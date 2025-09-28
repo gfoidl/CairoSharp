@@ -1,6 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?> 
+<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+		"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
 <!ENTITY version SYSTEM "version.xml">
 ]>
 <refentry id="cairo-Tags-and-Links">
@@ -60,7 +60,7 @@ document logical structure on supported backends. The following tags are support
 <refsect2 id="link"><title>Link Tags</title><para>A hyperlink is specified by enclosing the hyperlink text with the <link linkend="CAIRO-TAG-LINK:CAPS"><literal>CAIRO_TAG_LINK</literal></link> tag.</para>
 <para>For example:</para>
 <informalexample><programlisting>
-cairo_tag_begin (cr, CAIRO_TAG_LINK, "uri='http://cairographics.org'");
+cairo_tag_begin (cr, CAIRO_TAG_LINK, "uri='https://cairographics.org'");
 cairo_move_to (cr, 50, 50);
 cairo_show_text (cr, "This is a link to the cairo website.");
 cairo_tag_end (cr, CAIRO_TAG_LINK);
@@ -78,35 +78,34 @@ specified by four elements in the array: x, y, width, height. The
 array size must be a multiple of four.</para>
 <para>An example of creating a link with user specified clickable region:</para>
 <informalexample><programlisting>
-cairo_font_extents_t font_extents;
+struct text {
+    const char *s;
+    double x, y;
+};
+const struct text text1 = { "This link is split", 450, 70 };
+const struct text text2 = { "across two lines", 50, 70 };
 cairo_text_extents_t text1_extents;
 cairo_text_extents_t text2_extents;
 char attribs[100];
-const char *text1 = "This link is split";
-const char *text2 = "across two lines";
 
-cairo_font_extents (cr, &amp;font_extents);
-cairo_move_to (cr, 450, 50);
-cairo_text_extents (cr, text1, &amp;text1_extents);
-cairo_move_to (cr, 50, 70);
-cairo_text_extents (cr, text2, &amp;text2_extents);
+cairo_text_extents (cr, text1.s, &amp;text1_extents);
+cairo_text_extents (cr, text2.s, &amp;text2_extents);
 sprintf (attribs,
-         "rect=[%f %f %f %f %f %f %f %f] uri='http://cairographics.org'",
-         text1_extents.x_bearing,
-         text1_extents.y_bearing,
+         "rect=[%f %f %f %f %f %f %f %f] uri='https://cairographics.org'",
+         text1_extents.x_bearing + text1.x,
+         text1_extents.y_bearing + text1.y,
          text1_extents.width,
          text1_extents.height,
-         text2_extents.x_bearing,
-         text2_extents.y_bearing,
+         text2_extents.x_bearing + text2.x,
+         text2_extents.y_bearing + text2.y,
          text2_extents.width,
          text2_extents.height);
 
 cairo_tag_begin (cr, CAIRO_TAG_LINK, attribs);
-cairo_show_text (cr, "This is a link to the cairo website");
-cairo_move_to (cr, 450, 50);
-cairo_show_text (cr, text1);
-cairo_move_to (cr, 50, 70);
-cairo_show_text (cr, text2);
+cairo_move_to (cr, text1.x, text1.y);
+cairo_show_text (cr, text1.s);
+cairo_move_to (cr, text2.x, text2.y);
+cairo_show_text (cr, text2.s);
 cairo_tag_end (cr, CAIRO_TAG_LINK);
 </programlisting></informalexample>
 <para>There are three types of links. Each type has its own attributes as detailed below.</para>
@@ -127,7 +126,7 @@ to. Destinations are created with the <link linkend="CAIRO-TAG-DEST:CAPS"><liter
 : An integer specifying the page number in the PDF file to link to.</para>
 <para><parameter>pos</parameter>
 : [optional] An array of two floats specifying the x,y position
-on the page. Default is 0,0.</para>
+on the page.</para>
 <para>An example of the link attributes to link to a page and x,y position:</para>
 <programlisting>
 "page=3 pos=[3.1 6.2]"
@@ -139,7 +138,7 @@ on the page. Default is 0,0.</para>
 : An ASCII string specifying the URI.</para>
 <para>An example of the link attributes to the cairo website:</para>
 <programlisting>
-"uri='http://cairographics.org'"
+"uri='https://cairographics.org'"
 </programlisting>
 </refsect3>
 <refsect3 id="file-link"><title>File Links</title><para>A file link is a link a location in another PDF file.</para>
@@ -153,8 +152,9 @@ on the page. Default is 0,0.</para>
 <para> <parameter>page</parameter>
 : An integer specifying the page number in the PDF file.</para>
 <para> <parameter>pos</parameter>
-: [optional] An array of two floats specifying the x,y position
- on the page. Default is 0,0.</para>
+: [optional] An array of two floats specifying the x,y
+ position on the page. Position coordinates in external files are in PDF
+ coordinates (0,0 at bottom left).</para>
 <para>An example of the link attributes to PDF file:</para>
 <programlisting>
 "file='document.pdf' page=16 pos=[25 40]"
@@ -179,7 +179,7 @@ operations with the <link linkend="CAIRO-TAG-DEST:CAPS"><literal>CAIRO_TAG_DEST<
                 no operations are enclosed, the y coordidate is 0.</para>
 <para><parameter>internal</parameter>
 : A boolean that if true, the destination name may be
-           ommitted from PDF where possible. In this case, links
+           omitted from PDF where possible. In this case, links
            refer directly to the page and position instead of via
            the named destination table. Note that if this
            destination is referenced by another PDF (see <link linkend="file-link">File Links</link>),
@@ -199,11 +199,11 @@ cairo_tag_end (cr, CAIRO_TAG_DEST);
 </programlisting></informalexample>
 </refsect2>
 <refsect2 id="doc-struct"><title>Document Structure (PDF)</title><para>The document structure tags provide a means of specifying structural information
-such as headers, paragraphs, tables, and figures. The inclusion of structural information faciliates:</para>
+such as headers, paragraphs, tables, and figures. The inclusion of structural information facilitates:</para>
 <itemizedlist>
 <listitem><para>Extraction of text and graphics for copy and paste</para></listitem>
 <listitem><para>Reflow of text and graphics in the viewer</para></listitem>
-<listitem><para>Proccessing text eg searching and indexing</para></listitem>
+<listitem><para>Processing text eg searching and indexing</para></listitem>
 <listitem><para>Conversion to other formats</para></listitem>
 <listitem>
 <para>Accessability support</para>

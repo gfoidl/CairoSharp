@@ -201,6 +201,8 @@ write_ppm (cairo_surface_t *surface, int fd)
     case CAIRO_FORMAT_A1:
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_RGB30:
+    case CAIRO_FORMAT_RGB96F:
+    case CAIRO_FORMAT_RGBA128F:
     case CAIRO_FORMAT_INVALID:
     default:
 	return "unhandled image format";
@@ -244,6 +246,7 @@ write_ppm (cairo_surface_t *surface, int fd)
     return NULL;
 }
 
+#if CAIRO_HAS_INTERPRETER
 static cairo_surface_t *
 _create_image (void *closure,
 	       cairo_content_t content,
@@ -268,7 +271,6 @@ _create_image (void *closure,
     return cairo_surface_reference (*out);
 }
 
-#if CAIRO_HAS_INTERPRETER
 static const char *
 _cairo_script_render_page (const char *filename,
 			   cairo_surface_t **surface_out)

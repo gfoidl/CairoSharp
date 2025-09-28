@@ -1470,7 +1470,7 @@ UNWIND_STRINGS:
 #include <signal.h>
 #include <setjmp.h>
 /* Used to catch crashes in a test, so that we report it as such and
- * continue testing, although one crasher may already have corrupted memory in
+ * continue testing, although one crash may already have corrupted memory in
  * an nonrecoverable fashion. */
 static jmp_buf jmpbuf;
 
@@ -1668,6 +1668,7 @@ cairo_test_create_surface_from_png (const cairo_test_context_t *ctx,
 {
     cairo_surface_t *image;
     cairo_status_t status;
+    char *unique_id;
 
     image = cairo_image_surface_create_from_png (filename);
     status = cairo_surface_status (image);
@@ -1683,6 +1684,10 @@ cairo_test_create_surface_from_png (const cairo_test_context_t *ctx,
 	    free (srcdir_filename);
 	}
     }
+    unique_id = strdup(filename);
+    cairo_surface_set_mime_data (image, CAIRO_MIME_TYPE_UNIQUE_ID,
+				 (unsigned char *)unique_id, strlen(unique_id),
+				 free, unique_id);
 
     return image;
 }

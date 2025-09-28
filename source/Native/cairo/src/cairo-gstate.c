@@ -45,12 +45,6 @@
 #include "cairo-pattern-private.h"
 #include "cairo-traps-private.h"
 
-#if _XOPEN_SOURCE >= 600 || defined (_ISOC99_SOURCE)
-#define ISFINITE(x) isfinite (x)
-#else
-#define ISFINITE(x) ((x) * (x) >= 0.) /* check for NaNs */
-#endif
-
 static cairo_status_t
 _cairo_gstate_init_copy (cairo_gstate_t *gstate, cairo_gstate_t *other);
 
@@ -247,7 +241,7 @@ _cairo_gstate_save (cairo_gstate_t **gstate, cairo_gstate_t **freelist)
 
     top = *freelist;
     if (top == NULL) {
-	top = malloc (sizeof (cairo_gstate_t));
+	top = _cairo_malloc (sizeof (cairo_gstate_t));
 	if (unlikely (top == NULL))
 	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
     } else
@@ -2219,7 +2213,7 @@ _cairo_gstate_transform_glyphs_to_backend (cairo_gstate_t	*gstate,
 	  *num_transformed_glyphs = 0;
 	  return;
 	}
-	/* XXX We currently drop any glyphs that has its position outside
+	/* XXX We currently drop any glyphs that have their position outside
 	 * of the surface boundaries by a safety margin depending on the
 	 * font scale.  This however can fail in extreme cases where the
 	 * font has really long swashes for example...  We can correctly

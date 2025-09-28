@@ -2967,6 +2967,12 @@ _image_read_raw (csi_t *ctx,
     case CAIRO_FORMAT_ARGB32:
 	instride = rowlen = 4 * width;
 	break;
+    case CAIRO_FORMAT_RGB96F:
+	instride = rowlen = 12 * width;
+	break;
+    case CAIRO_FORMAT_RGBA128F:
+	instride = rowlen = 16 * width;
+	break;
     }
     len = rowlen * height;
 
@@ -3066,6 +3072,8 @@ err_decompress:
 #endif
 		    }
 		    break;
+		case CAIRO_FORMAT_RGB96F:
+		case CAIRO_FORMAT_RGBA128F:
 		case CAIRO_FORMAT_RGB30:
 		case CAIRO_FORMAT_INVALID:
 		case CAIRO_FORMAT_ARGB32:
@@ -3155,6 +3163,8 @@ err_decompress:
 #endif
 		}
 		break;
+	    case CAIRO_FORMAT_RGBA128F:
+	    case CAIRO_FORMAT_RGB96F:
 	    case CAIRO_FORMAT_RGB30:
 	    case CAIRO_FORMAT_INVALID:
 	    case CAIRO_FORMAT_ARGB32:
@@ -3191,6 +3201,8 @@ err_decompress:
 	    case CAIRO_FORMAT_A8:
 		break;
 
+	    case CAIRO_FORMAT_RGBA128F:
+	    case CAIRO_FORMAT_RGB96F:
 	    case CAIRO_FORMAT_RGB30:
 	    case CAIRO_FORMAT_RGB24:
 	    case CAIRO_FORMAT_INVALID:
@@ -4810,8 +4822,8 @@ _set_dash (csi_t *ctx)
 	if (_csi_likely (array->stack.len < ARRAY_LENGTH (stack_dashes))) {
 	    dashes = stack_dashes;
 	} else {
-	if (_csi_unlikely ((unsigned) array->stack.len >= INT_MAX / sizeof (double)))
-	    return _csi_error (CSI_STATUS_NO_MEMORY);
+	    if (_csi_unlikely ((unsigned) array->stack.len >= INT_MAX / sizeof (double)))
+		return _csi_error (CSI_STATUS_NO_MEMORY);
 	    dashes = _csi_alloc (ctx, sizeof (double) * array->stack.len);
 	    if (_csi_unlikely (dashes == NULL))
 		return _csi_error (CSI_STATUS_NO_MEMORY);

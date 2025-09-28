@@ -65,6 +65,8 @@ _cairo_gl_get_flavor (void)
 
     if (version == NULL)
 	flavor = CAIRO_GL_FLAVOR_NONE;
+    else if (strstr (version, "OpenGL ES 3") != NULL)
+	flavor = CAIRO_GL_FLAVOR_ES3;
     else if (strstr (version, "OpenGL ES 2") != NULL)
 	flavor = CAIRO_GL_FLAVOR_ES2;
     else
@@ -80,7 +82,7 @@ _cairo_gl_get_vbo_size (void)
 
     const char *env = getenv ("CAIRO_GL_VBO_SIZE");
     if (env == NULL) {
-        vbo_size = CAIRO_GL_VBO_SIZE_DEFAULT;
+	vbo_size = CAIRO_GL_VBO_SIZE_DEFAULT;
     } else {
 	errno = 0;
 	vbo_size = strtol (env, NULL, 10);

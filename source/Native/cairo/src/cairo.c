@@ -124,7 +124,7 @@
  *
  * For example:
  * <informalexample><programlisting>
- * cairo_tag_begin (cr, CAIRO_TAG_LINK, "uri='http://cairographics.org'");
+ * cairo_tag_begin (cr, CAIRO_TAG_LINK, "uri='https://cairographics.org'");
  * cairo_move_to (cr, 50, 50);
  * cairo_show_text (cr, "This is a link to the cairo website.");
  * cairo_tag_end (cr, CAIRO_TAG_LINK);
@@ -144,35 +144,34 @@
  *
  * An example of creating a link with user specified clickable region:
  * <informalexample><programlisting>
- * cairo_font_extents_t font_extents;
+ * struct text {
+ *     const char *s;
+ *     double x, y;
+ * };
+ * const struct text text1 = { "This link is split", 450, 70 };
+ * const struct text text2 = { "across two lines", 50, 70 };
  * cairo_text_extents_t text1_extents;
  * cairo_text_extents_t text2_extents;
  * char attribs[100];
- * const char *text1 = "This link is split";
- * const char *text2 = "across two lines";
  *
- * cairo_font_extents (cr, &font_extents);
- * cairo_move_to (cr, 450, 50);
- * cairo_text_extents (cr, text1, &text1_extents);
- * cairo_move_to (cr, 50, 70);
- * cairo_text_extents (cr, text2, &text2_extents);
+ * cairo_text_extents (cr, text1.s, &text1_extents);
+ * cairo_text_extents (cr, text2.s, &text2_extents);
  * sprintf (attribs,
- *          "rect=[%f %f %f %f %f %f %f %f] uri='http://cairographics.org'",
- *          text1_extents.x_bearing,
- *          text1_extents.y_bearing,
+ *          "rect=[%f %f %f %f %f %f %f %f] uri='https://cairographics.org'",
+ *          text1_extents.x_bearing + text1.x,
+ *          text1_extents.y_bearing + text1.y,
  *          text1_extents.width,
  *          text1_extents.height,
- *          text2_extents.x_bearing,
- *          text2_extents.y_bearing,
+ *          text2_extents.x_bearing + text2.x,
+ *          text2_extents.y_bearing + text2.y,
  *          text2_extents.width,
  *          text2_extents.height);
  *
  * cairo_tag_begin (cr, CAIRO_TAG_LINK, attribs);
- * cairo_show_text (cr, "This is a link to the cairo website");
- * cairo_move_to (cr, 450, 50);
- * cairo_show_text (cr, text1);
- * cairo_move_to (cr, 50, 70);
- * cairo_show_text (cr, text2);
+ * cairo_move_to (cr, text1.x, text1.y);
+ * cairo_show_text (cr, text1.s);
+ * cairo_move_to (cr, text2.x, text2.y);
+ * cairo_show_text (cr, text2.s);
  * cairo_tag_end (cr, CAIRO_TAG_LINK);
  * </programlisting></informalexample>
  *
@@ -193,7 +192,7 @@
  * @page: An integer specifying the page number in the PDF file to link to.
  *
  * @pos: [optional] An array of two floats specifying the x,y position
- * on the page. Default is 0,0.
+ * on the page.
  *
  * An example of the link attributes to link to a page and x,y position:
  * <programlisting>
@@ -209,7 +208,7 @@
  *
  * An example of the link attributes to the cairo website:
  * <programlisting>
- * "uri='http://cairographics.org'"
+ * "uri='https://cairographics.org'"
  * </programlisting>
  *
  * ## File Links ## {#file-link}
@@ -227,8 +226,9 @@
  *
  *  @page: An integer specifying the page number in the PDF file.
  *
- *  @pos: [optional] An array of two floats specifying the x,y position
- *  on the page. Default is 0,0.
+ *  @pos: [optional] An array of two floats specifying the x,y
+ *  position on the page. Position coordinates in external files are in PDF
+ *  coordinates (0,0 at bottom left).
  *
  * An example of the link attributes to PDF file:
  * <programlisting>
@@ -236,7 +236,7 @@
  * </programlisting>
  *
  * # Destination Tags # {#dest}
-
+ *
  * A destination is specified by enclosing the destination drawing
  * operations with the %CAIRO_TAG_DEST tag.
  *
@@ -255,7 +255,7 @@
  *                 no operations are enclosed, the y coordidate is 0.
  *
  * @internal: A boolean that if true, the destination name may be
- *            ommitted from PDF where possible. In this case, links
+ *            omitted from PDF where possible. In this case, links
  *            refer directly to the page and position instead of via
  *            the named destination table. Note that if this
  *            destination is referenced by another PDF (see [File Links][file-link]),
@@ -278,10 +278,10 @@
  * # Document Structure (PDF) # {#doc-struct}
  *
  * The document structure tags provide a means of specifying structural information
- * such as headers, paragraphs, tables, and figures. The inclusion of structural information faciliates:
+ * such as headers, paragraphs, tables, and figures. The inclusion of structural information facilitates:
  * * Extraction of text and graphics for copy and paste
  * * Reflow of text and graphics in the viewer
- * * Proccessing text eg searching and indexing
+ * * Processing text eg searching and indexing
  * * Conversion to other formats
  * * Accessability support
  *
@@ -843,7 +843,7 @@ slim_hidden_def (cairo_set_operator);
 
 
 #if 0
-/**
+/*
  * cairo_set_opacity:
  * @cr: a #cairo_t
  * @opacity: the level of opacity to use when compositing
@@ -853,9 +853,7 @@ slim_hidden_def (cairo_set_operator);
  * using the alpha value.
  *
  * The default opacity is 1.
- *
- * Since: TBD
- **/
+ */
 void
 cairo_set_opacity (cairo_t *cr, double opacity)
 {

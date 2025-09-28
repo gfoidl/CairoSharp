@@ -86,6 +86,8 @@ cairo_debug_reset_static_data (void)
 
     _cairo_image_reset_static_data ();
 
+    _cairo_image_compositor_reset_static_data ();
+
 #if CAIRO_HAS_DRM_SURFACE
     _cairo_drm_device_reset_static_data ();
 #endif
@@ -128,6 +130,12 @@ _cairo_debug_check_image_surface_is_defined (const cairo_surface_t *surface)
     case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_ARGB32:
 	width = image->width*4;
+	break;
+    case CAIRO_FORMAT_RGB96F:
+	width = image->width*12;
+	break;
+    case CAIRO_FORMAT_RGBA128F:
+	width = image->width*16;
 	break;
     case CAIRO_FORMAT_INVALID:
     default:

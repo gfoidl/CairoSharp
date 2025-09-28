@@ -107,6 +107,12 @@ _cairo_win32_tmpfile (void);
 #undef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+#if _XOPEN_SOURCE >= 600 || defined (_ISOC99_SOURCE)
+#define ISFINITE(x) isfinite (x)
+#else
+#define ISFINITE(x) ((x) * (x) >= 0.) /* check for NaNs */
+#endif
+
 #ifndef FALSE
 #define FALSE 0
 #endif
@@ -477,7 +483,8 @@ typedef enum _cairo_scaled_glyph_info {
     CAIRO_SCALED_GLYPH_INFO_METRICS	 = (1 << 0),
     CAIRO_SCALED_GLYPH_INFO_SURFACE	 = (1 << 1),
     CAIRO_SCALED_GLYPH_INFO_PATH	 = (1 << 2),
-    CAIRO_SCALED_GLYPH_INFO_RECORDING_SURFACE = (1 << 3)
+    CAIRO_SCALED_GLYPH_INFO_RECORDING_SURFACE = (1 << 3),
+    CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE = (1 << 4)
 } cairo_scaled_glyph_info_t;
 
 typedef struct _cairo_scaled_font_subset {
@@ -607,6 +614,9 @@ struct _cairo_scaled_font_backend {
                            long                  offset,
                            unsigned char        *buffer,
                            unsigned long        *length);
+
+    cairo_bool_t
+    (*has_color_glyphs)   (void                 *scaled_font);
 };
 
 struct _cairo_font_face_backend {
@@ -871,6 +881,9 @@ _cairo_font_options_init_copy (cairo_font_options_t		*options,
 			       const cairo_font_options_t	*other);
 
 cairo_private void
+_cairo_font_options_fini (cairo_font_options_t *options);
+
+cairo_private void
 _cairo_font_options_set_lcd_filter (cairo_font_options_t   *options,
 				   cairo_lcd_filter_t  lcd_filter);
 
@@ -902,6 +915,9 @@ _cairo_validate_text_clusters (const char		   *utf8,
 			       int			    num_clusters,
 			       cairo_text_cluster_flags_t   cluster_flags);
 
+cairo_private unsigned long
+_cairo_string_hash (const char *str, int len);
+
 cairo_private cairo_status_t
 _cairo_intern_string (const char **str_inout, int len);
 
@@ -909,7 +925,10 @@ cairo_private void
 _cairo_intern_string_reset_static_data (void);
 
 cairo_private const char *
-cairo_get_locale_decimal_point (void);
+_cairo_get_locale_decimal_point (void);
+
+cairo_private double
+_cairo_strtod (const char *nptr, char **endptr);
 
 /* cairo-path-fixed.c */
 cairo_private cairo_path_fixed_t *
@@ -1255,6 +1274,11 @@ _cairo_scaled_glyph_set_recording_surface (cairo_scaled_glyph_t *scaled_glyph,
                                            cairo_scaled_font_t *scaled_font,
                                            cairo_surface_t *recording_surface);
 
+cairo_private void
+_cairo_scaled_glyph_set_color_surface (cairo_scaled_glyph_t *scaled_glyph,
+		                       cairo_scaled_font_t *scaled_font,
+		                       cairo_image_surface_t *surface);
+
 cairo_private cairo_int_status_t
 _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
 			    unsigned long index,
@@ -1317,6 +1341,9 @@ _cairo_stroke_style_dash_approximate (const cairo_stroke_style_t *style,
 
 
 /* cairo-surface.c */
+
+cairo_private cairo_bool_t
+_cairo_surface_has_mime_image (cairo_surface_t *surface);
 
 cairo_private cairo_status_t
 _cairo_surface_copy_mime_data (cairo_surface_t *dst,
@@ -1491,11 +1518,11 @@ _cairo_surface_release_device_reference (cairo_surface_t *surface);
  * for that, even without being considered "valid" for the sake of
  * things like cairo_image_surface_create().
  *
- * Since 1.2.0 we ran into the same situtation with X servers with BGR
+ * Since 1.2.0 we ran into the same situation with X servers with BGR
  * visuals. This time we invented #cairo_internal_format_t instead,
  * (see it for more discussion).
  *
- * The punchline is that %CAIRO_FORMAT_VALID must not conside any
+ * The punchline is that %CAIRO_FORMAT_VALID must not consider any
  * internal format to be valid. Also we need to decide if the
  * RGB16_565 should be moved to instead be an internal format. If so,
  * this macro need not change for it. (We probably will need to leave
@@ -1509,7 +1536,7 @@ _cairo_surface_release_device_reference (cairo_surface_t *surface);
  * in cairo-xlib-surface.c--again see -Wswitch-enum).
  */
 #define CAIRO_FORMAT_VALID(format) ((format) >= CAIRO_FORMAT_ARGB32 &&		\
-                                    (format) <= CAIRO_FORMAT_RGB30)
+                                    (format) <= CAIRO_FORMAT_RGBA128F)
 
 /* pixman-required stride alignment in bytes. */
 #define CAIRO_STRIDE_ALIGNMENT (sizeof (uint32_t))
@@ -1558,6 +1585,9 @@ _cairo_image_scaled_glyph_fini (cairo_scaled_font_t *scaled_font,
 
 cairo_private void
 _cairo_image_reset_static_data (void);
+
+cairo_private void
+_cairo_image_compositor_reset_static_data (void);
 
 cairo_private cairo_surface_t *
 _cairo_image_surface_create_with_pixman_format (unsigned char		*data,
@@ -1900,6 +1930,10 @@ _cairo_matrix_multiply (cairo_matrix_t *r,
 
 cairo_private void
 _cairo_observers_notify (cairo_list_t *observers, void *arg);
+
+/* Open a file with a UTF-8 filename */
+cairo_private cairo_status_t
+_cairo_fopen (const char *filename, const char *mode, FILE **file_out);
 
 /* Avoid unnecessary PLT entries.  */
 slim_hidden_proto (cairo_clip_preserve);

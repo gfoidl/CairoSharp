@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -52,5 +53,14 @@
       <Version>1.15.6</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\source\CairoSharp\CairoSharp.csproj">
+      <Project>{85035815-f858-484c-bbbf-bad2db2beb93}</Project>
+      <Name>CairoSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)source\Native\Output\NativeLibraryCopier.exe" #$(SolutionDir),$(ConfigurationName),$(PlatformName),$(TargetDir)#</PreBuildEvent>
+  </PropertyGroup>
 </Project>
