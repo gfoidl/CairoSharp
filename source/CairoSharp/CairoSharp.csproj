@@ -58,13 +58,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\..\native\libs\win-x64\cairo.dll"
-                 LinkBase="runtimes\win-x64"
+        <Content Include="..\..\artifacts\native\win-x64\build\src\cairo-2.dll"
+                 Link="runtimes\win-x64\cairo.dll"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\win-x64\native" />
 
-        <Content Include="..\..\native\libs\win-x86\cairo.dll"
-                 LinkBase="runtimes\win-x86"
+        <Content Include="..\..\artifacts\native\win-x86\build\src\cairo-2.dll"
+                 Link="runtimes\win-x86\cairo.dll"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\win-x86\native" />
 

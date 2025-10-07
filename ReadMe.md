@@ -78,6 +78,38 @@ the upstream repo -- it's a complete rewrite for modern .NET.
 
 ## Native libraries
 
+https://gitlab.com/saiwp/cairo.git
+
+https://mesonbuild.com/SimpleStart.html
+
+
+From cairo repo https://gitlab.com/saiwp/cairo/-/blob/master/INSTALL:
+x64:
+```cmd
+rem Run in "x64 Native Tools Command Prompt for VS 2022"
+
+cd native\cairo
+
+meson setup --buildtype=release --default-library=both --default-both-libraries=shared -Dtests=disabled ..\..\artifacts\native\win-x64\build
+ninja -C ..\..\artifacts\native\win-x64\build
+
+rem build will likely not complete, but the desired artifact is there...
+rem meson install -C ..\..\artifacts\native\win-x64\build --destdir ..\out
+```
+x86:
+```cmd
+rem Run in "x86 Native Tools Command Prompt for VS 2022"
+
+cd native\cairo
+
+meson setup --buildtype=release --default-library=both --default-both-libraries=shared -Dtests=disabled ..\..\artifacts\native\win-x86\build
+ninja -C ..\..\artifacts\native\win-x86\build
+
+rem build will likely not complete, but the desired artifact is there...
+rem meson install -C ..\..\artifacts\native\win-x86\build --destdir ..\out
+```
+
+
 The native project files for Windows are taken from https://github.com/preshing/cairo-windows, currently using cairo version 1.17.2.
 
 * [cairo](http://www.cairographics.org/)
