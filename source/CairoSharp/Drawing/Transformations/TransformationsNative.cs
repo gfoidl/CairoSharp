@@ -9,47 +9,47 @@ namespace Cairo.Drawing.Transformations;
 
 internal static unsafe partial class TransformationsNative
 {
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_translate(void* cr, double tx, double ty);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_scale(void* cr, double sx, double sy);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_rotate(void* cr, double angle);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_transform(void* cr, ref Matrix matrix);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_set_matrix(void* cr, ref Matrix matrix);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_get_matrix(void* cr, out Matrix matrix);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_identity_matrix(void* cr);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_user_to_device(void* cr, ref double x, ref double y);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_user_to_device_distance(void* cr, ref double dx, ref double dy);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_device_to_user(void* cr, ref double x, ref double y);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_device_to_user_distance(void* cr, ref double dx, ref double dy);
 }

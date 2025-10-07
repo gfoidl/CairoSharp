@@ -13,7 +13,7 @@ namespace Cairo;
 public static class CairoAPI
 {
     /// <summary>
-    /// Returns the version of the cairo library encoded in a single integer as per CAIRO_VERSION_ENCODE.
+    /// Returns the version of the cairo library encoded in a single integer as per <see cref="VersionEncode(int, int, int)"/>.
     /// The encoding ensures that later versions compare greater than earlier versions.
     /// </summary>
     public static int Version { get; } = UtilitiesNative.cairo_version();
@@ -23,7 +23,10 @@ public static class CairoAPI
     /// </summary>
     public static unsafe string VersionString => field ??= new string(UtilitiesNative.cairo_version_string());
 
-    internal static int VersionEncode(int major, int minor, int patch) => major * 10_000 + minor * 100 + patch;
+    /// <summary>
+    /// CAIRO_VERSION_ENCODE
+    /// </summary>
+    public static int VersionEncode(int major, int minor, int patch) => major * 10_000 + minor * 100 + patch;
 
     /// <summary>
     /// Verifies at runtime that the cairo library meets the required version. When <c>true</c> this method

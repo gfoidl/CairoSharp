@@ -70,12 +70,12 @@ public sealed unsafe class ScriptSurface : Device
 
     protected override void DisposeCore(void* handle)
     {
+        base.DisposeCore(handle);
+
         if (_streamHandle.IsAllocated)
         {
             _streamHandle.Free();
         }
-
-        base.DisposeCore(handle);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public sealed unsafe class ScriptSurface : Device
     }
 
     /// <summary>
-    /// Create a pxoy surface that will render to target and record the operations to device.
+    /// Create a proxy surface that will render to target and record the operations to device.
     /// </summary>
     /// <param name="target">a target surface to wrap</param>
     /// <returns>

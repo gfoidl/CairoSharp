@@ -140,12 +140,12 @@ public sealed unsafe class RasterSource : Pattern
 
     protected override void DisposeCore(void* handle)
     {
+        base.DisposeCore(handle);
+
         if (_stateHandle.IsAllocated)
         {
             _stateHandle.Free();
         }
-
-        base.DisposeCore(handle);
     }
 
     /// <summary>

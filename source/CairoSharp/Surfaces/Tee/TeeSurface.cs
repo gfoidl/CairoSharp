@@ -23,15 +23,18 @@ public sealed unsafe class TeeSurface : Surface
     /// </para>
     /// </remarks>
     public TeeSurface(Surface primary)
-        : base(cairo_tee_surface_create(primary.Handle), owner: true, throwOnConstructionError: false) { }
+        : base(cairo_tee_surface_create(primary.Handle), owner: true, throwOnConstructionError: true) { }
 
     /// <summary>
     /// Adds a new target surface to the list of replicas of a tee surface.
     /// </summary>
     /// <param name="target">the surface to add</param>
+    /// <exception cref="ArgumentNullException"><paramref name="target"/> is <c>null</c></exception>
     public void Add(Surface target)
     {
         this.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(target);
+
         cairo_tee_surface_add(this.Handle, target.Handle);
     }
 

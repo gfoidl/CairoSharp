@@ -9,11 +9,11 @@ namespace Cairo.Utilities;
 
 internal static unsafe partial class UtilitiesNative
 {
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial int cairo_version();
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial sbyte* cairo_version_string();
 }

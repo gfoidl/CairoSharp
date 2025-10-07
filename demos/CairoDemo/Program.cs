@@ -3,16 +3,26 @@
 using System.Diagnostics;
 using Cairo;
 using Cairo.Drawing;
+using Cairo.Drawing.Patterns;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
 using Cairo.Surfaces;
 using Cairo.Surfaces.Images;
+using Cairo.Surfaces.PDF;
+using Cairo.Surfaces.Recording;
+using Cairo.Surfaces.SVG;
+using Cairo.Surfaces.Tee;
 using CairoDemo;
 using IOPath = System.IO.Path;
+
+AppContext.SetSwitch("Cairo.DebugDispose", true);
 
 if (Directory.Exists("output")) Directory.Delete("output", true);
 Directory.CreateDirectory("output");
 Environment.CurrentDirectory = IOPath.Combine(Environment.CurrentDirectory, "output");
+
+PrintCairoInfo();
+PrintSupportedSurfaceVersions();
 
 try
 {
@@ -24,6 +34,8 @@ try
     Arrow();
     Hexagon();
     Gradient();
+    MeshPattern();
+    RecordingAndScriptSurface();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -36,11 +48,36 @@ if (Debugger.IsAttached)
     Console.ReadKey();
 }
 //-----------------------------------------------------------------------------
+static void PrintCairoInfo()
+{
+    Console.WriteLine($"Cairo version: {CairoAPI.VersionString}");
+    Console.WriteLine();
+}
+//-----------------------------------------------------------------------------
+static void PrintSupportedSurfaceVersions()
+{
+    Console.WriteLine("Supported PDF versions:");
+
+    foreach (PdfVersion pdfVersion in PdfSurface.GetSupportedVersions())
+    {
+        Console.WriteLine($"\t{pdfVersion.GetString()}");
+    }
+
+    Console.WriteLine("Supported SVG versions");
+
+    foreach (SvgVersion svgVersion in SvgSurface.GetSupportedVersions())
+    {
+        Console.WriteLine($"\t{svgVersion.GetString()}");
+    }
+
+    Console.WriteLine();
+}
+//-----------------------------------------------------------------------------
 static void Primitives()
 {
     static void Draw(Surface surface)
     {
-        using Context c = new(surface);
+        using CairoContext c = new(surface);
         c.Scale(4, 4);
 
         // Stroke:
@@ -49,7 +86,7 @@ static void Primitives()
         c.Rectangle(10, 10, 10, 10);
         c.Stroke();
 
-        c.Save();
+        using (c.Save())
         {
             c.Color = new Color(0, 0, 0);
             c.Translate(20, 5);
@@ -57,52 +94,59 @@ static void Primitives()
             c.LineTo(10, 5);
             c.Stroke();
         }
-        c.Restore();
 
         // Fill:
         c.Color = new Color(0, 0, 0);
-        c.SetSourceRGB(0, 0, 0);
+        c.SetSourceRgb(0, 0, 0);
         c.Rectangle(10, 30, 10, 10);
         c.Fill();
 
         // Text:
         c.Color = new Color(0, 0, 0);
-        c.SelectFontFace("Georgia", FontSlant.Normal, FontWeight.Bold);
-        c.SetFontSize(10);
-        TextExtents te = c.TextExtents("a");
+        c.SetFontFace("Georgia", FontSlant.Normal, FontWeight.Bold);
+        c.FontSize = 10;
+        c.TextExtents("a", out TextExtents te);
         c.MoveTo(
             0.5 - te.Width / 2 - te.XBearing + 10,
             0.5 - te.Height / 2 - te.YBearing + 50);
         c.ShowText("a");
 
         c.Color = new Color(0, 0, 0);
-        c.SelectFontFace("Arial", FontSlant.Normal, FontWeight.Bold);
-        c.SetFontSize(10);
-        te = c.TextExtents("a");
+        c.SetFontFace("Arial", FontSlant.Normal, FontWeight.Bold);
+        c.FontSize = 10;
+        c.TextExtents("a", out te);
         c.MoveTo(
             0.5 - te.Width / 2 - te.XBearing + 10,
             0.5 - te.Height / 2 - te.YBearing + 60);
         c.ShowText("a");
     }
 
-    using (Surface surface = new ImageSurface(Format.Argb32, 200, 3200))
+    using (Surface surface = new ImageSurface(Format.Argb32, 200, 320))
     {
         Draw(surface);
         surface.WriteToPng("primitives.png");
     }
 
-    using (Surface surface = new PdfSurface("primitives.pdf", 200, 3200))
+    using (Surface surface = new PdfSurface("primitives.pdf", 200, 320))
+    {
         Draw(surface);
 
-    using (Surface surface = new SvgSurface("primitives.svg", 200, 3200))
+        // Another page (with the same content...)
+        surface.ShowPage();
         Draw(surface);
+    }
+
+    using (Surface surface = new SvgSurface("primitives.svg", 200, 320))
+    {
+        Draw(surface);
+    }
 }
 //-----------------------------------------------------------------------------
 static void AntiAlias()
 {
     static void Draw(Surface surface)
     {
-        using Context ctx = new(surface);
+        using CairoContext ctx = new(surface);
         // Sets the anti-aliasing method:
         ctx.Antialias = Antialias.Subpixel;
 
@@ -146,30 +190,48 @@ static void AntiAlias()
     }
 
     using (Surface surface = new PdfSurface("antialias.pdf", 70, 150))
+    {
         Draw(surface);
+    }
 
     using (Surface surface = new SvgSurface("antialias.svg", 70, 150))
+    {
         Draw(surface);
+    }
 }
 //-----------------------------------------------------------------------------
 static void Mask()
 {
-    static void Draw(Surface surface)
+    static void Draw(Surface surface, bool hasMultiplePages = false)
     {
-        using Context ctx = new(surface);
+        using CairoContext ctx = new(surface);
         ctx.Scale(500, 500);
 
-        Gradient linpat = new LinearGradient(0, 0, 1, 1);
+        using Gradient linpat = new LinearGradient(0, 0, 1, 1);
         linpat.AddColorStop(0, new Color(0, 0.3, 0.8));
         linpat.AddColorStop(1, new Color(1, 0.8, 0.3));
 
-        Gradient radpat = new RadialGradient(0.5, 0.5, 0.25, 0.5, 0.5, 0.6);
+        using Gradient radpat = new RadialGradient(0.5, 0.5, 0.25, 0.5, 0.5, 0.6);
         radpat.AddColorStop(0, new Color(0, 0, 0, 1));
         radpat.AddColorStop(1, new Color(0, 0, 0, 0));
 
         ctx.Source = linpat;
-        //ctx.Paint();
-        ctx.Mask(radpat);
+
+        if (!hasMultiplePages)
+        {
+            ctx.Mask(radpat);
+        }
+        else
+        {
+            ctx.Mask(radpat);
+
+            ctx.ShowPage();
+            ctx.Paint();
+
+            ctx.ShowPage();
+            ctx.Source = radpat;
+            ctx.Paint();
+        }
     }
 
     using (Surface surface = new ImageSurface(Format.Argb32, 500, 500))
@@ -179,17 +241,21 @@ static void Mask()
     }
 
     using (Surface surface = new PdfSurface("mask.pdf", 500, 500))
-        Draw(surface);
+    {
+        Draw(surface, hasMultiplePages: true);
+    }
 
     using (Surface surface = new SvgSurface("mask.svg", 500, 500))
+    {
         Draw(surface);
+    }
 }
 //-----------------------------------------------------------------------------
 static void Demo01()
 {
     static void Draw(Surface surface)
     {
-        using Context c = new(surface);
+        using CairoContext c = new(surface);
         c.Scale(500, 500);
 
         c.Color = new Color(0, 0, 0);
@@ -220,20 +286,24 @@ static void Demo01()
     }
 
     using (Surface surface = new PdfSurface("demo01.pdf", 500, 500))
+    {
         Draw(surface);
+    }
 
     using (Surface surface = new SvgSurface("demo01.svg", 500, 500))
+    {
         Draw(surface);
+    }
 }
 //-----------------------------------------------------------------------------
 static void Demo02()
 {
     static void Draw(Surface surface)
     {
-        using Context c = new(surface);
+        using CairoContext c = new(surface);
         c.Scale(500, 500);
 
-        Gradient radpat = new RadialGradient(0.25, 0.25, 0.1, 0.5, 0.5, 0.5);
+        using Gradient radpat = new RadialGradient(0.25, 0.25, 0.1, 0.5, 0.5, 0.5);
         radpat.AddColorStop(0, new Color(1.0, 0.8, 0.8));
         radpat.AddColorStop(1, new Color(0.9, 0.0, 0.0));
 
@@ -248,7 +318,7 @@ static void Demo02()
         c.Source = radpat;
         c.Fill();
 
-        Gradient linpat = new LinearGradient(0.25, 0.35, 0.75, 0.65);
+        using Gradient linpat = new LinearGradient(0.25, 0.35, 0.75, 0.65);
         linpat.AddColorStop(0.00, new Color(1, 1, 1, 0));
         linpat.AddColorStop(0.25, new Color(0, 1, 0, 0.5));
         linpat.AddColorStop(0.50, new Color(1, 1, 1, 0));
@@ -267,23 +337,27 @@ static void Demo02()
     }
 
     using (Surface surface = new PdfSurface("demo02.pdf", 500, 500))
+    {
         Draw(surface);
+    }
 
     using (Surface surface = new SvgSurface("demo02.svg", 500, 500))
+    {
         Draw(surface);
+    }
 }
 //-----------------------------------------------------------------------------
 static void Arrow()
 {
     static void Draw(Surface surface)
     {
-        using Context c = new(surface);
+        using CairoContext c = new(surface);
         c.Scale(500, 500);
 
-        // Hat nur für PNG Relevanz:
+        // Only relevant for PNG
         c.Antialias = Antialias.Subpixel;
 
-        // Linienweite, wegen Maßstab so:
+        // line width because of scale
         double ux = 1, uy = 1;
         c.DeviceToUserDistance(ref ux, ref uy);
         c.LineWidth = Math.Max(ux, uy);
@@ -304,10 +378,14 @@ static void Arrow()
     }
 
     using (Surface surface = new PdfSurface("arrow.pdf", 500, 500))
+    {
         Draw(surface);
+    }
 
     using (Surface surface = new SvgSurface("arrow.svg", 500, 500))
+    {
         Draw(surface);
+    }
 }
 //-----------------------------------------------------------------------------
 static void Hexagon()
@@ -329,7 +407,7 @@ static void Hexagon()
 
     static void Draw(Surface surface)
     {
-        using Context c = new(surface);
+        using CairoContext c = new(surface);
         c.Scale(500, 500);
 
         // Hat nur für PNG Relevanz:
@@ -341,7 +419,7 @@ static void Hexagon()
         c.LineWidth = Math.Max(ux, uy);
 
         PointD[] hexagon = GetHexagonPoints(0.5);
-        c.Save();
+        using (c.Save())
         {
             c.Translate(0.5, 0.5);
             c.MoveTo(hexagon[0]);
@@ -353,7 +431,6 @@ static void Hexagon()
             c.ClosePath();
             c.Stroke();
         }
-        c.Restore();
 
         c.Color = new Color(0, 0, 1);
         ux = 0.1; uy = 0.1;
@@ -390,24 +467,26 @@ static void Gradient()
 {
     static void Draw(Surface surface)
     {
-        using Context c = new(surface);
+        using CairoContext c = new(surface);
 
-        Gradient pat = new LinearGradient(0.0, 0.0, 0.0, 256.0);
-        pat.AddColorStopRgba(1, 0, 0, 0, 1);
-        pat.AddColorStopRgba(0, 1, 1, 1, 1);
-        c.Rectangle(0, 0, 256, 256);
-        c.SetSource(pat);
-        c.Fill();
-        pat.Dispose();
+        using (Gradient pat = new LinearGradient(0.0, 0.0, 0.0, 256.0))
+        {
+            pat.AddColorStopRgba(1, 0, 0, 0, 1);
+            pat.AddColorStopRgba(0, 1, 1, 1, 1);
+            c.Rectangle(0, 0, 256, 256);
+            c.SetSource(pat);
+            c.Fill();
+        }
 
-        pat = new RadialGradient(115.2, 102.4, 25.6,
-                                 102.4, 102.4, 128.0);
-        pat.AddColorStopRgba(0, 1, 1, 1, 1);
-        pat.AddColorStopRgba(1, 0, 0, 0, 1);
-        c.SetSource(pat);
-        c.Arc(128.0, 128.0, 76.8, 0, 2 * Math.PI);
-        c.Fill();
-        pat.Dispose();
+        using (Gradient pat = new RadialGradient(115.2, 102.4, 25.6,
+                                                 102.4, 102.4, 128.0))
+        {
+            pat.AddColorStopRgba(0, 1, 1, 1, 1);
+            pat.AddColorStopRgba(1, 0, 0, 0, 1);
+            c.SetSource(pat);
+            c.Arc(128.0, 128.0, 76.8, 0, 2 * Math.PI);
+            c.Fill();
+        }
     }
 
     using (Surface surface = new ImageSurface(Format.Argb32, 500, 500))
@@ -429,12 +508,86 @@ static void Gradient()
     }
 }
 //-----------------------------------------------------------------------------
+static void MeshPattern()
+{
+    // Based on https://gist.github.com/mgdm/3159434
+
+    static void Draw(Surface surface)
+    {
+        using CairoContext c = new(surface);
+        using Mesh mesh      = new();
+
+        // Use the mesh pattern methods to create a rectangle (called a "patch").
+        // This rectangle will be the same size as the image
+        using (mesh.BeginPatch())
+        {
+            mesh.LineTo(0, 0);      // corner 0
+            mesh.LineTo(400, 0);    // corner 1
+            mesh.LineTo(400, 300);  // corner 2
+            mesh.LineTo(0, 300);    // corner 3
+            mesh.LineTo(0, 0);      // back to corner 0
+
+            mesh.SetCornerColorRgb(0, 0, 0, 0);     // corner 0 - black
+            mesh.SetCornerColorRgb(1, 1, 0, 0);     // corner 1 - red
+            mesh.SetCornerColorRgb(2, 0, 1, 0);     // corner 2 - green
+            mesh.SetCornerColorRgb(3, 0, 0, 1);     // corner 3 - blue
+        }
+
+        c.SetSource(mesh);
+
+        // Draw a rectangle and fill it
+        c.Rectangle(0, 0, 400, 300);
+        c.Fill();
+    }
+
+    using Surface primarySurface = new PdfSurface("mesh.pdf", 400, 300);
+    using Surface svgSurface     = new SvgSurface("mesh.svg", 400, 300);
+    using Surface imageSurface   = new ImageSurface(Format.Argb32, 400, 300);
+    using TeeSurface teeSurface  = new(primarySurface);
+
+    teeSurface.Add(svgSurface);
+    teeSurface.Add(imageSurface);
+
+    Draw(teeSurface);
+    imageSurface.WriteToPng("mesh.png");
+}
+//-----------------------------------------------------------------------------
+static void RecordingAndScriptSurface()
+{
+    using RecordingSurface recordingSurface = new(Content.Color);
+    using CairoContext context              = new(recordingSurface);
+    using ScriptSurface script              = new("script.cairo");
+
+    script.Mode = ScriptMode.Ascii;
+    script.FromRecordingSurface(recordingSurface);
+    script.WriteComment($"Start at {DateTimeOffset.Now}");
+
+    context.Color = new Color(0, 0, 1);
+    context.Rectangle(10, 20, 40, 30);
+    context.FillPreserve();
+
+    context.LineWidth = 2;
+    context.Color = new Color(1, 0, 0);
+    context.Stroke();
+
+    using (ImageSurface img = new(Format.Argb32, 300, 300))
+    using (CairoContext cr  = new(img))
+    {
+        cr.SetSourceSurface(recordingSurface, 0, 0);
+        cr.Paint();
+
+        img.WriteToPng("recording.png");
+    }
+
+    script.WriteComment($"End at {DateTimeOffset.Now}");
+}
+//-----------------------------------------------------------------------------
 namespace CairoDemo
 {
     public static class ContextExtensions
     {
         public static void Arrow(
-            this Context c,
+            this CairoContext c,
             double x0, double y0,
             double x1, double y1,
             double length, double angle)

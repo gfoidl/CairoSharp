@@ -235,12 +235,12 @@ public sealed unsafe class UserFont : FontFace
 
     protected override void DisposeCore(void* handle)
     {
+        base.DisposeCore(handle);
+
         if (_stateHandle.IsAllocated)
         {
             _stateHandle.Free();
         }
-
-        base.DisposeCore(handle);
     }
 
     /// <summary>

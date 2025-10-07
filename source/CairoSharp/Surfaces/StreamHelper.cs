@@ -29,9 +29,10 @@ internal static unsafe class StreamHelper
             GCHandle gcHandle = GCHandle.FromIntPtr((nint)state);
             Debug.Assert(gcHandle.IsAllocated);
 
-            Stream stream           = (Stream)gcHandle.Target!;
-            ReadOnlySpan<byte> span = new(data, (int)length);
+            Stream? stream = gcHandle.Target as Stream;
+            Debug.Assert(stream is not null);
 
+            ReadOnlySpan<byte> span = new(data, (int)length);
             stream.Write(span);
 
             return Status.Success;

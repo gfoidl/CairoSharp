@@ -25,12 +25,15 @@ public sealed unsafe class SvgSurface : Surface
 
     protected override void DisposeCore(void* handle)
     {
+        base.DisposeCore(handle);
+
+        // Need to free the surface first, so that the write function (if any)
+        // can be called on a valid handle.
+        // So it's like: dispose -> write func -> stream handle free
         if (_streamHandle.IsAllocated)
         {
             _streamHandle.Free();
         }
-
-        base.DisposeCore(handle);
     }
 
     /// <summary>

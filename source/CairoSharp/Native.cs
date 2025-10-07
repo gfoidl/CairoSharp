@@ -1,18 +1,21 @@
 // (c) gfoidl, all rights reserved
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Cairo;
 
-internal static class NativeMethods
+internal static class Native
 {
     public const string LibCairo = "cairo";
 
+#pragma warning disable CA2255      // The 'ModuleInitializer' attribute should not be used in libraries
 #if NET5_0_OR_GREATER && DEBUG      // only needed for local DEV, via NuGet / .NET SDK package reference the deps are setup correctly
     private static nint s_libHandle;
 
-    static NativeMethods()
+    [ModuleInitializer]
+    public static void ModuleInitializer()
     {
         NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), static (libraryName, assembly, searchPath) =>
         {
@@ -39,7 +42,8 @@ internal static class NativeMethods
 
         return 0;
 
-        static string GetLibraryName() => OperatingSystem.IsLinux() ? $"lib{LibCairo}.so" : LibCairo;
+        // Not strictly necessary, as the runtime will do this for us otherwise.
+        static string GetLibraryName() => OperatingSystem.IsLinux() ? $"lib{LibCairo}.so" : $"{LibCairo}.dll";
 
         static string GetRuntimeIdentifier()
         {
@@ -71,11 +75,11 @@ internal static class NativeMethods
         }
     }
 #endif
-
-#if !NET5_0_OR_GREATER
-    static NativeMethods()
+#if !NET5_0_OR_GREATER && DEBUG
+    [ModuleInitializer]
+    public static void ModuleInitializer()
     {
-        string path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+        string path   = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
         string dllDir = System.IO.Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location);
 
         if (Environment.Is64BitProcess)
@@ -92,4 +96,5 @@ internal static class NativeMethods
         Environment.SetEnvironmentVariable("PATH", path);
     }
 #endif
+#pragma warning restore CA2255      // The 'ModuleInitializer' attribute should not be used in libraries
 }

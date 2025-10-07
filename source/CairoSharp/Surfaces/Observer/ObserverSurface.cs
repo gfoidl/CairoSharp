@@ -29,14 +29,14 @@ public sealed unsafe class ObserverSurface : Surface
 
     protected override void DisposeCore(void* handle)
     {
+        base.DisposeCore(handle);
+
         GCHandle thisHandle = GCHandle.FromIntPtr(new IntPtr(_thisHandle));
 
         if (thisHandle.IsAllocated)
         {
             thisHandle.Free();
         }
-
-        base.DisposeCore(handle);
     }
 
     /// <summary>

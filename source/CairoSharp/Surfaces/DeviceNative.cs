@@ -8,75 +8,75 @@ namespace Cairo.Surfaces;
 
 internal static unsafe partial class DeviceNative
 {
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void* cairo_device_reference(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_device_destroy(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial Status cairo_device_status(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_device_finish(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_device_flush(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial DeviceType cairo_device_get_type(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial uint cairo_device_get_reference_count(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial Status cairo_device_set_user_data(void* device, ref UserDataKey key, void* user_data, cairo_destroy_func_t destroy);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void* cairo_device_get_user_data(void* device, ref UserDataKey key);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial Status cairo_device_acquire(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_device_release(void* device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial double cairo_device_observer_elapsed(void* abstract_device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial double cairo_device_observer_fill_elapsed(void* abstract_device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial double cairo_device_observer_glyphs_elapsed(void* abstract_device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial double cairo_device_observer_mask_elapsed(void* abstract_device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial double cairo_device_observer_paint_elapsed(void* abstract_device);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial Status cairo_device_observer_print(void* abstract_device, cairo_write_func_t write_func, void* closure);
 
-    [LibraryImport(NativeMethods.LibCairo)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial double cairo_device_observer_stroke_elapsed(void* abstract_device);
 }

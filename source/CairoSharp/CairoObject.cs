@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using Cairo.Utilities;
 
 namespace Cairo;
@@ -7,7 +8,7 @@ namespace Cairo;
 /// <summary>
 /// Base object for cairo.
 /// </summary>
-public abstract unsafe class CairoObject : IDisposable
+public abstract unsafe class CairoObject : IDisposable, IEquatable<CairoObject>
 {
     private void* _handle;
 
@@ -25,6 +26,7 @@ public abstract unsafe class CairoObject : IDisposable
 
     protected internal void* Handle => _handle;
 
+    [DebuggerStepThrough]
     protected internal void CheckDisposed() => ObjectDisposedException.ThrowIf(_handle is null, this);
 
     public void Dispose()
@@ -52,4 +54,25 @@ public abstract unsafe class CairoObject : IDisposable
     protected abstract void DisposeCore(void* handle);
 
     ~CairoObject() => Dispose(false);
+
+    /// <summary>
+    /// Two <see cref="CairoObject"/>s are equal, when there native handles are equal.
+    /// </summary>
+    public bool Equals(CairoObject? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        return this.Handle == other.Handle;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => this.Equals(obj as CairoObject);
+
+    /// <summary>
+    /// The hashcode of this object.
+    /// </summary>
+    public override int GetHashCode() => ((nint)this.Handle).GetHashCode();
 }
