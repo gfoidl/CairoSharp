@@ -140,11 +140,10 @@ public sealed unsafe class ImageSurface : Surface
 
             if (data is null)
             {
-                return ReadOnlySpan<byte>.Empty;
+                return [];
             }
 
             int length = this.Height * this.Stride;
-
             return new ReadOnlySpan<byte>(data, length);
         }
     }
