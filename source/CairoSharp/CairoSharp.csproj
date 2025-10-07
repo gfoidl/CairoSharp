@@ -61,12 +61,12 @@
         <Content Include="..\..\artifacts\native\win-x64\build\src\cairo-2.dll"
                  Link="runtimes\win-x64\cairo.dll"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x64\native" />
+                 PackagePath="runtimes\win-x64\native\cairo.dll" />
 
         <Content Include="..\..\artifacts\native\win-x86\build\src\cairo-2.dll"
                  Link="runtimes\win-x86\cairo.dll"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x86\native" />
+                 PackagePath="runtimes\win-x86\native\cairo.dll" />
 
         <Content Include="..\..\native\stubs\linux-x64\libcairo.so"
                  LinkBase="runtimes\linux-x64"
