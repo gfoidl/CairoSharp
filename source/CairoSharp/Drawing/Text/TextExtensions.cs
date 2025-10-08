@@ -68,7 +68,7 @@ public static unsafe class TextExtensions
         /// This method is equivalent to a call to cairo_toy_font_face_create() followed by cairo_set_font_face().
         /// </para>
         /// </remarks>
-        public void SetFontFace(string family, FontSlant slant = FontSlant.Normal, FontWeight weight = FontWeight.Normal)
+        public void SelectFontFace(string family, FontSlant slant = FontSlant.Normal, FontWeight weight = FontWeight.Normal)
         {
             cr.CheckDisposed();
             cairo_select_font_face(cr.Handle, family, slant, weight);

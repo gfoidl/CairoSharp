@@ -12,6 +12,24 @@ namespace Cairo;
 /// </summary>
 public static unsafe class PathExtensions
 {
+    extension(double value)
+    {
+        /// <summary>
+        /// Converts degrees to radians. rad = deg * Pi / 180
+        /// </summary>
+        /// <returns>Radians.</returns>
+        public double DegreesToRadians() => value * Math.PI / 180d;
+    }
+
+    extension(int value)
+    {
+        /// <summary>
+        /// Converts degrees to radians. rad = deg * Pi / 180
+        /// </summary>
+        /// <returns>Radians.</returns>
+        public double DegreesToRadians() => value * Math.PI / 180d;
+    }
+
     extension(CairoContext cr)
     {
         /// <summary>
@@ -318,7 +336,7 @@ public static unsafe class PathExtensions
         /// If there is no current point before the call to cairo_curve_to() this method will
         /// behave as if preceded by a call to cairo_move_to(cr , x1 , y1 ).
         /// </remarks>
-        public void CurceTo(double x1, double y1, double x2, double y2, double x3, double y3)
+        public void CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
         {
             cr.CheckDisposed();
             cairo_curve_to(cr.Handle, x1, y1, x2, y2, x3, y3);
@@ -337,7 +355,7 @@ public static unsafe class PathExtensions
         /// behave as if preceded by a call to cairo_move_to(cr , x1 , y1 ).
         /// </remarks>
         public void CurveTo(PointD p1, PointD p2, PointD p3)
-            => CurceTo(cr, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y);
+            => CurveTo(cr, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y);
 
         /// <summary>
         /// Adds a line to the path from the current point to position (x , y ) in user-space

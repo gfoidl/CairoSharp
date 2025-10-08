@@ -8,6 +8,7 @@
     <Project Path="demos/AspNetCoreDemo/AspNetCoreDemo.csproj" Id="cd2d8994-351f-4af5-be56-25fafc22623e" />
     <Project Path="demos/CairoDemo.NuGet/CairoDemo.NuGet.csproj" Id="75ce7d03-c812-4855-8806-b24854ce1590" />
     <Project Path="demos/CairoDemo/CairoDemo.csproj" />
+    <Project Path="demos/WinFormsDemo/WinFormsDemo.csproj" Id="e6ab799a-f171-47b7-aacc-c6b37f3d4041" />
     <Project Path="demos/WpfDemo/WpfDemo.csproj" Id="800d210e-339c-471c-b670-f1903925373d" />
   </Folder>
   <Folder Name="/native/" />

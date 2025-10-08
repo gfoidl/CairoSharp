@@ -385,6 +385,14 @@ public sealed unsafe class CairoContext : CairoObject
     }
 
     /// <summary>
+    /// This is a convenience method for <see cref="SetSourceSurface(Surface, double, double)"/>.
+    /// </summary>
+    /// <param name="surface">a surface to be used to set the source pattern</param>
+    /// <param name="x">User-space X coordinate for surface origin</param>
+    /// <param name="y">User-space Y coordinate for surface origin</param>
+    public void SetSource(Surface surface, double x, double y) => this.SetSourceSurface(surface, x, y);
+
+    /// <summary>
     /// This is a convenience method for creating a pattern from surface and setting
     /// it as the source in cr with <see cref="SetSource(Pattern)"/>.
     /// </summary>

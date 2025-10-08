@@ -105,7 +105,7 @@ static void Primitives()
 
         // Text:
         c.Color = new Color(0, 0, 0);
-        c.SetFontFace("Georgia", FontSlant.Normal, FontWeight.Bold);
+        c.SelectFontFace("Georgia", FontSlant.Normal, FontWeight.Bold);
         c.FontSize = 10;
         c.TextExtents("a", out TextExtents te);
         c.MoveTo(
@@ -114,7 +114,7 @@ static void Primitives()
         c.ShowText("a");
 
         c.Color = new Color(0, 0, 0);
-        c.SetFontFace("Arial", FontSlant.Normal, FontWeight.Bold);
+        c.SelectFontFace("Arial", FontSlant.Normal, FontWeight.Bold);
         c.FontSize = 10;
         c.TextExtents("a", out te);
         c.MoveTo(

@@ -80,19 +80,16 @@ public sealed unsafe class ScaledFont : FontFace
     /// point would be advanced by <see cref="TextExtensions.ShowText(CairoContext, string?)"/>.
     /// </summary>
     /// <param name="text">a NUL-terminated string of text, encoded in UTF-8</param>
-    /// <returns>the extents for a string of text</returns>
     /// <remarks>
     /// Note that whitespace characters do not directly contribute to the size of the rectangle
     /// (extents.width and extents.height). They do contribute indirectly by changing the position
     /// of non-whitespace characters. In particular, trailing whitespace characters are likely to not
     /// affect the size of the rectangle, though they will affect the x_advance and y_advance values.
     /// </remarks>
-    public TextExtents GetTextExtents(string text)
+    public void TextExtents(string text, out TextExtents textExtents)
     {
         this.CheckDisposed();
-
-        cairo_scaled_font_text_extents(this.Handle, text, out TextExtents textExtents);
-        return textExtents;
+        cairo_scaled_font_text_extents(this.Handle, text, out textExtents);
     }
 
     /// <summary>
@@ -104,15 +101,13 @@ public sealed unsafe class ScaledFont : FontFace
     /// would be advanced by <see cref="TextExtensions.ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>.
     /// </summary>
     /// <param name="glyphs">an array of glyph IDs with X and Y offsets.</param>
-    /// <returns>the extents for an array of glyphs</returns>
-    public TextExtents GetGlyphExtents(params ReadOnlySpan<Glyph> glyphs)
+    public void GlyphExtents(ReadOnlySpan<Glyph> glyphs, out TextExtents textExtents)
     {
         this.CheckDisposed();
 
         fixed (Glyph* ptr = glyphs)
         {
-            cairo_scaled_font_glyph_extents(this.Handle, ptr, glyphs.Length, out TextExtents textExtents);
-            return textExtents;
+            cairo_scaled_font_glyph_extents(this.Handle, ptr, glyphs.Length, out textExtents);
         }
     }
 
@@ -159,7 +154,7 @@ public sealed unsafe class ScaledFont : FontFace
 
             status.ThrowIfNotSuccess();
 
-            clusters = new(clustersNative, numClusters);
+            clusters = new TextClusterArray(clustersNative, numClusters);
             return new GlyphArray(glyphs, numGlyphs);
         }
         else
