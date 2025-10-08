@@ -21,7 +21,7 @@ namespace Cairo.Drawing.Patterns;
 /// </para>
 /// <para>
 /// Note: The coordinates are always in pattern space. For a new pattern, pattern space is identical
-/// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.GetMatrix(out Utilities.Matrix)"/>.
+/// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.GetMatrix(out Matrix)"/>.
 /// </para>
 /// </remarks>
 public sealed unsafe class Mesh : Pattern

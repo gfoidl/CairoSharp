@@ -18,7 +18,7 @@ public sealed unsafe class DirectWriteFont : FontFace
     /// <param name="dwriteFontFace">A pointer to an IDWriteFontFace specifying the DWrite font to use.</param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>.
+    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// <para>
     /// See <a href="https://www.cairographics.org/manual/cairo-DWrite-Fonts.html#cairo-dwrite-font-face-create-for-dwrite-fontface">cairo docs</a>
     /// for an example about usage.

@@ -2,7 +2,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Cairo.Utilities;
+namespace Cairo;
 
 // https://www.cairographics.org/manual/cairo-cairo-matrix-t.html
 

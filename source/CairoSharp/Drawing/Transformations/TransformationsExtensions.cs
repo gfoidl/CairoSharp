@@ -1,6 +1,5 @@
 // (c) gfoidl, all rights reserved
 
-using Cairo.Utilities;
 using static Cairo.Drawing.Transformations.TransformationsNative;
 
 namespace Cairo;

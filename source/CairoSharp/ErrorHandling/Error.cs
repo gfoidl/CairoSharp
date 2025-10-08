@@ -26,6 +26,7 @@ public static unsafe class Error
         /// </summary>
         /// <exception cref="CairoException">status != <see cref="Status.Success"/></exception>
         [StackTraceHidden]
+        [DebuggerNonUserCode]
         public void ThrowIfNotSuccess()
         {
             if (status != Status.Success)
@@ -35,6 +36,7 @@ public static unsafe class Error
         }
 
         [StackTraceHidden]
+        [DebuggerNonUserCode]
         internal void ThrowIfStatus(Status value)
         {
             if (status == value)

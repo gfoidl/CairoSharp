@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using Cairo.Drawing;
 using Cairo.Drawing.Patterns;
 using Cairo.Surfaces;
-using Cairo.Utilities;
 using static Cairo.CairoContextNative;
 
 namespace Cairo;
@@ -60,7 +59,13 @@ public sealed unsafe class CairoContext : CairoObject
         }
     }
 
-    protected override void DisposeCore(void* handle) => cairo_destroy(this.Handle);
+    protected override void DisposeCore(void* handle)
+    {
+        cairo_destroy(this.Handle);
+
+        uint rc = cairo_get_reference_count(handle);
+        Debug.WriteLine($"CairoContext 0x{(nint)handle}: reference count = {rc}");
+    }
 
 
     /// <summary>

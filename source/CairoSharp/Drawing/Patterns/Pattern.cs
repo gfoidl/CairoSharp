@@ -1,7 +1,6 @@
 // (c) gfoidl, all rights reserved
 
-using System.Diagnostics.CodeAnalysis;
-using Cairo.Utilities;
+using System.Diagnostics;
 using static Cairo.Drawing.Patterns.PatternNative;
 
 namespace Cairo.Drawing.Patterns;
@@ -30,7 +29,13 @@ public unsafe class Pattern : CairoObject
         }
     }
 
-    protected override void DisposeCore(void* handle) => cairo_pattern_destroy(handle);
+    protected override void DisposeCore(void* handle)
+    {
+        cairo_pattern_destroy(handle);
+
+        uint rc = cairo_pattern_get_reference_count(handle);
+        Debug.WriteLine($"Pattern 0x{(nint)handle}: reference count = {rc}");
+    }
 
     /// <summary>
     /// Checks whether an error has previously occurred for this pattern.

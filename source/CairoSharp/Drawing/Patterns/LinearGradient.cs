@@ -23,7 +23,7 @@ public sealed unsafe class LinearGradient : Gradient
     /// <param name="y1">y coordinate of the end point</param>
     /// <remarks>
     /// Note: The coordinates here are in pattern space. For a new pattern, pattern space is identical
-    /// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.GetMatrix(out Utilities.Matrix)"/>.
+    /// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.GetMatrix(out Matrix)"/>.
     /// </remarks>
     public LinearGradient(double x0, double y0, double x1, double y1)
         : base(cairo_pattern_create_linear(x0, y0, x1, y1), owner: true) { }

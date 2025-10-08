@@ -1,7 +1,6 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
-using Cairo.Utilities;
 using unsafe LOGFONTW = void*;
 using unsafe HFONT    = void*;
 using unsafe HDC      = void*;

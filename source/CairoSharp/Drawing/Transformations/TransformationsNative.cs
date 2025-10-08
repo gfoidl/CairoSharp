@@ -1,7 +1,6 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
-using Cairo.Utilities;
 
 namespace Cairo.Drawing.Transformations;
 

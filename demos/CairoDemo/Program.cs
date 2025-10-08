@@ -10,9 +10,12 @@ using Cairo.Fonts;
 using Cairo.Surfaces;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.PDF;
+using Cairo.Surfaces.PostScript;
 using Cairo.Surfaces.Recording;
 using Cairo.Surfaces.SVG;
 using Cairo.Surfaces.Tee;
+using Cairo.Surfaces.Win32;
+using Cairo.Surfaces.XLib;
 using CairoDemo;
 using IOPath = System.IO.Path;
 
@@ -22,22 +25,25 @@ if (Directory.Exists("output")) Directory.Delete("output", true);
 Directory.CreateDirectory("output");
 Environment.CurrentDirectory = IOPath.Combine(Environment.CurrentDirectory, "output");
 
-PrintCairoInfo();
-PrintSupportedSurfaceVersions();
-
 try
 {
-    Primitives();
-    AntiAlias();
-    Mask();
-    Demo01();
-    Demo02();
-    Arrow();
-    Hexagon();
-    Gradient();
-    MeshPattern();
-    RecordingAndScriptSurface();
-    PdfFeatures();
+    PrintCairoInfo();
+    PrintSupportedSurfaceVersions();
+    ShowSurfaceInformation();
+
+    //Primitives();
+    //AntiAlias();
+    //Mask();
+    //Demo01();
+    //Demo02();
+    //Arrow();
+    //Hexagon();
+    //Gradient();
+    //MeshPattern();
+    //MeshPattern1();
+    //RecordingAndScriptSurface();
+    //PdfFeatures();
+    RasterSource();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -73,6 +79,47 @@ static void PrintSupportedSurfaceVersions()
     }
 
     Console.WriteLine();
+}
+//-----------------------------------------------------------------------------
+static void ShowSurfaceInformation()
+{
+    Console.WriteLine("Surfaces:");
+
+    using (ImageSurface surface = new(Format.Argb32, 100, 100))
+    {
+        Print(surface);
+    }
+
+    using (PdfSurface surface = new(100, 100))
+    {
+        Print(surface);
+    }
+
+    using (PostScriptSurface surface = new(100, 100))
+    {
+        Print(surface);
+    }
+
+    using (SvgSurface surface = new(100, 100))
+    {
+        Print(surface);
+    }
+
+    using (Win32Surface surface = new(Format.Argb32, 100, 100))
+    {
+        Print(surface);
+    }
+
+    static void Print(Surface surface)
+    {
+        Console.WriteLine($"""
+                {surface.GetType().Name,-20}
+                    HasShowTextGlyphs:      {surface.HasShowTextGlyphs}
+                    supports mime-type png: {surface.SupportsMimeType(MimeTypes.Png)}
+                    supports mime-type jpg: {surface.SupportsMimeType(MimeTypes.Jpeg)}
+                    supports mime-type uri: {surface.SupportsMimeType(MimeTypes.Uri)}
+            """);
+    }
 }
 //-----------------------------------------------------------------------------
 static void Primitives()
@@ -554,6 +601,76 @@ static void MeshPattern()
     imageSurface.WriteToPng("mesh.png");
 }
 //-----------------------------------------------------------------------------
+static void MeshPattern1()
+{
+    // Based on https://gitlab.com/saiwp/cairo/-/blob/master/test/mesh-pattern.c?ref_type=heads
+
+    const int PatWidth  = 170;
+    const int PatHeight = 170;
+    const int Size      = PatWidth;
+    const int Pad       = 2;
+    const int Width     = Pad + Size + Pad;
+    const int Height    = Width;
+
+    static void Draw(Surface surface)
+    {
+        using CairoContext cr = new(surface);
+
+        cr.Translate(Pad, Pad);
+        cr.Translate(10, 10);
+
+        using Mesh mesh = new();
+
+        using (mesh.BeginPatch())
+        {
+            mesh.MoveTo(0, 0);
+            mesh.CurveTo(30, -30, 60, 30, 100, 0);
+            mesh.CurveTo(60, 30, 130, 60, 100, 100);
+            mesh.CurveTo(60, 70, 30, 130, 0, 100);
+            mesh.CurveTo(30, 70, -30, 30, 0, 0);
+
+            mesh.SetCornerColorRgb(0, 1, 0, 0);
+            mesh.SetCornerColorRgb(1, 0, 1, 0);
+            mesh.SetCornerColorRgb(2, 0, 0, 1);
+            mesh.SetCornerColorRgb(3, 1, 1, 0);
+        }
+
+        using (mesh.BeginPatch())
+        {
+            mesh.MoveTo(50, 50);
+
+            mesh.CurveTo(80, 20, 110, 80, 150, 50);
+            mesh.CurveTo(110, 80, 180, 110, 150, 150);
+            mesh.CurveTo(110, 120, 80, 180, 50, 150);
+            mesh.CurveTo(80, 120, 20, 80, 50, 50);
+
+            mesh.SetCornerColorRgba(0, 1, 0, 0, 0.3);
+            mesh.SetCornerColorRgb(1, 0, 1, 0);
+            mesh.SetCornerColorRgba(2, 0, 0, 1, 0.3);
+            mesh.SetCornerColorRgb(3, 1, 1, 0);
+        }
+
+        cr.SetSource(mesh);
+        cr.Paint();
+    }
+
+    using (Surface surface = new ImageSurface(Format.Argb32, Width, Height))
+    {
+        Draw(surface);
+        surface.WriteToPng("mesh1.png");
+    }
+
+    using (Surface surface = new PdfSurface("mesh1.pdf", Width, Height))
+    {
+        Draw(surface);
+    }
+
+    using (Surface surface = new SvgSurface("mesh1.svg", Width, Height))
+    {
+        Draw(surface);
+    }
+}
+//-----------------------------------------------------------------------------
 static void RecordingAndScriptSurface()
 {
     using RecordingSurface recordingSurface = new(Content.Color);
@@ -627,6 +744,73 @@ static void PdfFeatures()
         context.Fill();
 
         surface.SetPageLabel("my page 2");
+    }
+}
+//-----------------------------------------------------------------------------
+static void RasterSource()
+{
+    // Based on https://gitlab.com/saiwp/cairo/-/blob/master/test/raster-source.c?ref_type=heads
+
+    // Note: we set the current dir to output
+    PngDimensions("../png.png", out Content content, out int pngWidth, out int pngHeight);
+
+    using Pattern png = new RasterSource("../png.png", content, pngWidth, pngHeight, static (pattern, userData, target, ref extents) =>
+    {
+        string pngFile = (userData as string)!;
+        return new ImageSurface(pngFile);
+    });
+
+    using Pattern red = new RasterSource(null, Content.Color, pngWidth, pngHeight, static (pattern, userData, target, ref extents) =>
+    {
+        Surface image      = target.CreateSimilarImage(Format.Rgb24, extents.Width, extents.Height);
+        image.DeviceOffset = new PointD(extents.X, extents.Y);
+
+        using CairoContext cr = new(image);
+        cr.SetSourceRgb(1, 0, 0);
+        cr.Paint();
+
+        return image;
+    });
+
+    const int Width  = 200;
+    const int Height = 80;
+
+    using SvgSurface svgSurface     = new("raster-source.svg", Width, Height);
+    using PdfSurface pdfSurface     = new("raster-source.pdf", Width, Height);
+    using ImageSurface imageSurface = new(Format.Argb32, Width, Height);
+    using TeeSurface teeSurface     = new(svgSurface);
+    using CairoContext context = new(teeSurface);
+
+    teeSurface.Add(pdfSurface);
+    teeSurface.Add(imageSurface);
+
+    context.SetSourceRgb(0, 0, 1);
+    context.Paint();
+
+    context.Translate(0, (Height - pngHeight) / 2);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            Pattern source = ((i ^ j) & 1) != 1 ? red : png;
+            context.SetSource(source);
+
+            context.Rectangle(i * Width / 4, j * pngHeight / 4, Width / 4, pngHeight / 4);
+            context.Fill();
+        }
+    }
+
+    imageSurface.WriteToPng("raster-source.png");
+
+    // Lazy way of determining PNG dimensions...
+    static void PngDimensions(string pngFile, out Content content, out int width, out int height)
+    {
+        using ImageSurface surface = new(pngFile);
+
+        content = surface.Content;
+        width   = surface.Width;
+        height  = surface.Height;
     }
 }
 //-----------------------------------------------------------------------------

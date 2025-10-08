@@ -14,4 +14,8 @@
         <PackageReference Include="gfoidl.CairoSharp" Version="2.0.0"     Condition="'$(Configuration)' != 'Debug'" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\CairoDemo\*.png" Link="%(FileName).png" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

@@ -9,7 +9,6 @@ using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.Win32;
-using Cairo.Utilities;
 
 namespace WinFormsDemo;
 

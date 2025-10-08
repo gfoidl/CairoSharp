@@ -20,7 +20,7 @@ public sealed unsafe class QuartzFont : FontFace
     /// <param name="font">a CGFontRef obtained through a method external to cairo.</param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>.
+    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// </remarks>
     public static QuartzFont CreateForCgFont(IntPtr font)
     {
@@ -34,7 +34,7 @@ public sealed unsafe class QuartzFont : FontFace
     /// <param name="fontId">an ATSUFontID for the font.</param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>.
+    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// </remarks>
     public static QuartzFont CreateForAtsuFontId(uint fontId)
     {

@@ -35,6 +35,7 @@ public sealed unsafe class RasterSource : Pattern
     /// defined by extents, though the surface itself does not have to be limited to that area.
     /// </summary>
     /// <param name="pattern">the pattern being rendered from</param>
+    /// <param name="userData">the user data as given by construction</param>
     /// <param name="target">the rendering target surface</param>
     /// <param name="extents">rectangular region of interest in pixels in sample space</param>
     /// <returns>a <see cref="Surface"/></returns>
@@ -47,7 +48,7 @@ public sealed unsafe class RasterSource : Pattern
     /// <see cref="Surface.DeviceOffset"/> to specify the top-left corner of the sample data (along with
     /// width and height of the surface).
     /// </remarks>
-    public delegate Surface Acquire(Pattern? pattern, Surface target, ref RectangleInt extents);
+    public delegate Surface Acquire(Pattern? pattern, object? userData, Surface target, ref RectangleInt extents);
 
     /// <summary>
     /// <see cref="Release"/> is the type of delegate which is called when the pixel data is no longer
@@ -116,6 +117,7 @@ public sealed unsafe class RasterSource : Pattern
     /// <summary>
     /// Creates a new user pattern for providing pixel data.
     /// </summary>
+    /// <param name="userData">the user data to be passed to all callbacks</param>
     /// <param name="content">
     /// content type for the pixel data that will be returned. Knowing the content type ahead of time
     /// is used for analysing the operation and picking the appropriate rendering path.
@@ -127,10 +129,10 @@ public sealed unsafe class RasterSource : Pattern
     /// Use the setter functions to associate callbacks with the returned pattern.
     /// The only mandatory callback is acquire.
     /// </remarks>
-    public RasterSource(Content content, int width, int height, Acquire acquire)
+    public RasterSource(object? userData, Content content, int width, int height, Acquire acquire)
         : this(IntPtr.Zero, content, width, height)
     {
-        _state       = new State();
+        _state       = new State() { UserData = userData };
         _stateHandle = GCHandle.Alloc(_state, GCHandleType.Normal);
 
         this.CallbackData = GCHandle.ToIntPtr(_stateHandle);
@@ -172,15 +174,12 @@ public sealed unsafe class RasterSource : Pattern
         {
             this.CheckDisposed();
 
-            if (value != GCHandle.ToIntPtr(_stateHandle))
+            if (value != GCHandle.ToIntPtr(_stateHandle) && _stateHandle.IsAllocated)
             {
-                if (_stateHandle.IsAllocated)
-                {
-                    _stateHandle.Free();
-                }
-
-                cairo_raster_source_pattern_set_callback_data(this.Handle, value.ToPointer());
+                _stateHandle.Free();
             }
+
+            cairo_raster_source_pattern_set_callback_data(this.Handle, value.ToPointer());
         }
     }
 
@@ -280,10 +279,10 @@ public sealed unsafe class RasterSource : Pattern
 
             Debug.Assert(state.Acquire is not null);
 
-            using Pattern? patternObj      = Lookup(pattern);
+            using Pattern? patternObj = Lookup(pattern);
             using Surface? surfaceObj = Surface.Lookup(target);
 
-            Surface result = state.Acquire(patternObj, surfaceObj, ref extents);
+            Surface result = state.Acquire(patternObj, state.UserData, surfaceObj, ref extents);
             return result.Handle;
         }
 
@@ -387,6 +386,7 @@ public sealed unsafe class RasterSource : Pattern
 
     private class State
     {
+        public object? UserData   { get; set; }
         public Acquire? Acquire   { get; set; }
         public Release? Release   { get; set; }
         public Snapshot? Snapshot { get; set; }

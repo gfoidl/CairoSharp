@@ -2,7 +2,6 @@
 
 using System.Runtime.InteropServices;
 using Cairo.Drawing.Text;
-using Cairo.Utilities;
 
 namespace Cairo.Fonts.Scaled;
 

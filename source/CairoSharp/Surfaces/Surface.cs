@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using Cairo.Fonts.Scaled;
@@ -33,7 +34,13 @@ public unsafe class Surface : CairoObject
         }
     }
 
-    protected override void DisposeCore(void* handle) => cairo_surface_destroy(handle);
+    protected override void DisposeCore(void* handle)
+    {
+        cairo_surface_destroy(handle);
+
+        uint rc = cairo_surface_get_reference_count(handle);
+        Debug.WriteLine($"Surface 0x{(nint)handle}: reference count = {rc}");
+    }
 
     /// <summary>
     /// Create a new surface that is as compatible as possible with an existing surface. For example the new
@@ -205,7 +212,7 @@ public unsafe class Surface : CairoObject
     /// Retrieves the default font rendering options for the surface. This allows display surfaces to
     /// report the correct subpixel order for rendering on them, print surfaces to disable hinting
     /// of metrics and so forth. The result can then be used with
-    /// <see cref="ScaledFont(Fonts.FontFace, ref Utilities.Matrix, ref Utilities.Matrix, Fonts.FontOptions)"/>.
+    /// <see cref="ScaledFont(Fonts.FontFace, ref Matrix, ref Matrix, Fonts.FontOptions)"/>.
     /// </summary>
     /// <param name="fontOptions">
     /// a cairo_font_options_t object into which to store the retrieved options. All existing values are overwritten
@@ -416,10 +423,6 @@ public unsafe class Surface : CairoObject
     /// </summary>
     /// <param name="mimeType">the MIME type of the image data</param>
     /// <param name="data">the image data to attach to the surface</param>
-    /// <returns>
-    /// <see cref="Status.Success"/> or <see cref="Status.NoMemory"/> if a slot could not be
-    /// allocated for the user data.
-    /// </returns>
     /// <remarks>
     /// The attached image (or filename) data can later be used by backends which support it (currently:
     /// PDF, PS, SVG and Win32 Printing surfaces) to emit this data instead of making a snapshot of
@@ -442,29 +445,36 @@ public unsafe class Surface : CairoObject
     /// data and then attach the MIME data to that. This ensures the image will always be used while still allowing
     /// the MIME data to be used whenever possible.
     /// </para>
+    /// <para>
+    /// An example is given in
+    /// <a href="https://gitlab.com/saiwp/cairo/-/blob/master/test/pdf-mime-data.c?ref_type=heads#L34-39">this C test</a>.
+    /// </para>
     /// </remarks>
-    public Status SetMimeData(string mimeType, ReadOnlySpan<byte> data)
+    public void SetMimeData(string mimeType, ReadOnlySpan<byte> data)
     {
         this.CheckDisposed();
 
         if (data.IsEmpty)
         {
-            return Status.Success;
+            return;
         }
 
         cairo_destroy_func_t destroyFunc = &EmptyDestroyFunction;
 
         fixed (byte* ptr = &MemoryMarshal.GetReference(data))
         {
-            return cairo_surface_set_mime_data(
+            Status status = cairo_surface_set_mime_data(
                 this.Handle,
                 mimeType,
                 ptr,
                 new CULong((uint)data.Length),
                 destroyFunc,
                 null);
+
+            status.ThrowIfStatus(Status.NoMemory);
         }
 
+        // Let the GC do its work.
         static void EmptyDestroyFunction(void* state) { }
     }
 

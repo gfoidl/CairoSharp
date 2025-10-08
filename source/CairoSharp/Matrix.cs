@@ -3,8 +3,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
+using Cairo.Utilities;
 
-namespace Cairo.Utilities;
+namespace Cairo;
 
 /// <summary>
 /// Generic matrix operations

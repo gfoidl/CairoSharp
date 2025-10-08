@@ -30,14 +30,14 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// <param name="loadFlags">
     /// flags to pass to FT_Load_Glyph when loading glyphs from the font. These flags are OR'ed
     /// together with the flags derived from the <see cref="FontOptions"/> to
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>,
+    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>,
     /// so only a few values such as FT_LOAD_VERTICAL_LAYOUT, and FT_LOAD_FORCE_AUTOHINT are useful.
     /// You should not pass any of the flags affecting the load target, such as FT_LOAD_TARGET_LIGHT.
     /// </param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>.
-    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>
+    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
+    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the FreeType backend and can be used with functions such as <see cref="LockFace"/>.
     /// Note that Cairo may keep a reference to the FT_Face alive in a font-cache and the exact lifetime
     /// of the reference depends highly upon the exact usage pattern and is subject to external factors.
@@ -61,11 +61,11 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// </param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>
-    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>
+    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the FreeType backend and can be used with methods such as <see cref="LockFace"/>.
     /// <para>
-    /// Font rendering options are represented both here and when you call <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Utilities.Matrix, ref Utilities.Matrix, FontOptions)"/>.
+    /// Font rendering options are represented both here and when you call <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// Font options that have a representation in a FcPattern must be passed in here; to modify FcPattern
     /// appropriately to reflect the options in a <see cref="FontOptions"/>, call <see cref="SubstituteOptions"/>.
     /// </para>

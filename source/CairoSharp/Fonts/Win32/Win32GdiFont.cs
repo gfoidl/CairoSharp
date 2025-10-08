@@ -1,6 +1,5 @@
 // (c) gfoidl, all rights reserved
 
-using Cairo.Utilities;
 using static Cairo.Fonts.Win32.Win32GdiFontNative;
 
 namespace Cairo.Fonts.Win32;

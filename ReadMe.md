@@ -131,3 +131,14 @@ The native project files for Windows are taken from https://github.com/preshing/
 * [freetype](http://www.freetype.org/)
   Version from cairo-project dependency
   [COPYING Info](https://github.com/zwcloud/CairoSharp/blob/master/Native/freetype/docs/LICENSE.TXT)
+
+
+
+
+
+Tipps:
+
+png-flatten
+Loads a PNG image (potentially with alpha) and writes out a flattened (no alpha)\nPNG image by first blending over white.
+https://gitlab.com/saiwp/cairo/-/blob/master/test/png-flatten.c?ref_type=heads
+

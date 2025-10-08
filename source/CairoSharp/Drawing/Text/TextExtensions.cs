@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
-using Cairo.Utilities;
 using static Cairo.Drawing.Text.TextNative;
 
 namespace Cairo;

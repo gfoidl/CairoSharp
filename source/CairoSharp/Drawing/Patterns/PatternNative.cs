@@ -2,7 +2,6 @@
 
 using System.Runtime.InteropServices;
 using Cairo.Drawing.Path;
-using Cairo.Utilities;
 
 namespace Cairo.Drawing.Patterns;
 

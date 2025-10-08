@@ -9,4 +9,8 @@
         <ProjectReference Include="..\..\source\CairoSharp\CairoSharp.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="*.png" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

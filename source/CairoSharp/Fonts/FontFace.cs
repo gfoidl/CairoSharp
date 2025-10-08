@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using static Cairo.Fonts.FontFaceNative;
 using unsafe ReferenceFunc = delegate*<void*, void*>;
 
@@ -40,7 +41,13 @@ public unsafe class FontFace : CairoObject
         }
     }
 
-    protected override void DisposeCore(void* handle) => cairo_font_face_destroy(handle);
+    protected override void DisposeCore(void* handle)
+    {
+        cairo_font_face_destroy(handle);
+
+        uint rc = cairo_font_face_get_reference_count(handle);
+        Debug.WriteLine($"FontFace 0x{(nint)handle}: reference count = {rc}");
+    }
 
     /// <summary>
     /// Checks whether an error has previously occurred for this font face

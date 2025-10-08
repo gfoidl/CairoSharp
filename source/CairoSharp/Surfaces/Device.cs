@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using System.Text;
 using static Cairo.Surfaces.DeviceNative;
 
@@ -30,7 +31,13 @@ namespace Cairo.Surfaces;
 /// </remarks>
 public unsafe class Device(void* handle) : CairoObject(cairo_device_reference(handle))
 {
-    protected override void DisposeCore(void* handle) => cairo_device_destroy(handle);
+    protected override void DisposeCore(void* handle)
+    {
+        cairo_device_destroy(handle);
+
+        uint rc = cairo_device_get_reference_count(handle);
+        Debug.WriteLine($"Device 0x{(nint)handle}: reference count = {rc}");
+    }
 
     /// <summary>
     /// Checks whether an error has previously occurred for this device.

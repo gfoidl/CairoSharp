@@ -48,8 +48,9 @@ public static unsafe class TagsAndLinksExtensions
         /// </para>
         /// </returns>
         /// <remarks>
-        /// See <a href="https://www.cairographics.org/manual/cairo-Tags-and-Links.html#cairo-tag-begin">cairo docs</a>
-        /// for further information and examples.
+        /// See <a href="https://www.cairographics.org/manual/cairo-Tags-and-Links.html">cairo docs</a>
+        /// for further information and examples. More examples are in the
+        /// <a href="https://gitlab.com/saiwp/cairo/-/blob/master/test/pdf-structure.c?ref_type=heads#L43">cairo C tests</a>.
         /// <para>
         /// Invalid nesting of tags will cause cr to shutdown and throw a <see cref="CairoException"/> with
         /// <see cref="CairoException.Status"/> of <see cref="Status.TagError"/>.

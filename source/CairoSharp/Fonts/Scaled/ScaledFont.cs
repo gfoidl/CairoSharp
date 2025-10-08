@@ -1,8 +1,8 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Cairo.Drawing.Text;
-using Cairo.Utilities;
 using static Cairo.Fonts.Scaled.ScaledFontNative;
 
 namespace Cairo.Fonts.Scaled;
@@ -40,7 +40,13 @@ public sealed unsafe class ScaledFont : FontFace
         : base(cairo_scaled_font_create(fontFace.Handle, ref fontMatrix, ref ctm, fontOptions.Handle), owner: true)
         => _fontOptions = fontOptions;
 
-    protected override void DisposeCore(void* handle) => cairo_scaled_font_destroy(handle);
+    protected override void DisposeCore(void* handle)
+    {
+        cairo_scaled_font_destroy(handle);
+
+        uint rc = cairo_scaled_font_get_reference_count(handle);
+        Debug.WriteLine($"ScaledFont 0x{(nint)handle}: reference count = {rc}");
+    }
 
     /// <summary>
     /// Checks whether an error has previously occurred for this scaled_font.
