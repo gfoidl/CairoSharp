@@ -243,4 +243,12 @@ public sealed unsafe class PostScriptSurface : StreamSurface
         this.CheckDisposed();
         cairo_ps_surface_dsc_comment(this.Handle, comment);
     }
+
+    /// <summary>
+    /// The <see cref="PdfSurface"/> can have multiple pages.
+    /// </summary>
+    /// <remarks>
+    /// See <see cref="Surface.ShowPage"/> / <see cref="Surface.CopyPage"/>.
+    /// </remarks>
+    public override bool CanHaveMultiplePages => true;
 }

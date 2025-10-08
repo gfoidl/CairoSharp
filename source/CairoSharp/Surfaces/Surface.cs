@@ -662,4 +662,9 @@ public unsafe class Surface : CairoObject
     /// Indicates whether this surface is a "nil" surface or not.
     /// </summary>
     public bool IsNilSurface => this.Status != Status.Success;
+
+    /// <summary>
+    /// Indicates if the <see cref="Surface"/> can have multiple pages
+    /// </summary>
+    public virtual bool CanHaveMultiplePages => false;
 }

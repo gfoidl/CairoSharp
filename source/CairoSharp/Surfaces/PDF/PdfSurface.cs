@@ -208,4 +208,12 @@ public sealed unsafe class PdfSurface : StreamSurface
         this.CheckDisposed();
         cairo_pdf_surface_set_thumbnail_size(this.Handle, width, height);
     }
+
+    /// <summary>
+    /// The <see cref="PdfSurface"/> can have multiple pages.
+    /// </summary>
+    /// <remarks>
+    /// See <see cref="Surface.ShowPage"/> / <see cref="Surface.CopyPage"/>.
+    /// </remarks>
+    public override bool CanHaveMultiplePages => true;
 }
