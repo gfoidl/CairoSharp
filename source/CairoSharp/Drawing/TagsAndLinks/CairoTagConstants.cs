@@ -2,7 +2,7 @@
 
 namespace Cairo.Drawing.TagsAndLinks;
 
-public static class Constants
+public static class CairoTagConstants
 {
     /// <summary>
     /// Create a destination for a hyperlink. Destination tag attributes are detailed at

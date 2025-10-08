@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Cairo;
 using Cairo.Drawing;
 using Cairo.Drawing.Patterns;
+using Cairo.Drawing.TagsAndLinks;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
 using Cairo.Surfaces;
@@ -36,6 +37,7 @@ try
     Gradient();
     MeshPattern();
     RecordingAndScriptSurface();
+    PdfFeatures();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -580,6 +582,52 @@ static void RecordingAndScriptSurface()
     }
 
     script.WriteComment($"End at {DateTimeOffset.Now}");
+}
+//-----------------------------------------------------------------------------
+static void PdfFeatures()
+{
+    using PdfSurface surface = new("pdf-features.pdf", PageSize.A4.WidthInPoints, PageSize.A4.HeightInPoints);
+    surface.RestrictToVersion(PdfVersion.Version1_7);
+
+    using CairoContext context = new(surface);
+
+    int outlineId = surface.AddOutline(PdfSurface.PdfOutlineRoot, "Test Outline (link to cairo)", "uri='https://cairographics.org'", PdfOutlineFlags.Open);
+
+    surface.SetMetadata(PdfMetadata.Author, "gfoidl");
+    surface.SetMetadata(PdfMetadata.Subject, "cairo");
+
+    surface.SetCustomMetadata("CairoSharp version", "2.0.0");
+    surface.SetThumbnailSize((int)PageSize.A4.WidthInPoints / 20, (int)PageSize.A4.HeightInPoints / 20);
+
+    // Page 1
+    {
+        context.Rectangle(10, 10, 100, 200);
+        context.StrokePreserve();
+        context.Color = new Color(0, 1, 0);
+        context.Fill();
+
+        // Hyperlink
+        using (context.TagBegin(CairoTagConstants.CairoTagLink, "uri='https://github.com/gfoidl/CairoSharp'"))
+        {
+            context.Color = Color.Default;
+            context.MoveTo(200, 50);
+            context.ShowText("This is a link to the source repository of CairoSharp");
+        }
+    }
+
+    // Page 2
+    {
+        context.ShowPage();
+        surface.SetSize(PageSize.A4Landscape.WidthInPoints, PageSize.A4.HeightInPoints);
+
+        context.Color = Color.Default;
+        context.Rectangle(10, 10, 200, 100);
+        context.StrokePreserve();
+        context.Color = new Color(0, 0, 1);
+        context.Fill();
+
+        surface.SetPageLabel("my page 2");
+    }
 }
 //-----------------------------------------------------------------------------
 namespace CairoDemo

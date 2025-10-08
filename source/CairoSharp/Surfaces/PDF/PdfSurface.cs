@@ -141,9 +141,9 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// <param name="parentId">the id of the parent item or <see cref="PdfOutlineRoot"/> if this is a top level item.</param>
     /// <param name="outlineName">the name of the outline</param>
     /// <param name="linkAttribs">the link attributes specifying where this outline links to</param>
-    /// <param name="flags">outline item flags</param>
+    /// <param name="flags">outline item flags, defaults to <see cref="PdfOutlineFlags.Open"/></param>
     /// <returns> the id for the added item.</returns>
-    public int AddOutline(int parentId, string outlineName, string linkAttribs, PdfOutlineFlags flags)
+    public int AddOutline(int parentId, string outlineName, string linkAttribs, PdfOutlineFlags flags = PdfOutlineFlags.Open)
     {
         this.CheckDisposed();
         return cairo_pdf_surface_add_outline(this.Handle, parentId, outlineName, linkAttribs, flags);

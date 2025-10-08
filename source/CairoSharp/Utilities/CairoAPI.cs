@@ -40,7 +40,7 @@ public static class CairoAPI
 
         int requiredVersion = VersionEncode(majorRequired, minorRequired, patchRequired);
 
-        if (requiredVersion < Version)
+        if (Version < requiredVersion)
         {
             throw new NotSupportedException($"""
                 The feature is only available from Cairo version {majorRequired}.{minorRequired}.{patchRequired} onwards.

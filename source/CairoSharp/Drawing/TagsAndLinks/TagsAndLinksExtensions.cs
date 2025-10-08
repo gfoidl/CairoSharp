@@ -21,17 +21,42 @@ public static unsafe class TagsAndLinksExtensions
     extension(CairoContext cr)
     {
         /// <summary>
-        /// Marks the beginning of the <paramref name="tagName"/> structure.
-        /// Call <see cref="TagEnd(CairoContext, string)"/> with the same
-        /// <paramref name="tagName"/> to mark the end of the structure.
+        /// Marks the beginning of the <paramref name="tagName"/> structure. Call <see cref="TagEnd(CairoContext, string)"/>
+        /// with the same<paramref name="tagName"/> to mark the end of the structure.
+        /// <para>
+        /// For common tag names in PDF see <see cref="Drawing.TagsAndLinks.CairoTagConstants"/>.
+        /// </para>
         /// </summary>
         /// <param name="tagName">tag name</param>
         /// <param name="attributes">tag attributes</param>
+        /// <returns>
+        /// A <see cref="TagScope"/>, which when <see cref="TagScope.Dispose"/>d calls <see cref="TagEnd(CairoContext, string)"/>.
+        /// <para>
+        /// So instead of writing code like
+        /// <code>
+        /// context.TagBegin("foo");
+        /// // ...
+        /// context.TagEnd("foo");
+        /// </code>
+        /// one can write
+        /// <code>
+        /// using (context.TagBegin("foo"))
+        /// {
+        ///     // ...
+        /// }
+        /// </code>
+        /// </para>
+        /// </returns>
         /// <remarks>
         /// See <a href="https://www.cairographics.org/manual/cairo-Tags-and-Links.html#cairo-tag-begin">cairo docs</a>
-        /// for further information.
+        /// for further information and examples.
+        /// <para>
+        /// Invalid nesting of tags will cause cr to shutdown and throw a <see cref="CairoException"/> with
+        /// <see cref="CairoException.Status"/> of <see cref="Status.TagError"/>.
+        /// </para>
         /// </remarks>
-        public void TagBegin(string tagName, string attributes)
+        /// <exception cref="CairoException">invalid nesting of tags</exception>
+        public TagScope TagBegin(string tagName, string attributes)
         {
             ArgumentNullException.ThrowIfNull(tagName);
             ArgumentNullException.ThrowIfNull(attributes);
@@ -39,6 +64,8 @@ public static unsafe class TagsAndLinksExtensions
             cr.CheckDisposed();
 
             cairo_tag_begin(cr.Handle, tagName, attributes);
+
+            return new TagScope(cr, tagName);
         }
 
         /// <summary>
@@ -46,11 +73,13 @@ public static unsafe class TagsAndLinksExtensions
         /// </summary>
         /// <param name="tagName">tag name</param>
         /// <remarks>
-        /// Invalid nesting of tags will cause cr to shutdown and throw a <see cref="CairoException"/>.
+        /// Invalid nesting of tags will cause cr to shutdown and throw a <see cref="CairoException"/> with
+        /// <see cref="CairoException.Status"/> of <see cref="Status.TagError"/>.
         /// <para>
         /// See <see cref="TagBegin(CairoContext, string, string)"/>.
         /// </para>
         /// </remarks>
+        /// <exception cref="CairoException">invalid nesting of tags</exception>
         public void TagEnd(string tagName)
         {
             ArgumentNullException.ThrowIfNull(tagName);
@@ -60,5 +89,25 @@ public static unsafe class TagsAndLinksExtensions
 
             cr.Status.ThrowIfStatus(Status.TagError);
         }
+    }
+}
+
+/// <summary>
+/// A helper type for <see cref="TagsAndLinksExtensions.TagEnd(CairoContext, string)"/> / <see cref="TagsAndLinksExtensions.TagEnd(CairoContext, string)"/>.
+/// </summary>
+public ref struct TagScope
+{
+    private CairoContext?   _context;
+    private readonly string _tagName;
+
+    internal TagScope(CairoContext context, string tagName) => (_context, _tagName) = (context, tagName);
+
+    /// <summary>
+    /// Calls <see cref="TagsAndLinksExtensions.TagEnd(CairoContext, string)"/>
+    /// </summary>
+    public void Dispose()
+    {
+        _context?.TagEnd(_tagName);
+        _context = null;
     }
 }
