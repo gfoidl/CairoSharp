@@ -1,6 +1,5 @@
 // (c) gfoidl, all rights reserved
 
-using System.Runtime.InteropServices;
 using static Cairo.Surfaces.PostScript.PostScriptSurfaceNative;
 
 namespace Cairo.Surfaces.PostScript;
@@ -39,29 +38,10 @@ namespace Cairo.Surfaces.PostScript;
 /// Normally the bbox data is identical to the %%%BoundingBox data in the EPS file.
 /// </para>
 /// </remarks>
-public sealed unsafe class PostScriptSurface : Surface
+public sealed unsafe class PostScriptSurface : StreamSurface
 {
-    private GCHandle _streamHandle;     // mutable struct
-
     internal PostScriptSurface(void* handle, bool owner, bool throwOnConstructionError = true)
         : base(handle, owner, throwOnConstructionError) { }
-
-    private PostScriptSurface((IntPtr Handle, GCHandle StreamHandle) arg, bool throwOnConstructionError)
-        : base(arg.Handle.ToPointer(), owner: true, throwOnConstructionError)
-        => _streamHandle = arg.StreamHandle;
-
-    protected override void DisposeCore(void* handle)
-    {
-        base.DisposeCore(handle);
-
-        // Need to free the surface first, so that the write function (if any)
-        // can be called on a valid handle.
-        // So it's like: dispose -> write func -> stream handle free
-        if (_streamHandle.IsAllocated)
-        {
-            _streamHandle.Free();
-        }
-    }
 
     /// <summary>
     /// Creates a PostScript surface of the specified size in points, that may be queried and used as a source,
@@ -123,7 +103,7 @@ public sealed unsafe class PostScriptSurface : Surface
     /// </exception>
     /// <exception cref="ArgumentException">the stream is not writeable</exception>
     public PostScriptSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : this(StreamHelper.CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream), throwOnConstructionError) { }
+        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream), throwOnConstructionError) { }
 
     /// <summary>
     /// Restricts the generated PostSript file to level. See <see cref="PostScriptLevelExtensions.GetSupportedLevels"/>

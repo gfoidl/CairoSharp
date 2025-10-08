@@ -1,6 +1,5 @@
 // (c) gfoidl, all rights reserved
 
-using System.Runtime.InteropServices;
 using static Cairo.Surfaces.SVG.SvgSurfaceNative;
 
 namespace Cairo.Surfaces.SVG;
@@ -12,29 +11,10 @@ namespace Cairo.Surfaces.SVG;
 /// The SVG surface is used to render cairo graphics to SVG files and is a multi-page
 /// vector surface backend.
 /// </remarks>
-public sealed unsafe class SvgSurface : Surface
+public sealed unsafe class SvgSurface : StreamSurface
 {
-    private GCHandle _streamHandle;     // mutable struct
-
     internal SvgSurface(void* handle, bool owner, bool throwOnConstructionError = true)
         : base(handle, owner, throwOnConstructionError) { }
-
-    private SvgSurface((IntPtr Handle, GCHandle StreamHandle) arg, bool throwOnConstructionError)
-        : base(arg.Handle.ToPointer(), owner: true, throwOnConstructionError)
-        => _streamHandle = arg.StreamHandle;
-
-    protected override void DisposeCore(void* handle)
-    {
-        base.DisposeCore(handle);
-
-        // Need to free the surface first, so that the write function (if any)
-        // can be called on a valid handle.
-        // So it's like: dispose -> write func -> stream handle free
-        if (_streamHandle.IsAllocated)
-        {
-            _streamHandle.Free();
-        }
-    }
 
     /// <summary>
     /// Creates a SVG surface of the specified size in points, that may be queried and used as a source,
@@ -105,7 +85,7 @@ public sealed unsafe class SvgSurface : Surface
     /// </exception>
     /// <exception cref="ArgumentException">the stream is not writeable</exception>
     public SvgSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : this(StreamHelper.CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream), throwOnConstructionError) { }
+        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream), throwOnConstructionError) { }
 
     /// <summary>
     /// Gets or sets the unit of the SVG surface.

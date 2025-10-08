@@ -116,7 +116,7 @@ public sealed unsafe class ImageSurface : Surface
     /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
     /// </exception>
     public ImageSurface(ReadOnlySpan<byte> pngData, bool throwOnConstructionError = true)
-        : base(StreamHelper.CreateForPngData(pngData), owner: true, throwOnConstructionError) { }
+        : base(PngHelper.CreateForPngData(pngData), owner: true, throwOnConstructionError) { }
 
     /// <summary>
     /// Get a pointer to the data of the image surface, for direct inspection or modification.

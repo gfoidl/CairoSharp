@@ -1,6 +1,5 @@
 // (c) gfoidl, all rights reserved
 
-using System.Runtime.InteropServices;
 using static Cairo.Surfaces.PDF.PdfSurfaceNative;
 
 namespace Cairo.Surfaces.PDF;
@@ -21,29 +20,10 @@ namespace Cairo.Surfaces.PDF;
 /// For embedded image formats see <a href="https://www.cairographics.org/manual/cairo-PDF-Surfaces.html">cairo docs</a>.
 /// </para>
 /// </remarks>
-public sealed unsafe class PdfSurface : Surface
+public sealed unsafe class PdfSurface : StreamSurface
 {
-    private GCHandle _streamHandle;     // mutable struct
-
     internal PdfSurface(void* handle, bool owner, bool throwOnConstructionError = true)
         : base(handle, owner, throwOnConstructionError) { }
-
-    private PdfSurface((IntPtr Handle, GCHandle StreamHandle) arg, bool throwOnConstructionError)
-        : base(arg.Handle.ToPointer(), owner: true, throwOnConstructionError)
-        => _streamHandle = arg.StreamHandle;
-
-    protected override void DisposeCore(void* handle)
-    {
-        base.DisposeCore(handle);
-
-        // Need to free the surface first, so that the write function (if any)
-        // can be called on a valid handle.
-        // So it's like: dispose -> write func -> stream handle free
-        if (_streamHandle.IsAllocated)
-        {
-            _streamHandle.Free();
-        }
-    }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points, that may be queried and used as a source,
@@ -97,7 +77,7 @@ public sealed unsafe class PdfSurface : Surface
     /// </exception>
     /// <exception cref="ArgumentException">the stream is not writeable</exception>
     public PdfSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : this(StreamHelper.CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream), throwOnConstructionError) { }
+        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream), throwOnConstructionError) { }
 
     /// <summary>
     /// Restricts the generated PDF file to version. See <see cref="PdfVersionExtensions.GetSupportedVersions"/>
