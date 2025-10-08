@@ -20,7 +20,7 @@ public abstract unsafe class StreamSurface : Surface
         : base(arg.Handle.ToPointer(), owner: true, throwOnConstructionError)
         => _stateHandle = arg.StateHandle;
 
-    protected override unsafe void DisposeCore(void* handle)
+    protected override void DisposeCore(void* handle)
     {
         base.DisposeCore(handle);
 
@@ -35,6 +35,8 @@ public abstract unsafe class StreamSurface : Surface
 
     protected static (IntPtr, GCHandle) CreateForWriteStream(Stream stream, double width, double height, NativeFactory factory)
     {
+        ArgumentNullException.ThrowIfNull(stream);
+
         if (!stream.CanWrite)
         {
             throw new ArgumentException("Stream must be writeable");
@@ -57,9 +59,55 @@ public abstract unsafe class StreamSurface : Surface
             Debug.Assert(stream is not null);
 
             ReadOnlySpan<byte> span = new(data, (int)length);
-            stream.Write(span);
+
+            try
+            {
+                stream.Write(span);
+            }
+            catch
+            {
+                return Status.WriteError;
+            }
 
             return Status.Success;
         }
     }
+
+    protected static (IntPtr, GCHandle) CreateForDelegate<T>(T? obj, Callback<T> callback, double width, double height, NativeFactory factory)
+        where T : class
+    {
+        CallbackState<T> callbackState = new(obj, callback);
+        GCHandle stateHandle           = GCHandle.Alloc(callbackState, GCHandleType.Normal);
+        void* state                    = GCHandle.ToIntPtr(stateHandle).ToPointer();
+        cairo_write_func_t writeFunc   = &WriteFunc;
+
+        void* handle = factory(writeFunc, state, width, height);
+
+        return (new IntPtr(handle), stateHandle);
+
+        static Status WriteFunc(void* state, byte* data, uint length)
+        {
+            GCHandle gcHandle = GCHandle.FromIntPtr((nint)state);
+            Debug.Assert(gcHandle.IsAllocated);
+
+            CallbackState<T>? callbackState = gcHandle.Target as CallbackState<T>;
+            Debug.Assert(callbackState is not null);
+
+            ReadOnlySpan<byte> span = new(data, (int)length);
+
+            try
+            {
+                callbackState.Callback(callbackState.State, span);
+            }
+            catch
+            {
+                return Status.WriteError;
+            }
+
+            return Status.Success;
+        }
+    }
+
+    public delegate void Callback<T>(T? state, ReadOnlySpan<byte> data);
+    private record CallbackState<T>(T? State, Callback<T> Callback);
 }

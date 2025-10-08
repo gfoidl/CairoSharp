@@ -75,9 +75,28 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// <exception cref="CairoException">
     /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
     /// </exception>
-    /// <exception cref="ArgumentException">the stream is not writeable</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c></exception>
+    /// <exception cref="ArgumentException"><paramref name="stream"/> is not writeable</exception>
     public PdfSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
         : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream), throwOnConstructionError) { }
+
+    /// <summary>
+    /// Creates a PDF surface of the specified size in points to be written incrementally via the
+    /// <paramref name="callback"/>.
+    /// </summary>
+    /// <param name="callback">The callback to be invoked with the PDF content to be written</param>
+    /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
+    /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="throwOnConstructionError">
+    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
+    /// </param>
+    /// <exception cref="CairoException">
+    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
+    /// </exception>
+    /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
+    public PdfSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
+        : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream), throwOnConstructionError) { }
 
     /// <summary>
     /// Restricts the generated PDF file to version. See <see cref="PdfVersionExtensions.GetSupportedVersions"/>

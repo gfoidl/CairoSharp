@@ -1,33 +1,67 @@
 // (c) gfoidl, all rights reserved
 
+#define CAIRO_USE_CALLBACK
+
+using System.Diagnostics;
+using System.IO.Pipelines;
 using System.Net.Mime;
 using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Surfaces;
 using Cairo.Surfaces.SVG;
+using Microsoft.AspNetCore.Http.Features;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.WebHost.ConfigureKestrel(options => options.AllowSynchronousIO = true);
-
-WebApplication app = builder.Build();
+WebApplication app            = builder.Build();
 
 app.MapGet("/", GetSvg);
 
 app.Run();
 
-static Task GetSvg(HttpResponse response)
+static async ValueTask GetSvg(HttpResponse response)
 {
     response.StatusCode  = 200;
     response.ContentType = MediaTypeNames.Image.Svg;
 
-    DrawSvg(response.Body);
+#if CAIRO_USE_CALLBACK
+    DrawSvgViaCallback(response.BodyWriter);
 
-    return response.Body.FlushAsync();
+    _ = await response.BodyWriter.FlushAsync();
+#else
+    IHttpBodyControlFeature? httpBodyControlFeature = response.HttpContext.Features.Get<IHttpBodyControlFeature>();
+    Debug.Assert(httpBodyControlFeature is not null);
+
+    httpBodyControlFeature.AllowSynchronousIO = true;
+
+    DrawSvgViaStream(response.Body);
+
+    await response.Body.FlushAsync();
+#endif
 }
 
-static void DrawSvg(Stream stream, int size = 500)
+static void DrawSvgViaCallback(PipeWriter bodyWriter, int size = 500)
 {
-    using SvgSurface surface   = new(stream, size, size);
+    using SvgSurface surface = new(static (state, data) =>
+    {
+        PipeWriter writer = (state as PipeWriter)!;
+        Span<byte> buffer = writer.GetSpan(data.Length);
+
+        data.CopyTo(buffer);
+        writer.Advance(data.Length);
+
+    }, bodyWriter, size, size);
+
+    DrawCore(surface, size);
+}
+
+static void DrawSvgViaStream(Stream stream, int size = 500)
+{
+    using SvgSurface surface = new(stream, size, size);
+    DrawCore(surface, size);
+}
+
+static void DrawCore(SvgSurface surface, int size)
+{
     using CairoContext context = new(surface);
 
     using (context.Save())

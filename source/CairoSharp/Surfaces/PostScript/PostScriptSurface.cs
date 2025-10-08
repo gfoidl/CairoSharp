@@ -101,9 +101,28 @@ public sealed unsafe class PostScriptSurface : StreamSurface
     /// <exception cref="CairoException">
     /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
     /// </exception>
-    /// <exception cref="ArgumentException">the stream is not writeable</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c></exception>
+    /// <exception cref="ArgumentException"><paramref name="stream"/> is not writeable</exception>
     public PostScriptSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
         : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream), throwOnConstructionError) { }
+
+    /// <summary>
+    /// Creates a PostScript surface of the specified size in points to be written incrementally via the
+    /// <paramref name="callback"/>.
+    /// </summary>
+    /// <param name="callback">The callback to be invoked with the PS content to be written</param>
+    /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
+    /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="throwOnConstructionError">
+    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
+    /// </param>
+    /// <exception cref="CairoException">
+    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
+    /// </exception>
+    /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
+    public PostScriptSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
+        : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream), throwOnConstructionError) { }
 
     /// <summary>
     /// Restricts the generated PostSript file to level. See <see cref="PostScriptLevelExtensions.GetSupportedLevels"/>
