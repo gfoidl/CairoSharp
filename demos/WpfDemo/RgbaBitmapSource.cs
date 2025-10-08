@@ -52,8 +52,10 @@ internal sealed class RgbaBitmapSource : BitmapSource
 
     protected override Freezable CreateInstanceCore() => new RgbaBitmapSource(_rgbaBuffer, this.PixelWidth);
 
+#pragma warning disable CS0067              // The event is never used
     public override event EventHandler<DownloadProgressEventArgs>? DownloadProgress;
     public override event EventHandler? DownloadCompleted;
     public override event EventHandler<ExceptionEventArgs>? DownloadFailed;
     public override event EventHandler<ExceptionEventArgs>? DecodeFailed;
+#pragma warning restore CS0067
 }

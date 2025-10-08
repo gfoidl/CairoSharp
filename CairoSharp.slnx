@@ -41,4 +41,7 @@
   <Folder Name="/source/">
     <Project Path="source/CairoSharp/CairoSharp.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CairoSharp.Tests/CairoSharp.Tests.csproj" Id="5ef421ba-93dc-4b6b-804b-fe2a81017dcf" />
+  </Folder>
 </Solution>
