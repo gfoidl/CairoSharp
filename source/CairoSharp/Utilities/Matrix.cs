@@ -67,14 +67,14 @@ public unsafe struct Matrix
     /// <summary>
     /// Modifies <see cref="Matrix"/> to be an identity transformation.
     /// </summary>
-    public void InitIdentity()
-    {
-        // 1 0
-        // 0 1
-        // 0 0
-
-        MatrixNative.cairo_matrix_init_identity(ref this);
-    }
+    /// <remarks>
+    /// <code>
+    /// 1 0
+    /// 0 1
+    /// 0 0
+    /// </code>
+    /// </remarks>
+    public void InitIdentity() => MatrixNative.cairo_matrix_init_identity(ref this);
 
     /// <summary>
     /// Initializes <see cref="Matrix"/> to a transformation that translates by
@@ -82,14 +82,14 @@ public unsafe struct Matrix
     /// </summary>
     /// <param name="tx">amount to translate in the X direction</param>
     /// <param name="ty">amount to translate in the Y direction</param>
-    public void InitTranslate(double tx, double ty)
-    {
-        //  1  0
-        //  0  1
-        // tx ty
-
-        MatrixNative.cairo_matrix_init_translate(ref this, tx, ty);
-    }
+    /// <remarks>
+    /// <code>
+    ///  1  0
+    ///  0  1
+    /// tx ty
+    /// </code>
+    /// </remarks>
+    public void InitTranslate(double tx, double ty) => MatrixNative.cairo_matrix_init_translate(ref this, tx, ty);
 
     /// <summary>
     /// Initializes <see cref="Matrix"/> to a transformation that scales by
@@ -97,14 +97,14 @@ public unsafe struct Matrix
     /// </summary>
     /// <param name="sx">scale factor in the X direction</param>
     /// <param name="sy">scale factor in the Y direction</param>
-    public void InitScale(double sx, double sy)
-    {
-        // sx  0
-        //  0 sy
-        //  0  0
-
-        MatrixNative.cairo_matrix_init_scale(ref this, sx, sy);
-    }
+    /// <remarks>
+    /// <code>
+    /// sx  0
+    ///  0 sy
+    ///  0  0
+    /// </code>
+    /// </remarks>
+    public void InitScale(double sx, double sy) => MatrixNative.cairo_matrix_init_scale(ref this, sx, sy);
 
     /// <summary>
     /// Initialized <see cref="Matrix"/> to a transformation that rotates by <paramref name="radians"/>.
@@ -114,20 +114,14 @@ public unsafe struct Matrix
     /// angles rotate in the direction from the positive X axis toward the positive Y axis.
     /// With the default axis orientation of cairo, positive angles rotate in a clockwise direction.
     /// </param>
-    public void InitRotate(double radians)
-    {
-        /*
-         * double sin, con
-         * sin = Math.Sin(radians);
-         * cos = Math.Cos(radians);
-         * 
-         *  cos sin
-         * -sin cos
-         *    0   0
-         */
-
-        MatrixNative.cairo_matrix_init_rotate(ref this, radians);
-    }
+    /// <remarks>
+    /// <code>
+    ///  cos sin
+    /// -sin cos
+    ///    0   0
+    /// </code>
+    /// </remarks>
+    public void InitRotate(double radians) => MatrixNative.cairo_matrix_init_rotate(ref this, radians);
 
     /// <summary>
     /// Applies a translation by <paramref name="tx"/>, <paramref name="ty"/> to the transformation
@@ -169,7 +163,13 @@ public unsafe struct Matrix
     /// If <see cref="Matrix"/> has an inverse, modifies <see cref="Matrix"/> to be the inverse matrix and
     /// returns <see cref="Status.Success"/>. Otherwise, returns <see cref="Status.InvalidMatrix"/>.
     /// </returns>
-    public Status Invert() => MatrixNative.cairo_matrix_invert(ref this);
+    /// <exception cref="CairoException">thrown when the matrix does not have an inverse.</exception>
+    public void Invert()
+    {
+        Status status = MatrixNative.cairo_matrix_invert(ref this);
+
+        status.ThrowIfStatus(Status.InvalidMatrix);
+    }
 
     /// <summary>
     /// Multiplies the affine transformations in <paramref name="a"/> and <paramref name="b"/> together and
@@ -179,13 +179,10 @@ public unsafe struct Matrix
     /// </summary>
     /// <param name="a">a <see cref="Matrix"/></param>
     /// <param name="b">a <see cref="Matrix"/></param>
-    /// <returns>
-    /// The multiplied <see cref="Matrix"/>
-    /// </returns>
-    public static Matrix Multiply(ref Matrix a, ref Matrix b)
+    /// <param name="result">resulting matrix</param>
+    public static void Multiply(ref Matrix a, ref Matrix b, out Matrix result)
     {
-        MatrixNative.cairo_matrix_multiply(out Matrix result, ref a, ref b);
-        return result;
+        MatrixNative.cairo_matrix_multiply(out result, ref a, ref b);
     }
 
     public void Multiply(Matrix b)
