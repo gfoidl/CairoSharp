@@ -1,0 +1,3 @@
+[submodule "native/cairo"]
+	path = native/cairo
+	url = https://gitlab.com/saiwp/cairo.git
