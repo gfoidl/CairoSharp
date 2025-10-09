@@ -1,0 +1,41 @@
+<Solution>
+  <Folder Name="/build/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="nuget.config" />
+  </Folder>
+  <Folder Name="/demos/">
+    <Project Path="demos/CairoDemo.NuGet/CairoDemo.NuGet.csproj" Id="75ce7d03-c812-4855-8806-b24854ce1590" />
+    <Project Path="demos/CairoDemo/CairoDemo.csproj" />
+  </Folder>
+  <Folder Name="/native/" />
+  <Folder Name="/native/libs/" />
+  <Folder Name="/native/libs/win-x64/">
+    <File Path="native/libs/win-x64/cairo.dll" />
+  </Folder>
+  <Folder Name="/native/libs/win-x86/">
+    <File Path="native/libs/win-x86/cairo.dll" />
+  </Folder>
+  <Folder Name="/native/stubs/">
+    <File Path="native/stubs/ReadMe.md" />
+  </Folder>
+  <Folder Name="/native/stubs/linux-arm/">
+    <File Path="native/stubs/linux-arm/create.sh" />
+  </Folder>
+  <Folder Name="/native/stubs/linux-arm64/">
+    <File Path="native/stubs/linux-arm64/create.sh" />
+  </Folder>
+  <Folder Name="/native/stubs/linux-x64/">
+    <File Path="native/stubs/linux-x64/create.sh" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="ReadMe.md" />
+  </Folder>
+  <Folder Name="/source/">
+    <Project Path="source/CairoSharp/CairoSharp.csproj" />
+  </Folder>
+</Solution>

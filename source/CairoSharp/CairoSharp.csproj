@@ -1,0 +1,87 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Cairo</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <SignAssembly>True</SignAssembly>
+        <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+        <IsTrimmable>True</IsTrimmable>
+        <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Title>CairoSharp</Title>
+        <PackageId>gfoidl.CairoSharp</PackageId>
+        <Description>
+            Cairo Graphics Library -- .NET 8+ wrapper
+
+            Cairo is designed to produce consistent output on all output media while taking advantage of display hardware acceleration when available.
+            The cairo API provides operations similar to the drawing operators of PostScript and PDF.
+            Operations in cairo including stroking and filling cubic Bézier splines, transforming and compositing translucent images, and antialiased text rendering.
+            All drawing operations can be transformed by any affine transformation (scale, rotation, shear, etc.).
+        </Description>
+        <PackageIconUrl>http://cairographics.org/cairo-banner.png</PackageIconUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/gfoidl/CairoSharp</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/gfoidl/CairoSharp</PackageProjectUrl>
+        <PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\ReadMe.md" Link="ReadMe.md" Visible="false">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+
+        <None Include="..\..\icon.png" Label="icon.png" Visible="false">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\..\native\libs\win-x64\cairo.dll"
+                 LinkBase="runtimes\win-x64"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x64\native" />
+
+        <Content Include="..\..\native\libs\win-x86\cairo.dll"
+                 LinkBase="runtimes\win-x86"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x86\native" />
+
+        <Content Include="..\..\native\stubs\linux-x64\libcairo.so"
+                 LinkBase="runtimes\linux-x64"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\linux-x64\native" />
+
+        <Content Include="..\..\native\stubs\linux-arm64\libcairo.so"
+                 LinkBase="runtimes\linux-arm64"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\linux-arm64\native" />
+
+        <Content Include="..\..\native\stubs\linux-arm\libcairo.so"
+                 LinkBase="runtimes\linux-arm"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\linux-arm\native" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net8.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="..\CairoDemo\Program.cs" Link="Program.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="gfoidl.CairoSharp" Version="2.0.0-dev" />
+    </ItemGroup>
+
+</Project>

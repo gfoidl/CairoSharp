@@ -1,0 +1,27 @@
+<Project>
+
+    <PropertyGroup>
+        <VersionMajor Condition="'$(VersionMajor)' == ''">0</VersionMajor>
+        <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
+        <VersionPatch Condition="'$(VersionPatch)' == ''">0</VersionPatch>
+        <BuildNumber Condition="'$(BuildNumber)' == ''">1</BuildNumber>
+        <VersionSuffix Condition="'$(Configuration)' == 'Debug' and '$(VersionSuffix)' == ''">dev</VersionSuffix>
+        <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+        <AssemblyVersion>$(VersionMajor).$(VersionMinor).$(BuildNumber).$(VersionPatch)</AssemblyVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Authors>gfoidl</Authors>
+        <Product>CairoSharp</Product>
+        <Copyright>Copyright © gfoidl</Copyright>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseArtifactsOutput>true</UseArtifactsOutput>
+        <DebugType>embedded</DebugType>
+    </PropertyGroup>
+
+</Project>
