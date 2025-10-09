@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Cairo;
@@ -15,6 +16,7 @@ namespace Cairo;
 /// If the values passed in are outside that range, they will be clamped.
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
+[DebuggerNonUserCode]
 public readonly record struct Color(double Red, double Green, double Blue, double Alpha)
 {
     public Color(double red, double green, double blue) : this(red, green, blue, 1d) { }

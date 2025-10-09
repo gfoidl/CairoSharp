@@ -7,6 +7,8 @@ using Cairo.Drawing.Patterns;
 using Cairo.Drawing.TagsAndLinks;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
+using Cairo.Fonts.Scaled;
+using Cairo.Fonts.User;
 using Cairo.Surfaces;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.PDF;
@@ -46,6 +48,7 @@ try
     RecordingAndScriptSurface();
     PdfFeatures();
     RasterSource();
+    UserFontSimple();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -821,6 +824,84 @@ static void RasterSource()
         width   = surface.Width;
         height  = surface.Height;
     }
+}
+//-----------------------------------------------------------------------------
+static void UserFontSimple()
+{
+    // Well, this is a really very simple "font". Just for demo how it works.
+
+    static void Draw(Surface surface)
+    {
+        using UserFont userFont = new(static (ScaledFont sf, CairoContext cr, ref FontExtents fontExtents) =>
+        {
+            cr.FontExtents(out fontExtents);
+            return Status.Success;
+
+        }, static (ScaledFont sf, int glyph, CairoContext cr, ref TextExtents textExtents) =>
+        {
+            switch (glyph)
+            {
+                case 'a':
+                {
+                    cr.MoveTo(0, 10);
+                    cr.LineTo(5, 0);
+                    cr.LineTo(10, 10);
+                    cr.ClosePath();
+                    break;
+                }
+                case 'b':
+                {
+                    cr.Arc(5, 5, 5, 0, 2 * Math.PI);
+                    break;
+                }
+                default:
+                {
+                    cr.Rectangle(0, 0, 10, 10);
+                    break;
+                }
+            }
+
+            cr.Fill();
+
+            return Status.Success;
+        });
+
+        using CairoContext cr = new(surface);
+
+        cr.Rectangle(0, 0, 400, 150);
+        cr.Stroke();
+
+        cr.FontFace = userFont;
+        cr.MoveTo(10, 10);
+
+#if SHOW_TEXT
+        cr.ShowText("abx");
+#else
+        cr.TextPath("abx");
+
+        using LinearGradient gradient = new(0, 0, 400, 150);
+        gradient.AddColorStopRgb(0.0, 1, 0, 0);
+        gradient.AddColorStopRgb(0.5, 0, 1, 0);
+        gradient.AddColorStopRgb(1.0, 0, 0, 1);
+
+        cr.SetSource(gradient);
+        cr.FillPreserve();
+
+        cr.Color = Color.Default;
+        cr.Stroke();
+#endif
+    }
+
+    using Surface primarySurface = new PdfSurface("user-font.pdf", 400, 150);
+    using Surface svgSurface     = new SvgSurface("user-font.svg", 400, 150);
+    using Surface imageSurface   = new ImageSurface(Format.Argb32, 400, 150);
+    using TeeSurface teeSurface  = new(primarySurface);
+
+    teeSurface.Add(svgSurface);
+    teeSurface.Add(imageSurface);
+
+    Draw(teeSurface);
+    imageSurface.WriteToPng("user-font.png");
 }
 //-----------------------------------------------------------------------------
 namespace CairoDemo

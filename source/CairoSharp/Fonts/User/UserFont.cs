@@ -30,14 +30,15 @@ public sealed unsafe class UserFont : FontFace
     /// </summary>
     /// <param name="scaledFont">the scaled-font being created</param>
     /// <param name="cairoContext">a cairo context, in font space</param>
-    /// <param name="extents">font extents to fill in, in font space</param>
+    /// <param name="fontExtents">font extents to fill in, in font space</param>
     /// <returns>
     /// <see cref="Status.Success"/> on success, or one of the <see cref="Status"/> error codes for failure.
     /// </returns>
     /// <remarks>
     /// The cairo context cr is not used by the caller, but is prepared in font space, similar to what the
-    /// cairo contexts passed to the render_glyph method will look like. The callback can use this context for
-    /// extents computation for example. After the callback is called, cr is checked for any error status.
+    /// cairo contexts passed to the <see cref="RenderGlyph"/> delegate will look like. The callback can use
+    /// this context for extents computation for example. After the callback is called, cr is checked for any
+    /// error status.
     /// <para>
     /// The extents argument is where the user font sets the font extents for scaled_font. It is in font space,
     /// which means that for most cases its ascent and descent members should add to 1.0. extents is preset to hold
@@ -51,7 +52,7 @@ public sealed unsafe class UserFont : FontFace
     /// operations in the callback will result in deadlock.
     /// </para>
     /// </remarks>
-    public delegate Status Init(ScaledFont scaledFont, CairoContext cairoContext, ref FontExtents extents);
+    public delegate Status Init(ScaledFont scaledFont, CairoContext cairoContext, ref FontExtents fontExtents);
 
     /// <summary>
     /// <see cref="RenderGlyph"/> is the type of delegate which is called when a user scaled-font needs to render a glyph.
@@ -59,7 +60,7 @@ public sealed unsafe class UserFont : FontFace
     /// <param name="scaledFont">user scaled-font</param>
     /// <param name="glyph">glyph code to render</param>
     /// <param name="cairoContext">cairo context to draw to, in font space</param>
-    /// <param name="extents">glyph extents to fill in, in font space</param>
+    /// <param name="textExtents">glyph extents to fill in, in font space</param>
     /// <returns>
     /// <see cref="Status.Success"/> upon success, <see cref="Status.UserFontNotImplemented"/> if fallback options should
     /// be tried, or <see cref="Status.UserFontError"/> or any other error status on error.
@@ -73,7 +74,7 @@ public sealed unsafe class UserFont : FontFace
     /// All cairo rendering operations to cr are permitted. However, when this callback is set with
     /// cairo_user_font_face_set_render_glyph_func(), the result is undefined if any source other than the default
     /// source on cr is used. That means, glyph bitmaps should be rendered using
-    /// <see cref="CairoContext.Mask(Drawing.Patterns.Pattern)"/> instead of <see cref="CairoContext.Paint"/>.
+    /// <see cref="CairoContext.Mask(Pattern)"/> instead of <see cref="CairoContext.Paint"/>.
     /// </para>
     /// <para>
     /// When this callback is set with cairo_user_font_face_set_render_color_glyph_func(), the default source
@@ -102,7 +103,7 @@ public sealed unsafe class UserFont : FontFace
     /// of both color and non-color glyphs.
     /// </para>
     /// </remarks>
-    public delegate Status RenderGlyph(ScaledFont scaledFont, int glyph, CairoContext cairoContext, ref FontExtents extents);
+    public delegate Status RenderGlyph(ScaledFont scaledFont, int glyph, CairoContext cairoContext, ref TextExtents textExtents);
 
     /// <summary>
     /// <see cref="TextToGlyphs"/> is the type of delegate which is called to convert input text to an array of glyphs.
@@ -189,9 +190,9 @@ public sealed unsafe class UserFont : FontFace
     public UserFont(
         Init?           init,
         RenderGlyph     renderGlyph,
-        RenderGlyph?    renderColorGlyph,
-        TextToGlyphs?   textToGlyphs,
-        UnicodeToGlyph? unicodeToGlyph)
+        RenderGlyph?    renderColorGlyph = null,
+        TextToGlyphs?   textToGlyphs     = null,
+        UnicodeToGlyph? unicodeToGlyph   = null)
         : base(cairo_user_font_face_create())
     {
         ArgumentNullException.ThrowIfNull(renderGlyph);
@@ -326,29 +327,31 @@ public sealed unsafe class UserFont : FontFace
         return (State)gcHandle.Target!;
     }
 
-    private static Status InitCore(void* scaledFont, void* cr, ref FontExtents extents)
+    private static Status InitCore(void* scaledFont, void* cr, ref FontExtents fontExtents)
     {
         State state = GetState(scaledFont);
 
         Debug.Assert(state.Init is not null);
 
-        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true);
-        using CairoContext context = new(cr        , isOwnedByCairo: true);
+        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
+        ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
-        return state.Init(sf, context, ref extents);
+        return state.Init(sf, context, ref fontExtents);
     }
 
-    private static Status RenderGlyphCore(void* scaledFont, CULong glyph, void* cr, ref FontExtents extents)
+    private static Status RenderGlyphCore(void* scaledFont, CULong glyph, void* cr, ref TextExtents textExtents)
     {
         State state = GetState(scaledFont);
 
-        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true);
-        using CairoContext context = new(cr        , isOwnedByCairo: true);
+        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
+        ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
-        return state.RenderGlyph(sf, (int)glyph.Value, context, ref extents);
+        return state.RenderGlyph(sf, (int)glyph.Value, context, ref textExtents);
     }
 
-    private static Status RenderColorGlyphCore(void* scaledFont, CULong glyph, void* cr, ref FontExtents extents)
+    private static Status RenderColorGlyphCore(void* scaledFont, CULong glyph, void* cr, ref TextExtents textExtents)
     {
         State state = GetState(scaledFont);
 
@@ -357,10 +360,11 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true);
-        using CairoContext context = new(cr        , isOwnedByCairo: true);
+        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
+        ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
-        return state.RenderColorGlyph(sf, (int)glyph.Value, context, ref extents);
+        return state.RenderColorGlyph(sf, (int)glyph.Value, context, ref textExtents);
     }
 
     private static Status TextToGlyphsCore(
@@ -381,7 +385,9 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        using ScaledFont sf    = new(scaledFont, isOwnedByCairo: true);
+        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
+        ScaledFont sf = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+
         string text            = new((sbyte*)utf8, 0, utf8Len);
         bool useClusterMapping = clusters is not null;
 
@@ -427,8 +433,10 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        using ScaledFont sf = new(scaledFont, isOwnedByCairo: true);
-        Status status       = state.UnicodeToGlyph(sf, (int)unicode.Value, out int gi);
+        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
+        ScaledFont sf = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+
+        Status status = state.UnicodeToGlyph(sf, (int)unicode.Value, out int gi);
 
         glyphIndex = new CULong((uint)gi);
         return status;

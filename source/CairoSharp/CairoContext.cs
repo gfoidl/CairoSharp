@@ -49,12 +49,12 @@ public sealed unsafe class CairoContext : CairoObject
         return cairo_create(target.Handle);
     }
 
-    internal CairoContext(void* handle, bool isOwnedByCairo) : base(handle, isOwnedByCairo)
+    internal CairoContext(void* handle, bool isOwnedByCairo, bool needsDestroy = true) : base(handle, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfStatus(Status.NoMemory);
         this.Status.ThrowIfStatus(Status.WriteError);
 
-        if (isOwnedByCairo)
+        if (isOwnedByCairo && needsDestroy)
         {
             cairo_reference(handle);
         }
@@ -147,7 +147,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// surface is indicated by <see cref="Surface.Status"/> != <see cref="Status.Success"/>
     /// (or by the convenience <see cref="Surface.IsNilSurface"/> property).
     /// <para>
-    /// This object is owned by cairo. When done using it, call <see cref="CairoObject.Dispose()"/>.
+    /// This object is owned by cairo.
     /// </para>
     /// </remarks>
     public Surface Target
@@ -155,7 +155,7 @@ public sealed unsafe class CairoContext : CairoObject
         get
         {
             this.CheckDisposed();
-            return Surface.Lookup(cairo_get_target(this.Handle), isOwnedByCairo: true);
+            return Surface.Lookup(cairo_get_target(this.Handle), isOwnedByCairo: true, needsDestroy: false);
         }
     }
 
@@ -291,7 +291,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// <see cref="PushGroupWithContent(Content)"/>.
     /// </summary>
     /// <remarks>
-    /// This object is owned by cairo. When done using it, call <see cref="CairoObject.Dispose()"/>.
+    /// This object is owned by cairo.
     /// <para>
     /// This property will always return a valid pointer, but the result can be a "nil" surface if cr is
     /// already in an error state, (ie. <see cref="Status"/> != <see cref="Status.Success"/>. A nil
@@ -306,7 +306,7 @@ public sealed unsafe class CairoContext : CairoObject
             this.CheckDisposed();
 
             void* handle = cairo_get_group_target(this.Handle);
-            return Surface.Lookup(handle, isOwnedByCairo: true);
+            return Surface.Lookup(handle, isOwnedByCairo: true, needsDestroy: false);
         }
     }
 
@@ -437,14 +437,14 @@ public sealed unsafe class CairoContext : CairoObject
     /// Gets the current source pattern for cr.
     /// </summary>
     /// <returns>
-    /// the current source pattern. This object is owned by cairo. When done using it, call <see cref="CairoObject.Dispose()"/>.
+    /// the current source pattern. This object is owned by cairo.
     /// </returns>
     public Pattern? GetSource()
     {
         this.CheckDisposed();
 
         void* handle = cairo_get_source(this.Handle);
-        return Pattern.Lookup(handle, isOwnedByCairo: true);
+        return Pattern.Lookup(handle, isOwnedByCairo: true, needsDestroy: false);
     }
 
     /// <summary>

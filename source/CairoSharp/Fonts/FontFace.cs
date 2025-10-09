@@ -20,12 +20,12 @@ namespace Cairo.Fonts;
 /// </remarks>
 public unsafe class FontFace : CairoObject
 {
-    protected internal FontFace(void* handle, bool isOwnedByCairo = false, ReferenceFunc referenceFunc = null)
-        : base(handle, isOwnedByCairo)
+    protected internal FontFace(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true, ReferenceFunc referenceFunc = null)
+        : base(handle, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfNotSuccess();
 
-        if (isOwnedByCairo)
+        if (isOwnedByCairo && needsDestroy)
         {
             if (referenceFunc is null)
             {
@@ -126,15 +126,5 @@ public unsafe class FontFace : CairoObject
     {
         this.CheckDisposed();
         return cairo_font_face_get_user_data(this.Handle, ref key);
-    }
-
-    internal static FontFace? Lookup(void* handle, bool isOwnedByCairo)
-    {
-        if (handle is null)
-        {
-            return null;
-        }
-
-        return new FontFace(handle, isOwnedByCairo);
     }
 }

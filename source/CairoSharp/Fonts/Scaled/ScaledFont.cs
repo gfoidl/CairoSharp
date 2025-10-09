@@ -15,8 +15,8 @@ namespace Cairo.Fonts.Scaled;
 /// </remarks>
 public sealed unsafe class ScaledFont : FontFace
 {
-    internal ScaledFont(void* handle, bool isOwnedByCairo)
-        : base(handle, isOwnedByCairo, &cairo_scaled_font_reference) { }
+    internal ScaledFont(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy, &cairo_scaled_font_reference) { }
 
     /// <summary>
     /// Creates a <see cref="ScaledFont"/> object from a font face and matrices that describe
@@ -221,7 +221,7 @@ public sealed unsafe class ScaledFont : FontFace
             this.CheckDisposed();
 
             void* handle= cairo_scaled_font_get_font_face(this.Handle);
-            return new FontFace(handle, isOwnedByCairo: true, &cairo_scaled_font_reference);
+            return new FontFace(handle, isOwnedByCairo: true, referenceFunc: &cairo_scaled_font_reference);
         }
     }
 
@@ -297,15 +297,5 @@ public sealed unsafe class ScaledFont : FontFace
             this.CheckDisposed();
             return (int)cairo_scaled_font_get_reference_count(this.Handle);
         }
-    }
-
-    internal static new ScaledFont? Lookup(void* handle, bool isOwnedByCairo)
-    {
-        if (handle is null)
-        {
-            return null;
-        }
-
-        return new ScaledFont(handle, isOwnedByCairo);
     }
 }

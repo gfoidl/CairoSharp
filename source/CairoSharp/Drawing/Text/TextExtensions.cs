@@ -162,7 +162,7 @@ public static unsafe class TextExtensions
                 cr.CheckDisposed();
 
                 void* handle = cairo_get_font_face(cr.Handle);
-                return FontFace.Lookup(handle, isOwnedByCairo: true)!;
+                return new FontFace(handle, isOwnedByCairo: true);
             }
             set
             {
@@ -185,7 +185,7 @@ public static unsafe class TextExtensions
                 cr.CheckDisposed();
 
                 void* handle = cairo_get_scaled_font(cr.Handle);
-                return ScaledFont.Lookup(handle, isOwnedByCairo: true)!;
+                return new ScaledFont(handle, isOwnedByCairo: true);
             }
             set
             {
