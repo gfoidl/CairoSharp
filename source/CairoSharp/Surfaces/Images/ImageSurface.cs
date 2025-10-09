@@ -104,11 +104,11 @@ public sealed unsafe class ImageSurface : Surface
     /// ensure that all pending drawing operations are finished. A call to <see cref="Surface.MarkDirty()"/>
     /// is required after the data is modified.
     /// <para>
-    ///  a pointer to the image data of this surface or <see cref="ReadOnlySpan{T}.Empty"/> if surface is
-    ///  not an image surface, or if <see cref="Surface.Finish"/> has been called.
+    /// a pointer to the image data of this surface or <see cref="Span{T}.Empty"/> if surface is
+    /// not an image surface, or if <see cref="Surface.Finish"/> has been called.
     /// </para>
     /// </remarks>
-    public ReadOnlySpan<byte> Data
+    public Span<byte> Data
     {
         get
         {
@@ -122,7 +122,7 @@ public sealed unsafe class ImageSurface : Surface
             }
 
             int length = this.Height * this.Stride;
-            return new ReadOnlySpan<byte>(data, length);
+            return new Span<byte>(data, length);
         }
     }
 
