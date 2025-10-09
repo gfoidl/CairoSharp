@@ -3,12 +3,14 @@
 using System.Diagnostics;
 using Cairo;
 using Cairo.Drawing;
+using Cairo.Drawing.Path;
 using Cairo.Drawing.Patterns;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.Win32;
+using Path = Cairo.Drawing.Path.Path;
 
 namespace WinFormsDemo;
 
@@ -17,38 +19,44 @@ public partial class Form1 : Form
     private string?               _lastSelectedDemo;
     private Action<CairoContext>? _onPaintAction;
     private readonly byte[]       _pngData = File.ReadAllBytes("romedalen.png");
+    private Path?                 _hitPath;
 
     public Form1()
     {
         InitializeComponent();
-
-        this.Width = 10 + 256 + 10 + 20;                        // don't know why 20 is needed, but it is so
-        this.Height = menuStrip1.Height + 10 + 256 + 10 + 45;   // the same for the 45, maybe pixel <-> points
     }
 
-    protected override void OnPaint(PaintEventArgs e)
+    private void drawPanel_Paint(object sender, PaintEventArgs e)
     {
-        base.OnPaint(e);
-
-        using Graphics graphics    = e.Graphics;
-        using Win32Surface surface = new(graphics.GetHdc());
-        using CairoContext context = new(surface);
-
-        context.Translate(10, menuStrip1.Height + 10);
-
-        using (context.Save())
+        if (_lastSelectedDemo != "hit path" && _hitPath is not null)
         {
-            context.Rectangle(0, 0, 256, 256);
-            context.LineWidth = 1d;
-            context.Stroke();
+            _hitPath.Dispose();
         }
 
-        if (_onPaintAction is null)
+        nint hdc = e.Graphics.GetHdc();
+        try
         {
-            return;
-        }
+            using Win32Surface surface = new(hdc);
+            using CairoContext context = new(surface);
 
-        _onPaintAction(context);
+            using (context.Save())
+            {
+                context.Rectangle(0, 0, 256, 256);
+                context.LineWidth = 1d;
+                context.Stroke();
+            }
+
+            if (_onPaintAction is null)
+            {
+                return;
+            }
+
+            _onPaintAction(context);
+        }
+        finally
+        {
+            e.Graphics.ReleaseHdc(hdc);
+        }
     }
 
     private void saveAsPNGToolStripMenuItem_Click(object sender, EventArgs e)
@@ -59,11 +67,21 @@ public partial class Form1 : Form
 
         if (saveFileDialog.ShowDialog() == DialogResult.OK)
         {
-            using Graphics graphics    = this.CreateGraphics();
-            using Win32Surface surface = new(graphics.GetHdc());
-            using CairoContext context = new(surface);
+            Graphics graphics = drawPanel.CreateGraphics();
+            nint hdc          = graphics.GetHdc();
 
-            surface.WriteToPng(saveFileDialog.FileName);
+            try
+            {
+                using Win32Surface surface = new(hdc);
+                using CairoContext context = new(surface);
+
+                surface.WriteToPng(saveFileDialog.FileName);
+            }
+            finally
+            {
+                graphics.ReleaseHdc(hdc);
+                graphics.Dispose();
+            }
         }
     }
 
@@ -105,7 +123,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void arcNegativeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -137,7 +155,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void clipToolStripMenuItem_Click(object sender, EventArgs e)
@@ -162,7 +180,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void clipImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -183,7 +201,7 @@ public partial class Form1 : Form
             cr.Paint();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void curvedRectangleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -254,7 +272,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void roundedRectangleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -287,7 +305,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void curveToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -313,7 +331,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void dashToolStripMenuItem_Click(object sender, EventArgs e)
@@ -341,7 +359,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void fillAndStroke2ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -368,7 +386,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void fillStyleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -396,7 +414,7 @@ public partial class Form1 : Form
             cr.SetSourceRgb(0, 0, 0); cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void gradientToolStripMenuItem_Click(object sender, EventArgs e)
@@ -426,7 +444,7 @@ public partial class Form1 : Form
             }
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void imageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -447,7 +465,7 @@ public partial class Form1 : Form
             cr.Paint();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void imagePatternToolStripMenuItem_Click(object sender, EventArgs e)
@@ -477,7 +495,7 @@ public partial class Form1 : Form
             cr.Fill();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void multiSegmentCapsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -499,7 +517,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void setLineCapToolStripMenuItem_Click(object sender, EventArgs e)
@@ -531,7 +549,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void setLineJoinToolStripMenuItem_Click(object sender, EventArgs e)
@@ -560,7 +578,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void textToolStripMenuItem_Click(object sender, EventArgs e)
@@ -592,7 +610,7 @@ public partial class Form1 : Form
             cr.Fill();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void textAlignCenterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -627,7 +645,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void textExtentsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -662,7 +680,7 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void glyphsToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -683,7 +701,7 @@ public partial class Form1 : Form
             cr.ShowTextGlyphs(Text);
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
     }
 
     private void glyphsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -726,6 +744,93 @@ public partial class Form1 : Form
             }
         };
 
-        this.Invalidate();
+        drawPanel.Invalidate();
+    }
+
+
+    private void hitTestToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        _lastSelectedDemo = GetMenuText(sender);
+        _onPaintAction    = cr =>
+        {
+            using (cr.Save())
+            {
+                cr.Translate(100, 50);
+                cr.Scale(2, 2);
+
+                const int X  = 10;
+                const int Y  = 10;
+                const int Sx = 50;
+                const int Sy = 50;
+
+                cr.MoveTo(X, Y);
+                cr.LineTo(X + Sx, Y);
+                cr.LineTo(X + Sx, Y + Sy);
+                cr.LineTo(X + (Sx / 2), Y + Sy);
+                cr.LineTo(X + (Sx / 2), Y + (Sy / 2));
+                cr.LineTo(X, Y + (Sy / 2));
+                cr.LineTo(X, Y + Sy);
+                cr.LineTo(X - Sx, Y + Sy);
+                cr.ClosePath();
+            }
+
+            _hitPath = cr.CopyPath();   // record the path to use as a hit area
+
+            cr.SetSourceRgba(1, 0, 0, 0.5);
+            cr.FillPreserve();
+            cr.SetSourceRgb(1, 0, 0);
+            cr.Stroke();
+        };
+
+        drawPanel.Invalidate();
+    }
+
+    private void drawPanel_MouseClick(object sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Right)
+        {
+            drawPanel.Invalidate();
+            return;
+        }
+
+        if (_hitPath is null)
+        {
+            return;
+        }
+
+        foreach (Path.PathElement pathElement in _hitPath)
+        {
+            Debug.WriteLine($"Path item: {pathElement.DataType}");
+            foreach (PointD point in pathElement.Points)
+            {
+                Debug.WriteLine($"\t{point}");
+            }
+        }
+
+        Graphics graphics = drawPanel.CreateGraphics();
+        nint hdc          = graphics.GetHdc();
+
+        try
+        {
+            using Win32Surface surface = new(hdc);
+            using CairoContext context = new(surface);
+
+            context.AppendPath(_hitPath);
+
+            // different coordinates?
+            bool isInHitArea = context.InFill(new PointD(e.Location.X, e.Location.Y));
+
+            if (isInHitArea)
+            {
+                context.LineWidth = 5;
+                context.SetSourceRgb(0, 1, 0);
+                context.Stroke();
+            }
+        }
+        finally
+        {
+            graphics.ReleaseHdc(hdc);
+            graphics.Dispose();
+        }
     }
 }

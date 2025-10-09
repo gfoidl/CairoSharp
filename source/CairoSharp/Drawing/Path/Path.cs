@@ -11,6 +11,9 @@ namespace Cairo.Drawing.Path;
 /// </summary>
 /// <remarks>
 /// Paths are the most basic drawing tools and are primarily used to implicitly generate simple masks.
+/// <para>
+/// <c>foreach</c>-loop over the path, to get the <see cref="PathElement"/>s.
+/// </para>
 /// </remarks>
 public sealed unsafe class Path : CairoObject
 {
@@ -97,6 +100,9 @@ public sealed unsafe class Path : CairoObject
         }
     }
 
+    /// <summary>
+    /// An element of a <see cref="Path"/>.
+    /// </summary>
     public readonly ref struct PathElement
     {
         public DataType DataType           { get; }

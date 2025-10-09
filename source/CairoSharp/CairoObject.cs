@@ -34,6 +34,9 @@ public abstract unsafe class CairoObject : IDisposable, IEquatable<CairoObject>
     [DebuggerStepThrough]
     protected internal void CheckDisposed() => ObjectDisposedException.ThrowIf(_handle is null, this);
 
+    /// <summary>
+    /// Releases the resources used by the wrapped cairo object.
+    /// </summary>
     public void Dispose()
     {
         this.Dispose(true);

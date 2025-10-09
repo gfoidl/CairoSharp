@@ -34,7 +34,7 @@ public static unsafe class PathExtensions
     {
         /// <summary>
         /// Creates a copy of the current path and returns it to the user as a <see cref="Path"/>.
-        /// See <see cref="PathData"/> for hints on how to iterate over the returned data structure.
+        /// Use <c>foreach</c> to iterate over the returned data structure.
         /// </summary>
         /// <returns>
         /// the copy of the current path. The caller owns the returned object and should call
@@ -64,7 +64,7 @@ public static unsafe class PathExtensions
 
         /// <summary>
         /// Gets a flattened copy of the current path and returns it to the user as a <see cref="Path"/>.
-        /// See <see cref="PathData"/> for hints on how to iterate over the returned data structure.
+        /// Use <c>foreach</c> to iterate over the returned data structure.
         /// </summary>
         /// <returns>
         /// the copy of the current path. The caller owns the returned object and should call
@@ -74,7 +74,7 @@ public static unsafe class PathExtensions
         /// This method is like <see cref="CopyPath(CairoContext)"/> except that any curves in the path
         /// will be approximated with piecewise-linear approximations, (accurate to within the current
         /// tolerance value). That is, the result is guaranteed to not have any elements of type
-        /// <see cref="DataType.CurveTo"/> will instead be replaced by a series of <see cref="DataType.LineTo"/>
+        /// <see cref="DataType.CurveTo"/> which will instead be replaced by a series of <see cref="DataType.LineTo"/>
         /// elements.
         /// <para>
         /// This method will always return a valid pointer, but the result will have no data
@@ -112,8 +112,8 @@ public static unsafe class PathExtensions
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <c>null</c></exception>
         public void AppendPath(Path path)
         {
-            ArgumentNullException.ThrowIfNull(path);
             cr.CheckDisposed();
+            ArgumentNullException.ThrowIfNull(path);
 
             cairo_append_path(cr.Handle, (PathRaw*)path.Handle);
         }
