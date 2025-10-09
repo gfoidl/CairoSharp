@@ -25,7 +25,7 @@ public class ObserverEventArgs(Surface target) : EventArgs
 public sealed unsafe class ObserverSurface : Surface
 {
     private readonly Surface _target;
-    private readonly void* _thisHandle;
+    private readonly void*   _thisHandle;
 
     protected override void DisposeCore(void* handle)
     {
@@ -45,9 +45,6 @@ public sealed unsafe class ObserverSurface : Surface
     /// </summary>
     /// <param name="target">an existing surface for which the observer will watch</param>
     /// <param name="mode">sets the mode of operation (normal vs. record)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// The mode parameter can be set to either <see cref="ObserverMode.Normal"/> or
     /// <see cref="ObserverMode.RecordOperations"/>, to control whether or not the internal observer
@@ -56,11 +53,8 @@ public sealed unsafe class ObserverSurface : Surface
     /// The caller owns the surface and should call <see cref="CairoObject.Dispose()"/> when done with it.
     /// </para>
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public ObserverSurface(Surface target, ObserverMode mode, bool throwOnConstructionError = true)
-        : base(cairo_surface_create_observer(target.Handle, mode), owner: true, throwOnConstructionError)
+    /// <exception cref="CairoException">when construction fails</exception>
+    public ObserverSurface(Surface target, ObserverMode mode) : base(cairo_surface_create_observer(target.Handle, mode))
     {
         _target     = target ?? throw new ArgumentNullException(nameof(target));
         _thisHandle = GCHandle.ToIntPtr(GCHandle.Alloc(this, GCHandleType.Normal)).ToPointer();

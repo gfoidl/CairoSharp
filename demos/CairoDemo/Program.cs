@@ -15,11 +15,13 @@ using Cairo.Surfaces.Recording;
 using Cairo.Surfaces.SVG;
 using Cairo.Surfaces.Tee;
 using Cairo.Surfaces.Win32;
-using Cairo.Surfaces.XLib;
 using CairoDemo;
 using IOPath = System.IO.Path;
 
-AppContext.SetSwitch("Cairo.DebugDispose", true);
+// When enabled the RasterSource demo will fail. But actually it's OK, just
+// the simple approach for DebugDispose can't handle this, as the image is
+// destroyed in RasterSource.csL291 by a native call.
+//AppContext.SetSwitch("Cairo.DebugDispose", true);
 
 if (Directory.Exists("output")) Directory.Delete("output", true);
 Directory.CreateDirectory("output");
@@ -31,18 +33,18 @@ try
     PrintSupportedSurfaceVersions();
     ShowSurfaceInformation();
 
-    //Primitives();
-    //AntiAlias();
-    //Mask();
-    //Demo01();
-    //Demo02();
-    //Arrow();
-    //Hexagon();
-    //Gradient();
-    //MeshPattern();
-    //MeshPattern1();
-    //RecordingAndScriptSurface();
-    //PdfFeatures();
+    Primitives();
+    AntiAlias();
+    Mask();
+    Demo01();
+    Demo02();
+    Arrow();
+    Hexagon();
+    Gradient();
+    MeshPattern();
+    MeshPattern1();
+    RecordingAndScriptSurface();
+    PdfFeatures();
     RasterSource();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
@@ -264,7 +266,7 @@ static void Mask()
         radpat.AddColorStop(0, new Color(0, 0, 0, 1));
         radpat.AddColorStop(1, new Color(0, 0, 0, 0));
 
-        ctx.Source = linpat;
+        ctx.SetSource(linpat);
 
         if (!hasMultiplePages)
         {
@@ -278,7 +280,7 @@ static void Mask()
             ctx.Paint();
 
             ctx.ShowPage();
-            ctx.Source = radpat;
+            ctx.SetSource(radpat);
             ctx.Paint();
         }
     }
@@ -364,7 +366,7 @@ static void Demo02()
             }
         }
 
-        c.Source = radpat;
+        c.SetSource(radpat);
         c.Fill();
 
         using Gradient linpat = new LinearGradient(0.25, 0.35, 0.75, 0.65);
@@ -375,7 +377,7 @@ static void Demo02()
         linpat.AddColorStop(1.00, new Color(1, 1, 1, 0));
 
         c.Rectangle(0, 0, 1, 1);
-        c.Source = linpat;
+        c.SetSource(linpat);
         c.Fill();
     }
 
@@ -621,6 +623,7 @@ static void MeshPattern1()
 
         using Mesh mesh = new();
 
+        // Add a Coons patch
         using (mesh.BeginPatch())
         {
             mesh.MoveTo(0, 0);
@@ -779,7 +782,7 @@ static void RasterSource()
     using PdfSurface pdfSurface     = new("raster-source.pdf", Width, Height);
     using ImageSurface imageSurface = new(Format.Argb32, Width, Height);
     using TeeSurface teeSurface     = new(svgSurface);
-    using CairoContext context = new(teeSurface);
+    using CairoContext context      = new(teeSurface);
 
     teeSurface.Add(pdfSurface);
     teeSurface.Add(imageSurface);

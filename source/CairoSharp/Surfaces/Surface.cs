@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.PDF;
@@ -19,16 +20,46 @@ namespace Cairo.Surfaces;
 /// <summary>
 /// Base class for surfaces
 /// </summary>
+/// <remarks>
+/// <see cref="Surface"/> is the abstract type representing all different drawing targets that cairo can render
+/// to. The actual drawings are performed using a <see cref="CairoContext"/>.
+/// <para>
+/// A cairo surface is created by using backend-specific constructors
+/// </para>
+/// <para>
+/// Most surface types allow accessing the surface without using Cairo functions. If you do this, keep in mind
+/// that it is mandatory that you call <see cref="Flush"/> before reading from or writing to the surface and
+/// that you must use <see cref="MarkDirty()"/> after modifying it.
+/// </para>
+/// <para>
+/// Example: Directly modifying an image surface
+/// <code>
+/// void ModifyImageSurface(ImageSurface surface)
+/// {
+///     // flush to ensure all writing to the image was done
+///     surface.Flush();
+///
+///     // modify the image
+///     ModifyImageData(surface.Data, surface.Width, surface.Height, surface.Stride);
+///
+///     // mark the image dirty so Cairo clears its caches.
+///     surface.MarkDirty();
+/// }
+/// </code>
+/// </para>
+/// <para>
+/// Note that for other surface types it might be necessary to acquire the surface's device first.
+/// See <see cref="Device.Acquire"/> for a discussion of devices.
+/// </para>
+/// </remarks>
 public unsafe class Surface : CairoObject
 {
-    protected internal Surface(void* handle, bool owner, bool throwOnConstructionError = true) : base(handle)
+    protected internal Surface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy)
     {
-        if (throwOnConstructionError)
-        {
-            this.Status.ThrowIfNotSuccess();
-        }
+        this.Status.ThrowIfNotSuccess();
 
-        if (!owner)
+        if (isOwnedByCairo && needsDestroy)
         {
             cairo_surface_reference(handle);
         }
@@ -38,8 +69,13 @@ public unsafe class Surface : CairoObject
     {
         cairo_surface_destroy(handle);
 
-        uint rc = cairo_surface_get_reference_count(handle);
-        Debug.WriteLine($"Surface 0x{(nint)handle}: reference count = {rc}");
+        PrintDebugInfo(handle);
+        [Conditional("DEBUG")]
+        static void PrintDebugInfo(void* handle)
+        {
+            uint rc = cairo_surface_get_reference_count(handle);
+            Debug.WriteLine($"Surface 0x{(nint)handle}: reference count = {rc}");
+        }
     }
 
     /// <summary>
@@ -51,9 +87,6 @@ public unsafe class Surface : CairoObject
     /// <param name="content">the content for the new surface</param>
     /// <param name="width">width of the new surface, (in device-space units)</param>
     /// <param name="height">height of the new surface (in device-space units)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <returns>
     /// a pointer to the newly allocated surface. The caller owns the surface and should call
     /// <see cref="CairoObject.Dispose()"/> when done with it.
@@ -62,28 +95,23 @@ public unsafe class Surface : CairoObject
     /// if other is already in an error state or any other error occurs.
     /// </para>
     /// </returns>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public Surface CreateSimilar(Content content, int width, int height, bool throwOnConstructionError = true)
+    /// <exception cref="CairoException">when construction fails</exception>
+    public Surface CreateSimilar(Content content, int width, int height)
     {
         this.CheckDisposed();
 
         void* handle = cairo_surface_create_similar(this.Handle, content, width, height);
-        return new Surface(handle, owner: true, throwOnConstructionError);
+        return new Surface(handle);
     }
 
     /// <summary>
     /// Create a new image surface that is as compatible as possible for uploading to and the use in conjunction
     /// with an existing surface. However, this surface can still be used like any normal image surface. Unlike
-    /// <see cref="CreateSimilar(Content, int, int, bool)"/> the new image surface won't inherit the device scale from this one.
+    /// <see cref="CreateSimilar(Content, int, int)"/> the new image surface won't inherit the device scale from this one.
     /// </summary>
     /// <param name="format">the format for the new surface</param>
     /// <param name="width">width of the new surface, (in pixels)</param>
     /// <param name="height">height of the new surface (in pixels)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <returns>
     /// a pointer to the newly allocated image surface. The caller owns the surface and should call
     /// <see cref="CairoObject.Dispose()"/> when done with it.
@@ -95,18 +123,16 @@ public unsafe class Surface : CairoObject
     /// <remarks>
     /// Initially the surface contents are all 0 (transparent if contents have transparency, black otherwise.)
     /// <para>
-    /// Use <see cref="CreateSimilar(Content, int, int, bool)"/> if you don't need an image surface.
+    /// Use <see cref="CreateSimilar(Content, int, int)"/> if you don't need an image surface.
     /// </para>
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public Surface CreateSimilarImage(Format format, int width, int height, bool throwOnConstructionError = true)
+    /// <exception cref="CairoException">when construction fails</exception>
+    public Surface CreateSimilarImage(Format format, int width, int height)
     {
         this.CheckDisposed();
 
         void* handle = cairo_surface_create_similar_image(this.Handle, format, width, height);
-        return new Surface(handle, owner: true, throwOnConstructionError);
+        return new Surface(handle);
     }
 
     /// <summary>
@@ -139,7 +165,7 @@ public unsafe class Surface : CairoObject
         this.CheckDisposed();
 
         void* handle = cairo_surface_create_for_rectangle(this.Handle, x, y, width, height);
-        return new Surface(handle, owner: true, throwOnConstructionError);
+        return new Surface(handle);
     }
 
     /// <summary>
@@ -214,12 +240,15 @@ public unsafe class Surface : CairoObject
     /// of metrics and so forth. The result can then be used with
     /// <see cref="ScaledFont(Fonts.FontFace, ref Matrix, ref Matrix, Fonts.FontOptions)"/>.
     /// </summary>
-    /// <param name="fontOptions">
-    /// a cairo_font_options_t object into which to store the retrieved options. All existing values are overwritten
+    /// <param name="options">
+    /// a <see cref="FontOptions"/> object into which to store the retrieved options. All existing values are overwritten
     /// </param>
-    public void GetFontOptions(void* fontOptions)
+    public void GetFontOptions(FontOptions options)
     {
-        cairo_surface_get_font_options(this.Handle, fontOptions);
+        this.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(options);
+
+        cairo_surface_get_font_options(this.Handle, options.Handle);
     }
 
     /// <summary>
@@ -533,7 +562,7 @@ public unsafe class Surface : CairoObject
         this.CheckDisposed();
 
         void* handle = cairo_surface_map_to_image(this.Handle, &extents);
-        return new Surface(handle, owner: true);
+        return new Surface(handle, isOwnedByCairo: false, needsDestroy: false);
     }
 
     /// <summary>
@@ -549,7 +578,7 @@ public unsafe class Surface : CairoObject
         this.CheckDisposed();
 
         void* handle = cairo_surface_map_to_image(this.Handle, null);
-        return new Surface(handle, owner: true);
+        return new Surface(handle, isOwnedByCairo: false, needsDestroy: false);
     }
 
     /// <summary>
@@ -651,20 +680,20 @@ public unsafe class Surface : CairoObject
     }
 #pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
 
-    internal static Surface Lookup(void* surface, bool owner = false)
+    internal static Surface Lookup(void* surface, bool isOwnedByCairo, bool needsDestroy = true)
     {
         SurfaceType surfaceType = cairo_surface_get_type(surface);
 
         return surfaceType switch
         {
-            SurfaceType.Image => new ImageSurface     (surface, owner),
-            SurfaceType.Xlib  => new XLibSurface      (surface, owner),
-            SurfaceType.Xcb   => new XCBSurface       (surface, owner),
-            SurfaceType.Win32 => new Win32Surface     (surface, owner),
-            SurfaceType.Pdf   => new PdfSurface       (surface, owner),
-            SurfaceType.PS    => new PostScriptSurface(surface, owner),
-            SurfaceType.Svg   => new SvgSurface       (surface, owner),
-            _                 => new Surface     (surface, owner)
+            SurfaceType.Image => new ImageSurface     (surface, isOwnedByCairo, needsDestroy),
+            SurfaceType.Xlib  => new XLibSurface      (surface, isOwnedByCairo, needsDestroy),
+            SurfaceType.Xcb   => new XCBSurface       (surface, isOwnedByCairo, needsDestroy),
+            SurfaceType.Win32 => new Win32Surface     (surface, isOwnedByCairo, needsDestroy),
+            SurfaceType.Pdf   => new PdfSurface       (surface, isOwnedByCairo, needsDestroy),
+            SurfaceType.PS    => new PostScriptSurface(surface, isOwnedByCairo, needsDestroy),
+            SurfaceType.Svg   => new SvgSurface       (surface, isOwnedByCairo, needsDestroy),
+            _                 => new Surface          (surface, isOwnedByCairo, needsDestroy)
         };
     }
 

@@ -8,13 +8,12 @@ namespace Cairo.Surfaces.SVG;
 /// SVG Surfaces — Rendering SVG documents
 /// </summary>
 /// <remarks>
-/// The SVG surface is used to render cairo graphics to SVG files and is a multi-page
-/// vector surface backend.
+/// The SVG surface is used to render cairo graphics to SVG files and is a multi-page vector surface backend.
 /// </remarks>
 public sealed unsafe class SvgSurface : StreamSurface
 {
-    internal SvgSurface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal SvgSurface(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a SVG surface of the specified size in points, that may be queried and used as a source,
@@ -22,17 +21,11 @@ public sealed unsafe class SvgSurface : StreamSurface
     /// </summary>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
-    /// See <see cref="SvgSurface(string?, double, double, bool)"/> for further information.
+    /// See <see cref="SvgSurface(string?, double, double)"/> for further information.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public SvgSurface(double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : this(null as string, widthInPoints, heightInPoints, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public SvgSurface(double widthInPoints, double heightInPoints) : this(null as string, widthInPoints, heightInPoints) { }
 
     /// <summary>
     /// Creates a SVG surface of the specified size in points to be written to <paramref name="fileName"/>.
@@ -43,9 +36,6 @@ public sealed unsafe class SvgSurface : StreamSurface
     /// </param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// The SVG surface backend recognizes the following MIME types for the data attached to a surface
     /// (see <see cref="Surface.SetMimeData(string, ReadOnlySpan{byte})"/>) when it is used as a
@@ -65,11 +55,9 @@ public sealed unsafe class SvgSurface : StreamSurface
     /// only be embedded once.
     /// </para>
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public SvgSurface(string? fileName, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(cairo_svg_surface_create(fileName, widthInPoints, heightInPoints), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public SvgSurface(string? fileName, double widthInPoints, double heightInPoints)
+        : base(cairo_svg_surface_create(fileName, widthInPoints, heightInPoints)) { }
 
     /// <summary>
     /// Creates a SVG surface of the specified size in points to be written incrementally to the stream
@@ -77,16 +65,11 @@ public sealed unsafe class SvgSurface : StreamSurface
     /// <param name="stream">The stream to which the SVG content is written to</param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
+    /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c></exception>
     /// <exception cref="ArgumentException"><paramref name="stream"/> is not writeable</exception>
-    public SvgSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream), throwOnConstructionError) { }
+    public SvgSurface(Stream stream, double widthInPoints, double heightInPoints)
+        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream)) { }
 
     /// <summary>
     /// Creates a SVG surface of the specified size in points to be written incrementally via the
@@ -96,15 +79,10 @@ public sealed unsafe class SvgSurface : StreamSurface
     /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
+    /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
-    public SvgSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream), throwOnConstructionError) { }
+    public SvgSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints)
+        : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream)) { }
 
     /// <summary>
     /// Gets or sets the unit of the SVG surface.
@@ -160,4 +138,12 @@ public sealed unsafe class SvgSurface : StreamSurface
         this.CheckDisposed();
         cairo_svg_surface_restrict_to_version(this.Handle, version);
     }
+
+    /// <summary>
+    /// The <see cref="SvgSurface"/> can have multiple pages.
+    /// </summary>
+    /// <remarks>
+    /// See <see cref="Surface.ShowPage"/> / <see cref="Surface.CopyPage"/>.
+    /// </remarks>
+    public override bool CanHaveMultiplePages => true;
 }

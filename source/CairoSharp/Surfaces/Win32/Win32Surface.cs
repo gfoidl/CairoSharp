@@ -13,8 +13,8 @@ namespace Cairo.Surfaces.Win32;
 /// </remarks>
 public sealed unsafe class Win32Surface : Surface
 {
-    internal Win32Surface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal Win32Surface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a cairo surface that targets the given DC. The DC will be queried for its initial
@@ -24,8 +24,7 @@ public sealed unsafe class Win32Surface : Surface
     /// </summary>
     /// <param name="hdc">the DC to create a surface for</param>
     /// <exception cref="ArgumentNullException">when the surface could not be created due to a failure</exception>
-    public Win32Surface(IntPtr hdc)
-        : base(cairo_win32_surface_create(hdc.ToPointer()), owner: true) { }
+    public Win32Surface(IntPtr hdc) : base(cairo_win32_surface_create(hdc.ToPointer())) { }
 
     /// <summary>
     /// Creates a device-independent-bitmap surface not associated with any particular existing
@@ -36,7 +35,7 @@ public sealed unsafe class Win32Surface : Surface
     /// <param name="height">height of the surface, in pixels</param>
     /// <exception cref="ArgumentNullException">when the surface could not be created due to a failure</exception>
     public Win32Surface(Format format, int width, int height)
-        : base(cairo_win32_surface_create_with_dib(format, width, height), owner: true) { }
+        : base(cairo_win32_surface_create_with_dib(format, width, height)) { }
 
     /// <summary>
     /// Creates a device-dependent-bitmap surface not associated with any particular
@@ -48,7 +47,7 @@ public sealed unsafe class Win32Surface : Surface
     /// <param name="height">height of the surface, in pixels</param>
     /// <exception cref="ArgumentNullException">when the surface could not be created due to a failure</exception>
     public Win32Surface(IntPtr hdc, Format format, int width, int height)
-        : base(cairo_win32_surface_create_with_ddb(hdc.ToPointer(), format, width, height), owner: true) { }
+        : base(cairo_win32_surface_create_with_ddb(hdc.ToPointer(), format, width, height)) { }
 
     /// <summary>
     /// Creates a cairo surface that targets the given DC. The DC will be queried for its initial clip
@@ -65,8 +64,7 @@ public sealed unsafe class Win32Surface : Surface
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">when the surface could not be created due to a failure</exception>
-    public Win32Surface(IntPtr hdc, Format format)
-        : base(cairo_win32_surface_create_with_format(hdc.ToPointer(), format), owner: true) { }
+    public Win32Surface(IntPtr hdc, Format format) : base(cairo_win32_surface_create_with_format(hdc.ToPointer(), format)) { }
 
     /// <summary>
     /// Creates a cairo surface that targets the given DC. The DC will be queried for its
@@ -89,7 +87,7 @@ public sealed unsafe class Win32Surface : Surface
     public static Win32Surface CreatePrintingSurface(IntPtr hdc)
     {
         void* handle = cairo_win32_printing_surface_create(hdc.ToPointer());
-        return new Win32Surface(handle, owner: true);
+        return new Win32Surface(handle);
     }
 
     /// <summary>
@@ -112,21 +110,24 @@ public sealed unsafe class Win32Surface : Surface
     }
 
     /// <summary>
-    /// Returns a <see cref="Surface"/> image surface that refers to the same bits as
-    /// the DIB of the Win32 surface. If the passed-in win32 surface is not a DIB
-    /// surface, an <see cref="ArgumentNullException"/> is thrown.
+    /// Returns a <see cref="Surface"/> image surface that refers to the same bits as the DIB of the
+    /// Win32 surface. If the passed-in win32 surface is not a DIB surface, <c>null</c> is returned.
     /// </summary>
     /// <returns>
-    /// a <see cref="Surface"/> (owned by the <see cref="Win32Surface"/>)
+    /// a <see cref="Surface"/> (owned by the <see cref="Win32Surface"/>), or <c>null</c> if the win32
+    /// surface is not a DIB.
     /// </returns>
-    /// <exception cref="ArgumentNullException">
-    /// The win32 surface is not a DIB.
-    /// </exception>
-    public Surface GetImage()
+    public Surface? GetImage()
     {
         this.CheckDisposed();
 
         void* handle = cairo_win32_surface_get_image(this.Handle);
-        return new Surface(handle, owner: true);
+
+        if (handle is null)
+        {
+            return null;
+        }
+
+        return new Surface(handle, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
     }
 }

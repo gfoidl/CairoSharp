@@ -85,7 +85,7 @@ static void DrawCore(SvgSurface surface, int size)
         }
     }
 
-    context.Source = radpat;
+    context.SetSource(radpat);
     context.Fill();
 
     using Gradient linpat = new LinearGradient(0.25, 0.35, 0.75, 0.65);
@@ -96,6 +96,6 @@ static void DrawCore(SvgSurface surface, int size)
     linpat.AddColorStop(1.00, new Color(1, 1, 1, 0));
 
     context.Rectangle(0, 0, 1, 1);
-    context.Source = linpat;
+    context.SetSource(linpat);
     context.Fill();
 }

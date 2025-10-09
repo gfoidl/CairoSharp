@@ -10,16 +10,21 @@ namespace Cairo;
 /// </summary>
 public abstract unsafe class CairoObject : IDisposable, IEquatable<CairoObject>
 {
+    protected readonly bool _isOwnedByCairo;
+    protected readonly bool _needsDestroy;
+
     private void* _handle;
 
-    protected CairoObject(void* handle, bool allowNullPointer = false)
+    protected CairoObject(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true, bool allowNullPointer = false)
     {
         if (!allowNullPointer)
         {
             ArgumentNullException.ThrowIfNull(handle);
         }
 
-        _handle = handle;
+        _handle         = handle;
+        _isOwnedByCairo = isOwnedByCairo;
+        _needsDestroy   = needsDestroy;
 
         CairoDebug.OnAllocated(handle);
     }
@@ -42,12 +47,11 @@ public abstract unsafe class CairoObject : IDisposable, IEquatable<CairoObject>
             CairoDebug.OnDisposed(_handle, disposing, this.GetType());
         }
 
-        if (_handle is null)
+        if (_handle is not null && _needsDestroy)
         {
-            return;
+            this.DisposeCore(_handle);
         }
 
-        this.DisposeCore(_handle);
         _handle = null;
     }
 

@@ -10,7 +10,8 @@ namespace Cairo.Drawing.Patterns;
 /// </summary>
 public sealed unsafe class LinearGradient : Gradient
 {
-    internal LinearGradient(void* handle, bool owner) : base(handle, owner) { }
+    internal LinearGradient(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Create a new linear gradient <see cref="Pattern"/> along the line defined by (x0, y0) and (x1, y1).
@@ -26,7 +27,7 @@ public sealed unsafe class LinearGradient : Gradient
     /// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.GetMatrix(out Matrix)"/>.
     /// </remarks>
     public LinearGradient(double x0, double y0, double x1, double y1)
-        : base(cairo_pattern_create_linear(x0, y0, x1, y1), owner: true) { }
+        : base(cairo_pattern_create_linear(x0, y0, x1, y1)) { }
 
     /// <summary>
     /// Gets the gradient endpoints for a linear gradient.

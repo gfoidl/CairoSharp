@@ -19,8 +19,8 @@ namespace Cairo.Surfaces.XLib;
 /// </remarks>
 public unsafe class XLibSurface : Surface
 {
-    internal XLibSurface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal XLibSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates an Xlib surface that draws to the given drawable. The way that colors are
@@ -34,9 +34,6 @@ public unsafe class XLibSurface : Surface
     /// </param>
     /// <param name="width">the current width of drawable.</param>
     /// <param name="height">the current height of drawable.</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// Note: If drawable is a Window, then the method <see cref="SetSize(int, int)"/> must be called whenever
     /// the size of the window changes.
@@ -46,11 +43,9 @@ public unsafe class XLibSurface : Surface
     /// of the children will be included.
     /// </para>
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public XLibSurface(IntPtr display, Drawable drawable, IntPtr visual, int width, int height, bool throwOnConstructionError = true)
-        : base(cairo_xlib_surface_create(display.ToPointer(), drawable, visual.ToPointer(), width, height), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public XLibSurface(IntPtr display, Drawable drawable, IntPtr visual, int width, int height)
+        : base(cairo_xlib_surface_create(display.ToPointer(), drawable, visual.ToPointer(), width, height)) { }
 
     /// <summary>
     /// Creates an Xlib surface that draws to the given bitmap. This will be drawn to as a <see cref="Format.A1"/> object.
@@ -60,17 +55,12 @@ public unsafe class XLibSurface : Surface
     /// <param name="screen">the X Screen associated with bitmap </param>
     /// <param name="width">the current width of bitmap.</param>
     /// <param name="height">the current height of bitmap.</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <returns>the newly created surface</returns>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public static XLibSurface FromBitmap(IntPtr display, Pixmap bitmap, IntPtr screen, int width, int height, bool throwOnConstructionError = true)
+    /// <exception cref="CairoException">when construction fails</exception>
+    public static XLibSurface FromBitmap(IntPtr display, Pixmap bitmap, IntPtr screen, int width, int height)
     {
         void* handle = cairo_xlib_surface_create_for_bitmap(display.ToPointer(), bitmap, screen.ToPointer(), width, height);
-        return new XLibSurface(handle, owner: true, throwOnConstructionError);
+        return new XLibSurface(handle);
     }
 
     /// <summary>
@@ -144,7 +134,7 @@ public unsafe class XLibSurface : Surface
 
     /// <summary>
     /// Gets the X Visual associated with surface , suitable for use with the underlying X Drawable.
-    /// If surface was created by <see cref="XLibSurface(nint, Drawable, nint, int, int, bool)"/>, the return value
+    /// If surface was created by <see cref="XLibSurface(nint, Drawable, nint, int, int)"/>, the return value
     /// is the Visual passed to that constructor.
     /// </summary>
     public IntPtr Visual

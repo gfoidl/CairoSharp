@@ -12,7 +12,7 @@ namespace Cairo.Fonts.Quartz;
 /// </remarks>
 public sealed unsafe class QuartzFont : FontFace
 {
-    private QuartzFont(void* handle) : base(handle, owner: true) { }
+    private QuartzFont(void* handle) : base(handle) { }
 
     /// <summary>
     /// Creates a new font for the Quartz font backend based on a CGFontRef.

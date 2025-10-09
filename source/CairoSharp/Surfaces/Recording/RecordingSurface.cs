@@ -15,8 +15,12 @@ namespace Cairo.Surfaces.Recording;
 /// <para>
 /// If you want to replay a surface so that the results in target will be identical to the results
 /// that would have been obtained if the original operations applied to the recording surface had
-/// instead been applied to the target surface, you can see the example code in
-/// <a href="https://www.cairographics.org/manual/cairo-Recording-Surfaces.html">cairo docs</a>.
+/// instead been applied to the target surface, you can use code like this:
+/// <code>
+/// using CairoContext cr = new(target);
+/// cr.SetSourceSurface(recordingSurface, 0d, 0d);
+/// cr.Paint();
+/// </code>
 /// </para>
 /// <para>
 /// A recording surface is logically unbounded, i.e. it has no implicit constraint on the size of the
@@ -45,16 +49,14 @@ public sealed unsafe class RecordingSurface : Surface
     /// The recording phase of the recording surface is careful to snapshot all necessary
     /// objects (paths, patterns, etc.), in order to achieve accurate replay.
     /// </remarks>
-    public RecordingSurface(Content content, Rectangle extents)
-        : base(cairo_recording_surface_create(content, &extents), owner: true) { }
+    public RecordingSurface(Content content, Rectangle extents) : base(cairo_recording_surface_create(content, &extents)) { }
 
     /// <summary>
     /// Creates a recording-surface similar to <see cref="RecordingSurface(Content, Rectangle)"/>,
     /// but this one records unbounded operations.
     /// </summary>
     /// <param name="content">the content of the recording surface</param>
-    public RecordingSurface(Content content)
-        : base(cairo_recording_surface_create(content, null), owner: true) { }
+    public RecordingSurface(Content content) : base(cairo_recording_surface_create(content, null)) { }
 
     /// <summary>
     /// Measures the extents of the operations stored within the recording-surface. This

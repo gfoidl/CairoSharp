@@ -9,7 +9,6 @@ namespace Cairo.Surfaces;
 /// <summary>
 /// <see cref="Device"/> — interface to underlying rendering system
 /// </summary>
-/// <param name="handle">The handle to the underlying rendering system</param>
 /// <remarks>
 /// Devices are the abstraction Cairo employs for the rendering system used by a <see cref="Surface"/>.
 /// You can get the device of a surface using <see cref="Surface.Device"/>.
@@ -29,14 +28,21 @@ namespace Cairo.Surfaces;
 /// but can also be used by applications.
 /// </para>
 /// </remarks>
-public unsafe class Device(void* handle) : CairoObject(cairo_device_reference(handle))
+public unsafe class Device : CairoObject
 {
+    internal Device(void* handle) : base(cairo_device_reference(handle)) { }
+
     protected override void DisposeCore(void* handle)
     {
         cairo_device_destroy(handle);
 
-        uint rc = cairo_device_get_reference_count(handle);
-        Debug.WriteLine($"Device 0x{(nint)handle}: reference count = {rc}");
+        PrintDebugInfo(handle);
+        [Conditional("DEBUG")]
+        static void PrintDebugInfo(void* handle)
+        {
+            uint rc = cairo_device_get_reference_count(handle);
+            Debug.WriteLine($"Device 0x{(nint)handle}: reference count = {rc}");
+        }
     }
 
     /// <summary>

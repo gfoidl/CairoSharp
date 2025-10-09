@@ -10,7 +10,8 @@ namespace Cairo.Drawing.Patterns;
 /// </summary>
 public sealed unsafe class RadialGradient : Gradient
 {
-    internal RadialGradient(void* handle, bool owner) : base(handle, owner) { }
+    internal RadialGradient(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new radial gradient cairo_pattern_t between the two circles defined by (cx0, cy0, radius0)
@@ -24,7 +25,7 @@ public sealed unsafe class RadialGradient : Gradient
     /// <param name="cy1">y coordinate for the center of the end circle</param>
     /// <param name="radius1">radius of the end circle</param>
     public RadialGradient(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1)
-        : base(cairo_pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1), owner: true) { }
+        : base(cairo_pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1)) { }
 
     /// <summary>
     /// Gets the gradient endpoint circles for a radial gradient, each specified as a center

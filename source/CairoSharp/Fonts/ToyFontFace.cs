@@ -27,7 +27,7 @@ public sealed unsafe class ToyFontFace : FontFace
     /// </para>
     /// </remarks>
     public ToyFontFace(string family, FontSlant slant = FontSlant.Normal, FontWeight weight = FontWeight.Normal)
-        : base(cairo_toy_font_face_create(family, slant, weight), owner: true) { }
+        : base(cairo_toy_font_face_create(family, slant, weight)) { }
 
     /// <summary>
     /// Gets the family name of a toy font.

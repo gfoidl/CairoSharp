@@ -124,11 +124,12 @@ public sealed unsafe class ScriptSurface : Device
         this.CheckDisposed();
 
         void* handle = cairo_script_surface_create(this.Handle, content, width, height);
-        return new Surface(handle, owner: true);
+        return new Surface(handle, isOwnedByCairo: false);
     }
 
     /// <summary>
-    /// Create a proxy surface that will render to target and record the operations to device.
+    /// Create a proxy surface that will render to <paramref name="target"/> and record the operations to device
+    /// (this instance).
     /// </summary>
     /// <param name="target">a target surface to wrap</param>
     /// <returns>
@@ -141,7 +142,7 @@ public sealed unsafe class ScriptSurface : Device
         ArgumentNullException.ThrowIfNull(target);
 
         void* handle = cairo_script_surface_create_for_target(this.Handle, target.Handle);
-        return new Surface(handle, owner: true);
+        return new Surface(handle, isOwnedByCairo: false);
     }
 
     /// <summary>

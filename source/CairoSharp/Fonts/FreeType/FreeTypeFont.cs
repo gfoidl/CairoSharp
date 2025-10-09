@@ -13,9 +13,7 @@ namespace Cairo.Fonts.FreeType;
 /// </remarks>
 public sealed unsafe class FreeTypeFont : FontFace
 {
-
 #pragma warning disable CS1584 // XML comment has syntactically incorrect cref attribute
-
 #pragma warning disable CS1658 // Warning is overriding an error
     /// <summary>
     /// Creates a new font face for the FreeType font backend from a pre-opened
@@ -47,10 +45,9 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// for an example on how one might correctly couple the lifetime of the FreeType face object to the <see cref="FontFace"/>.
     /// </para>
     /// </remarks>
-    public FreeTypeFont(IntPtr face, int loadFlags)
+    public FreeTypeFont(IntPtr face, int loadFlags) : base(cairo_ft_font_face_create_for_ft_face(face.ToPointer(), loadFlags)) { }
 #pragma warning restore CS1658 // Warning is overriding an error
 #pragma warning restore CS1584 // XML comment has syntactically incorrect cref attribute
-        : base(cairo_ft_font_face_create_for_ft_face(face.ToPointer(), loadFlags), owner: true) { }
 
     /// <summary>
     /// Creates a new font face for the FreeType font backend based on a fontconfig pattern.
@@ -86,8 +83,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// FT_Face to that of the cairo font-face.
     /// </para>
     /// </remarks>
-    public FreeTypeFont(IntPtr pattern)
-        : base(cairo_ft_font_face_create_for_pattern(pattern.ToPointer()), owner: true) { }
+    public FreeTypeFont(IntPtr pattern) : base(cairo_ft_font_face_create_for_pattern(pattern.ToPointer())) { }
 
     /// <summary>
     /// Add options to a FcPattern based on a <see cref="FontOptions"/> font options object.

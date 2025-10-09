@@ -16,8 +16,8 @@ namespace Cairo.Surfaces.XCB;
 /// </remarks>
 public sealed unsafe class XCBSurface : Surface
 {
-    internal XCBSurface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal XCBSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates an XCB surface that draws to the given drawable. The way that colors are represented
@@ -31,19 +31,14 @@ public sealed unsafe class XCBSurface : Surface
     /// </param>
     /// <param name="widht">the current width of drawable </param>
     /// <param name="height">the current height of drawable </param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// This constructor always returns a valid pointer, but it will return a pointer to a "nil" surface
     /// if an error such as out of memory occurs. You can use <see cref="Surface.Status"/>
     /// to check for this.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public XCBSurface(IntPtr connection, uint drawable, IntPtr visual, int widht, int height, bool throwOnConstructionError = true)
-        : base(cairo_xcb_surface_create(connection.ToPointer(), drawable, visual.ToPointer(), widht, height), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public XCBSurface(IntPtr connection, uint drawable, IntPtr visual, int widht, int height)
+        : base(cairo_xcb_surface_create(connection.ToPointer(), drawable, visual.ToPointer(), widht, height)) { }
 
     /// <summary>
     /// Creates an XCB surface that draws to the given bitmap. This will be drawn to as a <see cref="Format.A1"/> object.
@@ -53,9 +48,6 @@ public sealed unsafe class XCBSurface : Surface
     /// <param name="screen">the XCB screen associated with bitmap </param>
     /// <param name="width">the current width of bitmap </param>
     /// <param name="height">the current height of bitmap </param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <returns>
     /// a pointer to the newly created surface. The caller owns the surface and should call <see cref="CairoObject.Dispose()"/>
     /// when done with it.
@@ -64,13 +56,11 @@ public sealed unsafe class XCBSurface : Surface
     /// such as out of memory occurs. You can use <see cref="Surface.Status"/> to check for this.
     /// </para>
     /// </returns>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public static XCBSurface FromBitmap(IntPtr connection, uint bitmap, IntPtr screen, int width, int height, bool throwOnConstructionError = true)
+    /// <exception cref="CairoException">when construction fails</exception>
+    public static XCBSurface FromBitmap(IntPtr connection, uint bitmap, IntPtr screen, int width, int height)
     {
         void* handle = cairo_xcb_surface_create_for_bitmap(connection.ToPointer(), bitmap, screen.ToPointer(), width, height);
-        return new XCBSurface(handle, owner: true, throwOnConstructionError);
+        return new XCBSurface(handle);
     }
 
     /// <summary>
@@ -86,9 +76,6 @@ public sealed unsafe class XCBSurface : Surface
     /// </param>
     /// <param name="width">the current width of drawable </param>
     /// <param name="height">the current height of drawable </param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// Note: If drawable is a Window, then the property <see cref="SetSize"/> must be called whenever
     /// the size of the window changes.
@@ -98,11 +85,9 @@ public sealed unsafe class XCBSurface : Surface
     /// children will be included.
     /// </para>
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public XCBSurface(IntPtr connection, IntPtr screen, uint drawable, IntPtr format, int width, int height, bool throwOnConstructionError = true)
-        : base(cairo_xcb_surface_create_with_xrender_format(connection.ToPointer(), screen.ToPointer(), drawable, format.ToPointer(), width, height), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public XCBSurface(IntPtr connection, IntPtr screen, uint drawable, IntPtr format, int width, int height)
+        : base(cairo_xcb_surface_create_with_xrender_format(connection.ToPointer(), screen.ToPointer(), drawable, format.ToPointer(), width, height)) { }
 
     /// <summary>
     /// Informs cairo of the new size of the XCB drawable underlying the surface. For a

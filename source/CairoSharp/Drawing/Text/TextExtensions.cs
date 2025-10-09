@@ -148,7 +148,7 @@ public static unsafe class TextExtensions
         }
 
         /// <summary>
-        /// Replaces the current <see cref="FontFace"/> object in the <see cref="CairoContext"/>with
+        /// Replaces the current <see cref="FontFace"/> object in the <see cref="CairoContext"/> with
         /// <see cref="FontFace"/>. The replaced font face in the <see cref="CairoContext"/> will be destroyed
         /// if there are no other references to it.
         /// <para>
@@ -162,7 +162,7 @@ public static unsafe class TextExtensions
                 cr.CheckDisposed();
 
                 void* handle = cairo_get_font_face(cr.Handle);
-                return FontFace.Lookup(handle, owner: false)!;
+                return FontFace.Lookup(handle, isOwnedByCairo: true)!;
             }
             set
             {
@@ -185,7 +185,7 @@ public static unsafe class TextExtensions
                 cr.CheckDisposed();
 
                 void* handle = cairo_get_scaled_font(cr.Handle);
-                return ScaledFont.Lookup(handle)!;
+                return ScaledFont.Lookup(handle, isOwnedByCairo: true)!;
             }
             set
             {

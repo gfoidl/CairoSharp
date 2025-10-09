@@ -13,7 +13,7 @@ namespace Cairo.Drawing.Regions;
 /// </remarks>
 public sealed unsafe class Region : CairoObject, IEquatable<Region>
 {
-    private Region(void* handle) : base(handle)
+    private Region(void* handle, bool isOwnedByCairo = false) : base(handle, isOwnedByCairo)
         => this.Status.ThrowIfNotSuccess();
 
     /// <summary>
@@ -47,12 +47,15 @@ public sealed unsafe class Region : CairoObject, IEquatable<Region>
     /// Allocates a new region object copying the area from this one.
     /// </summary>
     /// <returns>A newly allocated <see cref="Region"/>.</returns>
+    /// <remarks>
+    /// Free with <see cref="CairoObject.Dispose()"/>.
+    /// </remarks>
     public Region Copy()
     {
         this.CheckDisposed();
 
         void* handle = cairo_region_copy(this.Handle);
-        Region region = new(handle);
+        Region region = new(handle, isOwnedByCairo: false);
 
         region.Status.ThrowIfNotSuccess();
         return region;

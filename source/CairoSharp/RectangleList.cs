@@ -10,7 +10,7 @@ namespace Cairo;
 /// </summary>
 public sealed unsafe class RectangleList : CairoObject
 {
-    internal RectangleList(RectangleListRaw* handle) : base(handle, allowNullPointer: true) { }
+    internal RectangleList(RectangleListRaw* handle) : base(handle) { }
 
     protected override void DisposeCore(void* handle) => cairo_rectangle_list_destroy(handle);
 

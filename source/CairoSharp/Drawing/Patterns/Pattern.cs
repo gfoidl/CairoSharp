@@ -19,11 +19,12 @@ namespace Cairo.Drawing.Patterns;
 /// </remarks>
 public unsafe class Pattern : CairoObject
 {
-    protected internal Pattern(void* handle, bool owner) : base(handle)
+    protected internal Pattern(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfNotSuccess();
 
-        if (!owner)
+        if (isOwnedByCairo && needsDestroy)
         {
             cairo_pattern_reference(handle);
         }
@@ -33,8 +34,13 @@ public unsafe class Pattern : CairoObject
     {
         cairo_pattern_destroy(handle);
 
-        uint rc = cairo_pattern_get_reference_count(handle);
-        Debug.WriteLine($"Pattern 0x{(nint)handle}: reference count = {rc}");
+        PrintDebugInfo(handle);
+        [Conditional("DEBUG")]
+        static void PrintDebugInfo(void* handle)
+        {
+            uint rc = cairo_pattern_get_reference_count(handle);
+            Debug.WriteLine($"Pattern 0x{(nint)handle}: reference count = {rc}");
+        }
     }
 
     /// <summary>
@@ -221,7 +227,7 @@ public unsafe class Pattern : CairoObject
         }
     }
 
-    internal static Pattern? Lookup(void* pattern, bool owner = false)
+    internal static Pattern? Lookup(void* pattern, bool isOwnedByCairo, bool needsDestroy = true)
     {
         if (pattern is null)
         {
@@ -232,13 +238,13 @@ public unsafe class Pattern : CairoObject
 
         return patternType switch
         {
-            PatternType.Solid        => new SolidPattern  (pattern, owner),
-            PatternType.Surface      => new SurfacePattern(pattern, owner),
-            PatternType.Linear       => new LinearGradient(pattern, owner),
-            PatternType.Radial       => new RadialGradient(pattern, owner),
-            PatternType.Mesh         => new Mesh          (pattern, owner),
-            PatternType.RasterSource => new RasterSource  (pattern, owner),
-            _                        => new Pattern       (pattern, owner)
+            PatternType.Solid        => new SolidPattern  (pattern, isOwnedByCairo, needsDestroy),
+            PatternType.Surface      => new SurfacePattern(pattern, isOwnedByCairo, needsDestroy),
+            PatternType.Linear       => new LinearGradient(pattern, isOwnedByCairo, needsDestroy),
+            PatternType.Radial       => new RadialGradient(pattern, isOwnedByCairo, needsDestroy),
+            PatternType.Mesh         => new Mesh          (pattern, isOwnedByCairo, needsDestroy),
+            PatternType.RasterSource => new RasterSource  (pattern, isOwnedByCairo, needsDestroy),
+            _                        => new Pattern       (pattern, isOwnedByCairo, needsDestroy)
         };
     }
 }

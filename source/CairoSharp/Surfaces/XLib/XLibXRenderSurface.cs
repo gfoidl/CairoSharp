@@ -17,8 +17,7 @@ namespace Cairo.Surfaces.XLib;
 /// </remarks>
 public sealed unsafe class XLibXRenderSurface : Surface
 {
-    internal XLibXRenderSurface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal XLibXRenderSurface(void* handle, bool isOwnedByCairo = false) : base(handle, isOwnedByCairo) { }
 
     /// <summary>
     /// Creates an Xlib surface that draws to the given drawable. The way that colors are represented
@@ -32,24 +31,19 @@ public sealed unsafe class XLibXRenderSurface : Surface
     /// </param>
     /// <param name="width">the current width of drawable.</param>
     /// <param name="height">the current height of drawable.</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// Note: If drawable is a Window, then the method <see cref="XLibSurface.SetSize(int, int)"/> must
     /// be called whenever the size of the window changes.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public XLibXRenderSurface(IntPtr display, Drawable drawable, IntPtr screen, IntPtr format, int width, int height, bool throwOnConstructionError = true)
-        : base(cairo_xlib_surface_create_with_xrender_format(display.ToPointer(), drawable, screen.ToPointer(), format.ToPointer(), width, height), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public XLibXRenderSurface(IntPtr display, Drawable drawable, IntPtr screen, IntPtr format, int width, int height)
+        : base(cairo_xlib_surface_create_with_xrender_format(display.ToPointer(), drawable, screen.ToPointer(), format.ToPointer(), width, height)) { }
 
     /// <summary>
     /// Gets the X Render picture format that surface uses for rendering with the X Render extension.
     /// </summary>
     /// <remarks>
-    /// If the surface was created by <see cref="XLibXRenderSurface(nint, Drawable, nint, nint, int, int, bool)"/>
+    /// If the surface was created by <see cref="XLibXRenderSurface(nint, Drawable, nint, nint, int, int)"/>
     /// originally, the return value is the format passed to that constructor.
     /// </remarks>
     public IntPtr XRenderFormat

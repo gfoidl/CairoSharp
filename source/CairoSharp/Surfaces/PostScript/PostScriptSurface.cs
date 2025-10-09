@@ -40,8 +40,8 @@ namespace Cairo.Surfaces.PostScript;
 /// </remarks>
 public sealed unsafe class PostScriptSurface : StreamSurface
 {
-    internal PostScriptSurface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal PostScriptSurface(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a PostScript surface of the specified size in points, that may be queried and used as a source,
@@ -49,21 +49,15 @@ public sealed unsafe class PostScriptSurface : StreamSurface
     /// </summary>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
-    /// See <see cref="PostScriptSurface(string?, double, double, bool)"/> for further information.
+    /// See <see cref="PostScriptSurface(string?, double, double)"/> for further information.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public PostScriptSurface(double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : this(null as string, widthInPoints, heightInPoints, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public PostScriptSurface(double widthInPoints, double heightInPoints) : this(null as string, widthInPoints, heightInPoints) { }
 
     /// <summary>
     /// Creates a PostScript surface of the specified size in points to be written to filename.
-    /// See <see cref="PostScriptSurface(Stream, double, double, bool)"/> for a more flexible mechanism for
+    /// See <see cref="PostScriptSurface(Stream, double, double)"/> for a more flexible mechanism for
     /// handling the PostScript output than simply writing it to a named file.
     /// </summary>
     /// <param name="fileName">
@@ -72,39 +66,29 @@ public sealed unsafe class PostScriptSurface : StreamSurface
     /// </param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// Note that the size of individual pages of the PostScript output can vary. See <see cref="SetSize"/>.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public PostScriptSurface(string? fileName, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(cairo_ps_surface_create(fileName, widthInPoints, heightInPoints), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public PostScriptSurface(string? fileName, double widthInPoints, double heightInPoints)
+        : base(cairo_ps_surface_create(fileName, widthInPoints, heightInPoints)) { }
 
     /// <summary>
     /// Creates a PostScript surface of the specified size in points to be written incrementally to the
-    /// stream represented by write_func and closure. See <see cref="PostScriptSurface(string?, double, double, bool)"/>
+    /// stream represented by write_func and closure. See <see cref="PostScriptSurface(string?, double, double)"/>
     /// for a more convenient way to simply direct the PostScript output to a named file.
     /// </summary>
     /// <param name="stream">The stream to which the PS content is written to</param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// Note that the size of individual pages of the PostScript output can vary. See <see cref="SetSize"/>.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
+    /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c></exception>
     /// <exception cref="ArgumentException"><paramref name="stream"/> is not writeable</exception>
-    public PostScriptSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream), throwOnConstructionError) { }
+    public PostScriptSurface(Stream stream, double widthInPoints, double heightInPoints)
+        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream)) { }
 
     /// <summary>
     /// Creates a PostScript surface of the specified size in points to be written incrementally via the
@@ -114,15 +98,10 @@ public sealed unsafe class PostScriptSurface : StreamSurface
     /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
+    /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
-    public PostScriptSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream), throwOnConstructionError) { }
+    public PostScriptSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints)
+        : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream)) { }
 
     /// <summary>
     /// Restricts the generated PostSript file to level. See <see cref="PostScriptLevelExtensions.GetSupportedLevels"/>
@@ -245,7 +224,7 @@ public sealed unsafe class PostScriptSurface : StreamSurface
     }
 
     /// <summary>
-    /// The <see cref="PdfSurface"/> can have multiple pages.
+    /// The <see cref="PostScriptSurface"/> can have multiple pages.
     /// </summary>
     /// <remarks>
     /// See <see cref="Surface.ShowPage"/> / <see cref="Surface.CopyPage"/>.

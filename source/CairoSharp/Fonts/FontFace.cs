@@ -20,15 +20,12 @@ namespace Cairo.Fonts;
 /// </remarks>
 public unsafe class FontFace : CairoObject
 {
-    protected FontFace(void* handle, bool owner, bool throwOnConstructionError = true, ReferenceFunc referenceFunc = null)
-        : base(handle)
+    protected internal FontFace(void* handle, bool isOwnedByCairo = false, ReferenceFunc referenceFunc = null)
+        : base(handle, isOwnedByCairo)
     {
-        if (throwOnConstructionError)
-        {
-            this.Status.ThrowIfNotSuccess();
-        }
+        this.Status.ThrowIfNotSuccess();
 
-        if (!owner)
+        if (isOwnedByCairo)
         {
             if (referenceFunc is null)
             {
@@ -45,8 +42,13 @@ public unsafe class FontFace : CairoObject
     {
         cairo_font_face_destroy(handle);
 
-        uint rc = cairo_font_face_get_reference_count(handle);
-        Debug.WriteLine($"FontFace 0x{(nint)handle}: reference count = {rc}");
+        PrintDebugInfo(handle);
+        [Conditional("DEBUG")]
+        static void PrintDebugInfo(void * handle)
+        {
+            uint rc = cairo_font_face_get_reference_count(handle);
+            Debug.WriteLine($"FontFace 0x{(nint)handle}: reference count = {rc}");
+        }
     }
 
     /// <summary>
@@ -126,13 +128,13 @@ public unsafe class FontFace : CairoObject
         return cairo_font_face_get_user_data(this.Handle, ref key);
     }
 
-    internal static FontFace? Lookup(void* handle, bool owner = false)
+    internal static FontFace? Lookup(void* handle, bool isOwnedByCairo)
     {
         if (handle is null)
         {
             return null;
         }
 
-        return new FontFace(handle, owner);
+        return new FontFace(handle, isOwnedByCairo);
     }
 }

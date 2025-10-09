@@ -28,7 +28,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// <summary>
     /// Creates a new <see cref="CairoContext"/> with all graphics state parameters set to default
     /// values and with target as a target surface. The target surface should be constructed with
-    /// a backend-specific function such as <see cref="Surfaces.Images.ImageSurface.ImageSurface(Format, int, int, bool)"/>
+    /// a backend-specific function such as <see cref="Surfaces.Images.ImageSurface.ImageSurface(Format, int, int)"/>
     /// (or any other cairo_backend_surface_create() variant).
     /// </summary>
     /// <param name="target">target surface for the context</param>
@@ -40,7 +40,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// If you attempt to target a surface which does not support writing (such as cairo_mime_surface_t)
     /// then an exception with <see cref="Status.WriteError"/> will be raised.
     /// </exception>
-    public CairoContext(Surface target) : this(CreateCore(target), owner: true) { }
+    public CairoContext(Surface target) : this(CreateCore(target), isOwnedByCairo: false) { }
 
     [StackTraceHidden]
     private static void* CreateCore(Surface target)
@@ -49,11 +49,12 @@ public sealed unsafe class CairoContext : CairoObject
         return cairo_create(target.Handle);
     }
 
-    internal CairoContext(void* handle, bool owner) : base(handle)
+    internal CairoContext(void* handle, bool isOwnedByCairo) : base(handle, isOwnedByCairo)
     {
-        this.Status.ThrowIfNotSuccess();
+        this.Status.ThrowIfStatus(Status.NoMemory);
+        this.Status.ThrowIfStatus(Status.WriteError);
 
-        if (!owner)
+        if (isOwnedByCairo)
         {
             cairo_reference(handle);
         }
@@ -63,8 +64,13 @@ public sealed unsafe class CairoContext : CairoObject
     {
         cairo_destroy(this.Handle);
 
-        uint rc = cairo_get_reference_count(handle);
-        Debug.WriteLine($"CairoContext 0x{(nint)handle}: reference count = {rc}");
+        PrintDebugInfo(handle);
+        [Conditional("DEBUG")]
+        static void PrintDebugInfo(void* handle)
+        {
+            uint rc = cairo_get_reference_count(handle);
+            Debug.WriteLine($"CairoContext 0x{(nint)handle}: reference count = {rc}");
+        }
     }
 
 
@@ -141,7 +147,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// surface is indicated by <see cref="Surface.Status"/> != <see cref="Status.Success"/>
     /// (or by the convenience <see cref="Surface.IsNilSurface"/> property).
     /// <para>
-    /// This object is owned by cairo.
+    /// This object is owned by cairo. When done using it, call <see cref="CairoObject.Dispose()"/>.
     /// </para>
     /// </remarks>
     public Surface Target
@@ -149,7 +155,7 @@ public sealed unsafe class CairoContext : CairoObject
         get
         {
             this.CheckDisposed();
-            return Surface.Lookup(cairo_get_target(this.Handle), owner: false);
+            return Surface.Lookup(cairo_get_target(this.Handle), isOwnedByCairo: true);
         }
     }
 
@@ -166,11 +172,11 @@ public sealed unsafe class CairoContext : CairoObject
     /// occlude each other), and then blend the result with translucence onto the destination.
     /// </para>
     /// <para>
-    /// Groups can be nested arbitrarily deep by making balanced calls to <see cref="PushGroup"/> / <see cref="PopGroup"/>.
+    /// Groups can be nested arbitrarily deep by making balanced calls to <see cref="PushGroup()"/> / <see cref="PopGroup"/>.
     /// Each call pushes / pops the new target group onto / from a stack.
     /// </para>
     /// <para>
-    /// The <see cref="PushGroup"/> method calls <see cref="Save"/> so that any changes to the
+    /// The <see cref="PushGroup()"/> method calls <see cref="Save"/> so that any changes to the
     /// graphics state will not be visible outside the group, (the <see cref="PopGroup"/> method call
     /// <see cref="Restore"/>).
     /// </para>
@@ -207,7 +213,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// <param name="content">a <see cref="Content"/> indicating the type of group that will be created</param>
     /// <remarks>
     /// The group will have a content type of content. The ability to control this content
-    /// type is the only distinction between this method and <see cref="PushGroup"/> which you
+    /// type is the only distinction between this method and <see cref="PushGroup()"/> which you
     /// should see for a more detailed description of group rendering.
     /// </remarks>
     public void PushGroupWithContent(Content content)
@@ -217,7 +223,19 @@ public sealed unsafe class CairoContext : CairoObject
     }
 
     /// <summary>
-    /// Terminates the redirection begun by a call to <see cref="PushGroup"/> or
+    /// Temporarily redirects drawing to an intermediate surface known as a group.
+    /// The redirection lasts until the group is completed by a call to <see cref="PopGroup"/> or
+    /// <see cref="PopGroupToSource"/>. These calls provide the result of any drawing to the
+    /// group as a pattern, (either as an explicit object, or set as the source pattern).
+    /// </summary>
+    /// <param name="content">a <see cref="Content"/> indicating the type of group that will be created</param>
+    /// <remarks>
+    /// This is a convenience overload, and the same as a call to <see cref="PushGroupWithContent(Content)"/>.
+    /// </remarks>
+    public void PushGroup(Content content) => this.PushGroupWithContent(content);
+
+    /// <summary>
+    /// Terminates the redirection begun by a call to <see cref="PushGroup()"/> or
     /// <see cref="PushGroupWithContent(Content)"/> and returns a new pattern containing the
     /// results of all drawing operations performed to the group.
     /// </summary>
@@ -228,7 +246,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// </returns>
     /// <remarks>
     /// The <see cref="PopGroup"/> method calls <see cref="Restore"/>, (balancing a call to <see cref="Save"/>
-    /// by the <see cref="PushGroup"/> method), so that any changes to the graphics state will
+    /// by the <see cref="PushGroup()"/> method), so that any changes to the graphics state will
     /// not be visible outside the group.
     /// </remarks>
     public Pattern PopGroup()
@@ -238,11 +256,11 @@ public sealed unsafe class CairoContext : CairoObject
         void* handle = cairo_pop_group(this.Handle);
 
         Debug.Assert(handle is not null);
-        return Pattern.Lookup(handle, owner: true)!;
+        return Pattern.Lookup(handle, isOwnedByCairo: false)!;
     }
 
     /// <summary>
-    /// Terminates the redirection begun by a call to <see cref="PushGroup"/>or
+    /// Terminates the redirection begun by a call to <see cref="PushGroup()"/>or
     /// <see cref="PushGroupWithContent(Content)"/> and installs the resulting pattern as
     /// the source pattern in the given cairo context.
     /// </summary>
@@ -256,7 +274,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// pointer to the pattern.
     /// <para>
     /// The <see cref="PopGroup"/> method calls <see cref="Restore"/>, (balancing a call to <see cref="Save"/>
-    /// by the <see cref="PushGroup"/> method), so that any changes to the graphics state will
+    /// by the <see cref="PushGroup()"/> method), so that any changes to the graphics state will
     /// not be visible outside the group.
     /// </para>
     /// </remarks>
@@ -269,11 +287,11 @@ public sealed unsafe class CairoContext : CairoObject
     /// <summary>
     /// Gets the current destination surface for the context. This is either the original target
     /// surface as passed to <see cref="CairoContext(Surface)"/> or the target surface for
-    /// the current group as started by the most recent call to <see cref="PushGroup"/> or
+    /// the current group as started by the most recent call to <see cref="PushGroup()"/> or
     /// <see cref="PushGroupWithContent(Content)"/>.
     /// </summary>
     /// <remarks>
-    /// the target surface. This object is owned by cairo.
+    /// This object is owned by cairo. When done using it, call <see cref="CairoObject.Dispose()"/>.
     /// <para>
     /// This property will always return a valid pointer, but the result can be a "nil" surface if cr is
     /// already in an error state, (ie. <see cref="Status"/> != <see cref="Status.Success"/>. A nil
@@ -288,7 +306,7 @@ public sealed unsafe class CairoContext : CairoObject
             this.CheckDisposed();
 
             void* handle = cairo_get_group_target(this.Handle);
-            return Surface.Lookup(handle, owner: false);
+            return Surface.Lookup(handle, isOwnedByCairo: true);
         }
     }
 
@@ -380,16 +398,6 @@ public sealed unsafe class CairoContext : CairoObject
     }
 
     /// <summary>
-    /// Convenience property for <see cref="GetSource"/> / <see cref="SetSource(Pattern)"/>.
-    /// </summary>
-    [DisallowNull]
-    public Pattern? Source
-    {
-        get => this.GetSource();
-        set => this.SetSource(value);
-    }
-
-    /// <summary>
     /// This is a convenience method for <see cref="SetSourceSurface(Surface, double, double)"/>.
     /// </summary>
     /// <param name="surface">a surface to be used to set the source pattern</param>
@@ -413,7 +421,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// Other than the initial translation pattern matrix, as described above, all other pattern
     /// attributes, (such as its extend mode), are set to the default values as in
     /// <see cref="SurfacePattern(Surface)"/>. The resulting pattern can be queried with
-    /// <see cref="Source"/> so that these attributes can be modified if desired, (eg. to
+    /// <see cref="GetSource"/> so that these attributes can be modified if desired, (eg. to
     /// create a repeating pattern with <see cref="Pattern.Extend"/>).
     /// </para>
     /// </remarks>
@@ -428,13 +436,15 @@ public sealed unsafe class CairoContext : CairoObject
     /// <summary>
     /// Gets the current source pattern for cr.
     /// </summary>
-    /// <returns> the current source pattern. This object is owned by cairo.</returns>
+    /// <returns>
+    /// the current source pattern. This object is owned by cairo. When done using it, call <see cref="CairoObject.Dispose()"/>.
+    /// </returns>
     public Pattern? GetSource()
     {
         this.CheckDisposed();
 
         void* handle = cairo_get_source(this.Handle);
-        return Pattern.Lookup(handle, owner: false);
+        return Pattern.Lookup(handle, isOwnedByCairo: true);
     }
 
     /// <summary>

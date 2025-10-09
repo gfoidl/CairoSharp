@@ -15,8 +15,8 @@ namespace Cairo.Surfaces.Images;
 /// </remarks>
 public sealed unsafe class ImageSurface : Surface
 {
-    internal ImageSurface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal ImageSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates an image surface of the specified format and dimensions. Initially the surface
@@ -27,17 +27,12 @@ public sealed unsafe class ImageSurface : Surface
     /// <param name="format">format of pixels in the surface to create</param>
     /// <param name="width">width of the surface, in pixels</param>
     /// <param name="height">height of the surface, in pixels</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// The caller owns the surface and should call <see cref="CairoObject.Dispose()"/> when done with it.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public ImageSurface(Format format, int width, int height, bool throwOnConstructionError = true)
-        : base(cairo_image_surface_create(format, width, height), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public ImageSurface(Format format, int width, int height)
+        : base(cairo_image_surface_create(format, width, height)) { }
 
     /// <summary>
     /// Creates an image surface for the provided pixel data. The output buffer must be kept
@@ -59,9 +54,6 @@ public sealed unsafe class ImageSurface : Surface
     /// This value should always be computed by <see cref="FormatExtensions.GetStrideForWidth(Format, int)"/>
     /// before allocating the data buffer.
     /// </param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// Note that the stride may be larger than width * bytes_per_pixel to provide proper alignment
     /// for each pixel and row. This alignment is required to allow high-performance rendering
@@ -69,19 +61,14 @@ public sealed unsafe class ImageSurface : Surface
     /// with the desired format and maximum image width value, and then use the resulting stride value to allocate
     /// the data and to create the image surface.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public ImageSurface(ReadOnlySpan<byte> data, Format format, int widht, int height, int stride, bool throwOnConstructionError = true)
-        : base(cairo_image_surface_create_for_data(data, format, widht, height, stride), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public ImageSurface(ReadOnlySpan<byte> data, Format format, int widht, int height, int stride)
+        : base(cairo_image_surface_create_for_data(data, format, widht, height, stride)) { }
 
     /// <summary>
     /// Creates a new image surface and initializes the contents to the given PNG file.
     /// </summary>
     /// <param name="pngFile">name of PNG file to load. On Windows this filename is encoded in UTF-8.</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// a new cairo_surface_t initialized with the contents of the PNG file, or a "nil" surface if any error
     /// occurred. A nil surface can be checked for with <see cref="Surface.Status"/> which may return one
@@ -92,11 +79,8 @@ public sealed unsafe class ImageSurface : Surface
     /// status on the context upon completion using <see cref="CairoContext.Status"/>.
     /// </para>
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public ImageSurface(string pngFile, bool throwOnConstructionError = true)
-        : base(cairo_image_surface_create_from_png(pngFile), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public ImageSurface(string pngFile) : base(cairo_image_surface_create_from_png(pngFile)) { }
 
     /// <summary>
     /// Creates  a new <see cref="ImageSurface"/> initialized with the contents of the PNG data or a "nil" surface
@@ -105,18 +89,12 @@ public sealed unsafe class ImageSurface : Surface
     /// following values: <see cref="Status.NoMemory"/>, <see cref="Status.ReadError"/>, <see cref="Status.PngError"/>
     /// </summary>
     /// <param name="pngData">The PNG data</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// Alternatively, you can allow errors to propagate through the drawing operations and check the status
     /// on the context upon completion using <see cref="CairoContext.Status"/>.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public ImageSurface(ReadOnlySpan<byte> pngData, bool throwOnConstructionError = true)
-        : base(PngHelper.CreateForPngData(pngData), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public ImageSurface(ReadOnlySpan<byte> pngData) : base(PngHelper.CreateForPngData(pngData)) { }
 
     /// <summary>
     /// Get a pointer to the data of the image surface, for direct inspection or modification.

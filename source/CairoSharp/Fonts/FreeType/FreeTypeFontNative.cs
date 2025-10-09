@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using unsafe FT_Face = void*;
 
 namespace Cairo.Fonts.FreeType;
 
@@ -10,7 +11,7 @@ internal static unsafe partial class FreeTypeFontNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_ft_font_face_create_for_ft_face(void* face, int load_flags);
+    internal static partial void* cairo_ft_font_face_create_for_ft_face(FT_Face face, int load_flags);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -22,7 +23,7 @@ internal static unsafe partial class FreeTypeFontNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_ft_scaled_font_lock_face(void* scaled_font);
+    internal static partial FT_Face cairo_ft_scaled_font_lock_face(void* scaled_font);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

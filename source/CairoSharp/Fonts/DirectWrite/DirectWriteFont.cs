@@ -33,8 +33,7 @@ public sealed unsafe class DirectWriteFont : FontFace
     /// such as AddFontMemResourceEx().
     /// </para>
     /// </remarks>
-    public DirectWriteFont(IntPtr dwriteFontFace)
-        : base(CreateCore(dwriteFontFace), owner: true) { }
+    public DirectWriteFont(IntPtr dwriteFontFace) : base(CreateCore(dwriteFontFace)) { }
 
     private static void* CreateCore(IntPtr dwriteFontFace)
     {

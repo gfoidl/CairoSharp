@@ -13,11 +13,11 @@ public abstract unsafe class StreamSurface : Surface
 {
     protected GCHandle _stateHandle;        // mutable struct
 
-    protected StreamSurface(void* handle, bool owner, bool throwOnConstructionError)
-        : base(handle, owner, throwOnConstructionError) { }
+    protected StreamSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
-    protected StreamSurface((IntPtr Handle, GCHandle StateHandle) arg, bool throwOnConstructionError)
-        : base(arg.Handle.ToPointer(), owner: true, throwOnConstructionError)
+    protected StreamSurface((IntPtr Handle, GCHandle StateHandle) arg, bool isOwnedByCairo = false)
+        : base(arg.Handle.ToPointer(), isOwnedByCairo)
         => _stateHandle = arg.StateHandle;
 
     protected override void DisposeCore(void* handle)
@@ -108,6 +108,12 @@ public abstract unsafe class StreamSurface : Surface
         }
     }
 
+    /// <summary>
+    /// The callback to be invoked with the content to be written.
+    /// </summary>
+    /// <typeparam name="T">type of <paramref name="state"/></typeparam>
+    /// <param name="state">state to be passed into the callback, as given in the constructor</param>
+    /// <param name="data">the data to be written</param>
     public delegate void Callback<T>(T? state, ReadOnlySpan<byte> data);
     private record CallbackState<T>(T? State, Callback<T> Callback);
 }

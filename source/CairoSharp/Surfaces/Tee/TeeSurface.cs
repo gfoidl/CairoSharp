@@ -22,8 +22,7 @@ public sealed unsafe class TeeSurface : Surface
     /// Operations performed on the tee surface will be replayed on any surface added to it.
     /// </para>
     /// </remarks>
-    public TeeSurface(Surface primary)
-        : base(cairo_tee_surface_create(primary.Handle), owner: true, throwOnConstructionError: true) { }
+    public TeeSurface(Surface primary) : base(cairo_tee_surface_create(primary.Handle)) { }
 
     /// <summary>
     /// Adds a new target surface to the list of replicas of a tee surface.
@@ -44,7 +43,7 @@ public sealed unsafe class TeeSurface : Surface
     /// <param name="index">the index of the replica to retrieve</param>
     /// <returns>the surface at the given index</returns>
     /// <remarks>
-    /// The primary surface used to create the cairo_tee_surface_t is always set at the zero index.
+    /// The primary surface used to create the <see cref="TeeSurface"/> is always set at the zero index.
     /// </remarks>
     public Surface this[int index]
     {
@@ -53,7 +52,7 @@ public sealed unsafe class TeeSurface : Surface
             this.CheckDisposed();
 
             void* handle = cairo_tee_surface_index(this.Handle, (uint)index);
-            return new Surface(handle, owner: true);
+            return new Surface(handle, isOwnedByCairo: true, needsDestroy: false);
         }
     }
 

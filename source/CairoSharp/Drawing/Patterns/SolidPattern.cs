@@ -9,7 +9,8 @@ namespace Cairo.Drawing.Patterns;
 /// </summary>
 public sealed unsafe class SolidPattern : Pattern
 {
-    internal SolidPattern(void* handle, bool owner) : base(handle, owner) { }
+    internal SolidPattern(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new <see cref="SolidPattern"/> corresponding to an opaque color. The color
@@ -20,7 +21,7 @@ public sealed unsafe class SolidPattern : Pattern
     /// <param name="green">green component of the color</param>
     /// <param name="blue">blue component of the color</param>
     public SolidPattern(double red, double green, double blue)
-        : base(cairo_pattern_create_rgb(red, green, blue), owner: true) { }
+        : base(cairo_pattern_create_rgb(red, green, blue)) { }
 
     /// <summary>
     /// Creates a new <see cref="SolidPattern"/> corresponding to a translucent color. The color
@@ -32,7 +33,7 @@ public sealed unsafe class SolidPattern : Pattern
     /// <param name="blue">blue component of the color</param>
     /// <param name="alpha">alpha component of the color</param>
     public SolidPattern(double red, double green, double blue, double alpha)
-        : base(cairo_pattern_create_rgba(red, green, blue, alpha), owner: true) { }
+        : base(cairo_pattern_create_rgba(red, green, blue, alpha)) { }
 
     /// <summary>
     /// Creates a new <see cref="SolidPattern"/> corresponding to a translucent color.
@@ -51,8 +52,7 @@ public sealed unsafe class SolidPattern : Pattern
     public SolidPattern(Color color, bool ignoreAlpha)
         : base(ignoreAlpha
             ? cairo_pattern_create_rgb(color.Red, color.Green, color.Blue)
-            : cairo_pattern_create_rgba(color.Red, color.Green, color.Blue, color.Alpha),
-            owner: true)
+            : cairo_pattern_create_rgba(color.Red, color.Green, color.Blue, color.Alpha))
     { }
 
     /// <summary>

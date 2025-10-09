@@ -14,7 +14,8 @@ namespace Cairo.Fonts;
 /// </remarks>
 public sealed unsafe class FontOptions : CairoObject, IEquatable<FontOptions>
 {
-    internal FontOptions(void* handle) : base(handle) => _customColorPaletteEntry = new CustomColorPaletteEntry(this);
+    internal FontOptions(void* handle, bool isOwnedByCairo = false) : base(handle, isOwnedByCairo)
+        => _customColorPaletteEntry = new CustomColorPaletteEntry(this);
 
     /// <summary>
     /// Allocates a new font options object with all options initialized to default values.
@@ -26,20 +27,23 @@ public sealed unsafe class FontOptions : CairoObject, IEquatable<FontOptions>
     /// </remarks>
     public FontOptions() : this(cairo_font_options_create()) { }
 
-    protected override unsafe void DisposeCore(void* handle) => cairo_font_options_destroy(handle);
+    protected override void DisposeCore(void* handle) => cairo_font_options_destroy(handle);
 
     /// <summary>
     /// Allocates a new font options object copying the option values from original.
     /// </summary>
     /// <returns>
-    /// a newly allocated cairo_font_options_t. Free with <see cref="CairoObject.Dispose()"/>. This method
-    /// always returns a valid pointer; if memory cannot be allocated, then a special error object is
-    /// returned where all operations on the object do nothing. You can check for this with <see cref="Status"/>.
+    /// a newly allocated <see cref="FontOptions"/>. Free with <see cref="CairoObject.Dispose()"/>.
     /// </returns>
+    /// <exception cref="CairoException">memory cannot be allocated</exception>
     public FontOptions Copy()
     {
         this.CheckDisposed();
-        return new FontOptions(cairo_font_options_copy(this.Handle));
+
+        FontOptions result = new(cairo_font_options_copy(this.Handle), isOwnedByCairo: false);
+        result.Status.ThrowIfStatus(Status.NoMemory);
+
+        return result;
     }
 
     /// <summary>

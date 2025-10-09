@@ -4,7 +4,7 @@ using static Cairo.Drawing.Text.TextNative;
 
 using System.Runtime.InteropServices;
 
-namespace Cairo.Fonts;
+namespace Cairo.Drawing.Text;
 
 /// <summary>
 /// The <see cref="Glyph"/> structure holds information about a single glyph when drawing or

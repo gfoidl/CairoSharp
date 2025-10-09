@@ -25,17 +25,11 @@ public sealed unsafe class QuartzSurface : Surface
     /// <param name="format">format of pixels in the surface to create</param>
     /// <param name="width">width of the surface, in pixels</param>
     /// <param name="height">height of the surface, in pixels</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// All Cairo operations, including those that require software rendering, will succeed on this surface.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public QuartzSurface(Format format, int width, int height, bool throwOnConstructionError = true)
-        : base(cairo_quartz_surface_create(format, (uint)width, (uint)height), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public QuartzSurface(Format format, int width, int height) : base(cairo_quartz_surface_create(format, (uint)width, (uint)height)) { }
 
     /// <summary>
     /// Creates a Quartz surface that wraps the given CGContext. The CGContext is assumed to
@@ -47,18 +41,13 @@ public sealed unsafe class QuartzSurface : Surface
     /// <param name="cgContext">the existing CGContext for which to create the surface</param>
     /// <param name="width">surface</param>
     /// <param name="height">height of the surface, in pixels</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
     /// All Cairo operations are implemented in terms of Quartz operations, as long as
     /// Quartz-compatible elements are used (such as Quartz fonts).
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public QuartzSurface(IntPtr cgContext, int width, int height, bool throwOnConstructionError = true)
-        : base(cairo_quartz_surface_create_for_cg_context(cgContext.ToPointer(), (uint)width, (uint)height), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public QuartzSurface(IntPtr cgContext, int width, int height)
+        : base(cairo_quartz_surface_create_for_cg_context(cgContext.ToPointer(), (uint)width, (uint)height)) { }
 
     /// <summary>
     /// Returns the CGContextRef that the given Quartz surface is backed by.
@@ -86,14 +75,8 @@ public sealed unsafe class QuartzSurface : Surface
     /// a cairo_quartz_surface.
     /// </summary>
     /// <param name="imageSurface">a cairo image surface to wrap with a quartz image surface</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public QuartzSurface(ImageSurface imageSurface, bool throwOnConstructionError = true)
-        : base(cairo_quartz_image_surface_create(imageSurface.Handle), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public QuartzSurface(ImageSurface imageSurface) : base(cairo_quartz_image_surface_create(imageSurface.Handle)) { }
 
     /// <summary>
     /// Returns a <see cref="ImageSurface"/> that refers to the same bits as the image of the quartz surface.
@@ -108,6 +91,11 @@ public sealed unsafe class QuartzSurface : Surface
 
         void* handle = cairo_quartz_image_surface_get_image(this.Handle);
 
-        return handle is not null ? new ImageSurface(handle, owner: true) : null;
+        if (handle is null)
+        {
+            return null;
+        }
+
+        return new ImageSurface(handle, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
     }
 }

@@ -26,12 +26,13 @@ namespace Cairo.Drawing.Patterns;
 /// </remarks>
 public sealed unsafe class Mesh : Pattern
 {
-    internal Mesh(void* handle, bool owner) : base(handle, owner) { }
+    internal Mesh(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Create a new mesh pattern.
     /// </summary>
-    public Mesh() : base(cairo_pattern_create_mesh(), owner: true) { }
+    public Mesh() : base(cairo_pattern_create_mesh()) { }
 
     /// <summary>
     /// Begin a patch in a mesh pattern.

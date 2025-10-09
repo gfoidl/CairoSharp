@@ -41,7 +41,7 @@ public sealed unsafe class RasterSource : Pattern
     /// <returns>a <see cref="Surface"/></returns>
     /// <remarks>
     /// For convenience the surface should probably be of image type, created with
-    /// <see cref="Surface.CreateSimilarImage(Format, int, int, bool)"/> for the target (which
+    /// <see cref="Surface.CreateSimilarImage(Format, int, int)"/> for the target (which
     /// enables the number of copies to be reduced during transfer to the device). Another option, might be to
     /// return a similar surface to the target for explicit handling by the application of a set of cached
     /// sources on the device. The region of sample data provided should be defined using
@@ -90,7 +90,8 @@ public sealed unsafe class RasterSource : Pattern
     private readonly State? _state;
     private GCHandle        _stateHandle;
 
-    internal RasterSource(void* handle, bool owner) : base(handle, owner) { }
+    internal RasterSource(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new user pattern for providing pixel data.
@@ -104,7 +105,7 @@ public sealed unsafe class RasterSource : Pattern
     /// <param name="height">maximum size of the sample area</param>
     /// <remarks>
     /// Note: with this overload <paramref name="userData"/> has to be provided, and the
-    /// raw / unmanaged delegates need to be used. <see cref="RasterSource(Content, int, int, Acquire)"/>
+    /// raw / unmanaged delegates need to be used. <see cref="RasterSource(object?, Content, int, int, Acquire)"/>
     /// allows the use of managed callbacks.
     /// <para>
     /// Use the setter functions to associate callbacks with the returned pattern.
@@ -112,7 +113,7 @@ public sealed unsafe class RasterSource : Pattern
     /// </para>
     /// </remarks>
     public RasterSource(IntPtr userData, Content content, int width, int height)
-        : base(cairo_pattern_create_raster_source(userData.ToPointer(), content, width, height), owner: true) { }
+        : base(cairo_pattern_create_raster_source(userData.ToPointer(), content, width, height)) { }
 
     /// <summary>
     /// Creates a new user pattern for providing pixel data.
@@ -217,7 +218,7 @@ public sealed unsafe class RasterSource : Pattern
     /// </param>
     /// <remarks>
     /// The acquire callback should create a surface (preferably an image surface created to
-    /// match the target using <see cref="Surface.CreateSimilarImage(Format, int, int, bool)"/>)
+    /// match the target using <see cref="Surface.CreateSimilarImage(Format, int, int)"/>)
     /// that defines at least the region of interest specified by extents. The surface is allowed to be
     /// the entire sample area, but if it does contain a subsection of the sample area, the surface extents
     /// should be provided by setting the device offset (along with its width and height) using
@@ -279,8 +280,9 @@ public sealed unsafe class RasterSource : Pattern
 
             Debug.Assert(state.Acquire is not null);
 
-            using Pattern? patternObj = Lookup(pattern);
-            using Surface? surfaceObj = Surface.Lookup(target);
+            // Here just wrapper objects, w/o memory management, thus no Dispose needed.
+            Pattern? patternObj = Pattern.Lookup(pattern, isOwnedByCairo: true, needsDestroy: false);
+            Surface? surfaceObj = Surface.Lookup(target , isOwnedByCairo: true, needsDestroy: false);
 
             Surface result = state.Acquire(patternObj, state.UserData, surfaceObj, ref extents);
             return result.Handle;

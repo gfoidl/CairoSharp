@@ -192,7 +192,7 @@ public sealed unsafe class UserFont : FontFace
         RenderGlyph?    renderColorGlyph,
         TextToGlyphs?   textToGlyphs,
         UnicodeToGlyph? unicodeToGlyph)
-        : base(cairo_user_font_face_create(), owner: true)
+        : base(cairo_user_font_face_create())
     {
         ArgumentNullException.ThrowIfNull(renderGlyph);
 
@@ -275,7 +275,7 @@ public sealed unsafe class UserFont : FontFace
             this.CheckDisposed();
 
             void* handle = cairo_user_scaled_font_get_foreground_marker(this.Handle);
-            return Pattern.Lookup(handle);
+            return Pattern.Lookup(handle, isOwnedByCairo: true);
         }
     }
 
@@ -311,7 +311,7 @@ public sealed unsafe class UserFont : FontFace
             this.CheckDisposed();
 
             void* handle = cairo_user_scaled_font_get_foreground_source(this.Handle);
-            return Pattern.Lookup(handle);
+            return Pattern.Lookup(handle, isOwnedByCairo: true);
         }
     }
 
@@ -332,8 +332,8 @@ public sealed unsafe class UserFont : FontFace
 
         Debug.Assert(state.Init is not null);
 
-        using ScaledFont sf        = new(scaledFont, owner: false);
-        using CairoContext context = new(cr        , owner: false);
+        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true);
+        using CairoContext context = new(cr        , isOwnedByCairo: true);
 
         return state.Init(sf, context, ref extents);
     }
@@ -342,8 +342,8 @@ public sealed unsafe class UserFont : FontFace
     {
         State state = GetState(scaledFont);
 
-        using ScaledFont sf        = new(scaledFont, owner: false);
-        using CairoContext context = new(cr        , owner: false);
+        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true);
+        using CairoContext context = new(cr        , isOwnedByCairo: true);
 
         return state.RenderGlyph(sf, (int)glyph.Value, context, ref extents);
     }
@@ -357,8 +357,8 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        using ScaledFont sf        = new(scaledFont, owner: false);
-        using CairoContext context = new(cr        , owner: false);
+        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true);
+        using CairoContext context = new(cr        , isOwnedByCairo: true);
 
         return state.RenderColorGlyph(sf, (int)glyph.Value, context, ref extents);
     }
@@ -381,7 +381,7 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        using ScaledFont sf    = new(scaledFont, owner: false);
+        using ScaledFont sf    = new(scaledFont, isOwnedByCairo: true);
         string text            = new((sbyte*)utf8, 0, utf8Len);
         bool useClusterMapping = clusters is not null;
 
@@ -427,7 +427,7 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        using ScaledFont sf = new(scaledFont, owner: false);
+        using ScaledFont sf = new(scaledFont, isOwnedByCairo: true);
         Status status       = state.UnicodeToGlyph(sf, (int)unicode.Value, out int gi);
 
         glyphIndex = new CULong((uint)gi);

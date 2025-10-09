@@ -31,7 +31,7 @@ public enum Status
 
     /// <summary>
     /// no saved group to pop, i.e. <see cref="CairoContext.PopGroup"/> without matching
-    /// <see cref="CairoContext.PushGroup"/> (Since 1.0)
+    /// <see cref="CairoContext.PushGroup()"/> (Since 1.0)
     /// </summary>
     InvalidPopGroup,
 

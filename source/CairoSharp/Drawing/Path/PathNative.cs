@@ -1,7 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
-using Cairo.Fonts;
+using Cairo.Drawing.Text;
 
 namespace Cairo.Drawing.Path;
 

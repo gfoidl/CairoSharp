@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Cairo.Utilities;
 
-public static unsafe class CairoDebug
+internal static unsafe class CairoDebug
 {
     private static ConcurrentDictionary<IntPtr, string>? s_traces;
 
@@ -36,16 +36,11 @@ public static unsafe class CairoDebug
         }
     }
 
-    public static void OnDisposed<T>(void* ptr, bool disposing) => OnDisposed<T>((nint)ptr, disposing);
-    public static void OnDisposed<T>(IntPtr obj, bool disposing) => OnDisposed(obj, disposing, typeof(T));
+    public static void OnDisposed<T>(void* ptr, bool disposing)         => OnDisposed<T>((nint)ptr, disposing);
+    public static void OnDisposed<T>(IntPtr obj, bool disposing)        => OnDisposed(obj, disposing, typeof(T));
     public static void OnDisposed(void* ptr, bool disposing, Type type) => OnDisposed((nint)ptr, disposing, type);
     public static void OnDisposed(IntPtr obj, bool disposing, Type type)
     {
-        if (disposing && !Enabled)
-        {
-            throw new InvalidOperationException();
-        }
-
         if (Environment.HasShutdownStarted)
         {
             return;

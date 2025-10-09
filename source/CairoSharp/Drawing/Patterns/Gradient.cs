@@ -7,7 +7,8 @@ namespace Cairo.Drawing.Patterns;
 /// <summary>
 /// <see cref="Gradient"/> is an abstract base class from which other <see cref="Pattern"/> classes derive.
 /// </summary>
-public abstract unsafe class Gradient(void* handle, bool owner) : Pattern(handle, owner)
+public abstract unsafe class Gradient(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
+    : Pattern(handle, isOwnedByCairo, needsDestroy)
 {
     /// <summary>
     /// Adds an opaque color stop to a gradient pattern. The offset specifies the location along

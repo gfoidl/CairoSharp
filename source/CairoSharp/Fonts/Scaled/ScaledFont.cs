@@ -1,7 +1,6 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Cairo.Drawing.Text;
 using static Cairo.Fonts.Scaled.ScaledFontNative;
 
@@ -16,10 +15,8 @@ namespace Cairo.Fonts.Scaled;
 /// </remarks>
 public sealed unsafe class ScaledFont : FontFace
 {
-    private readonly FontOptions? _fontOptions;
-
-    internal ScaledFont(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError, &cairo_scaled_font_reference) { }
+    internal ScaledFont(void* handle, bool isOwnedByCairo)
+        : base(handle, isOwnedByCairo, &cairo_scaled_font_reference) { }
 
     /// <summary>
     /// Creates a <see cref="ScaledFont"/> object from a font face and matrices that describe
@@ -37,15 +34,19 @@ public sealed unsafe class ScaledFont : FontFace
     /// Destroy with <see cref="CairoObject.Dispose()"/>.
     /// </remarks>
     public ScaledFont(FontFace fontFace, ref Matrix fontMatrix, ref Matrix ctm, FontOptions fontOptions)
-        : base(cairo_scaled_font_create(fontFace.Handle, ref fontMatrix, ref ctm, fontOptions.Handle), owner: true)
-        => _fontOptions = fontOptions;
+        : base(cairo_scaled_font_create(fontFace.Handle, ref fontMatrix, ref ctm, fontOptions.Handle)) { }
 
     protected override void DisposeCore(void* handle)
     {
         cairo_scaled_font_destroy(handle);
 
-        uint rc = cairo_scaled_font_get_reference_count(handle);
-        Debug.WriteLine($"ScaledFont 0x{(nint)handle}: reference count = {rc}");
+        PrintDebugInfo(handle);
+        [Conditional("DEBUG")]
+        static void PrintDebugInfo(void* handle)
+        {
+            uint rc = cairo_scaled_font_get_reference_count(handle);
+            Debug.WriteLine($"ScaledFont 0x{(nint)handle}: reference count = {rc}");
+        }
     }
 
     /// <summary>
@@ -86,6 +87,7 @@ public sealed unsafe class ScaledFont : FontFace
     /// point would be advanced by <see cref="TextExtensions.ShowText(CairoContext, string?)"/>.
     /// </summary>
     /// <param name="text">a NUL-terminated string of text, encoded in UTF-8</param>
+    /// <param name="textExtents">a <see cref="Fonts.TextExtents"/> which to store the retrieved extents.</param>
     /// <remarks>
     /// Note that whitespace characters do not directly contribute to the size of the rectangle
     /// (extents.width and extents.height). They do contribute indirectly by changing the position
@@ -107,6 +109,7 @@ public sealed unsafe class ScaledFont : FontFace
     /// would be advanced by <see cref="TextExtensions.ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>.
     /// </summary>
     /// <param name="glyphs">an array of glyph IDs with X and Y offsets.</param>
+    /// <param name="textExtents">a <see cref="Fonts.TextExtents"/> which to store the retrieved extents.</param>
     public void GlyphExtents(ReadOnlySpan<Glyph> glyphs, out TextExtents textExtents)
     {
         this.CheckDisposed();
@@ -218,28 +221,20 @@ public sealed unsafe class ScaledFont : FontFace
             this.CheckDisposed();
 
             void* handle= cairo_scaled_font_get_font_face(this.Handle);
-            return new ScaledFont(handle, owner: false);
+            return new FontFace(handle, isOwnedByCairo: true, &cairo_scaled_font_reference);
         }
     }
 
     /// <summary>
-    /// Gets the font options with which <see cref="ScaledFont"/> was created.
+    /// Stores the font options with which this <see cref="ScaledFont"/> was created into <paramref name="options"/>.
     /// </summary>
-    [MaybeNull]
-    public FontOptions FontOptions
+    /// <param name="options">return value for the font options</param>
+    public void GetFontOptions(FontOptions options)
     {
-        get
-        {
-            this.CheckDisposed();
+        this.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(options);
 
-            if (_fontOptions is null)
-            {
-                return null;
-            }
-
-            cairo_scaled_font_get_font_options(this.Handle, _fontOptions.Handle);
-            return _fontOptions;
-        }
+        cairo_scaled_font_get_font_options(this.Handle, options.Handle);
     }
 
     /// <summary>
@@ -304,13 +299,13 @@ public sealed unsafe class ScaledFont : FontFace
         }
     }
 
-    internal static new ScaledFont? Lookup(void* handle, bool owner = false)
+    internal static new ScaledFont? Lookup(void* handle, bool isOwnedByCairo)
     {
         if (handle is null)
         {
             return null;
         }
 
-        return new ScaledFont(handle, owner);
+        return new ScaledFont(handle, isOwnedByCairo);
     }
 }

@@ -22,8 +22,8 @@ namespace Cairo.Surfaces.PDF;
 /// </remarks>
 public sealed unsafe class PdfSurface : StreamSurface
 {
-    internal PdfSurface(void* handle, bool owner, bool throwOnConstructionError = true)
-        : base(handle, owner, throwOnConstructionError) { }
+    internal PdfSurface(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points, that may be queried and used as a source,
@@ -31,17 +31,11 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// </summary>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <remarks>
-    /// See <see cref="PdfSurface(string?, double, double, bool)"/> for further information.
+    /// See <see cref="PdfSurface(string?, double, double)"/> for further information.
     /// </remarks>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public PdfSurface(double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : this(null as string, widthInPoints, heightInPoints, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public PdfSurface(double widthInPoints, double heightInPoints) : this(null as string, widthInPoints, heightInPoints) { }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points to be written to filename.
@@ -53,14 +47,9 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// </param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public PdfSurface(string? fileName, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(cairo_pdf_surface_create(fileName, widthInPoints, heightInPoints), owner: true, throwOnConstructionError) { }
+    /// <exception cref="CairoException">when construction fails</exception>
+    public PdfSurface(string? fileName, double widthInPoints, double heightInPoints)
+        : base(cairo_pdf_surface_create(fileName, widthInPoints, heightInPoints)) { }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points to be written incrementally to the
@@ -69,16 +58,11 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// <param name="stream">The stream to which the PDF content is written to</param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
+    /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c></exception>
     /// <exception cref="ArgumentException"><paramref name="stream"/> is not writeable</exception>
-    public PdfSurface(Stream stream, double widthInPoints, double heightInPoints, bool throwOnConstructionError = true)
-        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream), throwOnConstructionError) { }
+    public PdfSurface(Stream stream, double widthInPoints, double heightInPoints)
+        : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream)) { }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points to be written incrementally via the
