@@ -107,9 +107,12 @@ static void ShowSurfaceInformation()
         Print(surface);
     }
 
-    using (Win32Surface surface = new(Format.Argb32, 100, 100))
+    if (OperatingSystem.IsWindows())
     {
-        Print(surface);
+        using (Win32Surface surface = new(Format.Argb32, 100, 100))
+        {
+            Print(surface);
+        }
     }
 
     static void Print(Surface surface)
@@ -716,8 +719,11 @@ static void PdfFeatures()
     surface.SetMetadata(PdfMetadata.Author, "gfoidl");
     surface.SetMetadata(PdfMetadata.Subject, "cairo");
 
-    surface.SetCustomMetadata("CairoSharp version", "2.0.0");
-    surface.SetThumbnailSize((int)PageSize.A4.WidthInPoints / 20, (int)PageSize.A4.HeightInPoints / 20);
+    if (CairoAPI.Version > CairoAPI.VersionEncode(1, 18, 0))
+    {
+        surface.SetCustomMetadata("CairoSharp version", "2.0.0");
+        surface.SetThumbnailSize((int)PageSize.A4.WidthInPoints / 20, (int)PageSize.A4.HeightInPoints / 20);
+    }
 
     // Page 1
     {
