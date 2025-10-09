@@ -96,7 +96,7 @@ public unsafe class Device(void* handle) : CairoObject(cairo_device_reference(ha
     /// <remarks>
     /// If the object is a nil object, 0 will be returned.
     /// </remarks>
-    public int ReferenceCount
+    internal int ReferenceCount
     {
         get
         {

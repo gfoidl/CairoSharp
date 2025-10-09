@@ -289,7 +289,7 @@ public sealed unsafe class ScaledFont : FontFace
     /// <summary>
     /// Returns the current reference count of scaled_font.
     /// </summary>
-    public new int ReferenceCount
+    internal new int ReferenceCount
     {
         get
         {

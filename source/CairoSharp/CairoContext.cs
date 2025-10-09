@@ -1215,7 +1215,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// <remarks>
     /// If the object is a nil object, 0 will be returned.
     /// </remarks>
-    public int ReferenceCount
+    internal int ReferenceCount
     {
         get
         {

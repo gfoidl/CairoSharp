@@ -353,7 +353,7 @@ public unsafe class Surface : CairoObject
     /// <summary>
     /// Returns the current reference count of surface.  If the object is a nil object, 0 will be returned.
     /// </summary>
-    public int ReferenceCount
+    internal int ReferenceCount
     {
         get
         {
