@@ -11,13 +11,8 @@
     <Project Path="demos/WinFormsDemo/WinFormsDemo.csproj" Id="e6ab799a-f171-47b7-aacc-c6b37f3d4041" />
     <Project Path="demos/WpfDemo/WpfDemo.csproj" Id="800d210e-339c-471c-b670-f1903925373d" />
   </Folder>
-  <Folder Name="/native/" />
-  <Folder Name="/native/libs/" />
-  <Folder Name="/native/libs/win-x64/">
-    <File Path="native/libs/win-x64/cairo.dll" />
-  </Folder>
-  <Folder Name="/native/libs/win-x86/">
-    <File Path="native/libs/win-x86/cairo.dll" />
+  <Folder Name="/native/">
+    <File Path="native/ReadMe.md" />
   </Folder>
   <Folder Name="/native/stubs/">
     <File Path="native/stubs/ReadMe.md" />
