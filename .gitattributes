@@ -1,0 +1,14 @@
+#------------------------------------------------------------------------------
+# L I N E   E N D I N G S
+
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Must keep LF line ending
+Dockerfile          text eol=lf
+.dockerignore       text eol=lf
+
+/**/*.sh            text eol=lf
+/**/*.conf          text eol=lf
+/**/*.crontab       text eol=lf
+/**/*.yml           text eol=lf
