@@ -497,7 +497,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// <para>
     /// Note: The length values are in user-space units as evaluated at the time of stroking.
     /// This is not necessarily the same as the user space at the time of
-    /// <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>.
+    /// <see cref="SetDash(ReadOnlySpan{double}, double)"/>.
     /// </para>
     /// </remarks>
     /// <exception cref="CairoException">
@@ -1085,7 +1085,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// A drawing operator that strokes the current path according to the current line width,
     /// line join, line cap, and dash settings. After <see cref="Stroke"/>, the current path
     /// will be cleared from the cairo context. See <see cref="LineWidth"/>, <see cref="LineJoin"/>,
-    /// <see cref="LineCap"/>, <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>, and
+    /// <see cref="LineCap"/>, <see cref="SetDash(ReadOnlySpan{double}, double)"/>, and
     /// <see cref="StrokePreserve"/>.
     /// </summary>
     /// <remarks>
@@ -1093,7 +1093,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// These can result in two different situations:
     /// <list type="number">
     /// <item>
-    /// Zero-length "on" segments set in <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>.
+    /// Zero-length "on" segments set in <see cref="SetDash(ReadOnlySpan{double}, double)"/>.
     /// If the cap style is <see cref="LineCap.Round"/> or <see cref="LineCap.Square"/> then
     /// these segments will be drawn as circular dots or squares respectively. In the case of
     /// <see cref="LineCap.Square"/>, the orientation of the squares is determined by the
@@ -1124,8 +1124,8 @@ public sealed unsafe class CairoContext : CairoObject
     /// the path within the cairo context.
     /// </summary>
     /// <remarks>
-    /// See <see cref="LineWidth"/>, <see cref="LineJoin"/>, <see cref="LineCap"/>, <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>,
-    /// and <see cref="StrokePreserve"/>.
+    /// See <see cref="LineWidth"/>, <see cref="LineJoin"/>, <see cref="LineCap"/>,
+    /// <see cref="SetDash(ReadOnlySpan{double}, double)"/>, and <see cref="StrokePreserve"/>.
     /// </remarks>
     public void StrokePreserve()
     {
@@ -1155,7 +1155,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// </para>
     /// <para>
     /// See <see cref="Stroke"/>, <see cref="LineWidth"/>, <see cref="LineJoin"/>, <see cref="LineCap"/>,
-    /// <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>, and <see cref="StrokePreserve"/>.
+    /// <see cref="SetDash(ReadOnlySpan{double}, double)"/>, and <see cref="StrokePreserve"/>.
     /// </para>
     /// </remarks>
     public void StrokeExtents(out double x1, out double y1, out double x2, out double y2)
@@ -1194,7 +1194,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// </returns>
     /// <remarks>
     /// See <see cref="Stroke"/>, <see cref="LineWidth"/>, <see cref="LineJoin"/>, <see cref="LineCap"/>,
-    /// <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>, and <see cref="StrokePreserve"/>.
+    /// <see cref="SetDash(ReadOnlySpan{double}, double)"/>, and <see cref="StrokePreserve"/>.
     /// </remarks>
     public bool InStroke(double x, double y)
     {
@@ -1213,7 +1213,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// </returns>
     /// <remarks>
     /// See <see cref="Stroke"/>, <see cref="LineWidth"/>, <see cref="LineJoin"/>, <see cref="LineCap"/>,
-    /// <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>, and <see cref="StrokePreserve"/>.
+    /// <see cref="SetDash(ReadOnlySpan{double}, double)"/>, and <see cref="StrokePreserve"/>.
     /// </remarks>
     public bool InStroke(PointD point) => this.InStroke(point.X, point.Y);
 

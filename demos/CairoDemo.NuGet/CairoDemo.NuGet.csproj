@@ -10,8 +10,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="gfoidl.CairoSharp" Version="2.0.0-dev" Condition="'$(Configuration)' == 'Debug'" />
-        <PackageReference Include="gfoidl.CairoSharp" Version="2.0.0"     Condition="'$(Configuration)' != 'Debug'" />
+        <PackageReference Include="gfoidl.CairoSharp" Version="0.1.0-dev" Condition="'$(Configuration)' == 'Debug'" />
+        <PackageReference Include="gfoidl.CairoSharp" Version="0.1.0"     Condition="'$(Configuration)' != 'Debug'" />
     </ItemGroup>
 
     <ItemGroup>

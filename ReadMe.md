@@ -1,144 +1,112 @@
-This is a fork of https://github.com/mono/gtk-sharp and is maintained completely separately from that project.
-
-
-
-Tutorial:
-https://zetcode.com/gfx/cairo/
-
-
+# CairoSharp
 
 [![NuGet](https://img.shields.io/nuget/v/gfoidl.CairoSharp.svg?style=flat-square)](https://www.nuget.org/packages/gfoidl.CairoSharp/)
 
-## CairoSharp
+CairoSharp is a .NET 8+ wrapper for [_cairo_](https://www.cairographics.org/).
 
-CairoSharp is a .NET 8+ wrapper for [cairo](https://www.cairographics.org/).
+_cairo_ is a 2D graphics library with support for multiple output devices. Currently supported output targets include the X Window System (via both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file output.
 
-Cairo is a 2D graphics library with support for multiple output devices.
+_cairo_ is designed to produce consistent output on all output media while taking advantage of display hardware acceleration when available (eg. through the X Render Extension).
 
-Cairo is designed to produce consistent output on all output media while taking advantage of display hardware acceleration when available.
-The cairo API provides operations similar to the drawing operators of PostScript and PDF.
-Operations in cairo including stroking and filling cubic Bézier splines, transforming and compositing translucent images, and antialiased text rendering.
-All drawing operations can be transformed by any affine transformation (scale, rotation, shear, etc.).
+The _cairo_ API provides operations similar to the drawing operators of PostScript and PDF. Operations in cairo including stroking and filling cubic Bézier splines, transforming and compositing translucent images, and antialiased text rendering. All drawing operations can be transformed by any affine transformation (scale, rotation, shear, etc.)
 
-## Platforms
+## Documentation / Tutorials for _cairo_
 
-[A former release](https://github.com/zwcloud/CairoSharp/releases/tag/dotnet45_v1) works on .NET Framework (Windows desktop, and Winform / WPF)
-on .NET 4.5 and Linux (tested on Ubuntu 12.04) on Mono 4.2.
-CairoSharp was ported to .NET Core (.NET Standard 1.6) after that release, and later on (in this repo) to move on it only supports .NET 8+.
+Some / most of the documentation is for the C language or for Python. But _cairo_ APIs are named everywhere quite similarly, so this shouldn't be a problem.
 
-Supported platforms:
+* [official documentation](https://www.cairographics.org/documentation/)
+* [Frequently Asked Questions](https://www.cairographics.org/FAQ/)
+* [Cooking with _cairo_](https://www.cairographics.org/cookbook/)
+* [ZetCode Cairo graphics tutorial](https://zetcode.com/gfx/cairo/)
+* [Mono.Cairo](https://www.mono-project.com/docs/tools+libraries/libraries/Mono.Cairo/) which includes the [Mono.Cairo Tutorial](https://www.mono-project.com/docs/tools+libraries/libraries/Mono.Cairo/tutorial/) and the [Mono.Cairo Cookbook](https://www.mono-project.com/docs/tools+libraries/libraries/Mono.Cairo/cookbook/)
+* [_cairo_ API documentation](https://www.cairographics.org/manual/)
 
-* Windows 32bit / 64bit
-* Linux 64bit (tested on Ubuntu 16.04-server)
-* Linux Arm
+Further there are some repositories which showcases the use of _cairo_ or bear some nice tricks:
+* [cairo-demo repository](https://gitlab.com/cairo/cairo-demos)
+* [Cairou](https://github.com/cubicool/cairou) -- A small library of useful, common Cairo routines.
+* [tests directory of the cairo repo](https://gitlab.freedesktop.org/cairo/cairo/-/tree/master/test?ref_type=heads) -- as always, tests showcase how to use an API
 
-Other platforms that support .NET may work, but have not been tested.
+## _cairo_ vs Skia
 
-On Windows all dependencies are included.
+Botht are (vector) graphic libraries, and the drawing model differs a bit. Naturally both have pros and cons, but -- experience in the drawing models aside -- I'd choose based on usage:
+* UI rendering: Skia due it's capabilities to use GPU
+* everything else: _cairo_, especially as with the same code you can write to different backends like PDF, SVG, PNG, PS
 
-On Linux _libcairo_ is a prerequisite. See https://www.cairographics.org/download/ on how to install.
-Cairo version 1.17.2 is minimum.
+For UI rendering I also use _cairo_, but this is just simple animations in WinForms, and not very hardware demanding. The reason for this is just as I know _cairo_ quite well and can keep the same drawing model for file / stream based backends and for UI.
 
-# [Documentation](https://github.com/gfoidl/CairoSharp/wiki)
+## License and history
 
-# Copying/License
+The first official .NET wrapper for _cairo_ lived in the [Mono GTK-Sharp](https://github.com/mono/gtk-sharp/tree/main/cairo) repository, and got licensed under the GNU LGPL. Later on a [zwcloud/CairoSharp](https://github.com/zwcloud/CairoSharp) was created also under the GNU LGPL (I contributes quite a bit to that repository).
+Time passed by and the zwcloud-wrapper got outdated and not maintained anymore (no activity since 2020).
 
-**LGPLv3** Project CairoSharp (not the native cairo lib but the C# one) is licensed under the LGPL v3 license.
+_cairo_ got some updates in the meantime, so I started from scratch with a new wrapper for .NET. So this project here isn't a fork of some other wrapper, it's a new project with just some examples / demos taken over. The actual wrapper-code is completely new and based on modern .NET features.
 
+As _cairo_ and all other wrappers are licensed under the GNU LGPL, so does this project too. But this doesn't mean that using this project in your work bring copyleft-virality with it.
+
+The license says
+> a larger work using the licensed work through interfaces provided by the licensed work may be distributed under different terms and without source code for the larger work
+
+So graphically it will look like this:
+```mermaid
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
+classDiagram
+  direction LR
+
+  Your App ..> CairoSharp: Interface
+  CairoSharp ..> cairo: Interface
 ```
-CairoSharp, A C# wrapper of cairo which is a 2D vector rendering library
-Copyright (C) 2017-2025 gfoidl
-Copyright (C) 2015-2020 Zou Wei, zwcloud@hotmail.com, https://zwcloud.net
-Copyright (C) 2007-2015 Xamarin, Inc.
-Copyright (C) 2006 Alp Toker
-Copyright (C) 2005 John Luke
-Copyright (C) 2004 Novell, Inc (http://www.novell.com)
-Copyright (C) Ximian, Inc. 2003
+Thus your work is "decoupled" via an interface from the licensed work refered to in the license.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+## _cairo_ features implemented
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+All features, functions, etc. as of _cairo_ version 1.18.5 are implemented. Further there member in the .NET wrapper are documented (xml doc comments), so Intellisense works.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-```
+## Supported platforms
 
-The C# code files in CairoSharp project was taken from Mono / [GTK#](https://github.com/mono/gtk-sharp/tree/master/cairo)(Version 3.0.0), licensed under the GNU LGPL.
-So CairoSharp uses LGPL as well.
+This project only supports .NET 8 onwards. For older .NET targets please use https://github.com/zwcloud/CairoSharp, but note that lots of newer _cairo_ APIs are missing there.
 
-I, @gfoidl, forked the repo from @zwcloud, made a lot of changes, which got then merged upstream by @zwcloud. Now for several years the upstream repo
-from @zwcloud seems to be stale, so I made again a lot of changes in this fork here. At the time of this writing there's only very little in common with
-the upstream repo -- it's a complete rewrite for modern .NET.
+| Operating system  | _cairo_ shipped with the package | manual installation                                                           |
+|-------------------|----------------------------------|-------------------------------------------------------------------------------|
+| Linux             | (see note for stubs below)       | :heavy_check_mark: (see [downloads](https://www.cairographics.org/download/)) |
+| Windows x64 / x86 | :heavy_checkmark:                | not needed                                                                    |
+| Mac OS            | :x:                              | :heavy_check_mark: (see [downloads](https://www.cairographics.org/download/)) |
 
-## Native libraries
+* for Windows x64 / x86 the _cairo_ DLL is bundled with the NuGet package, not further installation needed
+* for Linux x64, arm64, and arm _stubs_ are bundled with the NuGet package, that aid in the lookup for the shared library due to versioning
 
-https://gitlab.com/saiwp/cairo.git
+I don't have Mac OS, thus there are no stubs available, and I can't tell whether it will work or not.
 
-https://mesonbuild.com/SimpleStart.html
+Minimum _cairo_ version is 1.17.2. For some newer _cairo_ features (the ones added in 1.18 and newer) CairoSharp will throw a `NotSupportedException` if the installed _cairo_ version is too old (1.17.2 was chosen as baseline, as many Windows _cairo_ DLLs are this version -- but CairoSharp comes with it's own _cairo_ DLL for Windows anyway).
 
+## Why another CairoSharp?
 
-From cairo repo https://gitlab.com/saiwp/cairo/-/blob/master/INSTALL:
-x64:
-```cmd
-rem Run in "x64 Native Tools Command Prompt for VS 2022"
+* the others are old, but _cairo_ is still very handy and got recent updates
+* others are missing doc comments for Intellisense
+* new features like streaming APIs, PDF tags and other meta-data weren't available
+* code didn't use features of modern .NET like `Span<T>` and others
 
-cd native\cairo
+So instead of polishing an old wrapper, I chose to start a fresh one. For the name I chose _CairoSharp_, because I'm so used to it, and I dislike names like NCairo, CairoDotNet, and so on.
 
-meson setup --buildtype=release --default-library=both --default-both-libraries=shared -Dtests=disabled ..\..\artifacts\native\win-x64\build
-ninja -C ..\..\artifacts\native\win-x64\build
+The NuGet is named `gfoidl.CairoSharp` to have a distincition (and at the moment it's only one for a .NET 8 and newer target).
 
-rem build will likely not complete, but the desired artifact is there...
-rem meson install -C ..\..\artifacts\native\win-x64\build --destdir ..\out
-```
-x86:
-```cmd
-rem Run in "x86 Native Tools Command Prompt for VS 2022"
+## Building
 
-cd native\cairo
+### Managed side (the actual wrapper)
 
-meson setup --buildtype=release --default-library=both --default-both-libraries=shared -Dtests=disabled ..\..\artifacts\native\win-x86\build
-ninja -C ..\..\artifacts\native\win-x86\build
+Just like any other .NET project / solution. So either via `dotnet build` or via Visual Studio.
 
-rem build will likely not complete, but the desired artifact is there...
-rem meson install -C ..\..\artifacts\native\win-x86\build --destdir ..\out
-```
+When a _cairo_ shared library / DLL is available, that's all and you can start drawing.
 
+### Windows native _cairo_ build
 
-The native project files for Windows are taken from https://github.com/preshing/cairo-windows, currently using cairo version 1.17.2.
+For Windows it's hard to find a downloadable _cairo_ DLL that is recent enough, and especially without any failures. There are quite some around where some features like PDF rendering just don't output anything. Maybe because of wrong set compiler flags -- I didn't investigate these further.
 
-* [cairo](http://www.cairographics.org/)
-  Version 1.17.2
-  [COPYING Info](https://github.com/zwcloud/CairoSharp/blob/master/Native/cairo/COPYING)
+Luckily _cairo_ switched their build system to a modern one. They use [Meson](https://mesonbuild.com/SimpleStart.html), so it's quite easy to build _cairo_ for Windows. See [native build instructions](./native/ReadMe.md).
 
-* [libpng](http://libmng.com/pub/png/libpng.html)
-  Version from cairo-project dependency
-  [COPYING Info](https://github.com/zwcloud/CairoSharp/blob/master/Native/libpng/LICENSE)
+### Tests
 
-* [pixman](http://www.pixman.org/)
-  Version from cairo-project dependency
-  [COPYING Info](https://github.com/zwcloud/CairoSharp/blob/master/Native/pixman/COPYING)
-
-* [zlib](http://www.zlib.net/)
-  Version from cairo-project dependency
-  [COPYING Info](https://github.com/zwcloud/CairoSharp/blob/master/Native/zlib/README)
-
-* [freetype](http://www.freetype.org/)
-  Version from cairo-project dependency
-  [COPYING Info](https://github.com/zwcloud/CairoSharp/blob/master/Native/freetype/docs/LICENSE.TXT)
-
-
-
-
-
-Tipps:
-
-png-flatten
-Loads a PNG image (potentially with alpha) and writes out a flattened (no alpha)\nPNG image by first blending over white.
-https://gitlab.com/saiwp/cairo/-/blob/master/test/png-flatten.c?ref_type=heads
-
+_cairo_ has a lot of [unit tests](https://gitlab.freedesktop.org/cairo/cairo/-/tree/master/test?ref_type=heads) which ideally should be ported also to see if the wrapper works as intended. But for most _cairo_ function the wrapper is really thin, and for methods that require more logic they're touched in the demo / example code to see that they work as they should. Besides that, porting all the tests to this project would be quite an effort...

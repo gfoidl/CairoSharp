@@ -5,6 +5,7 @@
     <File Path="nuget.config" />
   </Folder>
   <Folder Name="/demos/">
+    <File Path="demos/ReadMe.md" />
     <Project Path="demos/AspNetCoreDemo/AspNetCoreDemo.csproj" Id="cd2d8994-351f-4af5-be56-25fafc22623e" />
     <Project Path="demos/CairoDemo.NuGet/CairoDemo.NuGet.csproj" Id="75ce7d03-c812-4855-8806-b24854ce1590" />
     <Project Path="demos/CairoDemo/CairoDemo.csproj" />

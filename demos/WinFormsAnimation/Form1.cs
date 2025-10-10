@@ -69,7 +69,7 @@ public partial class Form1 : Form
         using (cr.Save())
         {
             cr.Rectangle(clientRectangle);
-            cr.Color = new Color(162 / 255d, 250 / 255d, 159 / 255d, 0.2);  // https://rgbacolorpicker.com/
+            cr.Color = Color.FromRgbaBytes(162, 250, 159, 51);  // https://rgbacolorpicker.com/
             cr.FillPreserve();
 
             cr.Color     = Color.Default;
