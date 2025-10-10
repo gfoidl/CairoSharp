@@ -383,7 +383,8 @@ public static unsafe class TextExtensions
         /// <param name="text">a string, or <c>null</c></param>
         /// <param name="extents">a <see cref="Fonts.TextExtents"/> object into which the results will be stored</param>
         /// <remarks>
-        /// Note that whitespace characters do not directly contribute to the size of the rectangle (extents.width and extents.height).
+        /// Note that whitespace characters do not directly contribute to the size of the rectangle
+        /// (<see cref="TextExtents.Width"/> and <see cref="TextExtents.Height"/>).
         /// They do contribute indirectly by changing the position of non-whitespace characters. In particular, trailing
         /// whitespace characters are likely to not affect the size of the rectangle, though they will affect
         /// the <see cref="TextExtents.XAdvance"/> and <see cref="TextExtents.YAdvance"/> values.

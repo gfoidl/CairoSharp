@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>Cairo.Extensions</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <SignAssembly>True</SignAssembly>
+        <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+        <IsTrimmable>True</IsTrimmable>
+        <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Title>CairoSharp Extensions</Title>
+        <PackageId>gfoidl.CairoSharp.Extensions</PackageId>
+        <Description>
+            Extensions for Cairo Graphics Library -- .NET 8+ wrapper
+        </Description>
+        <PackageIconUrl>http://cairographics.org/cairo-banner.png</PackageIconUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+        <PackageTags>cairo vector-graphics</PackageTags>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/gfoidl/CairoSharp</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/gfoidl/CairoSharp</PackageProjectUrl>
+        <PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="ReadMe.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+
+        <None Include="..\..\icon.png" Label="icon.png" Visible="false">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CairoSharp\CairoSharp.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -10,7 +10,6 @@ using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.Win32;
-using Path = Cairo.Drawing.Path.Path;
 
 namespace WinFormsDemo;
 

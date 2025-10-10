@@ -9,6 +9,7 @@
     <Project Path="demos/AspNetCoreDemo/AspNetCoreDemo.csproj" Id="cd2d8994-351f-4af5-be56-25fafc22623e" />
     <Project Path="demos/CairoDemo.NuGet/CairoDemo.NuGet.csproj" Id="75ce7d03-c812-4855-8806-b24854ce1590" />
     <Project Path="demos/CairoDemo/CairoDemo.csproj" />
+    <Project Path="demos/CairoExtensionsDemo/CairoExtensionsDemo.csproj" Id="5969c885-11f8-484f-88a5-6303a9143369" />
     <Project Path="demos/WinFormsAnimation/WinFormsAnimation.csproj" Id="f9d1c9a6-89c1-4ee8-b4a2-ff67112c7639" />
     <Project Path="demos/WinFormsDemo/WinFormsDemo.csproj" Id="e6ab799a-f171-47b7-aacc-c6b37f3d4041" />
     <Project Path="demos/WpfDemo/WpfDemo.csproj" Id="800d210e-339c-471c-b670-f1903925373d" />
@@ -36,6 +37,7 @@
     <File Path="ReadMe.md" />
   </Folder>
   <Folder Name="/source/">
+    <Project Path="source/CairoSharp.Extensions/CairoSharp.Extensions.csproj" Id="729707e5-2bf4-4c70-908c-d91d2d9b4dc8" />
     <Project Path="source/CairoSharp/CairoSharp.csproj" />
   </Folder>
   <Folder Name="/tests/">

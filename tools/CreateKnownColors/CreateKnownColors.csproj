@@ -9,4 +9,8 @@
         <Compile Remove="KnownColors.cs" Condition="Exists('KnownColors.cs')" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Using Remove="Cairo.Drawing.Path.Path" />
+    </ItemGroup>
+
 </Project>

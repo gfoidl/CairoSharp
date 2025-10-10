@@ -32,7 +32,7 @@ internal static class Native
 
     private static nint GetLibHandle()
     {
-        string path = Path.Combine(AppContext.BaseDirectory, "runtimes", GetRuntimeIdentifier(), GetLibraryName());
+        string path = System.IO.Path.Combine(AppContext.BaseDirectory, "runtimes", GetRuntimeIdentifier(), GetLibraryName());
 
         if (NativeLibrary.TryLoad(path, out nint libHandle))
         {

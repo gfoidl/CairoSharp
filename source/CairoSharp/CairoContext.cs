@@ -598,7 +598,7 @@ public sealed unsafe class CairoContext : CairoObject
     /// path. The current fill rule affects both <see cref="Fill"/> and <see cref="Clip"/>.
     /// </summary>
     /// <remarks>
-    /// See <see cref="FillRule"/> for details on the semantics of each available fill rule.
+    /// See <see cref="Drawing.FillRule"/> for details on the semantics of each available fill rule.
     /// <para>
     /// The default fill rule is <see cref="FillRule.Winding"/>.
     /// </para>

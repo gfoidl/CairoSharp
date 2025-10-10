@@ -25,4 +25,8 @@
         <DebugType>embedded</DebugType>
     </PropertyGroup>
 
+    <ItemGroup>
+        <Using Include="Cairo.Drawing.Path.Path" Alias="Path" />
+    </ItemGroup>
+
 </Project>

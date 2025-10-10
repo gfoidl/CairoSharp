@@ -82,6 +82,10 @@ I don't have Mac OS, thus there are no stubs available, and I can't tell whether
 
 Minimum _cairo_ version is 1.17.2. For some newer _cairo_ features (the ones added in 1.18 and newer) CairoSharp will throw a `NotSupportedException` if the installed _cairo_ version is too old (1.17.2 was chosen as baseline, as many Windows _cairo_ DLLs are this version -- but CairoSharp comes with it's own _cairo_ DLL for Windows anyway).
 
+## Extensions
+
+There is an accompanying project calls [CairoSharp.Extensions](source/CairoSharp.Extensions/ReadMe.md).
+
 ## Why another CairoSharp?
 
 * the others are old, but _cairo_ is still very handy and got recent updates
