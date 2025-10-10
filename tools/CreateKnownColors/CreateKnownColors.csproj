@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="System.Drawing.Primitives.xml" CopyToOutputDirectory="PreserveNewest" />
+        <Compile Remove="KnownColors.cs" Condition="Exists('KnownColors.cs')" />
+    </ItemGroup>
+
+</Project>

@@ -41,4 +41,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/CairoSharp.Tests/CairoSharp.Tests.csproj" Id="5ef421ba-93dc-4b6b-804b-fe2a81017dcf" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/CreateKnownColors/CreateKnownColors.csproj" Id="45755ffc-6644-4803-a22e-1b51d9767568" />
+  </Folder>
 </Solution>
