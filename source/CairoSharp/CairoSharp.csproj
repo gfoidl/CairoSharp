@@ -38,7 +38,7 @@
         <PackageIconUrl>http://cairographics.org/cairo-banner.png</PackageIconUrl>
         <PackageIcon>icon.png</PackageIcon>
         <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
-        <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+        <PackageTags>cairo vector-graphics</PackageTags>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/gfoidl/CairoSharp</RepositoryUrl>
         <PackageProjectUrl>https://github.com/gfoidl/CairoSharp</PackageProjectUrl>
