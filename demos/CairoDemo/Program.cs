@@ -49,6 +49,7 @@ try
     PdfFeatures();
     RasterSource();
     UserFontSimple();
+    PngFlatten();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -695,7 +696,7 @@ static void RecordingAndScriptSurface()
     context.FillPreserve();
 
     context.LineWidth = 2;
-    context.Color = new Color(1, 0, 0);
+    context.Color     = new Color(1, 0, 0);
     context.Stroke();
 
     using (ImageSurface img = new(Format.Argb32, 300, 300))
@@ -902,6 +903,26 @@ static void UserFontSimple()
 
     Draw(teeSurface);
     imageSurface.WriteToPng("user-font.png");
+}
+//-----------------------------------------------------------------------------
+static void PngFlatten()
+{
+    // Make a transparent PNG opaque
+    // Based on https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/png-flatten.c?ref_type=heads
+
+    // Note: we set the current dir to output
+    using ImageSurface argb  = new("../png-transparent.png");
+    using ImageSurface rgb24 = new(Format.Rgb24, argb.Width, argb.Height);
+    using CairoContext cr    = new(rgb24);
+
+    // white for the background
+    cr.SetSourceRgb(1, 1, 1);
+    cr.Paint();
+
+    cr.SetSourceSurface(argb, 0, 0);
+    cr.Paint();
+
+    rgb24.WriteToPng("png-opaque.png");
 }
 //-----------------------------------------------------------------------------
 namespace CairoDemo
