@@ -14,7 +14,7 @@ public sealed unsafe class RadialGradient : Gradient
         : base(handle, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
-    /// Creates a new radial gradient cairo_pattern_t between the two circles defined by (cx0, cy0, radius0)
+    /// Creates a new radial gradient <see cref="Pattern"/> between the two circles defined by (cx0, cy0, radius0)
     /// and (cx1, cy1, radius1). Before using the gradient pattern, a number of color stops should be
     /// defined using <see cref="Gradient.AddColorStop(double, Color)"/> or one of the other overloads available.
     /// </summary>
@@ -26,6 +26,17 @@ public sealed unsafe class RadialGradient : Gradient
     /// <param name="radius1">radius of the end circle</param>
     public RadialGradient(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1)
         : base(cairo_pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1)) { }
+
+    /// <summary>
+    /// Creates a new radial gradient <see cref="Pattern"/> between the two circles defined by
+    /// <paramref name="point0"/> and <paramref name="point1"/>
+    /// Before using the gradient pattern, a number of color stops should be
+    /// defined using <see cref="Gradient.AddColorStop(double, Color)"/> or one of the other overloads available.
+    /// </summary>
+    /// <param name="point0">coordinate for the center of the start circle</param>
+    /// <param name="point1">coordinate for the center of the end circle</param>
+    public RadialGradient(PointDWithRadius point0, PointDWithRadius point1)
+        : this(point0.X, point0.Y, point0.Radius, point1.X, point1.Y, point1.Radius) { }
 
     /// <summary>
     /// Gets the gradient endpoint circles for a radial gradient, each specified as a center

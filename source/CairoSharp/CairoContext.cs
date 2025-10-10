@@ -490,22 +490,20 @@ public sealed unsafe class CairoContext : CairoObject
     /// </para>
     /// </param>
     /// <param name="offset">an offset into the dash pattern at which the stroke should start</param>
-    /// <param name="throwOnInvalidState">
-    /// When <c>true</c> checks the <see cref="Status"/>, and will throw if the state is not success.
-    /// </param>
     /// <remarks>
     /// Each "on" segment will have caps applied as if the segment were a separate sub-path.
-    /// In particular, it is valid to use an "on" length of 0.0 with <see cref="Drawing.LineCap.Round"/>
-    /// or <see cref="Drawing.LineCap.Square"/> in order to distributed dots or squares along a path.
+    /// In particular, it is valid to use an "on" length of 0.0 with <see cref="LineCap.Round"/>
+    /// or <see cref="LineCap.Square"/> in order to distributed dots or squares along a path.
     /// <para>
     /// Note: The length values are in user-space units as evaluated at the time of stroking.
-    /// This is not necessarily the same as the user space at the time of <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>.
+    /// This is not necessarily the same as the user space at the time of
+    /// <see cref="SetDash(ReadOnlySpan{double}, double, bool)"/>.
     /// </para>
     /// </remarks>
     /// <exception cref="CairoException">
     /// will be thrown when <see cref="Status"/> is <see cref="Status.InvalidDash"/>
     /// </exception>
-    public void SetDash(ReadOnlySpan<double> dashes, double offset, bool throwOnInvalidState = true)
+    public void SetDash(ReadOnlySpan<double> dashes, double offset)
     {
         this.CheckDisposed();
 
@@ -514,11 +512,33 @@ public sealed unsafe class CairoContext : CairoObject
             cairo_set_dash(this.Handle, ptr, dashes.Length, offset);
         }
 
-        if (throwOnInvalidState)
-        {
-            this.Status.ThrowIfNotSuccess();
-        }
+        this.Status.ThrowIfStatus(Status.InvalidDash);
     }
+
+    /// <summary>
+    /// Sets the dash pattern to be used by <see cref="Stroke"/>. A dash pattern is specified
+    /// by dashes, an array of positive values. Each value provides the length of alternate
+    /// "on" and "off" portions of the stroke.
+    /// </summary>
+    /// <param name="dashes">
+    /// an array specifying alternate lengths of on and off stroke portions
+    /// <para>
+    /// If <see cref="ReadOnlySpan{T}.Empty"/> dashing is disabled.
+    /// </para>
+    /// <para>
+    /// When <see cref="ReadOnlySpan{T}.Length"/> is 1 a symmetric pattern is assumed with alternating
+    /// on and off portions of the size specified by the single value in dashes.
+    /// </para>
+    /// <para>
+    /// If any value in dashes is negative, or if all values are 0, then cr will be put into an
+    /// error state with a status of <see cref="Status.InvalidDash"/>.
+    /// </para>
+    /// </param>
+    /// <remarks>
+    /// This is a convenience overload for <see cref="SetDash(ReadOnlySpan{double}, double)"/> with
+    /// offset = 0.
+    /// </remarks>
+    public void SetDash(params ReadOnlySpan<double> dashes) => this.SetDash(dashes, offset: 0);
 
     /// <summary>
     /// This property returns the length of the dash array in cr (0 if dashing is not currently in effect).
@@ -1289,7 +1309,8 @@ public sealed unsafe class CairoContext : CairoObject
     /// to the stroke width. In the wild, handling of this situation is not well-defined. Some PDF, PS, and
     /// SVG renderers match Cairo's output, but some very popular implementations (Acrobat, Chrome, rsvg)
     /// will scale the hairline unevenly. As such, best practice is to reset any anisotropic scaling before
-    /// calling <see cref="Stroke"/>. See https://cairographics.org/cookbook/ellipses/ for an example.
+    /// calling <see cref="Stroke"/>.
+    /// See <a href="https://cairographics.org/cookbook/ellipses/">cairo cookbok - ellipses</a> for an example.
     /// </remarks>
     public bool Hairline
     {

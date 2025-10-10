@@ -624,6 +624,15 @@ public unsafe class Surface : CairoObject
         {
             Status status = cairo_surface_write_to_png(this.Handle, fileName);
 
+            if (status == Status.WriteError)
+            {
+                // Try it again in case that cairo couldn't write to the stream, so
+                // a better error message is thrown by .NET.
+                // Side note: this is also why the cairo docs for wrappers suggest the
+                // stream based function, but I'd like to have this approach here.
+                goto Stream;
+            }
+
             if (throwOnError)
             {
                 status.ThrowIfNotSuccess();
@@ -632,6 +641,7 @@ public unsafe class Surface : CairoObject
             return status;
         }
 
+    Stream:
         using FileStream stream = File.Create(fileName);
         return this.WriteToPngStream(stream, throwOnError);
     }

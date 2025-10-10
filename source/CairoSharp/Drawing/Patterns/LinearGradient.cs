@@ -24,10 +24,23 @@ public sealed unsafe class LinearGradient : Gradient
     /// <param name="y1">y coordinate of the end point</param>
     /// <remarks>
     /// Note: The coordinates here are in pattern space. For a new pattern, pattern space is identical
-    /// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.GetMatrix(out Matrix)"/>.
+    /// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.SetMatrix(ref Matrix)(ref Matrix)"/>.
     /// </remarks>
-    public LinearGradient(double x0, double y0, double x1, double y1)
-        : base(cairo_pattern_create_linear(x0, y0, x1, y1)) { }
+    public LinearGradient(double x0, double y0, double x1, double y1) : base(cairo_pattern_create_linear(x0, y0, x1, y1)) { }
+
+    /// <summary>
+    /// Create a new linear gradient <see cref="Pattern"/> along the line defined by <paramref name="point0"/>
+    /// and <paramref name="point1"/>.
+    /// Before using the gradient pattern, a number of color stops should be defined using
+    /// <see cref="Gradient.AddColorStop(double, Color)"/> or one of the other overloads available.
+    /// </summary>
+    /// <param name="point0">coordinate of the start point</param>
+    /// <param name="point1">coordinate of the end point</param>
+    /// <remarks>
+    /// Note: The coordinates here are in pattern space. For a new pattern, pattern space is identical
+    /// to user space, but the relationship between the spaces can be changed with <see cref="Pattern.SetMatrix(ref Matrix)(ref Matrix)"/>.
+    /// </remarks>
+    public LinearGradient(PointD point0, PointD point1) : this(point0.X, point0.Y, point1.X, point1.Y) { }
 
     /// <summary>
     /// Gets the gradient endpoints for a linear gradient.
