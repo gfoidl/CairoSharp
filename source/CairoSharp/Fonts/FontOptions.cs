@@ -14,7 +14,8 @@ namespace Cairo.Fonts;
 /// </remarks>
 public sealed unsafe class FontOptions : CairoObject, IEquatable<FontOptions>
 {
-    internal FontOptions(void* handle, bool isOwnedByCairo = false) : base(handle, isOwnedByCairo)
+    internal FontOptions(void* handle, bool isOwnedByCairo = false)
+        : base(handle, isOwnedByCairo)
         => _customColorPaletteEntry = new CustomColorPaletteEntry(this);
 
     /// <summary>
