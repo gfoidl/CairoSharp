@@ -10,7 +10,6 @@ using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.Win32;
-using Path = Cairo.Drawing.Path.Path;
 
 namespace WinFormsDemo;
 
@@ -587,7 +586,7 @@ public partial class Form1 : Form
         _onPaintAction    = static cr =>
         {
             cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Bold);
-            cr.FontSize = 90d;
+            cr.SetFontSize(90d);
 
             cr.MoveTo(10.0, 135.0);
             cr.ShowText("Hello");
@@ -621,7 +620,7 @@ public partial class Form1 : Form
             const string Text = "cairo";
 
             cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
-            cr.FontSize = 52;
+            cr.SetFontSize(52);
 
             cr.TextExtents(Text, out TextExtents extents);
 
@@ -656,7 +655,7 @@ public partial class Form1 : Form
             const string Text = "cairo";
 
             cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
-            cr.FontSize = 100;
+            cr.SetFontSize(100);
 
             cr.TextExtents(Text, out TextExtents extents);
 
@@ -691,7 +690,7 @@ public partial class Form1 : Form
             const string Text = "cairo";
 
             cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
-            cr.FontSize = 100;
+            cr.SetFontSize(100);
 
             const double X = 25.0;
             const double Y = 150.0;
@@ -712,7 +711,7 @@ public partial class Form1 : Form
             const string Text = "cairo";
 
             cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
-            cr.FontSize = 100;
+            cr.SetFontSize(100);
 
             const double X = 25.0;
             const double Y = 150.0;

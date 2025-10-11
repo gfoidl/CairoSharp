@@ -78,17 +78,15 @@ public static unsafe class TextExtensions
         /// with cairo_set_font_size() or cairo_set_font_matrix(). This results in a font size of size user space units.
         /// (More precisely, this matrix will result in the font's em-square being a size by size square in user space.)
         /// </summary>
+        /// <param name="fontSize">the new font size, in user space units</param>
         /// <remarks>
-        /// If text is drawn without a call to <see cref="set_FontSize(CairoContext, double)"/>(),
+        /// If text is drawn without a call to <see cref="SetFontSize(CairoContext, double)"/>(),
         /// (nor cairo_set_font_matrix() nor cairo_set_scaled_font()), the default font size is 10.0.
         /// </remarks>
-        public double FontSize
+        public void SetFontSize(double fontSize)
         {
-            set
-            {
-                cr.CheckDisposed();
-                cairo_set_font_size(cr.Handle, value);
-            }
+            cr.CheckDisposed();
+            cairo_set_font_size(cr.Handle, fontSize);
         }
 
         /// <summary>
@@ -383,7 +381,8 @@ public static unsafe class TextExtensions
         /// <param name="text">a string, or <c>null</c></param>
         /// <param name="extents">a <see cref="Fonts.TextExtents"/> object into which the results will be stored</param>
         /// <remarks>
-        /// Note that whitespace characters do not directly contribute to the size of the rectangle (extents.width and extents.height).
+        /// Note that whitespace characters do not directly contribute to the size of the rectangle
+        /// (<see cref="TextExtents.Width"/> and <see cref="TextExtents.Height"/>).
         /// They do contribute indirectly by changing the position of non-whitespace characters. In particular, trailing
         /// whitespace characters are likely to not affect the size of the rectangle, though they will affect
         /// the <see cref="TextExtents.XAdvance"/> and <see cref="TextExtents.YAdvance"/> values.

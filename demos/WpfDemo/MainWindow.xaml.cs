@@ -27,7 +27,7 @@ public partial class MainWindow : Window
             context.Fill();
 
             context.MoveTo(140.0, 110.0);
-            context.FontSize = 32;
+            context.SetFontSize(32);
             context.SetSourceColor(new Color(0.0, 0.0, 0.8, 1.0));
             context.ShowText("Hello Cairo!");
 

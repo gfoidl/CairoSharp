@@ -17,11 +17,16 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseArtifactsOutput>true</UseArtifactsOutput>
         <DebugType>embedded</DebugType>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="Cairo.Drawing.Path.Path" Alias="Path" />
+    </ItemGroup>
 
 </Project>

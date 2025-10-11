@@ -3,7 +3,6 @@
 using Cairo.Drawing.Path;
 using Cairo.Drawing.Text;
 using static Cairo.Drawing.Path.PathNative;
-using Path = Cairo.Drawing.Path.Path;
 
 namespace Cairo;
 
