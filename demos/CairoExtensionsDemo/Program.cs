@@ -4,9 +4,13 @@ using System.Diagnostics;
 using System.Reflection;
 using Cairo;
 using Cairo.Extensions;
+using Cairo.Extensions.Arrows;
 using Cairo.Extensions.Shapes;
 using Cairo.Fonts;
+using Cairo.Surfaces;
+using Cairo.Surfaces.Images;
 using Cairo.Surfaces.PDF;
+using Cairo.Surfaces.PostScript;
 using Cairo.Surfaces.SVG;
 using Cairo.Surfaces.Tee;
 using IOPath = System.IO.Path;
@@ -23,6 +27,7 @@ try
 
     Shapes();
     KnownColorsView();
+    Arrows();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -53,6 +58,7 @@ static void Shapes()
     surface.Add(pdf);
     using CairoContext cr = new(surface);
 
+    // Is only relevant to PNG
     cr.Antialias = Antialias.Best;
 
     cr.Rectangle(0, 0, Width, Height);
@@ -96,6 +102,7 @@ static void Shapes()
         cr.Stroke();
     }
 
+    // PNG can also be created this way
     surface.WriteToPng("shapes.png");
 }
 //-----------------------------------------------------------------------------
@@ -169,4 +176,49 @@ static void KnownColorsView()
             yield return (color, field.Name);
         }
     }
+}
+//-----------------------------------------------------------------------------
+static void Arrows()
+{
+    using SvgSurface svg       = new("arrows.svg", 300, 300);
+    using PdfSurface pdf       = new("arrows.pdf", 300, 300);
+    using PostScriptSurface ps = new("arrows.ps" , 300, 300);
+    using TeeSurface surface   = new(svg);
+
+    surface.Add(pdf);
+    surface.Add(ps);
+    using CairoContext cr = new(surface);
+
+    // Is only relevant to PNG
+    cr.Antialias = Antialias.Best;
+
+    cr.Scale(300, 300);
+
+    // adjust the line width due scaling
+    double ux = 1, uy = 1;
+    cr.DeviceToUserDistance(ref ux, ref uy);
+    cr.LineWidth = Math.Max(ux, uy);
+
+    cr.MoveTo(0, 0.1);
+    cr.LineTo(1, 0.1);
+    cr.MoveTo(0, 0.9);
+    cr.LineTo(1, 0.9);
+    cr.Stroke();
+
+    Arrow arrow = new(cr);
+    cr.Color    = KnownColors.Blue;
+    arrow.DrawArrow (0.1, 0.1, 0.2, 0.9);
+    arrow.DrawVector(0.2, 0.1, 0.3, 0.9);
+
+    arrow    = new OpenArrow(cr);
+    cr.Color = KnownColors.Green;
+    arrow.DrawArrow (0.3, 0.1, 0.4, 0.9);
+    arrow.DrawVector(0.4, 0.1, 0.5, 0.9);
+
+    arrow    = new CircleArrow(cr, radius: 0.01);   // keep scale in mind
+    cr.Color = KnownColors.Red;
+    arrow.DrawArrow (0.5, 0.1, 0.6, 0.9);
+    arrow.DrawVector(0.6, 0.1, 0.7, 0.9);
+
+    svg.WriteToPng("arrows.png");
 }
