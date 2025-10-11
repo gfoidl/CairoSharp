@@ -99,7 +99,10 @@ public abstract class Shape(CairoContext cr) : IDisposable
 
     private Path GetPath()
     {
-        _cr.NewPath();
+        if (_cr.HasCurrentPoint)
+        {
+            _cr.NewPath();
+        }
 
         this.CreatePath(_cr);
         Path path = _cr.CopyPath();

@@ -53,9 +53,12 @@ public static class ContextExtensions
         /// <param name="xCenter">the x-coordinate of the center</param>
         /// <param name="yCenter">the y-coordinate of the center</param>
         /// <param name="inradius">the inradius (= half the length)</param>
-        public void Hexagon(double xCenter, double yCenter, double inradius)
+        /// <param name="peakOnTop">
+        /// when <c>true</c> the peak is on top, <c>false</c> otherwise. Defaults to <c>true</c>
+        /// </param>
+        public void Hexagon(double xCenter, double yCenter, double inradius, bool peakOnTop = true)
         {
-            using Hexagon hexagon = new(cr, inradius);
+            using Hexagon hexagon = new(cr, inradius, peakOnTop);
             using (cr.Save())
             {
                 cr.Translate(xCenter, yCenter);

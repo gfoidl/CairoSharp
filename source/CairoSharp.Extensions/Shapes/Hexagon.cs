@@ -9,6 +9,8 @@ public sealed class Hexagon : Shape
 {
     private static readonly double s_sqrt3Inv = 1d / Math.Sqrt(3d);
 
+    private readonly bool _peakOnTop;
+
     /// <summary>
     /// The inradius of the hexagon.
     /// </summary>
@@ -24,11 +26,14 @@ public sealed class Hexagon : Shape
     /// </summary>
     /// <param name="cr">The <see cref="CairoContext"/></param>
     /// <param name="inradius">The inradius of the hexagon</param>
+    /// <param name="peakOnTop">
+    /// when <c>true</c> the peak is on top, <c>false</c> otherwise. Defaults to <c>true</c>
+    /// </param>
     /// <remarks>
     /// When <paramref name="inradius" /> is negative, the absolute value
     /// gets used, no exception is thrown.
     /// </remarks>
-    public Hexagon(CairoContext cr, double inradius) : base(cr)
+    public Hexagon(CairoContext cr, double inradius, bool peakOnTop = true) : base(cr)
     {
         // Anpassen der Seitenlänge damit der Abstand zwischen 2 Sechsecken 2.ri beträgt.
         // ri...Inkreisradius, a = ru...Kantenlänge
@@ -37,6 +42,7 @@ public sealed class Hexagon : Shape
         inradius          = Math.Abs(inradius);
         this.Inradius     = inradius;
         this.Circumradius = 2 * inradius * s_sqrt3Inv;
+        _peakOnTop        = peakOnTop;
     }
 
     protected internal override void CreatePath(CairoContext cr)
@@ -46,6 +52,12 @@ public sealed class Hexagon : Shape
         double a    = ru;
         double aBy2 = a * 0.5;
 
+        if (!_peakOnTop)
+        {
+            cr.Save();
+            cr.Rotate(Math.PI / 2);
+        }
+
         // Hexagon points. Above center first, then clockwise.
         cr.MoveTo   (0  , -ru);
         cr.LineTo   (ri , -aBy2);
@@ -54,5 +66,10 @@ public sealed class Hexagon : Shape
         cr.LineTo   (-ri, aBy2);
         cr.RelLineTo(0  , -a);
         cr.ClosePath();
+
+        if (!_peakOnTop)
+        {
+            cr.Restore();
+        }
     }
 }

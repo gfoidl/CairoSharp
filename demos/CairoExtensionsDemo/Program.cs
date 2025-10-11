@@ -102,6 +102,9 @@ static void Shapes()
         cr.Hexagon(650, 400, 100);
         cr.Color = KnownColors.Brown;
         cr.Stroke();
+
+        cr.Hexagon(900, 400, 100, peakOnTop: false);
+        cr.Stroke();
     }
 
     // PNG can also be created this way
