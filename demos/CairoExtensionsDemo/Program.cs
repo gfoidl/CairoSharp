@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using Cairo;
+using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
 using Cairo.Extensions.Arrows;
 using Cairo.Extensions.Shapes;
@@ -28,6 +29,7 @@ try
     Shapes();
     KnownColorsView();
     Arrows();
+    PaintAfter();       // "layered painting"
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -139,7 +141,7 @@ static void KnownColorsView()
     }
 
     cr.LineWidth = 0.35;
-    cr.FontSize  = 10;
+    cr.SetFontSize(10);     // is the default anyway
     cr.SelectFontFace("Arial");
 
     for (int i = 0; i < colors.Count; ++i)
@@ -221,4 +223,122 @@ static void Arrows()
     arrow.DrawVector(0.6, 0.1, 0.7, 0.9);
 
     svg.WriteToPng("arrows.png");
+}
+//-----------------------------------------------------------------------------
+static void PaintAfter()
+{
+    Pattern? pattern = null;
+
+    try
+    {
+        using (SvgSurface svg  = new("test.svg", 300, 300))
+        using (CairoContext cr = new(svg))
+        {
+            // Draw to group
+            cr.PushGroup();
+            {
+                cr.Hexagon(150, 150, 125);
+                cr.SetSourceRgb(0.8, 0.8, 0.8);
+                cr.Fill();
+            }
+            // Get the group
+            pattern = cr.PopGroup();
+
+            cr.SetSource(pattern);
+
+            // Draw (withou mask, hence everything that's in the in the source)
+            cr.Paint();
+        }
+
+        using (PdfSurface pdf  = new("test1.pdf", 300, 300))
+        using (SvgSurface svg  = new("test1.svg", 300, 300))
+        using (CairoContext cr = new(svg))
+        {
+            cr.PushGroup();
+            {
+                cr.SetSource(pattern);
+                cr.Paint();
+
+                cr.SetSourceRgb(0, 0, 1);
+                cr.LineWidth = 0.1;
+
+                cr.MoveTo(  0, 150);
+                cr.LineTo(300, 150);
+                cr.MoveTo(150,   0);
+                cr.LineTo(150, 300);
+                cr.Stroke();
+
+                cr.SetSourceRgb(0, 0, 0);
+                cr.SelectFontFace("Georgia");   // or "Rockwell", or "Arial", or ...
+                cr.SetFontSize(16);
+                string text = "Hexagon with coordinate-axis";
+
+                // Determine the width of the text
+                double textWidth = cr.GetTextWidth(text);
+
+                using (cr.Save())
+                {
+                    cr.Translate((300 - textWidth) / 2, 16);
+                    cr.ShowText(text);
+                }
+
+                cr.MoveTo(  0,   0);
+                cr.LineTo(300, 300);
+                cr.MoveTo(  0, 300);
+                cr.LineTo(300,   0);
+                cr.Stroke();
+
+                using (cr.Save())
+                {
+#if !VARIANT
+                    cr.Translate(16, 300);      // see below in the #ifdef, there's 0 --> result is the same.
+                    cr.Rotate(-Math.PI / 2);
+                    cr.Translate((300 - textWidth) / 2, 0);
+#else
+                    cr.Translate(0, 300);
+                    cr.Rotate(-Math.PI / 2);
+                    cr.Translate((300 - textWidth) / 2, 16);
+#endif
+                    cr.ShowText(text);
+                }
+
+                // Draw scale
+                using (cr.Save())
+                {
+                    cr.Translate(270, 20);
+
+                    using LinearGradient linpat = new(0, 0, 0, 260);
+                    linpat.AddColorStopRgb(0  , 0, 1, 0);
+                    linpat.AddColorStopRgb(0.5, 0, 0, 1);
+                    linpat.AddColorStopRgb(1  , 1, 0, 0);
+
+                    cr.Rectangle(0, 0, 20, 260);
+                    cr.SetSource(linpat);
+                    cr.FillPreserve();
+
+                    cr.Color = Color.Default;
+                    cr.LineWidth = 1;
+                    cr.Stroke();
+                }
+            }
+            pattern = cr.PopGroup();
+
+            cr.SetSource(pattern);
+            cr.Paint();
+
+            using CairoContext cr1 = new(pdf);
+            cr1.Color = new Color(1, 1, 1, 0);
+            cr1.Rectangle(0, 0, 300, 300);
+            cr1.Fill();
+
+            cr1.SetSource(pattern);
+            cr1.Paint();
+
+            pdf.WriteToPng("test1.png");
+        }
+    }
+    finally
+    {
+        pattern?.Dispose();
+    }
 }

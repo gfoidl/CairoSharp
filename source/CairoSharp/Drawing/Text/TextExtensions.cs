@@ -78,17 +78,15 @@ public static unsafe class TextExtensions
         /// with cairo_set_font_size() or cairo_set_font_matrix(). This results in a font size of size user space units.
         /// (More precisely, this matrix will result in the font's em-square being a size by size square in user space.)
         /// </summary>
+        /// <param name="fontSize">the new font size, in user space units</param>
         /// <remarks>
-        /// If text is drawn without a call to <see cref="set_FontSize(CairoContext, double)"/>(),
+        /// If text is drawn without a call to <see cref="SetFontSize(CairoContext, double)"/>(),
         /// (nor cairo_set_font_matrix() nor cairo_set_scaled_font()), the default font size is 10.0.
         /// </remarks>
-        public double FontSize
+        public void SetFontSize(double fontSize)
         {
-            set
-            {
-                cr.CheckDisposed();
-                cairo_set_font_size(cr.Handle, value);
-            }
+            cr.CheckDisposed();
+            cairo_set_font_size(cr.Handle, fontSize);
         }
 
         /// <summary>
