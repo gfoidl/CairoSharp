@@ -26,7 +26,7 @@ public sealed unsafe class SurfacePattern : Pattern
     /// <remarks>
     /// The reference returned in surface is owned by the pattern.
     /// </remarks>
-    public Surface? Surface
+    public Surface Surface
     {
         get
         {
@@ -36,7 +36,7 @@ public sealed unsafe class SurfacePattern : Pattern
 
             status.ThrowIfStatus(Status.PatternTypeMismatch);
 
-            return surfaceHandle is null ? null : new Surface(surfaceHandle, isOwnedByCairo: true);
+            return new Surface(surfaceHandle, isOwnedByCairo: true);
         }
     }
 }

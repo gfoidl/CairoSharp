@@ -295,8 +295,11 @@ public unsafe class Surface : CairoObject
     /// Sets an offset that is added to the device coordinates determined by the CTM when drawing
     /// to surface. One use case for this property is when we want to create a <see cref="Surface"/>
     /// that redirects drawing for a portion of an onscreen surface to an offscreen surface in a way that
-    /// is completely invisible to the user of the cairo API. Setting a transformation via cairo_translate()
-    /// isn't sufficient to do this, since functions like cairo_device_to_user() will expose the hidden offset.
+    /// is completely invisible to the user of the cairo API. Setting a transformation via
+    /// <see cref="TransformationsExtensions.Translate(CairoContext, double, double)"/>
+    /// isn't sufficient to do this, since functions like
+    /// <see cref="TransformationsExtensions.DeviceToUser(CairoContext, ref double, ref double)"/> will
+    /// expose the hidden offset.
     /// </summary>
     public PointD DeviceOffset
     {
@@ -317,8 +320,10 @@ public unsafe class Surface : CairoObject
     /// Sets a scale that is multiplied to the device coordinates determined by the CTM when drawing
     /// to surface. One common use for this is to render to very high resolution display devices at
     /// a scale factor, so that code that assumes 1 pixel will be a certain size will still work.
-    /// Setting a transformation via cairo_scale() isn't sufficient to do this, since functions like
-    /// cairo_device_to_user() will expose the hidden scale.
+    /// Setting a transformation via <see cref="TransformationsExtensions.Scale(CairoContext, double, double)"/>
+    /// isn't sufficient to do this, since functions like
+    /// <see cref="TransformationsExtensions.DeviceToUser(CairoContext, ref double, ref double)"/> will
+    /// expose the hidden scale.
     /// </summary>
     public PointD DeviceScale
     {
@@ -359,7 +364,7 @@ public unsafe class Surface : CairoObject
     /// The default fallback resolution is 300 pixels per inch in both dimensions.
     /// </para>
     /// </remarks>
-    public (double xPixelsPerInch, double yPixelsPerInch) SetFallbackResolution
+    public (double xPixelsPerInch, double yPixelsPerInch) FallbackResolution
     {
         get
         {

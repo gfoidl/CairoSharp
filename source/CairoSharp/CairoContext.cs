@@ -249,14 +249,16 @@ public sealed unsafe class CairoContext : CairoObject
     /// by the <see cref="PushGroup()"/> method), so that any changes to the graphics state will
     /// not be visible outside the group.
     /// </remarks>
-    public Pattern PopGroup()
+    public SurfacePattern PopGroup()
     {
         this.CheckDisposed();
 
         void* handle = cairo_pop_group(this.Handle);
 
         Debug.Assert(handle is not null);
-        return Pattern.Lookup(handle, isOwnedByCairo: false)!;
+        SurfacePattern? surface = Pattern.Lookup(handle, isOwnedByCairo: false) as SurfacePattern;
+
+        return surface ?? throw new CairoException("Unexpected result, should be a surface pattern");
     }
 
     /// <summary>
