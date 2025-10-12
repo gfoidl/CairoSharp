@@ -3,16 +3,20 @@
 ## Why?
 
 The name on `DllImport` is `cairo`, therefore the runtime evaluates the dll to
-* `cairo.dll` on windows
-* `libcairo.so` on linux
+* `cairo.dll` on Windows
+* `libcairo.so` on Linux
 
-But on linux the actual so is `libcairo.so.2` (see `/usr/lib/x86_64-linux-gnu`, there it is a symlink to `libcairo.so.2.11400.6` or similar).
+But on linux the actual so is `libcairo.so.2` (see `/usr/lib/x86_64-linux-gnu`, there it is a symlink to `libcairo.so.2.11800.0` or similar).
 Therefore the so can't be loaded. Possible workaurounds are:
-* another symlink ln -s libcairo.so.2 libcairo.so
+* another symlink `ln -s libcairo.so.2 libcairo.so` 
 * a stub libcairo.so that loads libcairo.so.2
 
 The first approach is possible, but requires user-action (and sudo) therefore this is error-prone and not practical.
 The second approach requires no user action, hence this one is preferable.
+
+> [!NOTE]
+> On Linux when installed via `apt install libcairo2-dev` (so the DEV package) then there's already the symlink for `libcairo.so`, so it will work w/o stubs, etc.
+> But for `apt install libcairo2` that symlink won't be available.
 
 
 ## How?

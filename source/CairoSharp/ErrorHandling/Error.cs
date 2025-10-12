@@ -1,7 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
-using Cairo.ErrorHandling;
+using static Cairo.ErrorHandling.ErrorNative;
 
 namespace Cairo;
 
@@ -17,7 +17,7 @@ public static unsafe class Error
         /// </returns>
         public string GetString()
         {
-            sbyte* raw = ErrorNative.cairo_status_to_string(status);
+            sbyte* raw = cairo_status_to_string(status);
             return new string(raw);
         }
 
@@ -63,8 +63,5 @@ public static unsafe class Error
     /// being destroyed when non-empty).
     /// </para>
     /// </remarks>
-    public static void ResetStaticData()
-    {
-        ErrorNative.cairo_debug_reset_static_data();
-    }
+    public static void ResetStaticData() => cairo_debug_reset_static_data();
 }

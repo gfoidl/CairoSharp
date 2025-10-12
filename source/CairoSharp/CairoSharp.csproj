@@ -46,6 +46,7 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="CairoSharp.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b92824db26ef87d6c74c58d964e829f9414739a3cad9bd6b7643680cf23b0f6a16c3896a1b12d67ef19efaac3a5665fc76a48876e612072ec9f380a8e07044cfc6a2dd0d73bf26cb7e0267a2a5e70c54e0d0f905d929d4f576bdf6b2556ef1ff6272ceabd24ec769164e6f0f939c2228ce9593c5e355562c3432c8cab808f6be" />
+        <InternalsVisibleTo Include="CairoSharp.Extensions, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b92824db26ef87d6c74c58d964e829f9414739a3cad9bd6b7643680cf23b0f6a16c3896a1b12d67ef19efaac3a5665fc76a48876e612072ec9f380a8e07044cfc6a2dd0d73bf26cb7e0267a2a5e70c54e0d0f905d929d4f576bdf6b2556ef1ff6272ceabd24ec769164e6f0f939c2228ce9593c5e355562c3432c8cab808f6be" />
     </ItemGroup>
 
     <ItemGroup>
@@ -61,28 +62,28 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\..\artifacts\native\win-x64\build\src\cairo-2.dll"
-                 Link="runtimes\win-x64\cairo.dll"
+        <Content Include="..\..\artifacts\native\win-x64\cairo\out\bin\*.dll"
+                 Link="runtimes\win-x64\native\%(FileName).dll"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x64\native\cairo.dll" />
+                 PackagePath="runtimes\win-x64\native" />
 
-        <Content Include="..\..\artifacts\native\win-x86\build\src\cairo-2.dll"
-                 Link="runtimes\win-x86\cairo.dll"
+        <Content Include="..\..\artifacts\native\win-x86\cairo\out\bin\*.dll"
+                 Link="runtimes\win-x86\native\%(FileName).dll"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x86\native\cairo.dll" />
+                 PackagePath="runtimes\win-x86\native" />
 
         <Content Include="..\..\native\stubs\linux-x64\libcairo.so"
-                 LinkBase="runtimes\linux-x64"
+                 LinkBase="runtimes\linux-x64\native"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\linux-x64\native" />
 
         <Content Include="..\..\native\stubs\linux-arm64\libcairo.so"
-                 LinkBase="runtimes\linux-arm64"
+                 LinkBase="runtimes\linux-arm64\native"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\linux-arm64\native" />
 
         <Content Include="..\..\native\stubs\linux-arm\libcairo.so"
-                 LinkBase="runtimes\linux-arm"
+                 LinkBase="runtimes\linux-arm\native"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\linux-arm\native" />
     </ItemGroup>

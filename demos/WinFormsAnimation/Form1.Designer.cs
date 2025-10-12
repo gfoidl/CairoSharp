@@ -71,8 +71,6 @@ partial class Form1
         // saveImagesCheckBox
         // 
         saveImagesCheckBox.AutoSize = true;
-        saveImagesCheckBox.Checked = true;
-        saveImagesCheckBox.CheckState = CheckState.Checked;
         saveImagesCheckBox.Location = new Point(468, 12);
         saveImagesCheckBox.Name = "saveImagesCheckBox";
         saveImagesCheckBox.Size = new Size(102, 23);
