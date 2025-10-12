@@ -65,16 +65,11 @@
                  Link="runtimes\win-x64\native\%(FileName).dll"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\win-x64\native" />
-        <!-- to avoid DLL loading troubles and a win-stub, cairo-2.dll is renamed to cairo.dll -->
-        <Content Update="..\..\artifacts\native\win-x64\cairo\out\bin\cairo-2.dll"
-                 Link="runtimes\win-x64\native\cairo.dll"
-                 CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x64\native\cairo.dll" />
 
-        <Content Include="..\..\artifacts\native\win-x86\cairo\build\src\cairo-2.dll"
-                 Link="runtimes\win-x86\native\cairo.dll"
+        <Content Include="..\..\artifacts\native\win-x86\cairo\out\bin\*.dll"
+                 Link="runtimes\win-x86\native\%(FileName).dll"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x86\native\cairo.dll" />
+                 PackagePath="runtimes\win-x86\native" />
 
         <Content Include="..\..\native\stubs\linux-x64\libcairo.so"
                  LinkBase="runtimes\linux-x64\native"

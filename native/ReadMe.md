@@ -54,11 +54,9 @@ rem Run in "x86 Native Tools Command Prompt for VS 2022"
 
 cd native\cairo
 
-meson setup --buildtype=release --default-library=both --default-both-libraries=shared -Dtests=disabled ..\..\artifacts\native\win-x86\cairo\build
+meson setup --buildtype=release --default-library=shared -Dfontconfig=enabled -Dfreetype=enabled -Dtests=disabled ..\..\artifacts\native\win-x86\cairo\build
 ninja -C ..\..\artifacts\native\win-x86\cairo\build
-
-rem build will likely not complete, but the desired artifact is there...
-rem meson install -C ..\..\artifacts\native\win-x86\cairo\build --destdir ..\..\out
+meson install -C ..\..\artifacts\native\win-x86\cairo\build --destdir ..\out
 ```
 
 ### Mac OS X
