@@ -65,16 +65,3 @@ rem meson install -C ..\..\artifacts\native\win-x86\cairo\build --destdir ..\..\
 
 _cairo_ must be [installed](https://www.cairographics.org/download/), and as I don't have any experience with Macs I don't know if stubs are needed or not.
 If you know more, please file and issue or create a PR, that adds these stubs, etc.
-
-## librsvg
-
-* on Linux it's easy to install (when not already there)
-* only the Windows x64 DLLs are bundled in the NuGet-package -- I don't care about Windows x86 (anymore)
-
-```cmd
-rem Run in "x64 Native Tools Command Prompt for VS 2022"
-
-cd native\librsvg
-
-
-```
