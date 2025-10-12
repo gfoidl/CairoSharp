@@ -11,6 +11,20 @@ internal static class Native
 {
     public const string LibCairo = "cairo";
 
+    // The logic in this loader will be used in the extensions project too.
+    public record LibNames(string LinuxLibName, string WindowsLibName, string MacOSLibName)
+    {
+        public string? LinuxStubName { get; init; }
+    }
+
+    // E.g. with the stub we have:
+    // $ ldd libcairo.so
+    // Then the dependencies from the OS loader's PoV are listed.
+    private static readonly LibNames s_cairoLibNames = new("libcairo.so.2", "cairo-2.dll", "libcairo.2.dylib")
+    {
+        LinuxStubName = "libcairo.so"
+    };
+
 #pragma warning disable CA2255      // The 'ModuleInitializer' attribute should not be used in libraries
     private static nint s_libHandle;
 
@@ -25,72 +39,49 @@ internal static class Native
             {
                 nint libHandle = Volatile.Read(ref s_libHandle);
 
-                return libHandle != 0 ? libHandle : GetLibHandle();
+                if (libHandle == 0)
+                {
+                    libHandle = GetLibHandle(s_cairoLibNames);
+                    Volatile.Write(ref s_libHandle, libHandle);
+                }
+
+                return libHandle;
             }
 
             return default;
         });
     }
 
-    private static nint GetLibHandle()
+    public static nint GetLibHandle(LibNames libNames)
     {
-        nint libHandle;
-
         if (OperatingSystem.IsWindows())
         {
-            libHandle = GetLibHandleWin();
+            return GetLibHandleWin(libNames);
         }
         else if (OperatingSystem.IsLinux())
         {
-            libHandle = GetLibHandleLinux();
+            return GetLibHandleLinux(libNames);
         }
         else if (OperatingSystem.IsMacOS())
         {
-            libHandle = GetLibHandleMacOS();
+            return GetLibHandleMacOS(libNames);
         }
         else
         {
             throw new PlatformNotSupportedException();
         }
-
-        if (libHandle != 0)
-        {
-            Volatile.Write(ref s_libHandle, libHandle);
-        }
-
-        return libHandle;
     }
 
-    private static nint GetLibHandleWin()
+    private static nint GetLibHandleWin(LibNames libNames)
     {
-        // E.g. with the stub we have:
-        // $ ldd libcairo.so
-        // Then the dependencies from the OS loader's PoV are listed.
-        const string WinLibName = "cairo-2.dll";
-
-        string path = GetLocalLibraryPathWithRid(WinLibName);
-
-        if (NativeLibrary.TryLoad(path, out nint handle))
+        // When consuming project is built with an RFID set, then the SDK
+        // flattens the native libraries.
+        if (NativeLibrary.TryLoad(libNames.WindowsLibName, out nint handle))
         {
             return handle;
         }
 
-        return default;
-    }
-
-    private static nint GetLibHandleLinux()
-    {
-        const string LinuxLibName = "libcairo.so.2";
-        const string StubLibName  = "libcairo.so";
-
-        // Try the native loader first
-        if (NativeLibrary.TryLoad(LinuxLibName, out nint handle))
-        {
-            return handle;
-        }
-
-        // When not found, try via stub
-        string path = GetLocalLibraryPathWithRid(StubLibName);
+        string path = GetLocalLibraryPathWithRid(libNames.WindowsLibName);
 
         if (NativeLibrary.TryLoad(path, out handle))
         {
@@ -100,11 +91,38 @@ internal static class Native
         return default;
     }
 
-    private static nint GetLibHandleMacOS()
+    private static nint GetLibHandleLinux(LibNames libNames)
     {
-        const string MacOSLibName = "libcairo.2.dylib";
+        // Try the native loader first
+        if (NativeLibrary.TryLoad(libNames.LinuxLibName, out nint handle))
+        {
+            return handle;
+        }
 
-        if (NativeLibrary.TryLoad(MacOSLibName, out nint handle))
+        // When not found, try via stub
+        if (libNames.LinuxStubName is not null)
+        {
+            // When consuming project is built with an RFID set, then the SDK
+            // flattens the native libraries.
+            if (NativeLibrary.TryLoad(libNames.LinuxStubName, out handle))
+            {
+                return handle;
+            }
+
+            string path = GetLocalLibraryPathWithRid(libNames.LinuxStubName);
+
+            if (NativeLibrary.TryLoad(path, out handle))
+            {
+                return handle;
+            }
+        }
+
+        return default;
+    }
+
+    private static nint GetLibHandleMacOS(LibNames libNames)
+    {
+        if (NativeLibrary.TryLoad(libNames.MacOSLibName, out nint handle))
         {
             return handle;
         }
@@ -112,7 +130,7 @@ internal static class Native
         return default;
     }
 
-    internal static string GetLocalLibraryPathWithRid(string libName)
+    private static string GetLocalLibraryPathWithRid(string libName)
     {
         string runtimeIdentifier = GetRuntimeIdentifier();
 
