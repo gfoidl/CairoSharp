@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="*.ttf" CopyToOutputDirectory="PreserveNewest" />
+        <EmbeddedResource Include="SanRemo.ttf" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Cairo.Extensions.Fonts.FreeType;
 using Cairo.Fonts.FreeType;
 using static Cairo.Extensions.Fonts.FreeType.FreeTypeNative;
@@ -47,7 +49,7 @@ public static unsafe class FreeTypeExtensions
         }
     }
 
-    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags)
+    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags, GCHandle fontDataHandle = default)
     {
         // Problem: cairo doesn't know to call FT_Done_Face when its font_face object is
         // destroyed, so we have to do that for it, by attaching a cleanup callback to
@@ -65,21 +67,44 @@ public static unsafe class FreeTypeExtensions
         FreeTypeFont ftFont = new((nint)face, loadFlags);
 
         void* userData = ftFont.GetUserData(ref s_destroyFuncKey);
-
         if (userData is null)
         {
-            ftFont.SetUserData(ref s_destroyFuncKey, face, &DestroyFunc);
+            FontState fontState = new((nint)face, fontDataHandle);
+            GCHandle gcHandle   = GCHandle.Alloc(fontState, GCHandleType.Normal);
+
+            ftFont.SetUserData(ref s_destroyFuncKey, GCHandle.ToIntPtr(gcHandle).ToPointer(), &DestroyFunc);
         }
 
         return ftFont;
 
         static void DestroyFunc(void* userData)
         {
-            FT_Face face = (FT_Face)userData;
-            FTError status = FT_Done_Face(face);
-            status.ThrowIfNotSuccess();
+            Debug.WriteLine("FreeTypeExtensions.DestroyFunc called");
+
+            GCHandle gcHandle = GCHandle.FromIntPtr((nint)userData);
+            Debug.Assert(gcHandle.IsAllocated);
+
+            FontState fontState = (FontState)gcHandle.Target!;
+
+            try
+            {
+                FT_Face face   = (FT_Face)fontState.Face;
+                FTError status = FT_Done_Face(face);
+                status.ThrowIfNotSuccess();
+            }
+            finally
+            {
+                if (fontState.FontDataHandle.IsAllocated)
+                {
+                    fontState.FontDataHandle.Free();
+                }
+
+                gcHandle.Free();
+            }
         }
     }
+
+    private record FontState(nint Face, GCHandle FontDataHandle);
 
     extension(FreeTypeFont)
     {
@@ -142,7 +167,7 @@ public static unsafe class FreeTypeExtensions
         /// <remarks>
         /// The pathname string should be recognizable as such by a standard <c>fopen</c> call on your system;
         /// in particular, this means that pathname must not contain null bytes. If that is not sufficient to
-        /// address all file name possibilities you might use <see cref="LoadFromStream(Stream, int)"/>
+        /// address all file name possibilities you might use <see cref="LoadFromData(ReadOnlySpan{byte}, int, int)"/>
         /// to pass a stream object instead.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="fontFileName"/> is <c>null</c></exception>
@@ -151,20 +176,49 @@ public static unsafe class FreeTypeExtensions
             ArgumentNullException.ThrowIfNull(fontFileName);
 
             FT_Library library = EnsureFreeTypeInitialized();
-
-            FT_Face face;
-            FTError status = FT_New_Face(library, fontFileName, new FT_Long(faceIndex), &face);
+            FTError status     = FT_New_Face(library, fontFileName, new FT_Long(faceIndex), out FT_Face face);
 
             status.ThrowIfNotSuccess();
             return CreateFreeTypeFontCore(face, loadFlags);
         }
 
-        // TODO: implement loading from a stream, e.g. .NET's resource stream when a font is
-        // embedded as resource.
-        // Cf. https://freetype.org/freetype2/docs/reference/ft2-face_creation.html#ft_open_face
-        internal static FreeTypeFont LoadFromStream(Stream stream, int faceIndex)
+        /// <summary>
+        /// Loads the font given by <paramref name="fontData"/> and <paramref name="faceIndex"/>.
+        /// </summary>
+        /// <param name="fontData">the data containing the font</param>
+        /// <param name="faceIndex">
+        /// This field holds two different values. Bits 0-15 are the index of the face in the font file
+        /// (starting with value 0). Set it to 0 if there is only one face in the font file.
+        /// <para>
+        /// Bits 16-30 are relevant to TrueType GX and OpenType Font Variations only, specifying the named
+        /// instance index for the current face index (starting with value 1; value 0 makes FreeType ignore
+        /// named instances). For non-variation fonts, bits 16-30 are ignored. Assuming that you want to access
+        /// the third named instance in face 4, <paramref name="faceIndex"/> should be set to 0x00030004. If you
+        /// want to access face 4 without variation handling, simply set face_index to value 4.
+        /// </para>
+        /// </param>
+        /// <param name="loadFlags">See <see cref="FreeTypeFont(nint, int)"/> param <c>loadFlags</c></param>
+        /// <returns>A <see cref="FreeTypeFont"/></returns>
+        public static FreeTypeFont LoadFromData(ReadOnlySpan<byte> fontData, int faceIndex = 0, int loadFlags = 0)
         {
-            throw new NotImplementedException();
+            if (fontData.IsEmpty)
+            {
+                throw new ArgumentException("empty data for font given", nameof(fontData));
+            }
+
+            FT_Library library = EnsureFreeTypeInitialized();
+
+            // FreeType won't make a copy of the font data, so we must take care of this.
+            byte[] fontDataArray = fontData.ToArray();
+            GCHandle gcHandle    = GCHandle.Alloc(fontDataArray, GCHandleType.Pinned);
+
+            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(fontDataArray))
+            {
+                FTError status = FT_New_Memory_Face(library, ptr, new FT_Long(fontData.Length), new FT_Long(faceIndex), out FT_Face face);
+
+                status.ThrowIfNotSuccess();
+                return CreateFreeTypeFontCore(face, loadFlags, gcHandle);
+            }
         }
     }
 }
