@@ -10,16 +10,24 @@ using FreeTypeSharp;
 
 unsafe
 {
-    using FreeTypeLibrary freeTypeLibrary = new();
-    PrintFreeTypeVersion(freeTypeLibrary);
-
-    FT_FaceRec_* face;
-    FT_Error ftStatus = FT.FT_New_Face(freeTypeLibrary.Native, (byte*)Marshal.StringToHGlobalAnsi("SanRemo.ttf"), 0, &face);
+    FT_LibraryRec_* freeTypeLibrary;
+    FT_Error ftStatus = FT.FT_Init_FreeType(&freeTypeLibrary);
 
     if (ftStatus != FT_Error.FT_Err_Ok)
     {
         Console.WriteLine(ftStatus);
-        return;
+        Environment.Exit(1);
+    }
+
+    PrintFreeTypeVersion(freeTypeLibrary);
+
+    FT_FaceRec_* face;
+    ftStatus = FT.FT_New_Face(freeTypeLibrary, (byte*)Marshal.StringToHGlobalAnsi("SanRemo.ttf"), 0, &face);
+
+    if (ftStatus != FT_Error.FT_Err_Ok)
+    {
+        Console.WriteLine(ftStatus);
+        Environment.Exit(1);
     }
 
     try
@@ -45,14 +53,30 @@ unsafe
     }
     finally
     {
-        FT.FT_Done_Face(face);
+        ftStatus = FT.FT_Done_Face(face);
+
+        if (ftStatus != FT_Error.FT_Err_Ok)
+        {
+            Console.WriteLine(ftStatus);
+            Environment.Exit(1);
+        }
+
+        // https://freetype.org/freetype2/docs/reference/ft2-library_setup.html#ft_done_freetype
+        // This call frees also all children, so the above call isn't needed.
+        ftStatus = FT.FT_Done_FreeType(freeTypeLibrary);
+
+        if (ftStatus != FT_Error.FT_Err_Ok)
+        {
+            Console.WriteLine(ftStatus);
+            Environment.Exit(1);
+        }
     }
 }
 //-----------------------------------------------------------------------------
-static unsafe void PrintFreeTypeVersion(FreeTypeLibrary freeTypeLibrary)
+static unsafe void PrintFreeTypeVersion(FT_LibraryRec_* freeTypeLibrary)
 {
     int major, minor, patch;
-    FT.FT_Library_Version(freeTypeLibrary.Native, &major, &minor, &patch);
+    FT.FT_Library_Version(freeTypeLibrary, &major, &minor, &patch);
 
     Console.WriteLine($"FreeType version: {major}.{minor}.{patch}");
 }
