@@ -2,9 +2,9 @@
 
 ### FreeType .NET library
 
-[FreeTypeSharp](https://github.com/ryancheung/FreeTypeSharp) is used in this demo.
+Wrappers like [FreeTypeSharp](https://github.com/ryancheung/FreeTypeSharp) are pretty raw and near to the C-API, so there's no logic inside the wrapper.
 
-It's pretty raw and near to the C-API.
+Further the [FreeType API](https://freetype.org/freetype2/docs/reference/ft2-face_creation.html) is well documented, thus no explicit wrapper is used in CairoSharp.
 
 ### Validation of the font file
 
