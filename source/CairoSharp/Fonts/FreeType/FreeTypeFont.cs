@@ -26,11 +26,15 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// <see cref="FontFace.SetUserData(ref UserDataKey, void*, delegate*{void*, void})"/>
     /// </param>
     /// <param name="loadFlags">
-    /// flags to pass to FT_Load_Glyph when loading glyphs from the font. These flags are OR'ed
-    /// together with the flags derived from the <see cref="FontOptions"/> to
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>,
+    /// flags to pass to <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_glyph">FT_Load_Glyph</a>
+    /// when loading glyphs from the font. These flags are OR'ed together with the flags derived from the
+    /// <see cref="FontOptions"/> to <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>,
     /// so only a few values such as FT_LOAD_VERTICAL_LAYOUT, and FT_LOAD_FORCE_AUTOHINT are useful.
     /// You should not pass any of the flags affecting the load target, such as FT_LOAD_TARGET_LIGHT.
+    /// <para>
+    /// See <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_xxx">FT_LOAD_XXX</a>
+    /// for values.
+    /// </para>
     /// </param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or

@@ -14,6 +14,8 @@ internal static class Native
 #pragma warning disable CA2255      // The 'ModuleInitializer' attribute should not be used in libraries
     private static nint s_libHandle;
 
+    // The module initializer is needed as every "feature" has it's own native class.
+    // Therefore w/o this initializer the DllImportResolver would not be set.
     [ModuleInitializer]
     public static void ModuleInitializer()
     {
@@ -61,15 +63,12 @@ internal static class Native
 
     private static nint GetLibHandleWin()
     {
+        // E.g. with the stub we have:
+        // $ ldd libcairo.so
+        // Then the dependencies from the OS loader's PoV are listed.
         const string WinLibName = "cairo-2.dll";
 
-        string runtimeIdentifier = GetRuntimeIdentifier();
-        string path              = IOPath.Combine(
-            AppContext.BaseDirectory,
-            "runtimes",
-            runtimeIdentifier,
-            "native",
-            WinLibName);
+        string path = GetLocalLibraryPathWithRid(WinLibName);
 
         if (NativeLibrary.TryLoad(path, out nint handle))
         {
@@ -91,13 +90,7 @@ internal static class Native
         }
 
         // When not found, try via stub
-        string runtimeIdentifier = GetRuntimeIdentifier();
-        string path              = IOPath.Combine(
-            AppContext.BaseDirectory,
-            "runtimes",
-            runtimeIdentifier,
-            "native",
-            StubLibName);
+        string path = GetLocalLibraryPathWithRid(StubLibName);
 
         if (NativeLibrary.TryLoad(path, out handle))
         {
@@ -117,6 +110,18 @@ internal static class Native
         }
 
         return default;
+    }
+
+    internal static string GetLocalLibraryPathWithRid(string libName)
+    {
+        string runtimeIdentifier = GetRuntimeIdentifier();
+
+        return IOPath.Combine(
+            AppContext.BaseDirectory,
+            "runtimes",
+            runtimeIdentifier,
+            "native",
+            libName);
     }
 
     private static string GetRuntimeIdentifier()
