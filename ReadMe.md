@@ -72,7 +72,7 @@ This project only supports .NET 8 onwards. For older .NET targets please use htt
 | Operating system  | _cairo_ shipped with the package | manual installation                                                           |
 |-------------------|----------------------------------|-------------------------------------------------------------------------------|
 | Linux             | (see note for stubs below)       | :heavy_check_mark: (see [downloads](https://www.cairographics.org/download/)) |
-| Windows x64 / x86 | :heavy_checkmark:                | not needed                                                                    |
+| Windows x64 / x86 | :heavy_check_mark:                | not needed                                                                    |
 | Mac OS            | :x:                              | :heavy_check_mark: (see [downloads](https://www.cairographics.org/download/)) |
 
 * for Windows x64 / x86 the _cairo_ DLL is bundled with the NuGet package, not further installation needed
