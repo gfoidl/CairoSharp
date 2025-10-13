@@ -2,12 +2,10 @@
 
 using System.Runtime.InteropServices;
 
-namespace Cairo.Extensions.Loading.SVG;
+namespace Cairo.Extensions.Loading;
 
 internal struct GFile;
 internal struct GInputStream;
-
-internal struct RsvgHandle;
 
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct GError
@@ -16,3 +14,8 @@ internal unsafe struct GError
     public int Code;
     public sbyte* Message;
 }
+
+internal struct RsvgHandle;
+
+internal struct PopplerDocument;
+internal struct PopplerPage;

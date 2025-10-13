@@ -1,6 +1,6 @@
 // (c) gfoidl, all rights reserved
 
-using static Cairo.Extensions.Loading.SVG.LibRSvgNative;
+using static Cairo.Extensions.Loading.LoadingNative;
 
 namespace Cairo.Extensions.Loading.SVG;
 

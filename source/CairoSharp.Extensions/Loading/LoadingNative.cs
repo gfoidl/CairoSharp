@@ -6,14 +6,17 @@ global using RsvgRectangle         = Cairo.Rectangle;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Cairo.Extensions.Loading.PDF;
+using Cairo.Extensions.Loading.SVG;
 
-namespace Cairo.Extensions.Loading.SVG;
+namespace Cairo.Extensions.Loading;
 
-public static unsafe partial class LibRSvgNative
+public static unsafe partial class LoadingNative
 {
-    public const string LibRSvgName    = "librsvg-2.so";
     public const string LigGObjectName = "libgobject-2.0.so";
     public const string LibGioName     = "libgio-2.0.so";
+    public const string LibRSvgName    = "librsvg-2.so";
+    public const string LibPopplerName = "libpoppler-glib.so.8";
 
     [DisallowNull]
     public static DllImportResolver? DllImportResolver
@@ -52,6 +55,12 @@ public static unsafe partial class LibRSvgNative
 
         return null;
     }
+
+    public static string? GetPopplerVersion()
+    {
+        sbyte* version = poppler_get_version();
+        return version is not null ? new string(version) : null;
+    }
     //-------------------------------------------------------------------------
     [LibraryImport(LibGioName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -65,6 +74,7 @@ public static unsafe partial class LibRSvgNative
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void g_object_unref(void* @object);
     //-------------------------------------------------------------------------
+    // librsvg
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial RsvgHandle* rsvg_handle_new_from_gfile_sync(GFile* file, RsvgHandleFlags flags, void* cancellable, GError** error);
@@ -97,4 +107,29 @@ public static unsafe partial class LibRSvgNative
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool rsvg_handle_render_layer(RsvgHandle* handle, cairo_t* cr, string id, RsvgRectangle* viewport, GError** error);
 #endif
+    //-------------------------------------------------------------------------
+    // Poppler
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_get_version();
+
+    [LibraryImport(LibPopplerName, StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial PopplerDocument* poppler_document_new_from_gfile(GFile* file, string? password, void* cancellable, GError** error);
+
+    [LibraryImport(LibPopplerName, StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial PopplerDocument* poppler_document_new_from_stream(GInputStream* stream, long offset, string? password, void* cancellable, GError** error);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial PopplerPage* poppler_document_get_page(PopplerDocument* document, int index);
+
+    [LibraryImport(LibPopplerName, StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial PopplerPage* poppler_document_get_page_by_label(PopplerDocument* document, string label);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void poppler_page_render_full(PopplerPage* page, cairo_t* cairo, [MarshalAs(UnmanagedType.U4)] bool printing, PopplerAnnotFlag flags);
 }

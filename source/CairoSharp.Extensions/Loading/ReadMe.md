@@ -55,8 +55,10 @@ sudo apt update
 sudo apt install librsvg2-bin
 
 # PDF
-sudo apt install poppler-utils
+sudo apt install libpoppler-glib-dev
 ```
+
+Note: poppler is for C++, thus the `libpoppler-glib8` is needed which provides C-bindings.
 
 ### Windows
 
@@ -87,25 +89,20 @@ E.g. for SVG loading with librsvg:
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Cairo.Extensions.Loading.SVG;
+using IOPath = System.IO.Path;
 
 if (OperatingSystem.IsWindows())
 {
-    LibRSvgNative.DllImportResolver = static (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
+    LoadingNative.DllImportResolver = static (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
     {
-        string? path = null;
-
-        if (libraryName == LibRSvgNative.LibRSvgName)
+        string? path = libraryName switch
         {
-            path = System.IO.Path.Combine(@"C:\Program Files\Inkscape\bin", "librsvg-2-2.dll");
-        }
-        else if (libraryName == LibRSvgNative.LibGioName)
-        {
-            path = System.IO.Path.Combine(@"C:\Program Files\Inkscape\bin", "libgio-2.0-0.dll");
-        }
-        else if (libraryName == LibRSvgNative.LigGObjectName)
-        {
-            path = System.IO.Path.Combine(@"C:\Program Files\Inkscape\bin", "libgobject-2.0-0.dll");
-        }
+            LoadingNative.LibRSvgName    => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "librsvg-2-2.dll"),
+            LoadingNative.LibPopplerName => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libpoppler-glib-8.dll"),
+            LoadingNative.LigGObjectName => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgio-2.0-0.dll"),
+            LoadingNative.LibGioName     => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgobject-2.0-0.dll"),
+            _                            => null
+        };
 
         if (path is not null && NativeLibrary.TryLoad(path, out nint handle))
         {
@@ -118,8 +115,9 @@ if (OperatingSystem.IsWindows())
 ```
 
 > [!TIP]
-> The `LibRSvgNative.LibRSvgName` is the standard so-name on Linux, thus for a standard installation no `DllImportResolver` has to be set on Linux
+> The `LoadingNative.LibXYZ` names are the standard so-names on Linux, thus for a standard installation no `DllImportResolver` has to be set on Linux
 
-In the above example librsvg (and libgio) from an Inkscape installation is used, so the resolver points to that place. If libgio is statically linked into librsvg (very unlikely) than that resolver should point to the librsvg DLLs, as that exports the needed functions.
+In the above example the native DLLs from an Inkscape installation are used, so the resolver points to that place.
 
-For poppler it's similar, just that the resolver has to be set on `LibPopplerNative` instead.
+When either librsvg or poppler isn't needed, then no resolver for these names has to be given.
+The resolvers for `LigGObjectName` and `LibGioName` must be given anyway (once loading features are used).

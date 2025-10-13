@@ -5,8 +5,9 @@ using System.Runtime.InteropServices;
 using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
+using Cairo.Extensions.Loading;
+using Cairo.Extensions.Loading.PDF;
 using Cairo.Extensions.Loading.SVG;
-using Cairo.Extensions.Shapes;
 using Cairo.Surfaces;
 using Cairo.Surfaces.PostScript;
 using Cairo.Surfaces.SVG;
@@ -14,22 +15,16 @@ using IOPath = System.IO.Path;
 
 if (OperatingSystem.IsWindows())
 {
-    LibRSvgNative.DllImportResolver = static (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
+    LoadingNative.DllImportResolver = static (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
     {
-        string? path = null;
-
-        if (libraryName == LibRSvgNative.LibRSvgName)
+        string? path = libraryName switch
         {
-            path = IOPath.Combine(@"C:\Program Files\Inkscape\bin", "librsvg-2-2.dll");
-        }
-        else if (libraryName == LibRSvgNative.LibGioName)
-        {
-            path = IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgio-2.0-0.dll");
-        }
-        else if (libraryName == LibRSvgNative.LigGObjectName)
-        {
-            path = IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgobject-2.0-0.dll");
-        }
+            LoadingNative.LibRSvgName    => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "librsvg-2-2.dll"),
+            LoadingNative.LibPopplerName => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libpoppler-glib-8.dll"),
+            LoadingNative.LigGObjectName => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgobject-2.0-0.dll"),
+            LoadingNative.LibGioName     => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgio-2.0-0.dll"),
+            _                            => null
+        };
 
         if (path is not null && NativeLibrary.TryLoad(path, out nint handle))
         {
@@ -56,7 +51,8 @@ Pdf2Png();
 static void PrintVersionInfos()
 {
     Console.WriteLine($"Cairo version:   {CairoAPI.VersionString}");
-    Console.WriteLine($"LibRsvg version: {LibRSvgNative.GetLibRsvgVersion()}");
+    Console.WriteLine($"LibRsvg version: {LoadingNative.GetLibRsvgVersion()}");
+    Console.WriteLine($"Poppler version: {LoadingNative.GetPopplerVersion()}");
     Console.WriteLine();
 }
 //-----------------------------------------------------------------------------
@@ -160,5 +156,13 @@ static void Svg2Png()
 //-----------------------------------------------------------------------------
 static void Pdf2Png()
 {
+    // Loading via file
+    {
+        using SvgSurface svgSurface = new("pdf2png_0.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
 
+        // Note: we set the current dir to output
+        cr.LoadPdf("../demo02.pdf", 0);
+        svgSurface.WriteToPng("pdf2png_0.png");
+    }
 }
