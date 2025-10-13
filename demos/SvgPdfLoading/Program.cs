@@ -36,6 +36,10 @@ if (OperatingSystem.IsWindows())
         return default;
     };
 }
+else
+{
+    // nothing to do on Linux :-)
+}
 
 if (Directory.Exists("output")) Directory.Delete("output", true);
 Directory.CreateDirectory("output");
@@ -48,7 +52,8 @@ Pdf2Png();
 //-----------------------------------------------------------------------------
 static void PrintVersionInfos()
 {
-    Console.WriteLine($"Cairo version: {CairoAPI.VersionString}");
+    Console.WriteLine($"Cairo version:   {CairoAPI.VersionString}");
+    Console.WriteLine($"LibRsvg version: {LibRSvgNative.GetLibRsvgVersion()}");
     Console.WriteLine();
 }
 //-----------------------------------------------------------------------------

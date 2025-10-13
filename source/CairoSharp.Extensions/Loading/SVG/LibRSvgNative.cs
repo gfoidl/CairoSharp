@@ -26,6 +26,33 @@ public static unsafe partial class LibRSvgNative
         }
     }
     //-------------------------------------------------------------------------
+    public static string? GetLibRsvgVersion()
+    {
+        // https://github.com/GNOME/librsvg/blob/0cca5327a5ebbe83013a74047181703e7ea402e2/librsvg-c/build.rs#L74-L81
+        // So they're exposed as static variables, thus PInvoke can't be used.
+
+        if (!NativeLibrary.TryLoad(LibRSvgName, out nint libHandle) && DllImportResolver is not null)
+        {
+            libHandle = DllImportResolver(LibRSvgName, Assembly.GetExecutingAssembly(), null);
+        }
+
+        if (libHandle != 0)
+        {
+            if (NativeLibrary.TryGetExport(libHandle, "rsvg_major_version", out nint majorAddress)
+             && NativeLibrary.TryGetExport(libHandle, "rsvg_minor_version", out nint minorAddress)
+             && NativeLibrary.TryGetExport(libHandle, "rsvg_micro_version", out nint microAddress))
+            {
+                int* major = (int*)majorAddress;
+                int* minor = (int*)minorAddress;
+                int* micro = (int*)microAddress;
+
+                return $"{*major}.{*minor}.{*micro}";
+            }
+        }
+
+        return null;
+    }
+    //-------------------------------------------------------------------------
     [LibraryImport(LibGioName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial GFile* g_file_new_for_path(string path);
