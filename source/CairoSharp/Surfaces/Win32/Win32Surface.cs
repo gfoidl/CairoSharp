@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Surfaces.Images;
 using static Cairo.Surfaces.Win32.Win32SurfaceNative;
 
 namespace Cairo.Surfaces.Win32;
@@ -110,14 +111,14 @@ public sealed unsafe class Win32Surface : Surface
     }
 
     /// <summary>
-    /// Returns a <see cref="Surface"/> image surface that refers to the same bits as the DIB of the
+    /// Returns a <see cref="ImageSurface"/> that refers to the same bits as the DIB of the
     /// Win32 surface. If the passed-in win32 surface is not a DIB surface, <c>null</c> is returned.
     /// </summary>
     /// <returns>
-    /// a <see cref="Surface"/> (owned by the <see cref="Win32Surface"/>), or <c>null</c> if the win32
+    /// a <see cref="ImageSurface"/> (owned by the <see cref="Win32Surface"/>), or <c>null</c> if the win32
     /// surface is not a DIB.
     /// </returns>
-    public Surface? GetImage()
+    public ImageSurface? GetImage()
     {
         this.CheckDisposed();
 
@@ -128,6 +129,6 @@ public sealed unsafe class Win32Surface : Surface
             return null;
         }
 
-        return new Surface(handle, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
+        return new ImageSurface(handle, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
     }
 }
