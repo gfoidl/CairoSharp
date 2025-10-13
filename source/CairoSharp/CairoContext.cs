@@ -1,13 +1,17 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Cairo.Drawing;
 using Cairo.Drawing.Patterns;
 using Cairo.Surfaces;
 using static Cairo.CairoContextNative;
 
 namespace Cairo;
+
+/// <summary>
+/// The native (cairo) context type.
+/// </summary>
+public struct cairo_t;
 
 /// <summary>
 /// cairo_t — The cairo drawing context
@@ -73,6 +77,17 @@ public sealed unsafe class CairoContext : CairoObject
         }
     }
 
+    /// <summary>
+    /// The native handle to <c>cairo_t</c>
+    /// </summary>
+    /// <remarks>
+    /// This handle can be used to pass cairo to other libraries like Pango, poppler, etc.
+    /// <para>
+    /// Note: this handle is owned by CairoSharp, so don't free it in anyway, otherwise
+    /// undefined behavior can occur.
+    /// </para>
+    /// </remarks>
+    public cairo_t* NativeContext => (cairo_t*)this.Handle;
 
     /// <summary>
     /// Checks whether an error has previously occurred for this context.
