@@ -1,5 +1,9 @@
 <Project>
 
+    <PropertyGroup>
+        <UseNativeStubs>false</UseNativeStubs>
+    </PropertyGroup>
+
     <ItemGroup Label="Native cairo DLLs for Windows">
         <CairoWinLib Include="cairo-2" />
         <CairoWinLib Include="fontconfig-1" />
@@ -25,7 +29,9 @@
                  Link="runtimes\win-x86\native\%(FileName).dll"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\win-x86\native" />
+    </ItemGroup>
 
+    <ItemGroup Condition="'$(UseNativeStubs)' == 'true'">
         <Content Include="..\..\native\stubs\linux-x64\libcairo.so"
                  LinkBase="runtimes\linux-x64\native"
                  CopyToOutputDirectory="PreserveNewest"

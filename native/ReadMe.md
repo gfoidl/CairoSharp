@@ -6,10 +6,11 @@
 
 For Linux _cairo_ is a prerequisite and must be [installed](https://www.cairographics.org/download/), e.g. for Debian-like:
 ```bash
+sudo apt install libcairo2-bin
+
+# or to install the dev-package (the bin package is sufficient usually)
 sudo apt install libcairo2-dev
 ```
-
-We use [stubs](./stubs/ReadMe.md), which make handling of the versioned _cairo_ library easier.
 
 ### Windows
 
