@@ -194,6 +194,7 @@ public static unsafe class FreeTypeExtensions
         /// </param>
         /// <param name="loadFlags">See <see cref="FreeTypeFont(nint, int)"/> param <c>loadFlags</c></param>
         /// <returns>A <see cref="FreeTypeFont"/></returns>
+        /// <exception cref="ArgumentException">when empty data is given</exception>
         public static FreeTypeFont LoadFromData(ReadOnlySpan<byte> fontData, int faceIndex = 0, int loadFlags = 0)
         {
             if (fontData.IsEmpty)
@@ -201,20 +202,73 @@ public static unsafe class FreeTypeExtensions
                 throw new ArgumentException("empty data for font given", nameof(fontData));
             }
 
-            FT_Library library = EnsureFreeTypeInitialized();
-
             // FreeType won't make a copy of the font data, so we must take care of this.
             byte[] pinnedArray = GC.AllocateUninitializedArray<byte>(fontData.Length, pinned: true);
             fontData.CopyTo(pinnedArray);
 
-            Debug.Assert(GC.GetGeneration(pinnedArray) == GC.MaxGeneration);
+            return LoadFromData(pinnedArray, faceIndex, loadFlags);
+        }
 
-            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(pinnedArray))
+        /// <summary>
+        /// Loads the font given by <paramref name="font"/> and <paramref name="faceIndex"/>.
+        /// </summary>
+        /// <param name="font">the <see cref="Stream"/> containing the font</param>
+        /// <param name="faceIndex">
+        /// This field holds two different values. Bits 0-15 are the index of the face in the font file
+        /// (starting with value 0). Set it to 0 if there is only one face in the font file.
+        /// <para>
+        /// Bits 16-30 are relevant to TrueType GX and OpenType Font Variations only, specifying the named
+        /// instance index for the current face index (starting with value 1; value 0 makes FreeType ignore
+        /// named instances). For non-variation fonts, bits 16-30 are ignored. Assuming that you want to access
+        /// the third named instance in face 4, <paramref name="faceIndex"/> should be set to 0x00030004. If you
+        /// want to access face 4 without variation handling, simply set face_index to value 4.
+        /// </para>
+        /// </param>
+        /// <param name="loadFlags">See <see cref="FreeTypeFont(nint, int)"/> param <c>loadFlags</c></param>
+        /// <returns>A <see cref="FreeTypeFont"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="font"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentException">
+        /// the <see cref="Stream"/> of <paramref name="font"/> is not readable or seekable, or the
+        /// <see cref="Stream.Length"/> is greater than <see cref="Array.MaxLength"/>.
+        /// </exception>
+        public static FreeTypeFont LoadFromStream(Stream font, int faceIndex = 0, int loadFlags = 0)
+        {
+            ArgumentNullException.ThrowIfNull(font);
+
+            if (!font.CanRead)
             {
-                FTError status = FT_New_Memory_Face(library, ptr, new FT_Long(fontData.Length), new FT_Long(faceIndex), out FT_Face face);
+                throw new ArgumentException("The stream is not readable", nameof(font));
+            }
+
+            if (!font.CanSeek)
+            {
+                throw new ArgumentException("The stream is not seekable", nameof(font));
+            }
+
+            if (font.Length > Array.MaxLength)
+            {
+                throw new ArgumentException("The stream is too big to handle", nameof(font));
+            }
+
+            // FreeType won't make a copy of the font data, so we must take care of this.
+            byte[] fontData = GC.AllocateUninitializedArray<byte>((int)font.Length, pinned: true);
+            font.ReadExactly(fontData);
+
+            return LoadFromData(fontData, faceIndex, loadFlags);
+        }
+
+        private static FreeTypeFont LoadFromData(byte[] pinnedFontData, int faceIndex, int loadFlags)
+        {
+            Debug.Assert(GC.GetGeneration(pinnedFontData) == GC.MaxGeneration);
+
+            FT_Library library = EnsureFreeTypeInitialized();
+
+            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(pinnedFontData))
+            {
+                FTError status = FT_New_Memory_Face(library, ptr, new FT_Long(pinnedFontData.Length), new FT_Long(faceIndex), out FT_Face face);
 
                 status.ThrowIfNotSuccess();
-                return CreateFreeTypeFontCore(face, loadFlags, pinnedArray);
+                return CreateFreeTypeFontCore(face, loadFlags, pinnedFontData);
             }
         }
     }

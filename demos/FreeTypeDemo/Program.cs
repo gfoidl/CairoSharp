@@ -10,6 +10,7 @@ using Cairo.Surfaces.Tee;
 Console.WriteLine($"FreeType version: {FreeTypeFont.FreeTypeLibVersion()}");
 
 LoadFontFromFile();
+LoadFontFromResourceStreamViaLocalArray();
 LoadFontFromResourceStream();
 
 // This is not really needed, but here just to showcase
@@ -24,7 +25,7 @@ static void LoadFontFromFile()
     Core(freeTypeFont, "test0");
 }
 
-static void LoadFontFromResourceStream()
+static void LoadFontFromResourceStreamViaLocalArray()
 {
     using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("FreeTypeDemo.SanRemo.ttf")!;
     byte[] fontData         = new byte[fontStream.Length];
@@ -32,11 +33,15 @@ static void LoadFontFromResourceStream()
 
     using FreeTypeFont freeTypeFont = FreeTypeFont.LoadFromData(fontData);
 
-    GC.Collect();
-    GC.WaitForPendingFinalizers();
-    GC.Collect();
-
     Core(freeTypeFont, "test1");
+}
+
+static void LoadFontFromResourceStream()
+{
+    using Stream fontStream         = Assembly.GetExecutingAssembly().GetManifestResourceStream("FreeTypeDemo.SanRemo.ttf")!;
+    using FreeTypeFont freeTypeFont = FreeTypeFont.LoadFromStream(fontStream);
+
+    Core(freeTypeFont, "test2");
 }
 
 static void Core(FreeTypeFont freeTypeFont, string fileName)
