@@ -61,6 +61,50 @@ public static unsafe partial class LoadingNative
         sbyte* version = poppler_get_version();
         return version is not null ? new string(version) : null;
     }
+
+    public static int PopplerVersion
+    {
+        get
+        {
+            if (field == 0)
+            {
+                field = GetPopplerVersionAsInt();
+            }
+
+            return field;
+        }
+    }
+
+    private static int GetPopplerVersionAsInt()
+    {
+        ReadOnlySpan<char> version = GetPopplerVersion();
+
+        if (version.IsEmpty)
+        {
+            return -1;
+        }
+
+        int idx = version.IndexOf('.');
+        if (!int.TryParse(version[..idx], out int major))
+        {
+            return -1;
+        }
+
+        version = version.Slice(idx + 1);
+        idx     = version.IndexOf('.');
+        if (!int.TryParse(version[..idx], out int minor))
+        {
+            return -1;
+        }
+
+        version = version.Slice(idx + 1);
+        if (!int.TryParse(version, out int patch))
+        {
+            return -1;
+        }
+
+        return CairoAPI.VersionEncode(major, minor, patch);
+    }
     //-------------------------------------------------------------------------
     [LibraryImport(LibGioName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -119,7 +163,7 @@ public static unsafe partial class LoadingNative
 
     [LibraryImport(LibPopplerName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial PopplerDocument* poppler_document_new_from_stream(GInputStream* stream, long offset, string? password, void* cancellable, GError** error);
+    internal static partial PopplerDocument* poppler_document_new_from_stream(GInputStream* stream, long length, string? password, void* cancellable, GError** error);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -132,4 +176,12 @@ public static unsafe partial class LoadingNative
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void poppler_page_render_full(PopplerPage* page, cairo_t* cairo, [MarshalAs(UnmanagedType.U4)] bool printing, PopplerAnnotFlag flags);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void poppler_page_render(PopplerPage* page, cairo_t* cairo);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void poppler_page_render_for_printing(PopplerPage* page, cairo_t* cairo);
 }

@@ -67,17 +67,18 @@ static void Svg2Png()
 
         // Note: we set the current dir to output
         cr.LoadSvg("../demo02.svg", viewPort);
+
         svgSurface.WriteToPng("svg2png_0.png");
     }
 
     // Loading via byte array
     {
-        byte[] svgData = File.ReadAllBytes("../demo02.svg");
-
         using SvgSurface svgSurface = new("svg2png_1.svg", 500, 500);
         using CairoContext cr       = new(svgSurface);
 
+        byte[] svgData = File.ReadAllBytes("../demo02.svg");
         cr.LoadSvg(svgData, viewPort);
+
         svgSurface.WriteToPng("svg2png_1.png");
     }
 
@@ -98,7 +99,7 @@ static void Svg2Png()
         cr.SetSourceSurface(svgLogo, 0, 0);
         cr.Paint();
 
-        cr.SetSourceSurface(svgLogo, 100, 100);
+        cr.SetSourceSurface(svgLogo, 100, 50);
         cr.Paint();
 
         using (cr.Save())
@@ -163,6 +164,20 @@ static void Pdf2Png()
 
         // Note: we set the current dir to output
         cr.LoadPdf("../demo02.pdf", 0);
+
         svgSurface.WriteToPng("pdf2png_0.png");
     }
+
+    // Loading via byte array
+    {
+        using SvgSurface svgSurface = new("pdf2png_1.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
+
+        byte[] pdfData = File.ReadAllBytes("../demo02.pdf");
+        cr.LoadPdf(pdfData, 0);
+
+        svgSurface.WriteToPng("pdf2png_1.png");
+    }
+
+    // Playing around is similar to the demo at SVG above.
 }

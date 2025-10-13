@@ -55,7 +55,7 @@ public static unsafe class PopplerExtensions
             {
                 file     = g_file_new_for_path(fileName);
                 document = poppler_document_new_from_gfile(file, password: null, cancellable: null, &error);
-                page     = RenderCore(document, pageIndex, cr, printing, flags);
+                page     = RenderCore(document, pageIndex, cr, printing, flags, error);
             }
             finally
             {
@@ -106,8 +106,8 @@ public static unsafe class PopplerExtensions
                 fixed (byte* ptr = pdfData)
                 {
                     inputStream = g_memory_input_stream_new_from_data(ptr, (nint)pdfData.Length, &DummyDestroyNotify);
-                    document    = poppler_document_new_from_stream(inputStream, 0, password: null, cancellable: null, &error);
-                    page        = RenderCore(document, pageIndex, cr, printing, flags);
+                    document    = poppler_document_new_from_stream(inputStream, pdfData.Length, password: null, cancellable: null, &error);
+                    page        = RenderCore(document, pageIndex, cr, printing, flags, error);
                 }
             }
             finally
@@ -133,11 +133,38 @@ public static unsafe class PopplerExtensions
         }
     }
 
-    private static PopplerPage* RenderCore(PopplerDocument* document, int pageIndex, CairoContext cr, bool printing, PopplerAnnotFlag flags)
+    private static PopplerPage* RenderCore(PopplerDocument* document, int pageIndex, CairoContext cr, bool printing, PopplerAnnotFlag flags, GError* error)
     {
+        if (document is null)
+        {
+            throw new PopplerException(error);
+        }
+
         PopplerPage* page = poppler_document_get_page(document, pageIndex);
 
-        poppler_page_render_full(page, cr.NativeContext, printing, flags);
+        if (page is null)
+        {
+            throw new PopplerException($"""
+                PDF page at index {pageIndex} could not be loaded.
+                Note: the page index is 0-based.
+                """);
+        }
+
+        if (PopplerVersion > CairoAPI.VersionEncode(25, 2, 0))
+        {
+            poppler_page_render_full(page, cr.NativeContext, printing, flags);
+        }
+        else
+        {
+            if (printing)
+            {
+                poppler_page_render_for_printing(page, cr.NativeContext);
+            }
+            else
+            {
+                poppler_page_render(page, cr.NativeContext);
+            }
+        }
 
         return page;
     }
