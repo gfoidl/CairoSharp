@@ -17,7 +17,7 @@ namespace Cairo.Extensions.Shapes;
 /// </remarks>
 public abstract class Shape(CairoContext cr) : IDisposable
 {
-    private readonly CairoContext _cr = cr;
+    private readonly CairoContext _cr = cr ?? throw new ArgumentNullException(nameof(cr));
     private Path?                 _path;
 
     public void Dispose()
@@ -34,67 +34,59 @@ public abstract class Shape(CairoContext cr) : IDisposable
     /// <summary>
     /// Draws the oultine of the shape.
     /// </summary>
-    /// <param name="cr">The <see cref="CairoContext"/></param>
     /// <param name="centerX">The x-coordinate of the center</param>
     /// <param name="centerY">The y-coordinate of the center</param>
-    public void Draw(CairoContext cr, double centerX, double centerY)
+    public void Draw(double centerX, double centerY)
     {
-        ArgumentNullException.ThrowIfNull(cr);
-
-        using (cr.Save())
+        using (_cr.Save())
         {
-            cr.Translate(centerX, centerY);
-            cr.AppendPath(this.Path);
-            cr.Stroke();
+            _cr.Translate(centerX, centerY);
+            _cr.AppendPath(this.Path);
+            _cr.Stroke();
         }
     }
 
     /// <summary>
     /// Draws the oultine of the shape with the given <see cref="Color" />.
     /// </summary>
-    /// <param name="cr">The <see cref="CairoContext"/></param>
     /// <param name="centerX">The x-coordinate of the center</param>
     /// <param name="centerY">The y-coordinate of the center</param>
     /// <param name="color">
     /// The colour of the outline. Components must be given in the range [0,1]
     /// </param>
-    public void Draw(CairoContext cr, double centerX, double centerY, Color color)
+    public void Draw(double centerX, double centerY, Color color)
     {
         cr.Color = color;
-        this.Draw(cr, centerX, centerY);
+        this.Draw(centerX, centerY);
     }
 
     /// <summary>
     /// Fills the shape.
     /// </summary>
-    /// <param name="cr">The <see cref="CairoContext"/></param>
     /// <param name="centerX">The x-coordinate of the center</param>
     /// <param name="centerY">The y-coordinate of the center</param>
-    public void Fill(CairoContext cr, double centerX, double centerY)
+    public void Fill(double centerX, double centerY)
     {
-        ArgumentNullException.ThrowIfNull(cr);
-
-        using (cr.Save())
+        using (_cr.Save())
         {
-            cr.Translate(centerX, centerY);
-            cr.AppendPath(this.Path);
-            cr.Fill();
+            _cr.Translate(centerX, centerY);
+            _cr.AppendPath(this.Path);
+            _cr.Fill();
         }
     }
 
     /// <summary>
     /// Fills the shape with the given <see cref="Color" />.
     /// </summary>
-    /// <param name="cr">The <see cref="CairoContext"/></param>
     /// <param name="centerX">The x-coordinate of the center</param>
     /// <param name="centerY">The y-coordinate of the center</param>
     /// <param name="color">
     /// The colour of the fill. Components must be given in the range [0,1]
     /// </param>
-    public void Fill(CairoContext cr, double centerX, double centerY, Color color)
+    public void Fill(double centerX, double centerY, Color color)
     {
-        cr.Color = color;
-        this.Fill(cr, centerX, centerY);
+        _cr.Color = color;
+        this.Fill(centerX, centerY);
     }
 
     private Path GetPath()
