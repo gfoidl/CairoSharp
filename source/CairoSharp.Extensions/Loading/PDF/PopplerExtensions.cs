@@ -88,7 +88,7 @@ public static unsafe class PopplerExtensions
         /// <paramref name="printing"/> argument.
         /// </remarks>
         /// <exception cref="ArgumentException"><paramref name="pdfData"/> is empty</exception>
-        /// <exception cref="LibRsvgException">an error occured</exception>
+        /// <exception cref="PopplerException">an error occured</exception>
         public void LoadPdf(ReadOnlySpan<byte> pdfData, int pageIndex, bool printing = false, PopplerAnnotFlag flags = PopplerAnnotFlag.Unknown)
         {
             if (pdfData.IsEmpty)
