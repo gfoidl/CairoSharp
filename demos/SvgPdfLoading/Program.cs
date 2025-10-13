@@ -54,13 +54,28 @@ static void PrintVersionInfos()
 //-----------------------------------------------------------------------------
 static void Svg2Png()
 {
-    // Note: we set the current dir to output
-    using SvgSurface svgSurface = new("svg2png.svg", 500, 500);
-    using CairoContext cr       = new(svgSurface);
-    Rectangle viewPort          = new(0, 0, 500, 500);
+    Rectangle viewPort = new(0, 0, 500, 500);
 
-    cr.LoadSvg("../demo02.svg", viewPort);
-    svgSurface.WriteToPng("svg2png.png");
+    // Loading via file
+    {
+        using SvgSurface svgSurface = new("svg2png_0.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
+
+        // Note: we set the current dir to output
+        cr.LoadSvg("../demo02.svg", viewPort);
+        svgSurface.WriteToPng("svg2png_0.png");
+    }
+
+    // Loading via byte array
+    {
+        byte[] svgData = File.ReadAllBytes("../demo02.svg");
+
+        using SvgSurface svgSurface = new("svg2png_1.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
+
+        cr.LoadSvg(svgData, viewPort);
+        svgSurface.WriteToPng("svg2png_1.png");
+    }
 }
 //-----------------------------------------------------------------------------
 static void Pdf2Png()

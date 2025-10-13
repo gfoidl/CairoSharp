@@ -59,6 +59,7 @@ public static unsafe partial class LibRSvgNative
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool rsvg_handle_render_document(RsvgHandle* handle, cairo_t* cr, RsvgRectangle* viewport, GError** error);
 
+#if LOADING_SVG_RENDER_ELEMENTS
     [LibraryImport(LibRSvgName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     [return: MarshalAs(UnmanagedType.U4)]
@@ -68,4 +69,5 @@ public static unsafe partial class LibRSvgNative
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool rsvg_handle_render_layer(RsvgHandle* handle, cairo_t* cr, string id, RsvgRectangle* viewport, GError** error);
+#endif
 }
