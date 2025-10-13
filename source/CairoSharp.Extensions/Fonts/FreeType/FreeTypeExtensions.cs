@@ -49,7 +49,7 @@ public static unsafe class FreeTypeExtensions
         }
     }
 
-    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags, GCHandle fontDataHandle = default)
+    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags, byte[]? pinnedFontData = null)
     {
         // Problem: cairo doesn't know to call FT_Done_Face when its font_face object is
         // destroyed, so we have to do that for it, by attaching a cleanup callback to
@@ -69,7 +69,7 @@ public static unsafe class FreeTypeExtensions
         void* userData = ftFont.GetUserData(ref s_destroyFuncKey);
         if (userData is null)
         {
-            FontState fontState = new((nint)face, fontDataHandle);
+            FontState fontState = new((nint)face, pinnedFontData);
             GCHandle gcHandle   = GCHandle.Alloc(fontState, GCHandleType.Normal);
 
             ftFont.SetUserData(ref s_destroyFuncKey, GCHandle.ToIntPtr(gcHandle).ToPointer(), &DestroyFunc);
@@ -94,17 +94,12 @@ public static unsafe class FreeTypeExtensions
             }
             finally
             {
-                if (fontState.FontDataHandle.IsAllocated)
-                {
-                    fontState.FontDataHandle.Free();
-                }
-
                 gcHandle.Free();
             }
         }
     }
 
-    private record FontState(nint Face, GCHandle FontDataHandle);
+    private record FontState(nint Face, byte[]? PinnedFontData);
 
     extension(FreeTypeFont)
     {
@@ -199,6 +194,7 @@ public static unsafe class FreeTypeExtensions
         /// </param>
         /// <param name="loadFlags">See <see cref="FreeTypeFont(nint, int)"/> param <c>loadFlags</c></param>
         /// <returns>A <see cref="FreeTypeFont"/></returns>
+        /// <exception cref="ArgumentException">when empty data is given</exception>
         public static FreeTypeFont LoadFromData(ReadOnlySpan<byte> fontData, int faceIndex = 0, int loadFlags = 0)
         {
             if (fontData.IsEmpty)
@@ -206,18 +202,73 @@ public static unsafe class FreeTypeExtensions
                 throw new ArgumentException("empty data for font given", nameof(fontData));
             }
 
-            FT_Library library = EnsureFreeTypeInitialized();
+            // FreeType won't make a copy of the font data, so we must take care of this.
+            byte[] pinnedArray = GC.AllocateUninitializedArray<byte>(fontData.Length, pinned: true);
+            fontData.CopyTo(pinnedArray);
+
+            return LoadFromData(pinnedArray, faceIndex, loadFlags);
+        }
+
+        /// <summary>
+        /// Loads the font given by <paramref name="font"/> and <paramref name="faceIndex"/>.
+        /// </summary>
+        /// <param name="font">the <see cref="Stream"/> containing the font</param>
+        /// <param name="faceIndex">
+        /// This field holds two different values. Bits 0-15 are the index of the face in the font file
+        /// (starting with value 0). Set it to 0 if there is only one face in the font file.
+        /// <para>
+        /// Bits 16-30 are relevant to TrueType GX and OpenType Font Variations only, specifying the named
+        /// instance index for the current face index (starting with value 1; value 0 makes FreeType ignore
+        /// named instances). For non-variation fonts, bits 16-30 are ignored. Assuming that you want to access
+        /// the third named instance in face 4, <paramref name="faceIndex"/> should be set to 0x00030004. If you
+        /// want to access face 4 without variation handling, simply set face_index to value 4.
+        /// </para>
+        /// </param>
+        /// <param name="loadFlags">See <see cref="FreeTypeFont(nint, int)"/> param <c>loadFlags</c></param>
+        /// <returns>A <see cref="FreeTypeFont"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="font"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentException">
+        /// the <see cref="Stream"/> of <paramref name="font"/> is not readable or seekable, or the
+        /// <see cref="Stream.Length"/> is greater than <see cref="Array.MaxLength"/>.
+        /// </exception>
+        public static FreeTypeFont LoadFromStream(Stream font, int faceIndex = 0, int loadFlags = 0)
+        {
+            ArgumentNullException.ThrowIfNull(font);
+
+            if (!font.CanRead)
+            {
+                throw new ArgumentException("The stream is not readable", nameof(font));
+            }
+
+            if (!font.CanSeek)
+            {
+                throw new ArgumentException("The stream is not seekable", nameof(font));
+            }
+
+            if (font.Length > Array.MaxLength)
+            {
+                throw new ArgumentException("The stream is too big to handle", nameof(font));
+            }
 
             // FreeType won't make a copy of the font data, so we must take care of this.
-            byte[] fontDataArray = fontData.ToArray();
-            GCHandle gcHandle    = GCHandle.Alloc(fontDataArray, GCHandleType.Pinned);
+            byte[] fontData = GC.AllocateUninitializedArray<byte>((int)font.Length, pinned: true);
+            font.ReadExactly(fontData);
 
-            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(fontDataArray))
+            return LoadFromData(fontData, faceIndex, loadFlags);
+        }
+
+        private static FreeTypeFont LoadFromData(byte[] pinnedFontData, int faceIndex, int loadFlags)
+        {
+            Debug.Assert(GC.GetGeneration(pinnedFontData) == GC.MaxGeneration);
+
+            FT_Library library = EnsureFreeTypeInitialized();
+
+            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(pinnedFontData))
             {
-                FTError status = FT_New_Memory_Face(library, ptr, new FT_Long(fontData.Length), new FT_Long(faceIndex), out FT_Face face);
+                FTError status = FT_New_Memory_Face(library, ptr, new FT_Long(pinnedFontData.Length), new FT_Long(faceIndex), out FT_Face face);
 
                 status.ThrowIfNotSuccess();
-                return CreateFreeTypeFontCore(face, loadFlags, gcHandle);
+                return CreateFreeTypeFontCore(face, loadFlags, pinnedFontData);
             }
         }
     }
