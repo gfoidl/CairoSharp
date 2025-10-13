@@ -49,7 +49,7 @@ public static unsafe class FreeTypeExtensions
         }
     }
 
-    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags, GCHandle fontDataHandle = default)
+    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags, byte[]? pinnedFontData = null)
     {
         // Problem: cairo doesn't know to call FT_Done_Face when its font_face object is
         // destroyed, so we have to do that for it, by attaching a cleanup callback to
@@ -69,7 +69,7 @@ public static unsafe class FreeTypeExtensions
         void* userData = ftFont.GetUserData(ref s_destroyFuncKey);
         if (userData is null)
         {
-            FontState fontState = new((nint)face, fontDataHandle);
+            FontState fontState = new((nint)face, pinnedFontData);
             GCHandle gcHandle   = GCHandle.Alloc(fontState, GCHandleType.Normal);
 
             ftFont.SetUserData(ref s_destroyFuncKey, GCHandle.ToIntPtr(gcHandle).ToPointer(), &DestroyFunc);
@@ -94,17 +94,12 @@ public static unsafe class FreeTypeExtensions
             }
             finally
             {
-                if (fontState.FontDataHandle.IsAllocated)
-                {
-                    fontState.FontDataHandle.Free();
-                }
-
                 gcHandle.Free();
             }
         }
     }
 
-    private record FontState(nint Face, GCHandle FontDataHandle);
+    private record FontState(nint Face, byte[]? PinnedFontData);
 
     extension(FreeTypeFont)
     {
@@ -209,15 +204,17 @@ public static unsafe class FreeTypeExtensions
             FT_Library library = EnsureFreeTypeInitialized();
 
             // FreeType won't make a copy of the font data, so we must take care of this.
-            byte[] fontDataArray = fontData.ToArray();
-            GCHandle gcHandle    = GCHandle.Alloc(fontDataArray, GCHandleType.Pinned);
+            byte[] pinnedArray = GC.AllocateUninitializedArray<byte>(fontData.Length, pinned: true);
+            fontData.CopyTo(pinnedArray);
 
-            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(fontDataArray))
+            Debug.Assert(GC.GetGeneration(pinnedArray) == GC.MaxGeneration);
+
+            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(pinnedArray))
             {
                 FTError status = FT_New_Memory_Face(library, ptr, new FT_Long(fontData.Length), new FT_Long(faceIndex), out FT_Face face);
 
                 status.ThrowIfNotSuccess();
-                return CreateFreeTypeFontCore(face, loadFlags, gcHandle);
+                return CreateFreeTypeFontCore(face, loadFlags, pinnedArray);
             }
         }
     }

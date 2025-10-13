@@ -32,6 +32,10 @@ static void LoadFontFromResourceStream()
 
     using FreeTypeFont freeTypeFont = FreeTypeFont.LoadFromData(fontData);
 
+    GC.Collect();
+    GC.WaitForPendingFinalizers();
+    GC.Collect();
+
     Core(freeTypeFont, "test1");
 }
 
