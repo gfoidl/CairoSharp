@@ -73,13 +73,13 @@ static void Shapes()
         using Square square   = new(cr, 100);
         using Hexagon hexagon = new(cr, 100);
 
-        circle .Fill(cr, 150, 150, KnownColors.Coral);
-        square .Draw(cr, 400, 150, KnownColors.Pink);
-        hexagon.Draw(cr, 650, 150, KnownColors.Brown);
+        circle .Fill(150, 150, KnownColors.Coral);
+        square .Draw(400, 150, KnownColors.Pink);
+        hexagon.Draw(650, 150, KnownColors.Brown);
 
-        circle .Fill(cr, 900, 150, KnownColors.Coral);
-        square .Draw(cr, 900, 150, KnownColors.Pink);
-        hexagon.Draw(cr, 900, 150, KnownColors.Brown);
+        circle .Fill(900, 150, KnownColors.Coral);
+        square .Draw(900, 150, KnownColors.Pink);
+        hexagon.Draw(900, 150, KnownColors.Brown);
 
         cr.LineWidth = 1;
         cr.SetDash(10, 2, 2, 2);
