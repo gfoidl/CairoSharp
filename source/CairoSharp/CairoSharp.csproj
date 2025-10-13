@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="native.props" />
+
     <PropertyGroup>
         <RootNamespace>Cairo</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -59,33 +61,6 @@
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="..\..\artifacts\native\win-x64\cairo\out\bin\*.dll"
-                 Link="runtimes\win-x64\native\%(FileName).dll"
-                 CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x64\native" />
-
-        <Content Include="..\..\artifacts\native\win-x86\cairo\out\bin\*.dll"
-                 Link="runtimes\win-x86\native\%(FileName).dll"
-                 CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x86\native" />
-
-        <Content Include="..\..\native\stubs\linux-x64\libcairo.so"
-                 LinkBase="runtimes\linux-x64\native"
-                 CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\linux-x64\native" />
-
-        <Content Include="..\..\native\stubs\linux-arm64\libcairo.so"
-                 LinkBase="runtimes\linux-arm64\native"
-                 CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\linux-arm64\native" />
-
-        <Content Include="..\..\native\stubs\linux-arm\libcairo.so"
-                 LinkBase="runtimes\linux-arm\native"
-                 CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\linux-arm\native" />
     </ItemGroup>
 
 </Project>

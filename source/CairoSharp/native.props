@@ -1,0 +1,45 @@
+<Project>
+
+    <ItemGroup Label="Native cairo DLLs for Windows">
+        <CairoWinLib Include="cairo-2" />
+        <CairoWinLib Include="fontconfig-1" />
+        <CairoWinLib Include="freetype-6" />
+        <CairoWinLib Include="pixman-1-0" />
+        <CairoWinLib Include="png16-16" />
+        <CairoWinLib Include="xml2-2" />
+        <CairoWinLib Include="z-1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <CairoWinLib_x64 Include="@(CairoWinLib -> '..\..\artifacts\native\win-x64\cairo\out\bin\%(Identity).dll')" />
+        <CairoWinLib_x86 Include="@(CairoWinLib -> '..\..\artifacts\native\win-x86\cairo\out\bin\%(Identity).dll')" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="@(CairoWinLib_x64)"
+                 Link="runtimes\win-x64\native\%(FileName).dll"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x64\native" />
+
+        <Content Include="@(CairoWinLib_x86)"
+                 Link="runtimes\win-x86\native\%(FileName).dll"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x86\native" />
+
+        <Content Include="..\..\native\stubs\linux-x64\libcairo.so"
+                 LinkBase="runtimes\linux-x64\native"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\linux-x64\native" />
+
+        <Content Include="..\..\native\stubs\linux-arm64\libcairo.so"
+                 LinkBase="runtimes\linux-arm64\native"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\linux-arm64\native" />
+
+        <Content Include="..\..\native\stubs\linux-arm\libcairo.so"
+                 LinkBase="runtimes\linux-arm\native"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\linux-arm\native" />
+    </ItemGroup>
+
+</Project>
