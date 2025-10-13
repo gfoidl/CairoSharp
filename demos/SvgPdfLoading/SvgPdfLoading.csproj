@@ -9,7 +9,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="demo02.*" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="*.svg" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="*.pdf" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

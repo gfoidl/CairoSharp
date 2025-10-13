@@ -3,9 +3,12 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Cairo;
+using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
 using Cairo.Extensions.Loading.SVG;
 using Cairo.Extensions.Shapes;
+using Cairo.Surfaces;
+using Cairo.Surfaces.PostScript;
 using Cairo.Surfaces.SVG;
 using IOPath = System.IO.Path;
 
@@ -80,6 +83,78 @@ static void Svg2Png()
 
         cr.LoadSvg(svgData, viewPort);
         svgSurface.WriteToPng("svg2png_1.png");
+    }
+
+    // Playing around with separate surface for the logo (output is the same as below)
+    {
+        using SvgSurface svgSurface = new("svg2png_2.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
+
+        cr.Rectangle(0, 0, 500, 500);
+        cr.Stroke();
+
+        using PostScriptSurface svgLogo    = new(50, 50);   // it's stack based similar to cairo's drawing model
+        using (CairoContext svgLogoContext = new(svgLogo))
+        {
+            svgLogoContext.LoadSvg("../calculator-svgrepo-com.svg", new Rectangle(0, 0, 50, 50));
+        }
+
+        cr.SetSourceSurface(svgLogo, 0, 0);
+        cr.Paint();
+
+        cr.SetSourceSurface(svgLogo, 100, 100);
+        cr.Paint();
+
+        using (cr.Save())
+        {
+            cr.Translate(250, 250);
+            cr.Rotate(45.DegreesToRadians());
+
+            cr.Rectangle(-50, -50, 100, 100);
+            cr.Color = KnownColors.Blue;
+            cr.Stroke();
+
+            cr.SetSourceSurface(svgLogo, 0, 0);
+            cr.Paint();
+        }
+
+        svgSurface.WriteToPng("svg2png_2.png");
+    }
+
+    // Playing around with PushGroup / PopGroup for the logo (output is the same as above)
+    {
+        using SvgSurface svgSurface = new("svg2png_3.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
+
+        cr.Rectangle(0, 0, 500, 500);
+        cr.Stroke();
+
+        cr.PushGroup();
+        cr.LoadSvg("../calculator-svgrepo-com.svg", new Rectangle(0, 0, 50, 50));
+
+        using SurfacePattern svgLogoPattern = cr.PopGroup();
+        Surface svgLogo                     = svgLogoPattern.Surface;
+
+        cr.SetSourceSurface(svgLogo, 0, 0);
+        cr.Paint();
+
+        cr.SetSourceSurface(svgLogo, 100, 50);
+        cr.Paint();
+
+        using (cr.Save())
+        {
+            cr.Translate(250, 250);
+            cr.Rotate(45.DegreesToRadians());
+
+            cr.Rectangle(-50, -50, 100, 100);
+            cr.Color = KnownColors.Blue;
+            cr.Stroke();
+
+            cr.SetSourceSurface(svgLogo, 0, 0);
+            cr.Paint();
+        }
+
+        svgSurface.WriteToPng("svg2png_3.png");
     }
 }
 //-----------------------------------------------------------------------------
