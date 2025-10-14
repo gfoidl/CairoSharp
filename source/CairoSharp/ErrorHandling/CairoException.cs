@@ -18,7 +18,7 @@ public class CairoException : Exception
 
     [DoesNotReturn]
     [StackTraceHidden]
-    public static void ThrowOutOfMemory(string? message = null)
+    internal static void ThrowOutOfMemory(string? message = null)
     {
         throw new CairoException(message ?? "Cairo signals out-of-memory");
     }

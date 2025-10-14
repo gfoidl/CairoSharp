@@ -23,13 +23,14 @@ public sealed unsafe class QuartzSurface : Surface
     /// Cairo to draw in sRGB and would use CGColorSpaceCreateWithName(kCGColorSpaceSRGB).
     /// </summary>
     /// <param name="format">format of pixels in the surface to create</param>
-    /// <param name="width">width of the surface, in pixels</param>
-    /// <param name="height">height of the surface, in pixels</param>
+    /// <param name="widthInPixels">width of the surface, in pixels</param>
+    /// <param name="heightInPixels">height of the surface, in pixels</param>
     /// <remarks>
     /// All Cairo operations, including those that require software rendering, will succeed on this surface.
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
-    public QuartzSurface(Format format, int width, int height) : base(cairo_quartz_surface_create(format, (uint)width, (uint)height)) { }
+    public QuartzSurface(Format format, int widthInPixels, int heightInPixels)
+        : base(cairo_quartz_surface_create(format, (uint)widthInPixels, (uint)heightInPixels)) { }
 
     /// <summary>
     /// Creates a Quartz surface that wraps the given CGContext. The CGContext is assumed to
@@ -39,15 +40,15 @@ public sealed unsafe class QuartzSurface : Surface
     /// is called.
     /// </summary>
     /// <param name="cgContext">the existing CGContext for which to create the surface</param>
-    /// <param name="width">surface</param>
-    /// <param name="height">height of the surface, in pixels</param>
+    /// <param name="widthInPixels">width of the surface, in pixels</param>
+    /// <param name="heightInPixels">height of the surface, in pixels</param>
     /// <remarks>
     /// All Cairo operations are implemented in terms of Quartz operations, as long as
     /// Quartz-compatible elements are used (such as Quartz fonts).
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
-    public QuartzSurface(IntPtr cgContext, int width, int height)
-        : base(cairo_quartz_surface_create_for_cg_context(cgContext.ToPointer(), (uint)width, (uint)height)) { }
+    public QuartzSurface(IntPtr cgContext, int widthInPixels, int heightInPixels)
+        : base(cairo_quartz_surface_create_for_cg_context(cgContext.ToPointer(), (uint)widthInPixels, (uint)heightInPixels)) { }
 
     /// <summary>
     /// Returns the CGContextRef that the given Quartz surface is backed by.

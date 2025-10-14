@@ -9,7 +9,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="SanRemo.ttf" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="*.svg" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="*.pdf" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

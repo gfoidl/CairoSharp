@@ -60,7 +60,7 @@ public abstract unsafe class CairoObject : IDisposable, IEquatable<CairoObject>
 
     protected abstract void DisposeCore(void* handle);
 
-    ~CairoObject() => Dispose(false);
+    ~CairoObject() => this.Dispose(false);
 
     /// <summary>
     /// Two <see cref="CairoObject"/>s are equal, when there native handles are equal.

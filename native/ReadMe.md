@@ -20,31 +20,13 @@ Options for the build are listed in [meson.options](https://gitlab.freedesktop.o
 
 #### x64
 
-For a build that outputs a single `cairo-2.dll` use:
 ```cmd
 rem Run in "x64 Native Tools Command Prompt for VS 2022"
 
 cd native\cairo
 
-meson setup --buildtype=release --default-library=both --default-both-libraries=shared -Dtests=disabled ..\..\artifacts\native\win-x64\cairo\build
-ninja -C ..\..\artifacts\native\win-x64\cairo\build
-
-rem build will likely not complete, but the desired artifact is there...
-rem meson install -C ..\..\artifacts\native\win-x64\cairo\build --destdir ..\out
-```
-
-> [!NOTE]
-> Freetype isn't available in this build.
-
-Thus when Freetype should be available, then a build like the following has to be done.
-This output several native DLLs, so all of them have to be included in the NuGet-package.
-```cmd
-rem Run in "x64 Native Tools Command Prompt for VS 2022"
-
-cd native\cairo
-
-meson setup --buildtype=release --default-library=shared -Dfontconfig=enabled -Dfreetype=enabled -Dtests=disabled ..\..\artifacts\native\win-x64\cairo\build
-ninja -C ..\..\artifacts\native\win-x64\cairo\build
+meson setup --buildtype=release --default-library=shared -Dfontconfig=enabled -Dfreetype=enabled -Dtests=disabled ..\..\artifacts\native\win-x64\cairo\build .
+meson compile -C ..\..\artifacts\native\win-x64\cairo\build
 meson install -C ..\..\artifacts\native\win-x64\cairo\build --destdir ..\out
 ```
 
@@ -55,8 +37,8 @@ rem Run in "x86 Native Tools Command Prompt for VS 2022"
 
 cd native\cairo
 
-meson setup --buildtype=release --default-library=shared -Dfontconfig=enabled -Dfreetype=enabled -Dtests=disabled ..\..\artifacts\native\win-x86\cairo\build
-ninja -C ..\..\artifacts\native\win-x86\cairo\build
+meson setup --buildtype=release --default-library=shared -Dfontconfig=enabled -Dfreetype=enabled -Dtests=disabled ..\..\artifacts\native\win-x86\cairo\build .
+meson compile -C ..\..\artifacts\native\win-x86\cairo\build
 meson install -C ..\..\artifacts\native\win-x86\cairo\build --destdir ..\out
 ```
 
