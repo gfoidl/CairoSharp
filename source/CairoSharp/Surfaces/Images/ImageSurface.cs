@@ -25,14 +25,14 @@ public sealed unsafe class ImageSurface : Surface
     /// belonging to the given format are undefined).
     /// </summary>
     /// <param name="format">format of pixels in the surface to create</param>
-    /// <param name="width">width of the surface, in pixels</param>
-    /// <param name="height">height of the surface, in pixels</param>
+    /// <param name="widthInPixels">width of the surface, in pixels</param>
+    /// <param name="heightInPixels">height of the surface, in pixels</param>
     /// <remarks>
     /// The caller owns the surface and should call <see cref="CairoObject.Dispose()"/> when done with it.
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
-    public ImageSurface(Format format, int width, int height)
-        : base(cairo_image_surface_create(format, width, height)) { }
+    public ImageSurface(Format format, int widthInPixels, int heightInPixels)
+        : base(cairo_image_surface_create(format, widthInPixels, heightInPixels)) { }
 
     /// <summary>
     /// Creates an image surface for the provided pixel data. The output buffer must be kept
@@ -47,7 +47,7 @@ public sealed unsafe class ImageSurface : Surface
     /// pointer returned by malloc).
     /// </param>
     /// <param name="format">the format of pixels in the buffer</param>
-    /// <param name="widht">the width of the image to be stored in the buffer</param>
+    /// <param name="width">the width of the image to be stored in the buffer</param>
     /// <param name="height">the height of the image to be stored in the buffer</param>
     /// <param name="stride">
     /// the number of bytes between the start of rows in the buffer as allocated.
@@ -62,8 +62,8 @@ public sealed unsafe class ImageSurface : Surface
     /// the data and to create the image surface.
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
-    public ImageSurface(ReadOnlySpan<byte> data, Format format, int widht, int height, int stride)
-        : base(cairo_image_surface_create_for_data(data, format, widht, height, stride)) { }
+    public ImageSurface(ReadOnlySpan<byte> data, Format format, int width, int height, int stride)
+        : base(cairo_image_surface_create_for_data(data, format, width, height, stride)) { }
 
     /// <summary>
     /// Creates a new image surface and initializes the contents to the given PNG file.

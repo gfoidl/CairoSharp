@@ -32,11 +32,11 @@ public sealed unsafe class Win32Surface : Surface
     /// surface or device context. The created bitmap will be uninitialized.
     /// </summary>
     /// <param name="format">format of pixels in the surface to create</param>
-    /// <param name="width">width of the surface, in pixels</param>
-    /// <param name="height">height of the surface, in pixels</param>
+    /// <param name="widthInPixels">width of the surface, in pixels</param>
+    /// <param name="heightInPixels">height of the surface, in pixels</param>
     /// <exception cref="ArgumentNullException">when the surface could not be created due to a failure</exception>
-    public Win32Surface(Format format, int width, int height)
-        : base(cairo_win32_surface_create_with_dib(format, width, height)) { }
+    public Win32Surface(Format format, int widthInPixels, int heightInPixels)
+        : base(cairo_win32_surface_create_with_dib(format, widthInPixels, heightInPixels)) { }
 
     /// <summary>
     /// Creates a device-dependent-bitmap surface not associated with any particular
@@ -44,11 +44,11 @@ public sealed unsafe class Win32Surface : Surface
     /// </summary>
     /// <param name="hdc">a DC compatible with the surface to create</param>
     /// <param name="format">format of pixels in the surface to create</param>
-    /// <param name="width">width of the surface, in pixels</param>
-    /// <param name="height">height of the surface, in pixels</param>
+    /// <param name="widthInPixels">width of the surface, in pixels</param>
+    /// <param name="heightInPixels">height of the surface, in pixels</param>
     /// <exception cref="ArgumentNullException">when the surface could not be created due to a failure</exception>
-    public Win32Surface(IntPtr hdc, Format format, int width, int height)
-        : base(cairo_win32_surface_create_with_ddb(hdc.ToPointer(), format, width, height)) { }
+    public Win32Surface(IntPtr hdc, Format format, int widthInPixels, int heightInPixels)
+        : base(cairo_win32_surface_create_with_ddb(hdc.ToPointer(), format, widthInPixels, heightInPixels)) { }
 
     /// <summary>
     /// Creates a cairo surface that targets the given DC. The DC will be queried for its initial clip
