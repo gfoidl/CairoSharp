@@ -57,7 +57,7 @@ public sealed unsafe class SvgDocument : Document
 
         GError* error;
 
-        fixed(byte* ptr = svgData)
+        fixed (byte* ptr = svgData)
         {
             // According https://gnome.pages.gitlab.gnome.org/librsvg/Rsvg-2.0/ctor.Handle.new_from_data.html
             // rsvg_handle_new_from_data shouldn't be used, as no flags, etc. can be set.

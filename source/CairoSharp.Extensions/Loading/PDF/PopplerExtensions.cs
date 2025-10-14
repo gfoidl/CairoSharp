@@ -15,7 +15,7 @@ public static unsafe class PopplerExtensions
         /// Loads a PDF file and renders it in cairo.
         /// </summary>
         /// <param name="fileName">PDF file</param>
-        /// <param name="pageIndex">a page index</param>
+        /// <param name="pageIndex">a page index (zero-based)</param>
         /// <param name="printing"><c>true</c> for printing mode, <c>false</c> otherwise</param>
         /// <param name="flags">flags which allow to select which annotations to render</param>
         /// <remarks>
@@ -44,43 +44,15 @@ public static unsafe class PopplerExtensions
         /// <exception cref="PopplerException">an error occured</exception>
         public void LoadPdf(string fileName, int pageIndex, bool printing = false, PopplerAnnotFlag flags = PopplerAnnotFlag.Unknown)
         {
-            ArgumentNullException.ThrowIfNull(fileName);
-
-            GError* error             = null;
-            GFile* file               = null;
-            PopplerDocument* document = null;
-            PopplerPage* page         = null;
-
-            try
-            {
-                file     = g_file_new_for_path(fileName);
-                document = poppler_document_new_from_gfile(file, password: null, cancellable: null, &error);
-                page     = RenderCore(document, pageIndex, cr, printing, flags, error);
-            }
-            finally
-            {
-                if (page is not null)
-                {
-                    g_object_unref(page);
-                }
-
-                if (document is not null)
-                {
-                    g_object_unref(document);
-                }
-
-                if (file is not null)
-                {
-                    g_object_unref(file);
-                }
-            }
+            using PdfDocument pdf = new(fileName);
+            RenderCore(pdf, pageIndex, cr, printing, flags);
         }
 
         /// <summary>
         /// Loads the PDF data and renders it in cairo.
         /// </summary>
         /// <param name="pdfData">PDF data</param>
-        /// <param name="pageIndex">a page index</param>
+        /// <param name="pageIndex">a page index (zero-based)</param>
         /// <param name="printing"><c>true</c> for printing mode, <c>false</c> otherwise</param>
         /// <param name="flags">flags which allow to select which annotations to render</param>
         /// <remarks>
@@ -91,64 +63,34 @@ public static unsafe class PopplerExtensions
         /// <exception cref="PopplerException">an error occured</exception>
         public void LoadPdf(ReadOnlySpan<byte> pdfData, int pageIndex, bool printing = false, PopplerAnnotFlag flags = PopplerAnnotFlag.Unknown)
         {
-            if (pdfData.IsEmpty)
-            {
-                throw new ArgumentException("no data given", nameof(pdfData));
-            }
+            using PdfDocument pdf = new(pdfData);
+            RenderCore(pdf, pageIndex, cr, printing, flags);
+        }
 
-            GError* error             = null;
-            GInputStream* inputStream = null;
-            PopplerDocument* document = null;
-            PopplerPage* page         = null;
+        /// <summary>
+        /// Loads the <paramref name="pdf"/> and renders it in cairo.
+        /// </summary>
+        /// <param name="pdf">PDF document</param>
+        /// <param name="pageIndex">a page index (zero-based)</param>
+        /// <param name="printing"><c>true</c> for printing mode, <c>false</c> otherwise</param>
+        /// <param name="flags">flags which allow to select which annotations to render</param>
+        /// <remarks>
+        /// See <see cref="LoadPdf(CairoContext, string, int, bool, PopplerAnnotFlag)"/> for the meaning of the
+        /// <paramref name="printing"/> argument.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="pdf"/> is <c>null</c></exception>
+        /// <exception cref="PopplerException">an error occured</exception>
+        public void LoadPdf(PdfDocument pdf, int pageIndex, bool printing = false, PopplerAnnotFlag flags = PopplerAnnotFlag.Unknown)
+        {
+            ArgumentNullException.ThrowIfNull(pdf);
 
-            try
-            {
-                fixed (byte* ptr = pdfData)
-                {
-                    inputStream = g_memory_input_stream_new_from_data(ptr, (nint)pdfData.Length, &DummyDestroyNotify);
-                    document    = poppler_document_new_from_stream(inputStream, pdfData.Length, password: null, cancellable: null, &error);
-                    page        = RenderCore(document, pageIndex, cr, printing, flags, error);
-                }
-            }
-            finally
-            {
-                if (page is not null)
-                {
-                    g_object_unref(page);
-                }
-
-                if (document is not null)
-                {
-                    g_object_unref(document);
-                }
-
-                if (inputStream is not null)
-                {
-                    g_object_unref(inputStream);
-                }
-            }
-
-            // Let the GC do it's thing.
-            static void DummyDestroyNotify(void* _) { }
+            RenderCore(pdf, pageIndex, cr, printing, flags);
         }
     }
 
-    private static PopplerPage* RenderCore(PopplerDocument* document, int pageIndex, CairoContext cr, bool printing, PopplerAnnotFlag flags, GError* error)
+    private static void RenderCore(PdfDocument pdf, int pageIndex, CairoContext cr, bool printing, PopplerAnnotFlag flags)
     {
-        if (document is null)
-        {
-            throw new PopplerException(error);
-        }
-
-        PopplerPage* page = poppler_document_get_page(document, pageIndex);
-
-        if (page is null)
-        {
-            throw new PopplerException($"""
-                PDF page at index {pageIndex} could not be loaded.
-                Note: the page index is 0-based.
-                """);
-        }
+        PopplerPage* page = pdf.GetPage(pageIndex);
 
         if (PopplerVersion > CairoAPI.VersionEncode(25, 2, 0))
         {
@@ -165,7 +107,5 @@ public static unsafe class PopplerExtensions
                 poppler_page_render(page, cr.NativeContext);
             }
         }
-
-        return page;
     }
 }

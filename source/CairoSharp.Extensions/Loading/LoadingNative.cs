@@ -109,6 +109,10 @@ public static unsafe partial class LoadingNative
     //-------------------------------------------------------------------------
     [LibraryImport(LibGLibName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void g_free(void* mem);
+
+    [LibraryImport(LibGLibName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void g_error_free(GError* error);
 
     [LibraryImport(LibGObjectName)]
@@ -202,4 +206,44 @@ public static unsafe partial class LoadingNative
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void poppler_page_render_for_printing(PopplerPage* page, cairo_t* cairo);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_document_get_author(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_document_get_creator(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_document_get_metadata(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial int poppler_document_get_n_pages(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void poppler_document_get_pdf_version(PopplerDocument* document, out uint major_version, out uint minor_version);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_document_get_pdf_version_string(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_document_get_producer(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_document_get_subject(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* poppler_document_get_title(PopplerDocument* document);
+
+    [LibraryImport(LibPopplerName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void poppler_page_get_size(PopplerPage* page, out double width, out double height);
 }

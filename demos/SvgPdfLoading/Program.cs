@@ -47,6 +47,9 @@ Environment.CurrentDirectory = IOPath.Combine(Environment.CurrentDirectory, "out
 PrintVersionInfos();
 
 Svg2Png();
+
+Console.WriteLine();
+
 Pdf2Png();
 //-----------------------------------------------------------------------------
 static void PrintVersionInfos()
@@ -83,7 +86,7 @@ static void Svg2Png()
         svgSurface.WriteToPng("svg2png_1.png");
     }
 
-    // Loading via explicit document class
+    // Loading via explicit document type
     {
         using SvgSurface svgSurface = new("svg2png_2.svg", 500, 500);
         using CairoContext cr       = new(svgSurface);
@@ -187,7 +190,7 @@ static void Pdf2Png()
         using CairoContext cr       = new(svgSurface);
 
         // Note: we set the current dir to output
-        cr.LoadPdf("../demo02.pdf", 0);
+        cr.LoadPdf("../demo02.pdf", pageIndex: 0);
 
         svgSurface.WriteToPng("pdf2png_0.png");
     }
@@ -198,9 +201,35 @@ static void Pdf2Png()
         using CairoContext cr       = new(svgSurface);
 
         byte[] pdfData = File.ReadAllBytes("../demo02.pdf");
-        cr.LoadPdf(pdfData, 0);
+        cr.LoadPdf(pdfData, pageIndex: 0);
 
         svgSurface.WriteToPng("pdf2png_1.png");
+    }
+
+    // Loading via explicit document type
+    {
+        using SvgSurface svgSurface = new("pdf2png_2.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
+
+        using PdfDocument pdfDoc = new("../demo02.pdf");
+        cr.LoadPdf(pdfDoc, pageIndex: 0);
+
+        pdfDoc.GetPageSize(0, out double width, out double height);
+        Console.WriteLine($"""
+            PDF
+                version:         {pdfDoc.PdfVersion}
+                author:          {pdfDoc.Author}
+                creator:         {pdfDoc.Creator}
+                producer:        {pdfDoc.Producer}
+                title:           {pdfDoc.Title}
+                subject:         {pdfDoc.Subject}
+                number of pages: {pdfDoc.NumberOfPages}
+                page 0 width:    {width}
+                page 0 height:   {height}
+                meta data:       {pdfDoc.MetaData}
+            """);
+
+        svgSurface.WriteToPng("pdf2png_2.png");
     }
 
     // Playing around is similar to the demo at SVG above.
