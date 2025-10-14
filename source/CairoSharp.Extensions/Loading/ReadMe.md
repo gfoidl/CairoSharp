@@ -69,20 +69,20 @@ I don't know if there any standalone librsvg build / download for Windows exists
 Another possibility is to re-use the libraries from an already installed application, that uses _cairo_, and librsvg.
 
 > [!CAUTION]
-> Always check the license before it this is allowed. You can't blame me for any misdemeanor.
+> Always check the license before if this is allowed. You can't blame me for any misdemeanor.
 
 One such application is the great [Inkscape](https://inkscape.org).
 
 #### PDF
 
-Can be downloaded e.g. from  Owen Schwartz 's [poppler-windows](https://github.com/oschwartz10612/poppler-windows).
+poppler can be downloaded e.g. from  Owen Schwartz 's [poppler-windows](https://github.com/oschwartz10612/poppler-windows).
 
 ## Usage
 
 As you have to locate the native libraries, you have to set a [DllImportResolver](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportresolver) for the native libraries, so they know where to find the native libraries.
 
 > [!IMPORTANT]
-> The `DllImportResolver` should be set before the first use of the methods provided by CairoSharp.Extensions
+> The `DllImportResolver` should be set before the first use of the methods provided by CairoSharp.Extensions.
 
 E.g. for SVG loading with librsvg:
 ```c#
@@ -116,9 +116,9 @@ if (OperatingSystem.IsWindows())
 ```
 
 > [!TIP]
-> The `LoadingNative.LibXYZ` names are the standard so-names on Linux, thus for a standard installation no `DllImportResolver` has to be set on Linux
+> The `LoadingNative.LibXYZ` names are the standard so-names on Linux, thus for a standard installation no `DllImportResolver` has to be set on Linux.
 
 In the above example the native DLLs from an Inkscape installation are used, so the resolver points to that place.
 
 When either librsvg or poppler isn't needed, then no resolver for these names has to be given.
-The resolvers for `LigGObjectName` and `LibGioName` must be given anyway (once loading features are used).
+The resolvers for `LigG...Name` must be given anyway (once loading features are used).

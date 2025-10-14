@@ -45,7 +45,3 @@ meson install -C ..\..\artifacts\native\win-x86\cairo\build --destdir ..\out
 
 _cairo_ must be [installed](https://www.cairographics.org/download/), and as I don't have any experience with Macs I don't know if stubs are needed or not.
 If you know more, please file and issue or create a PR, that adds these stubs, etc.
-
-## librsvg
-
-For `win-x64` there's a pre-built (downloaded) `librsvg`. The build over there with meson is too cumbersome for me, and the dependencies are a fucking nightmare.

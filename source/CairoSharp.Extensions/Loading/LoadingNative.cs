@@ -46,11 +46,11 @@ public static unsafe partial class LoadingNative
              && NativeLibrary.TryGetExport(libHandle, "rsvg_minor_version", out nint minorAddress)
              && NativeLibrary.TryGetExport(libHandle, "rsvg_micro_version", out nint microAddress))
             {
-                int* major = (int*)majorAddress;
-                int* minor = (int*)minorAddress;
-                int* micro = (int*)microAddress;
+                int major = *(int*)majorAddress;
+                int minor = *(int*)minorAddress;
+                int micro = *(int*)microAddress;
 
-                return $"{*major}.{*minor}.{*micro}";
+                return $"{major}.{minor}.{micro}";
             }
         }
 
