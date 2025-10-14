@@ -83,6 +83,29 @@ static void Svg2Png()
         svgSurface.WriteToPng("svg2png_1.png");
     }
 
+    // Loading via explicit document class
+    {
+        using SvgSurface svgSurface = new("svg2png_2.svg", 500, 500);
+        using CairoContext cr       = new(svgSurface);
+
+        using SvgDocument svgDoc = new("../demo02.svg");
+        cr.LoadSvg(svgDoc, viewPort);
+
+        if (svgDoc.TryGetSizeInPixels(out double widthInPixels, out double heightInPixels))
+        {
+            Console.WriteLine($"SVG size is {widthInPixels}px x {heightInPixels}px");
+        }
+        svgDoc.GetIntrinsicDimensions(out SvgLength? width, out SvgLength? height, out Rectangle? viewBox);
+        Console.WriteLine($"""
+            SVG
+                width:   {width}
+                height:  {height}
+                viewBox: {viewBox}
+            """);
+
+        svgSurface.WriteToPng("svg2png_2.png");
+    }
+
     // Playing around with separate surface for the logo (output is the same as below)
     {
         using SvgSurface svgSurface = new("svg2png_2.svg", 500, 500);

@@ -156,6 +156,19 @@ public static unsafe partial class LoadingNative
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool rsvg_handle_render_layer(RsvgHandle* handle, cairo_t* cr, string id, RsvgRectangle* viewport, GError** error);
 #endif
+
+    [LibraryImport(LibRSvgName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* rsvg_handle_get_base_uri(RsvgHandle* handle);
+
+    [LibraryImport(LibRSvgName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [return: MarshalAs(UnmanagedType.U4)]
+    internal static partial bool rsvg_handle_get_intrinsic_size_in_pixels(RsvgHandle* handle, out double out_width, out double out_height);
+
+    [LibraryImport(LibRSvgName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void rsvg_handle_get_intrinsic_dimensions(RsvgHandle* handle, out uint out_has_width, out SvgLength out_width, out uint out_has_height, out SvgLength out_height, out uint out_has_viewbox, RsvgRectangle* out_viewbox);
     //-------------------------------------------------------------------------
     // Poppler
     [LibraryImport(LibPopplerName)]
