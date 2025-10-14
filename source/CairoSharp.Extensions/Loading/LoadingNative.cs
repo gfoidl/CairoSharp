@@ -13,10 +13,10 @@ namespace Cairo.Extensions.Loading;
 
 public static unsafe partial class LoadingNative
 {
-    public const string LibGLibName    = "libglib-2.0.so";
-    public const string LibGObjectName = "libgobject-2.0.so";
-    public const string LibGioName     = "libgio-2.0.so";
-    public const string LibRSvgName    = "librsvg-2.so";
+    public const string LibGLibName    = "libglib-2.0.so.0";
+    public const string LibGObjectName = "libgobject-2.0.so.0";
+    public const string LibGioName     = "libgio-2.0.so.0";
+    public const string LibRSvgName    = "librsvg-2.so.2";
     public const string LibPopplerName = "libpoppler-glib.so.8";
 
     [DisallowNull]
