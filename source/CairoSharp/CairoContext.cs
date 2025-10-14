@@ -37,8 +37,8 @@ public sealed unsafe class CairoContext : CairoObject
     /// </summary>
     /// <param name="target">target surface for the context</param>
     /// <remarks>
-    /// This constructor references target, so you can immediately call <see cref="CairoObject.Dispose()"/> on it if you
-    /// don't need to maintain a separate reference to it.
+    /// This constructor references <paramref name="target"/>, so you can immediately call <see cref="CairoObject.Dispose()"/>
+    /// on that surface if you don't need to maintain a separate reference to it.
     /// </remarks>
     /// <exception cref="CairoException">
     /// If you attempt to target a surface which does not support writing (such as cairo_mime_surface_t)
@@ -52,6 +52,16 @@ public sealed unsafe class CairoContext : CairoObject
         ArgumentNullException.ThrowIfNull(target);
         return cairo_create(target.Handle);
     }
+
+    /// <summary>
+    /// Creates a new <see cref="CairoContext"/> from the given native handle.
+    /// </summary>
+    /// <param name="nativeHandle">the native handle to a cairo context</param>
+    /// <remarks>
+    /// Ownership of the handle is not transferred. <see cref="CairoObject.Dispose()"/> can be called,
+    /// but it will not free the native cairo context (it is actually a no-op here).
+    /// </remarks>
+    public CairoContext(cairo_t* nativeHandle) : base(nativeHandle, needsDestroy: false) { }
 
     internal CairoContext(void* handle, bool isOwnedByCairo, bool needsDestroy = true) : base(handle, isOwnedByCairo, needsDestroy)
     {
