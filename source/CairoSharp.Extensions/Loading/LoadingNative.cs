@@ -13,7 +13,8 @@ namespace Cairo.Extensions.Loading;
 
 public static unsafe partial class LoadingNative
 {
-    public const string LigGObjectName = "libgobject-2.0.so";
+    public const string LibGLibName    = "libglib-2.0.so";
+    public const string LibGObjectName = "libgobject-2.0.so";
     public const string LibGioName     = "libgio-2.0.so";
     public const string LibRSvgName    = "librsvg-2.so";
     public const string LibPopplerName = "libpoppler-glib.so.8";
@@ -106,6 +107,14 @@ public static unsafe partial class LoadingNative
         return CairoAPI.VersionEncode(major, minor, patch);
     }
     //-------------------------------------------------------------------------
+    [LibraryImport(LibGLibName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void g_error_free(GError* error);
+
+    [LibraryImport(LibGObjectName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void g_object_unref(void* @object);
+    //-------------------------------------------------------------------------
     [LibraryImport(LibGioName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial GFile* g_file_new_for_path(string path);
@@ -113,10 +122,6 @@ public static unsafe partial class LoadingNative
     [LibraryImport(LibGioName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial GInputStream* g_memory_input_stream_new_from_data(void* data, nint size, GDestroyNotify destroy);
-    //-------------------------------------------------------------------------
-    [LibraryImport(LigGObjectName)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void g_object_unref(void* @object);
     //-------------------------------------------------------------------------
     // librsvg
     [LibraryImport(LibRSvgName)]
