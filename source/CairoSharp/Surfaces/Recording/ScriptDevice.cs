@@ -13,8 +13,8 @@ public sealed unsafe class ScriptDevice : Device
 {
     private GCHandle _streamHandle;     // mutable struct
 
-    private ScriptDevice((IntPtr Handle, GCHandle StreamHandle) arg)
-        : base(arg.Handle.ToPointer())
+    private ScriptDevice((IntPtr Device, GCHandle StreamHandle) arg)
+        : base(arg.Device.ToPointer(), needsReference: false)
         => _streamHandle = arg.StreamHandle;
 
     /// <summary>
@@ -22,8 +22,7 @@ public sealed unsafe class ScriptDevice : Device
     /// </summary>
     /// <param name="fileName">the name (path) of the file to write the script to</param>
     /// <exception cref="CairoException">when construction fails</exception>
-    public ScriptDevice(string fileName)
-        : base(cairo_script_create(fileName))
+    public ScriptDevice(string fileName) : base(cairo_script_create(fileName), needsReference: false)
         => this.Status.ThrowIfNotSuccess();
 
     /// <summary>
@@ -45,9 +44,9 @@ public sealed unsafe class ScriptDevice : Device
         void* state                  = GCHandle.ToIntPtr(streamHandle).ToPointer();
         cairo_write_func_t writeFunc = &WriteFunc;
 
-        void* handle = cairo_script_create_for_stream(writeFunc, state);
+        void* device = cairo_script_create_for_stream(writeFunc, state);
 
-        return (new IntPtr(handle), streamHandle);
+        return (new IntPtr(device), streamHandle);
 
         static Status WriteFunc(void* state, byte* data, uint length)
         {

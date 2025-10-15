@@ -693,11 +693,12 @@ static void RecordingAndScriptSurface()
     context.Rectangle(10, 20, 40, 30);
     context.FillPreserve();
 
-    context.LineWidth = 2;
+    context.LineWidth = 3;      // 2 is the default, so wouldn't show up in the script
     context.Color     = new Color(1, 0, 0);
     context.Stroke();
 
-    surface.WriteToPng("script.png");
+    // This does not work for the script surface
+    //surface.WriteToPng("script.png");
     script.WriteComment($"End at {DateTimeOffset.Now}");
 }
 //-----------------------------------------------------------------------------
