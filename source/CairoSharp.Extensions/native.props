@@ -1,0 +1,24 @@
+<Project>
+
+    <ItemGroup Label="Native cairo DLLs for Windows">
+        <CairoWinLib Include="cairo-script-interpreter-2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <CairoWinLib_x64 Include="@(CairoWinLib -> '..\..\artifacts\native\win-x64\cairo\out\bin\%(Identity).dll')" />
+        <CairoWinLib_x86 Include="@(CairoWinLib -> '..\..\artifacts\native\win-x86\cairo\out\bin\%(Identity).dll')" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="@(CairoWinLib_x64)"
+                 Link="runtimes\win-x64\native\%(FileName).dll"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x64\native" />
+
+        <Content Include="@(CairoWinLib_x86)"
+                 Link="runtimes\win-x86\native\%(FileName).dll"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x86\native" />
+    </ItemGroup>
+
+</Project>
