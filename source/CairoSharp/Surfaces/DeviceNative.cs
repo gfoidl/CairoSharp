@@ -1,11 +1,13 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace Cairo.Surfaces;
 
 // https://www.cairographics.org/manual/cairo-cairo-device-t.html
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public struct cairo_device_t;
 
 internal static unsafe partial class DeviceNative

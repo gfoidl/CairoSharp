@@ -1,9 +1,11 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using static Cairo.Fonts.FontOptionsNative;
 
 namespace Cairo.Fonts;
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public struct cairo_font_options_t;
 
 /// <summary>

@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace Cairo.Drawing.Path;
@@ -17,6 +18,7 @@ namespace Cairo.Drawing.Path;
 /// data includes both headers and coordinates for each portion.
 /// </para>
 /// </remarks>
+[EditorBrowsable(EditorBrowsableState.Never)]
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct PathRaw
 {

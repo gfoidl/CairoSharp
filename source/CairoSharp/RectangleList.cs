@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using static Cairo.CairoContextNative;
 
@@ -36,6 +37,7 @@ public sealed unsafe class RectangleList : CairoObject<cairo_rectangle_list_t>
     }
 }
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct cairo_rectangle_list_t
 {

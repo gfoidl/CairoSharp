@@ -1,11 +1,13 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Diagnostics;
 using static Cairo.Fonts.FontFaceNative;
 using unsafe ReferenceFunc = delegate*<Cairo.Fonts.cairo_font_face_t*, Cairo.Fonts.cairo_font_face_t*>;
 
 namespace Cairo.Fonts;
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public struct cairo_font_face_t;
 
 /// <summary>

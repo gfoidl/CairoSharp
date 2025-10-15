@@ -1,9 +1,11 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using static Cairo.Drawing.Regions.RegionNative;
 
 namespace Cairo.Drawing.Regions;
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public struct cairo_region_t;
 
 /// <summary>

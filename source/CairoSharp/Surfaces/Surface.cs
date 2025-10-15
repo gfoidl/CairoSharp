@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,6 +18,7 @@ using static Cairo.Surfaces.SurfaceNative;
 
 namespace Cairo.Surfaces;
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public struct cairo_surface_t;
 
 /// <summary>

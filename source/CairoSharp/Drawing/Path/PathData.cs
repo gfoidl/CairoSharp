@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace Cairo.Drawing.Path;
@@ -38,6 +39,7 @@ union _cairo_path_data_t {
 /// for further information.
 /// </para>
 /// </remarks>
+[EditorBrowsable(EditorBrowsableState.Never)]
 [StructLayout(LayoutKind.Explicit)]
 public struct PathData
 {

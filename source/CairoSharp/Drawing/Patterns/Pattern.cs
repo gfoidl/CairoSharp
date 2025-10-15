@@ -1,10 +1,12 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Diagnostics;
 using static Cairo.Drawing.Patterns.PatternNative;
 
 namespace Cairo.Drawing.Patterns;
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 public struct cairo_pattern_t;
 
 /// <summary>
