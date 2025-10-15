@@ -10,11 +10,11 @@ internal static unsafe partial class SurfaceNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_surface_create_similar(void* other, Content content, int width, int height);
+    internal static partial cairo_surface_t* cairo_surface_create_similar(void* other, Content content, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_surface_create_similar_image(void* other, Format format, int width, int height);
+    internal static partial cairo_surface_t* cairo_surface_create_similar_image(void* other, Format format, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

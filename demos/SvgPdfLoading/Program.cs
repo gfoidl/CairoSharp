@@ -7,13 +7,15 @@ using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
 using Cairo.Extensions.Loading;
 using Cairo.Extensions.Loading.PDF;
+using Cairo.Extensions.Loading.Script;
 using Cairo.Extensions.Loading.SVG;
 using Cairo.Surfaces;
 using Cairo.Surfaces.PostScript;
+using Cairo.Surfaces.Recording;
 using Cairo.Surfaces.SVG;
 using IOPath = System.IO.Path;
 
-if (OperatingSystem.IsWindows())
+if (OperatingSystem.IsWindows() && false)
 {
     LoadingNative.DllImportResolver = static (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
     {
@@ -51,6 +53,10 @@ Svg2Png();
 Console.WriteLine();
 
 Pdf2Png();
+
+Console.WriteLine();
+
+ScriptLoading();
 //-----------------------------------------------------------------------------
 static void PrintVersionInfos()
 {
@@ -233,4 +239,25 @@ static void Pdf2Png()
     }
 
     // Playing around is similar to the demo at SVG above.
+}
+//-----------------------------------------------------------------------------
+static void ScriptLoading()
+{
+    // Note: we set the current dir to output
+    foreach (string script in Directory.EnumerateFiles("../scripts", "*.cs"))
+    {
+        string scriptName = IOPath.GetFileNameWithoutExtension(script);
+        Console.Write($"Replaying script '{scriptName}'...");
+
+        using Surface surfaceFromScript = ScriptSurface.CreateFromScript($"../scripts/{scriptName}.cs", SurfaceType.Svg, out double width, out double height);
+
+        using SvgSurface svgSurface = new($"{scriptName}.svg", width, height);
+        using CairoContext cr       = new(svgSurface);
+
+        cr.SetSourceSurface(surfaceFromScript, 0, 0);
+        cr.Paint();
+
+        svgSurface.WriteToPng($"{scriptName}.png");
+        Console.WriteLine("done");
+    }
 }
