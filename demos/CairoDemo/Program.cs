@@ -683,12 +683,10 @@ static void MeshPattern1()
 //-----------------------------------------------------------------------------
 static void RecordingAndScriptSurface()
 {
-    using RecordingSurface recordingSurface = new(Content.Color);
-    using CairoContext context              = new(recordingSurface);
-    using ScriptSurface script              = new("script.cairo");
+    using ScriptDevice script   = new("script.cairo");
+    using ScriptSurface surface = new(script, Content.Color, 300, 300);
+    using CairoContext context  = new(surface);
 
-    script.Mode = ScriptMode.Ascii;
-    script.FromRecordingSurface(recordingSurface);
     script.WriteComment($"Start at {DateTimeOffset.Now}");
 
     context.Color = new Color(0, 0, 1);
@@ -699,15 +697,7 @@ static void RecordingAndScriptSurface()
     context.Color     = new Color(1, 0, 0);
     context.Stroke();
 
-    using (ImageSurface img = new(Format.Argb32, 300, 300))
-    using (CairoContext cr  = new(img))
-    {
-        cr.SetSourceSurface(recordingSurface, 0, 0);
-        cr.Paint();
-
-        img.WriteToPng("recording.png");
-    }
-
+    surface.WriteToPng("script.png");
     script.WriteComment($"End at {DateTimeOffset.Now}");
 }
 //-----------------------------------------------------------------------------
