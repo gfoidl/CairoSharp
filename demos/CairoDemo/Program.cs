@@ -683,32 +683,70 @@ static void MeshPattern1()
 //-----------------------------------------------------------------------------
 static void RecordingAndScriptSurface()
 {
-    using RecordingSurface recordingSurface = new(Content.Color);
-    using CairoContext context              = new(recordingSurface);
-    using ScriptSurface script              = new("script.cairo");
-
-    script.Mode = ScriptMode.Ascii;
-    script.FromRecordingSurface(recordingSurface);
-    script.WriteComment($"Start at {DateTimeOffset.Now}");
-
-    context.Color = new Color(0, 0, 1);
-    context.Rectangle(10, 20, 40, 30);
-    context.FillPreserve();
-
-    context.LineWidth = 2;
-    context.Color     = new Color(1, 0, 0);
-    context.Stroke();
-
-    using (ImageSurface img = new(Format.Argb32, 300, 300))
-    using (CairoContext cr  = new(img))
+    // Record a script
     {
-        cr.SetSourceSurface(recordingSurface, 0, 0);
-        cr.Paint();
+        using ScriptDevice script   = new("script0.cairo");
+        using ScriptSurface surface = new(script, Content.Color, 300, 300);
+        using CairoContext context  = new(surface);
 
-        img.WriteToPng("recording.png");
+        script.Mode = ScriptMode.Ascii;
+
+        script.WriteComment($"Start at {DateTimeOffset.Now}");
+
+        context.Color = new Color(0, 0, 1);
+        context.Rectangle(10, 20, 40, 30);
+        context.FillPreserve();
+
+        context.LineWidth = 3;      // 2 is the default, so wouldn't show up in the script
+        context.Color     = new Color(1, 0, 0);
+        context.Stroke();
+
+        // This does not work for the script surface
+        //surface.WriteToPng("script.png");
+        script.WriteComment($"End at {DateTimeOffset.Now}");
     }
 
-    script.WriteComment($"End at {DateTimeOffset.Now}");
+    // Recording surface
+    {
+        using RecordingSurface recording = new(Content.Color);  // size is infinite
+        using CairoContext context       = new(recording);
+
+        // White background, as the default color is black.
+        context.Color = new Color(1, 1, 1);
+        context.Paint();
+
+        context.Rectangle(50, 50, 200, 100);
+        context.Color = new(0.8, 0.8, 0.8);
+        context.FillPreserve();
+        context.Color = Color.Default;
+        context.Stroke();
+
+        using (ScriptDevice script = new("script1.cairo"))
+        {
+            script.FromRecordingSurface(recording);
+        }
+
+        using SvgSurface svg  = new("recording.svg", 300, 300);
+        using CairoContext cr = new(svg);
+
+        cr.SetSourceSurface(recording, 0, 0);
+        cr.Paint();
+        svg.WriteToPng("recording.png");
+    }
+
+    // Proxy surface
+    {
+        using SvgSurface svg        = new("script2.svg", 300, 300);
+        using ScriptDevice script   = new("script2.cairo");
+        using ScriptSurface surface = new(script, svg);
+        using CairoContext context  = new(surface);
+
+        context.Rectangle(50, 50, 200, 100);
+        context.Color = new(0.8, 0.8, 0.8);
+        context.FillPreserve();
+        context.Color = Color.Default;
+        context.Stroke();
+    }
 }
 //-----------------------------------------------------------------------------
 static void PdfFeatures()

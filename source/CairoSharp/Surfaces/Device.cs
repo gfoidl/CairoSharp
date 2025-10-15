@@ -30,13 +30,24 @@ namespace Cairo.Surfaces;
 /// </remarks>
 public unsafe class Device : CairoObject
 {
-    internal Device(void* handle) : base(cairo_device_reference(handle)) { }
+    internal Device(void* device, bool needsReference = true) : base(CreateCore(device, needsReference)) { }
 
-    protected override void DisposeCore(void* handle)
+    [StackTraceHidden]
+    private static void* CreateCore(void* device, bool needsReference = true)
     {
-        cairo_device_destroy(handle);
+        if (needsReference)
+        {
+            cairo_device_reference(device);
+        }
 
-        PrintDebugInfo(handle);
+        return device;
+    }
+
+    protected override void DisposeCore(void* device)
+    {
+        cairo_device_destroy(device);
+
+        PrintDebugInfo(device);
         [Conditional("DEBUG")]
         static void PrintDebugInfo(void* handle)
         {
