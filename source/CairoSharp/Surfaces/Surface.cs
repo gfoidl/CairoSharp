@@ -17,6 +17,8 @@ using static Cairo.Surfaces.SurfaceNative;
 
 namespace Cairo.Surfaces;
 
+internal struct cairo_surface_t;
+
 /// <summary>
 /// Base class for surfaces
 /// </summary>
@@ -54,22 +56,22 @@ namespace Cairo.Surfaces;
 /// </remarks>
 public unsafe class Surface : CairoObject
 {
-    protected internal Surface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy)
+    protected internal Surface(void* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfNotSuccess();
 
         if (isOwnedByCairo && needsDestroy)
         {
-            cairo_surface_reference(handle);
+            cairo_surface_reference(surface);
         }
     }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(void* surface)
     {
-        cairo_surface_destroy(handle);
+        cairo_surface_destroy(surface);
 
-        PrintDebugInfo(handle);
+        PrintDebugInfo(surface);
         [Conditional("DEBUG")]
         static void PrintDebugInfo(void* handle)
         {
@@ -85,8 +87,8 @@ public unsafe class Surface : CairoObject
     /// for some reason. The type of the returned surface may be examined with <see cref="Surface.SurfaceType"/>.
     /// </summary>
     /// <param name="content">the content for the new surface</param>
-    /// <param name="width">width of the new surface, (in device-space units)</param>
-    /// <param name="height">height of the new surface (in device-space units)</param>
+    /// <param name="widthInDeviceSpaceUnits">width of the new surface, (in device-space units)</param>
+    /// <param name="heightInDeviceSpaceUnits">height of the new surface (in device-space units)</param>
     /// <returns>
     /// a pointer to the newly allocated surface. The caller owns the surface and should call
     /// <see cref="CairoObject.Dispose()"/> when done with it.
@@ -96,11 +98,11 @@ public unsafe class Surface : CairoObject
     /// </para>
     /// </returns>
     /// <exception cref="CairoException">when construction fails</exception>
-    public Surface CreateSimilar(Content content, int width, int height)
+    public Surface CreateSimilar(Content content, int widthInDeviceSpaceUnits, int heightInDeviceSpaceUnits)
     {
         this.CheckDisposed();
 
-        void* handle = cairo_surface_create_similar(this.Handle, content, width, height);
+        cairo_surface_t* handle = cairo_surface_create_similar(this.Handle, content, widthInDeviceSpaceUnits, heightInDeviceSpaceUnits);
         return new Surface(handle);
     }
 
@@ -131,7 +133,7 @@ public unsafe class Surface : CairoObject
     {
         this.CheckDisposed();
 
-        void* handle = cairo_surface_create_similar_image(this.Handle, format, width, height);
+        cairo_surface_t* handle = cairo_surface_create_similar_image(this.Handle, format, width, height);
         return new Surface(handle);
     }
 

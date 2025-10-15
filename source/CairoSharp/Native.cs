@@ -20,7 +20,10 @@ internal static class Native
     // E.g. with the stub we have:
     // $ ldd libcairo.so
     // Then the dependencies from the OS loader's PoV are listed.
-    private static readonly LibNames s_cairoLibNames = new("libcairo.so.2", "cairo-2.dll", "libcairo.2.dylib")
+    private static readonly LibNames s_cairoLibNames = new(
+        "libcairo.so.2",        // Linux
+        "cairo-2.dll",          // Windows
+        "libcairo.2.dylib")     // MacOS
     {
         LinuxStubName = "libcairo.so"
     };

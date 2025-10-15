@@ -14,7 +14,7 @@ internal static unsafe partial class SvgSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_svg_surface_create_for_stream(cairo_write_func_t write_func, void* closure, double width_in_points, double height_in_points);
+    internal static partial cairo_surface_t* cairo_svg_surface_create_for_stream(cairo_write_func_t write_func, void* closure, double width_in_points, double height_in_points);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

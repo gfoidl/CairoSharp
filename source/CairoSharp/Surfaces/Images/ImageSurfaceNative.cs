@@ -14,7 +14,7 @@ internal static unsafe partial class ImageSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_image_surface_create(Format format, int width, int height);
+    internal static partial cairo_surface_t* cairo_image_surface_create(Format format, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

@@ -13,4 +13,9 @@
         <Content Include="*.pdf" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\..\native\cairo\util\cairo-script\examples\*.cs" LinkBase="scripts" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\..\artifacts\bin\CairoDemo\debug\output\script0.cairo" Link="scripts\script0.cs" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

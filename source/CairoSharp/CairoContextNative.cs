@@ -12,7 +12,7 @@ internal static unsafe partial class CairoContextNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_create(void* target);
+    internal static partial cairo_t* cairo_create(void* target);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
