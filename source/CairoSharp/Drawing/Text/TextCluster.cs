@@ -47,7 +47,7 @@ public readonly record struct TextCluster(int Bytes, int Glyphs)
 /// <summary>
 /// A <see cref="TextCluster"/>-array.
 /// </summary>
-public sealed unsafe class TextClusterArray : CairoObject
+public sealed unsafe class TextClusterArray : CairoObject<TextCluster>
 {
     private readonly int _numberOfClusters;
 
@@ -55,10 +55,10 @@ public sealed unsafe class TextClusterArray : CairoObject
         : base(clusters)
         => _numberOfClusters = numberOfClusters;
 
-    protected override void DisposeCore(void* handle) => cairo_text_cluster_free((TextCluster*)handle);
+    protected override void DisposeCore(TextCluster* handle) => cairo_text_cluster_free(handle);
 
     /// <summary>
     /// The span representation of the <see cref="TextCluster"/>s.
     /// </summary>
-    public ReadOnlySpan<TextCluster> Span => new ReadOnlySpan<TextCluster>(this.Handle, _numberOfClusters);
+    public ReadOnlySpan<TextCluster> Span => new(this.Handle, _numberOfClusters);
 }

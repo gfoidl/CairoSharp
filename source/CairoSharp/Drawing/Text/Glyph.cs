@@ -60,7 +60,7 @@ public readonly record struct Glyph(CULong Index, double X, double Y)
 /// <summary>
 /// A <see cref="Glyph"/>-array.
 /// </summary>
-public sealed unsafe class GlyphArray : CairoObject
+public sealed unsafe class GlyphArray : CairoObject<Glyph>
 {
     private readonly int _numberOfGlyphs;
 
@@ -68,10 +68,10 @@ public sealed unsafe class GlyphArray : CairoObject
         : base(glyphs)
         => _numberOfGlyphs = numberOfGlyphs;
 
-    protected override void DisposeCore(void* handle) => cairo_glyph_free((Glyph*)handle);
+    protected override void DisposeCore(Glyph* glyph) => cairo_glyph_free(glyph);
 
     /// <summary>
     /// The span representation of the <see cref="Glyph"/>s.
     /// </summary>
-    public ReadOnlySpan<Glyph> Span => new ReadOnlySpan<Glyph>(this.Handle, _numberOfGlyphs);
+    public ReadOnlySpan<Glyph> Span => new(this.Handle, _numberOfGlyphs);
 }

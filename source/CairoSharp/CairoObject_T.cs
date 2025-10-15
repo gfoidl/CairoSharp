@@ -5,7 +5,10 @@ using Cairo.Utilities;
 
 namespace Cairo;
 
-public abstract unsafe class CairoObject<T> : IDisposable, IEquatable<CairoObject<T>>
+/// <summary>
+/// Generic  base object for cairo.
+/// </summary>
+public abstract unsafe class CairoObject<T> : CairoObject, IEquatable<CairoObject<T>>
     where T : unmanaged
 {
     protected readonly bool _isOwnedByCairo;
@@ -32,16 +35,7 @@ public abstract unsafe class CairoObject<T> : IDisposable, IEquatable<CairoObjec
     [DebuggerStepThrough]
     protected internal void CheckDisposed() => ObjectDisposedException.ThrowIf(_handle is null, this);
 
-    /// <summary>
-    /// Releases the resources used by the wrapped cairo object.
-    /// </summary>
-    public void Dispose()
-    {
-        this.Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
+    protected sealed override void Dispose(bool disposing)
     {
         if (!disposing || CairoDebug.Enabled)
         {
@@ -57,8 +51,6 @@ public abstract unsafe class CairoObject<T> : IDisposable, IEquatable<CairoObjec
     }
 
     protected abstract void DisposeCore(T* handle);
-
-    ~CairoObject() => this.Dispose(false);
 
     /// <summary>
     /// Two <see cref="CairoObject"/>s are equal, when there native handles are equal.

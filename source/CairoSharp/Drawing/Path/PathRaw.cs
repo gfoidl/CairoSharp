@@ -18,7 +18,7 @@ namespace Cairo.Drawing.Path;
 /// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
-internal unsafe struct PathRaw
+public unsafe struct PathRaw
 {
     /// <summary>
     /// the current error status

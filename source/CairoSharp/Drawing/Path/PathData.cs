@@ -39,7 +39,7 @@ union _cairo_path_data_t {
 /// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Explicit)]
-internal struct PathData
+public struct PathData
 {
     [FieldOffset(0)]
     public HeaderRaw Header;
