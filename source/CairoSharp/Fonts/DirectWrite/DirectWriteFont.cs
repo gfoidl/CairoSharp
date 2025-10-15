@@ -35,7 +35,7 @@ public sealed unsafe class DirectWriteFont : FontFace
     /// </remarks>
     public DirectWriteFont(IntPtr dwriteFontFace) : base(CreateCore(dwriteFontFace)) { }
 
-    private static void* CreateCore(IntPtr dwriteFontFace)
+    private static cairo_font_face_t* CreateCore(IntPtr dwriteFontFace)
     {
         CairoAPI.CheckSupportedVersion(1, 18, 0);
 

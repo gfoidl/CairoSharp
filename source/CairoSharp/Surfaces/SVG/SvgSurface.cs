@@ -12,8 +12,8 @@ namespace Cairo.Surfaces.SVG;
 /// </remarks>
 public sealed unsafe class SvgSurface : StreamSurface
 {
-    internal SvgSurface(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal SvgSurface(cairo_surface_t* surface, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a SVG surface of the specified size in points, that may be queried and used as a source,

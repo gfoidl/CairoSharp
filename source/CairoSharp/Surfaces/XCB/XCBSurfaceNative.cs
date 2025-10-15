@@ -1,12 +1,12 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
-using xcb_connection_t          = uint;
-using xcb_drawable_t            = uint;
-using xcb_screen_t              = uint;
-using xcb_visualtype_t          = uint;
-using xcb_pixmap_t              = uint;
-using xcb_render_pictforminfo_t = uint;
+using unsafe xcb_connection_t          = void*;
+using xcb_drawable_t                   = uint;
+using xcb_pixmap_t                     = uint;
+using unsafe xcb_render_pictforminfo_t = void*;
+using unsafe xcb_screen_t              = void*;
+using unsafe xcb_visualtype_t          = void*;
 
 namespace Cairo.Surfaces.XCB;
 
@@ -16,15 +16,15 @@ internal static unsafe partial class XCBSurfaceNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial cairo_surface_t* cairo_xcb_surface_create(xcb_connection_t* connection, xcb_drawable_t drawable, xcb_visualtype_t* visual, int width, int height);
+    internal static partial cairo_surface_t* cairo_xcb_surface_create(xcb_connection_t connection, xcb_drawable_t drawable, xcb_visualtype_t visual, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial cairo_surface_t* cairo_xcb_surface_create_for_bitmap(xcb_connection_t* connection, xcb_screen_t* screen, xcb_pixmap_t bitmap, int width, int height);
+    internal static partial cairo_surface_t* cairo_xcb_surface_create_for_bitmap(xcb_connection_t connection, xcb_screen_t screen, xcb_pixmap_t bitmap, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial cairo_surface_t* cairo_xcb_surface_create_with_xrender_format(xcb_connection_t* connection, xcb_screen_t* screen, xcb_drawable_t drawable, xcb_render_pictforminfo_t* format, int width, int height);
+    internal static partial cairo_surface_t* cairo_xcb_surface_create_with_xrender_format(xcb_connection_t connection, xcb_screen_t screen, xcb_drawable_t drawable, xcb_render_pictforminfo_t format, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -36,7 +36,7 @@ internal static unsafe partial class XCBSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial xcb_connection_t* cairo_xcb_device_get_connection(cairo_device_t* device);
+    internal static partial xcb_connection_t cairo_xcb_device_get_connection(cairo_device_t* device);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

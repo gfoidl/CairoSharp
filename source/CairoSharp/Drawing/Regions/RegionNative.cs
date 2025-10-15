@@ -6,8 +6,6 @@ namespace Cairo.Drawing.Regions;
 
 // https://www.cairographics.org/manual/cairo-Regions.html
 
-internal struct cairo_region_t;
-
 internal static unsafe partial class RegionNative
 {
     [LibraryImport(Native.LibCairo)]

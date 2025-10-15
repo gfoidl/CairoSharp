@@ -8,8 +8,6 @@ namespace Cairo.Drawing.Patterns;
 
 // https://www.cairographics.org/manual/cairo-cairo-pattern-t.html
 
-internal struct cairo_pattern_t;
-
 internal static unsafe partial class PatternNative
 {
     [LibraryImport(Native.LibCairo)]

@@ -27,7 +27,7 @@ public abstract unsafe class CairoObject<T> : IDisposable, IEquatable<CairoObjec
         CairoDebug.OnAllocated(handle);
     }
 
-    protected internal void* Handle => _handle;
+    protected internal T* Handle => _handle;
 
     [DebuggerStepThrough]
     protected internal void CheckDisposed() => ObjectDisposedException.ThrowIf(_handle is null, this);
@@ -41,7 +41,7 @@ public abstract unsafe class CairoObject<T> : IDisposable, IEquatable<CairoObjec
         GC.SuppressFinalize(this);
     }
 
-    protected void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!disposing || CairoDebug.Enabled)
         {
@@ -56,7 +56,7 @@ public abstract unsafe class CairoObject<T> : IDisposable, IEquatable<CairoObjec
         _handle = null;
     }
 
-    protected abstract void DisposeCore(void* handle);
+    protected abstract void DisposeCore(T* handle);
 
     ~CairoObject() => this.Dispose(false);
 

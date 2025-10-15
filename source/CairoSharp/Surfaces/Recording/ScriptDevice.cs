@@ -14,7 +14,7 @@ public sealed unsafe class ScriptDevice : Device
     private GCHandle _streamHandle;     // mutable struct
 
     private ScriptDevice((IntPtr Device, GCHandle StreamHandle) arg)
-        : base(arg.Device.ToPointer(), needsReference: false)
+        : base((cairo_device_t*)arg.Device.ToPointer(), needsReference: false)
         => _streamHandle = arg.StreamHandle;
 
     /// <summary>
@@ -62,9 +62,9 @@ public sealed unsafe class ScriptDevice : Device
         }
     }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_device_t* device)
     {
-        base.DisposeCore(handle);
+        base.DisposeCore(device);
 
         if (_streamHandle.IsAllocated)
         {

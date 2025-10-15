@@ -10,8 +10,8 @@ namespace Cairo.Drawing.Patterns;
 /// </summary>
 public sealed unsafe class SurfacePattern : Pattern
 {
-    internal SurfacePattern(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal SurfacePattern(cairo_pattern_t* pattern, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(pattern, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Create a new <see cref="SurfacePattern"/> for the given surface.
@@ -31,11 +31,11 @@ public sealed unsafe class SurfacePattern : Pattern
         {
             this.CheckDisposed();
 
-            Status status = cairo_pattern_get_surface(this.Handle, out void* surfaceHandle);
+            Status status = cairo_pattern_get_surface(this.Handle, out cairo_surface_t* surface);
 
             status.ThrowIfStatus(Status.PatternTypeMismatch);
 
-            return new Surface(surfaceHandle, isOwnedByCairo: true);
+            return new Surface(surface, isOwnedByCairo: true);
         }
     }
 }

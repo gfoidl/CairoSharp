@@ -17,6 +17,8 @@ using static Cairo.Surfaces.SurfaceNative;
 
 namespace Cairo.Surfaces;
 
+public struct cairo_surface_t;
+
 /// <summary>
 /// Base class for surfaces
 /// </summary>
@@ -52,9 +54,9 @@ namespace Cairo.Surfaces;
 /// See <see cref="Device.Acquire"/> for a discussion of devices.
 /// </para>
 /// </remarks>
-public unsafe class Surface : CairoObject
+public unsafe class Surface : CairoObject<cairo_surface_t>
 {
-    protected internal Surface(void* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
+    internal Surface(cairo_surface_t* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
         : base(surface, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfNotSuccess();
@@ -65,16 +67,16 @@ public unsafe class Surface : CairoObject
         }
     }
 
-    protected override void DisposeCore(void* surface)
+    protected override void DisposeCore(cairo_surface_t* surface)
     {
         cairo_surface_destroy(surface);
 
         PrintDebugInfo(surface);
         [Conditional("DEBUG")]
-        static void PrintDebugInfo(void* handle)
+        static void PrintDebugInfo(cairo_surface_t* surface)
         {
-            uint rc = cairo_surface_get_reference_count(handle);
-            Debug.WriteLine($"Surface 0x{(nint)handle}: reference count = {rc}");
+            uint rc = cairo_surface_get_reference_count(surface);
+            Debug.WriteLine($"Surface 0x{(nint)surface}: reference count = {rc}");
         }
     }
 
@@ -164,8 +166,8 @@ public unsafe class Surface : CairoObject
     {
         this.CheckDisposed();
 
-        void* handle = cairo_surface_create_for_rectangle(this.Handle, x, y, width, height);
-        return new Surface(handle);
+        cairo_surface_t* surface = cairo_surface_create_for_rectangle(this.Handle, x, y, width, height);
+        return new Surface(surface);
     }
 
     /// <summary>
@@ -223,16 +225,18 @@ public unsafe class Surface : CairoObject
         get
         {
             this.CheckDisposed();
-            void* handle = cairo_surface_get_device(this.Handle);
+            cairo_device_t* device = cairo_surface_get_device(this.Handle);
 
-            if (handle is null)
+            if (device is null)
             {
                 return null;
             }
 
-            return new Device(handle);
+            return new Device(device);
         }
     }
+
+    protected Device GetDeviceOrThrow() => this.Device ?? throw new CairoException("No device is associated with this surface");
 
     /// <summary>
     /// Retrieves the default font rendering options for the surface. This allows display surfaces to
@@ -566,8 +570,8 @@ public unsafe class Surface : CairoObject
     {
         this.CheckDisposed();
 
-        void* handle = cairo_surface_map_to_image(this.Handle, &extents);
-        return new ImageSurface(handle, isOwnedByCairo: false, needsDestroy: false);
+        cairo_surface_t* imageSurface = cairo_surface_map_to_image(this.Handle, &extents);
+        return new ImageSurface(imageSurface, isOwnedByCairo: false, needsDestroy: false);
     }
 
     /// <summary>
@@ -582,8 +586,8 @@ public unsafe class Surface : CairoObject
     {
         this.CheckDisposed();
 
-        void* handle = cairo_surface_map_to_image(this.Handle, null);
-        return new ImageSurface(handle, isOwnedByCairo: false, needsDestroy: false);
+        cairo_surface_t* imageSurface = cairo_surface_map_to_image(this.Handle, null);
+        return new ImageSurface(imageSurface, isOwnedByCairo: false, needsDestroy: false);
     }
 
     /// <summary>
@@ -695,7 +699,7 @@ public unsafe class Surface : CairoObject
     }
 #pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
 
-    internal static Surface Lookup(void* surface, bool isOwnedByCairo, bool needsDestroy = true)
+    internal static Surface Lookup(cairo_surface_t* surface, bool isOwnedByCairo, bool needsDestroy = true)
     {
         SurfaceType surfaceType = cairo_surface_get_type(surface);
 

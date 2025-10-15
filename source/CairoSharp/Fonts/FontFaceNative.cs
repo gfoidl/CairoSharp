@@ -6,8 +6,6 @@ namespace Cairo.Fonts;
 
 // https://www.cairographics.org/manual/cairo-cairo-font-face-t.html
 
-internal struct cairo_font_face_t;
-
 internal static unsafe partial class FontFaceNative
 {
     [LibraryImport(Native.LibCairo)]

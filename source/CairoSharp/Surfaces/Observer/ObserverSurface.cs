@@ -27,7 +27,7 @@ public sealed unsafe class ObserverSurface : Surface
     private readonly Surface _target;
     private readonly void*   _thisHandle;
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_surface_t* handle)
     {
         base.DisposeCore(handle);
 

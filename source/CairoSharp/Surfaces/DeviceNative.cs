@@ -6,7 +6,7 @@ namespace Cairo.Surfaces;
 
 // https://www.cairographics.org/manual/cairo-cairo-device-t.html
 
-internal struct cairo_device_t;
+public struct cairo_device_t;
 
 internal static unsafe partial class DeviceNative
 {
@@ -64,7 +64,7 @@ internal static unsafe partial class DeviceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial double cairo_device_observer_glyphs_elapsed(vocairo_device_tid* abstract_device);
+    internal static partial double cairo_device_observer_glyphs_elapsed(cairo_device_t* abstract_device);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

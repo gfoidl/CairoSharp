@@ -7,8 +7,6 @@ namespace Cairo.Surfaces;
 
 // https://www.cairographics.org/manual/cairo-cairo-surface-t.html
 
-internal struct cairo_surface_t;
-
 internal static unsafe partial class SurfaceNative
 {
     [LibraryImport(Native.LibCairo)]

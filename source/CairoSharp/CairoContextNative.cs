@@ -207,7 +207,7 @@ internal static unsafe partial class CairoContextNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_mask_surface(cairo_t* cr, cairo_surface_t surface, double surface_x, double surface_y);
+    internal static partial void cairo_mask_surface(cairo_t* cr, cairo_surface_t* surface, double surface_x, double surface_y);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -244,7 +244,7 @@ internal static unsafe partial class CairoContextNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial uint cairo_get_reference_count(cairo_surface_t* surface);
+    internal static partial uint cairo_get_reference_count(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

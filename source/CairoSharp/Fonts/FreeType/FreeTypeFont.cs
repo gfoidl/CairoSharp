@@ -1,6 +1,8 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Fonts.Scaled;
 using static Cairo.Fonts.FreeType.FreeTypeFontNative;
+using unsafe FT_Face = void*;
 
 namespace Cairo.Fonts.FreeType;
 
@@ -87,7 +89,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// FT_Face to that of the cairo font-face.
     /// </para>
     /// </remarks>
-    public FreeTypeFont(IntPtr pattern) : base(cairo_ft_font_face_create_for_pattern(pattern.ToPointer())) { }
+    public FreeTypeFont(IntPtr pattern) : base(cairo_ft_font_face_create_for_pattern((FcPattern*)pattern.ToPointer())) { }
 
     /// <summary>
     /// Add options to a FcPattern based on a <see cref="FontOptions"/> font options object.
@@ -101,7 +103,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// </remarks>
     public static void SubstituteOptions(FontOptions options, IntPtr pattern)
     {
-        cairo_ft_font_options_substitute(options.Handle, pattern.ToPointer());
+        cairo_ft_font_options_substitute(options.Handle, (FcPattern*)pattern.ToPointer());
     }
 
     /// <summary>
@@ -130,8 +132,8 @@ public sealed unsafe class FreeTypeFont : FontFace
     {
         this.CheckDisposed();
 
-        void* handle = cairo_ft_scaled_font_lock_face(this.Handle);
-        return new IntPtr(handle);
+        FT_Face ftFace = cairo_ft_scaled_font_lock_face((cairo_scaled_font_t*)this.Handle);
+        return new IntPtr(ftFace);
     }
 
     /// <summary>
@@ -140,7 +142,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     public void UnlockFace()
     {
         this.CheckDisposed();
-        cairo_ft_scaled_font_unlock_face(this.Handle);
+        cairo_ft_scaled_font_unlock_face((cairo_scaled_font_t*)this.Handle);
     }
 
     /// <summary>

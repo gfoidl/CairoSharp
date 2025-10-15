@@ -1,10 +1,10 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
-using Display           = uint;
-using Drawable          = uint;
-using Screen            = uint;
-using XRenderPictFormat = uint;
+using unsafe Display           = void*;
+using Drawable                 = uint;
+using unsafe Screen            = void*;
+using unsafe XRenderPictFormat = void*;
 
 namespace Cairo.Surfaces.XLib;
 
@@ -14,7 +14,7 @@ internal static unsafe partial class XLibXRenderSurfaceNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial cairo_surface_t* cairo_xlib_surface_create_with_xrender_format(Display* dpy, Drawable drawable, Screen* screen, XRenderPictFormat* format, int widht, int height);
+    internal static partial cairo_surface_t* cairo_xlib_surface_create_with_xrender_format(Display dpy, Drawable drawable, Screen screen, XRenderPictFormat format, int widht, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

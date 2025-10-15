@@ -19,8 +19,8 @@ namespace Cairo.Surfaces.XLib;
 /// </remarks>
 public unsafe class XLibSurface : Surface
 {
-    internal XLibSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal XLibSurface(cairo_surface_t* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates an Xlib surface that draws to the given drawable. The way that colors are
@@ -59,8 +59,8 @@ public unsafe class XLibSurface : Surface
     /// <exception cref="CairoException">when construction fails</exception>
     public static XLibSurface FromBitmap(IntPtr display, Pixmap bitmap, IntPtr screen, int width, int height)
     {
-        void* handle = cairo_xlib_surface_create_for_bitmap(display.ToPointer(), bitmap, screen.ToPointer(), width, height);
-        return new XLibSurface(handle);
+        cairo_surface_t* surface = cairo_xlib_surface_create_for_bitmap((uint*)display.ToPointer(), bitmap, (uint*)screen.ToPointer(), width, height);
+        return new XLibSurface(surface);
     }
 
     /// <summary>
@@ -192,10 +192,13 @@ public unsafe class XLibSurface : Surface
     /// <remarks>
     /// Use the special values -1 and -1 for disabling the RENDER extension.
     /// </remarks>
+    /// <exception cref="CairoException">when there is no device associated</exception>
     public void DebugCapXrenderVersion(int majorVersion, int minorVersion)
     {
         this.CheckDisposed();
-        cairo_xlib_device_debug_cap_xrender_version(this.Handle, majorVersion, minorVersion);
+
+        Device device = this.GetDeviceOrThrow();
+        cairo_xlib_device_debug_cap_xrender_version(device.Handle, majorVersion, minorVersion);
     }
 
     /// <summary>
@@ -206,12 +209,16 @@ public unsafe class XLibSurface : Surface
         get
         {
             this.CheckDisposed();
-            return cairo_xlib_device_debug_get_precision(this.Handle);
+
+            Device device = this.GetDeviceOrThrow();
+            return cairo_xlib_device_debug_get_precision(device.Handle);
         }
         set
         {
             this.CheckDisposed();
-            cairo_xlib_device_debug_set_precision(this.Handle, value);
+
+            Device device = this.GetDeviceOrThrow();
+            cairo_xlib_device_debug_set_precision(device.Handle, value);
         }
     }
 }

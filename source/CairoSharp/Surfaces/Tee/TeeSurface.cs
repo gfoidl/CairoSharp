@@ -51,8 +51,8 @@ public sealed unsafe class TeeSurface : Surface
         {
             this.CheckDisposed();
 
-            void* handle = cairo_tee_surface_index(this.Handle, (uint)index);
-            return new Surface(handle, isOwnedByCairo: true, needsDestroy: false);
+            cairo_surface_t* surface = cairo_tee_surface_index(this.Handle, (uint)index);
+            return new Surface(surface, isOwnedByCairo: true, needsDestroy: false);
         }
     }
 

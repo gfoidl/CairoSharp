@@ -2,9 +2,11 @@
 
 using System.Diagnostics;
 using static Cairo.Fonts.FontFaceNative;
-using unsafe ReferenceFunc = delegate*<void*, void*>;
+using unsafe ReferenceFunc = delegate*<Cairo.Fonts.cairo_font_face_t*, Cairo.Fonts.cairo_font_face_t*>;
 
 namespace Cairo.Fonts;
+
+public struct cairo_font_face_t;
 
 /// <summary>
 /// cairo_font_face_t — Base class for font faces
@@ -18,10 +20,10 @@ namespace Cairo.Fonts;
 /// of cairo_select_font_face(). The resulting face can be accessed using cairo_get_font_face().
 /// </para>
 /// </remarks>
-public unsafe class FontFace : CairoObject
+public unsafe class FontFace : CairoObject<cairo_font_face_t>
 {
-    protected internal FontFace(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true, ReferenceFunc referenceFunc = null)
-        : base(handle, isOwnedByCairo, needsDestroy)
+    protected internal FontFace(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true, ReferenceFunc referenceFunc = null)
+        : base(fontFace, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfNotSuccess();
 
@@ -29,25 +31,25 @@ public unsafe class FontFace : CairoObject
         {
             if (referenceFunc is null)
             {
-                cairo_font_face_reference(handle);
+                cairo_font_face_reference(fontFace);
             }
             else
             {
-                referenceFunc(handle);
+                referenceFunc(fontFace);
             }
         }
     }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_font_face_t* fontFace)
     {
-        cairo_font_face_destroy(handle);
+        cairo_font_face_destroy(fontFace);
 
-        PrintDebugInfo(handle);
+        PrintDebugInfo(fontFace);
         [Conditional("DEBUG")]
-        static void PrintDebugInfo(void * handle)
+        static void PrintDebugInfo(cairo_font_face_t* fontFace)
         {
-            uint rc = cairo_font_face_get_reference_count(handle);
-            Debug.WriteLine($"FontFace 0x{(nint)handle}: reference count = {rc}");
+            uint rc = cairo_font_face_get_reference_count(fontFace);
+            Debug.WriteLine($"FontFace 0x{(nint)fontFace}: reference count = {rc}");
         }
     }
 

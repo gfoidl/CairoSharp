@@ -10,7 +10,7 @@ internal static unsafe partial class DirectWriteFontNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_dwrite_font_face_create_for_dwrite_fontface(void* dwrite_font_face);
+    internal static partial cairo_font_face_t* cairo_dwrite_font_face_create_for_dwrite_fontface(void* dwrite_font_face);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

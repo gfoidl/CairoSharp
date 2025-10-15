@@ -90,13 +90,13 @@ public sealed unsafe class QuartzSurface : Surface
     {
         this.CheckDisposed();
 
-        void* handle = cairo_quartz_image_surface_get_image(this.Handle);
+        cairo_surface_t* imageSurface = cairo_quartz_image_surface_get_image(this.Handle);
 
-        if (handle is null)
+        if (imageSurface is null)
         {
             return null;
         }
 
-        return new ImageSurface(handle, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
+        return new ImageSurface(imageSurface, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
     }
 }

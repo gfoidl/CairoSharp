@@ -22,8 +22,8 @@ namespace Cairo.Surfaces.PDF;
 /// </remarks>
 public sealed unsafe class PdfSurface : StreamSurface
 {
-    internal PdfSurface(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal PdfSurface(cairo_surface_t* surface, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points, that may be queried and used as a source,

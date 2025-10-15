@@ -56,34 +56,35 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// <summary>
     /// Creates a new <see cref="CairoContext"/> from the given native handle.
     /// </summary>
-    /// <param name="nativeHandle">the native handle to a cairo context</param>
+    /// <param name="cr">the native handle to a cairo context</param>
     /// <remarks>
     /// Ownership of the handle is not transferred. <see cref="CairoObject.Dispose()"/> can be called,
     /// but it will not free the native cairo context (it is actually a no-op here).
     /// </remarks>
-    public CairoContext(cairo_t* nativeHandle) : base(nativeHandle, needsDestroy: false) { }
+    public CairoContext(cairo_t* cr) : base(cr, needsDestroy: false) { }
 
-    internal CairoContext(void* handle, bool isOwnedByCairo, bool needsDestroy = true) : base(handle, isOwnedByCairo, needsDestroy)
+    internal CairoContext(cairo_t* cr, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(cr, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfStatus(Status.NoMemory);
         this.Status.ThrowIfStatus(Status.WriteError);
 
         if (isOwnedByCairo && needsDestroy)
         {
-            cairo_reference(handle);
+            cairo_reference(cr);
         }
     }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_t* cr)
     {
         cairo_destroy(this.Handle);
 
-        PrintDebugInfo(handle);
+        PrintDebugInfo(cr);
         [Conditional("DEBUG")]
-        static void PrintDebugInfo(void* handle)
+        static void PrintDebugInfo(cairo_t* cr)
         {
-            uint rc = cairo_get_reference_count(handle);
-            Debug.WriteLine($"CairoContext 0x{(nint)handle}: reference count = {rc}");
+            uint rc = cairo_get_reference_count(cr);
+            Debug.WriteLine($"CairoContext 0x{(nint)cr}: reference count = {rc}");
         }
     }
 
@@ -278,10 +279,10 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     {
         this.CheckDisposed();
 
-        void* handle = cairo_pop_group(this.Handle);
+        cairo_pattern_t* pattern = cairo_pop_group(this.Handle);
 
-        Debug.Assert(handle is not null);
-        SurfacePattern? surface = Pattern.Lookup(handle, isOwnedByCairo: false) as SurfacePattern;
+        Debug.Assert(pattern is not null);
+        SurfacePattern? surface = Pattern.Lookup(pattern, isOwnedByCairo: false) as SurfacePattern;
 
         return surface ?? throw new CairoException("Unexpected result, should be a surface pattern");
     }
@@ -332,8 +333,8 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
         {
             this.CheckDisposed();
 
-            void* handle = cairo_get_group_target(this.Handle);
-            return Surface.Lookup(handle, isOwnedByCairo: true, needsDestroy: false);
+            cairo_surface_t* surface = cairo_get_group_target(this.Handle);
+            return Surface.Lookup(surface, isOwnedByCairo: true, needsDestroy: false);
         }
     }
 
@@ -470,8 +471,8 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     {
         this.CheckDisposed();
 
-        void* handle = cairo_get_source(this.Handle);
-        return Pattern.Lookup(handle, isOwnedByCairo: true, needsDestroy: false);
+        cairo_pattern_t* pattern = cairo_get_source(this.Handle);
+        return Pattern.Lookup(pattern, isOwnedByCairo: true, needsDestroy: false);
     }
 
     /// <summary>

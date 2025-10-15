@@ -15,8 +15,8 @@ namespace Cairo.Surfaces.Images;
 /// </remarks>
 public sealed unsafe class ImageSurface : Surface
 {
-    internal ImageSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal ImageSurface(cairo_surface_t* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates an image surface of the specified format and dimensions. Initially the surface

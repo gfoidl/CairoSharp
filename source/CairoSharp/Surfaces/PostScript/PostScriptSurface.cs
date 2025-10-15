@@ -40,8 +40,8 @@ namespace Cairo.Surfaces.PostScript;
 /// </remarks>
 public sealed unsafe class PostScriptSurface : StreamSurface
 {
-    internal PostScriptSurface(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal PostScriptSurface(cairo_surface_t* surface, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a PostScript surface of the specified size in points, that may be queried and used as a source,

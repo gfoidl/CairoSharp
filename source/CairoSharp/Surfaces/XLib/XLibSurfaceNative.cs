@@ -1,11 +1,11 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
-using Display  = uint;
-using Drawable = uint;
-using Visual   = uint;
-using Pixmap   = uint;
-using Screen   = uint;
+using unsafe Display  = void*;
+using Drawable        = uint;
+using Pixmap          = uint;
+using unsafe Screen   = void*;
+using unsafe Visual   = void*;
 
 namespace Cairo.Surfaces.XLib;
 
@@ -15,11 +15,11 @@ internal static unsafe partial class XLibSurfaceNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial cairo_surface_t* cairo_xlib_surface_create(Display* display, Drawable drawable, Visual* visual, int width, int height);
+    internal static partial cairo_surface_t* cairo_xlib_surface_create(Display display, Drawable drawable, Visual visual, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial cairo_surface_t* cairo_xlib_surface_create_for_bitmap(Display* display, Pixmap bitmap, Screen* screen, int width, int height);
+    internal static partial cairo_surface_t* cairo_xlib_surface_create_for_bitmap(Display display, Pixmap bitmap, Screen screen, int width, int height);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -47,7 +47,7 @@ internal static unsafe partial class XLibSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial int cairo_xlib_surface_get_width(vcairo_surface_toid* surface);
+    internal static partial int cairo_xlib_surface_get_width(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -67,5 +67,5 @@ internal static unsafe partial class XLibSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_xlib_device_debug_set_precision(vocairo_device_tid* device, int precision);
+    internal static partial void cairo_xlib_device_debug_set_precision(cairo_device_t* device, int precision);
 }

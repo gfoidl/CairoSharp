@@ -26,8 +26,8 @@ namespace Cairo.Drawing.Patterns;
 /// </remarks>
 public sealed unsafe class Mesh : Pattern
 {
-    internal Mesh(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal Mesh(cairo_pattern_t* pattern, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(pattern, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Create a new mesh pattern.

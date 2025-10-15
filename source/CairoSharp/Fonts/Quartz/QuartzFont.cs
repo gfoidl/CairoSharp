@@ -12,7 +12,7 @@ namespace Cairo.Fonts.Quartz;
 /// </remarks>
 public sealed unsafe class QuartzFont : FontFace
 {
-    private QuartzFont(void* handle) : base(handle) { }
+    private QuartzFont(cairo_font_face_t* fontFace) : base(fontFace) { }
 
     /// <summary>
     /// Creates a new font for the Quartz font backend based on a CGFontRef.
@@ -24,8 +24,8 @@ public sealed unsafe class QuartzFont : FontFace
     /// </remarks>
     public static QuartzFont CreateForCgFont(IntPtr font)
     {
-        void* handle = cairo_quartz_font_face_create_for_cgfont(font.ToPointer());
-        return new QuartzFont(handle);
+        cairo_font_face_t* fontFace = cairo_quartz_font_face_create_for_cgfont(font.ToPointer());
+        return new QuartzFont(fontFace);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public sealed unsafe class QuartzFont : FontFace
     /// </remarks>
     public static QuartzFont CreateForAtsuFontId(uint fontId)
     {
-        void* handle = cairo_quartz_font_face_create_for_atsu_font_id(fontId);
-        return new QuartzFont(handle);
+        cairo_font_face_t* fontFace = cairo_quartz_font_face_create_for_atsu_font_id(fontId);
+        return new QuartzFont(fontFace);
     }
 }

@@ -14,8 +14,8 @@ namespace Cairo.Surfaces.Win32;
 /// </remarks>
 public sealed unsafe class Win32Surface : Surface
 {
-    internal Win32Surface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal Win32Surface(cairo_surface_t* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a cairo surface that targets the given DC. The DC will be queried for its initial
@@ -87,8 +87,8 @@ public sealed unsafe class Win32Surface : Surface
     /// <exception cref="ArgumentNullException">when the surface could not be created due to a failure</exception>
     public static Win32Surface CreatePrintingSurface(IntPtr hdc)
     {
-        void* handle = cairo_win32_printing_surface_create(hdc.ToPointer());
-        return new Win32Surface(handle);
+        cairo_surface_t* surface = cairo_win32_printing_surface_create(hdc.ToPointer());
+        return new Win32Surface(surface);
     }
 
     /// <summary>
@@ -122,13 +122,13 @@ public sealed unsafe class Win32Surface : Surface
     {
         this.CheckDisposed();
 
-        void* handle = cairo_win32_surface_get_image(this.Handle);
+        cairo_surface_t* surface = cairo_win32_surface_get_image(this.Handle);
 
-        if (handle is null)
+        if (surface is null)
         {
             return null;
         }
 
-        return new ImageSurface(handle, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
+        return new ImageSurface(surface, isOwnedByCairo: true, needsDestroy: /* not documented in cairo */ false);
     }
 }
