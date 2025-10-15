@@ -15,7 +15,7 @@ using Cairo.Surfaces.Recording;
 using Cairo.Surfaces.SVG;
 using IOPath = System.IO.Path;
 
-if (OperatingSystem.IsWindows() && false)
+if (OperatingSystem.IsWindows())
 {
     LoadingNative.DllImportResolver = static (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
     {
