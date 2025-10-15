@@ -17,8 +17,7 @@ public sealed unsafe class SurfacePattern : Pattern
     /// Create a new <see cref="SurfacePattern"/> for the given surface.
     /// </summary>
     /// <param name="surface">the surface</param>
-    public SurfacePattern(Surface surface)
-        : base(cairo_pattern_create_for_surface(surface.Handle)) { }
+    public SurfacePattern(Surface surface) : base(cairo_pattern_create_for_surface(surface.Handle)) { }
 
     /// <summary>
     /// Gets the surface of a surface pattern.
