@@ -178,11 +178,11 @@ internal static unsafe partial class CairoContextNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_rectangle_list_destroy(cairo_rectangle_list_t* rectangle_list);
+    internal static partial void cairo_rectangle_list_destroy(RectangleListRaw* rectangle_list);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial cairo_rectangle_list_t* cairo_copy_clip_rectangle_list(cairo_t* cr);
+    internal static partial RectangleListRaw* cairo_copy_clip_rectangle_list(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

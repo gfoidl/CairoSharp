@@ -945,7 +945,7 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     {
         this.CheckDisposed();
 
-        cairo_rectangle_list_t* handle = cairo_copy_clip_rectangle_list(this.Handle);
+        RectangleListRaw* handle = cairo_copy_clip_rectangle_list(this.Handle);
         return new RectangleList(handle);
     }
 

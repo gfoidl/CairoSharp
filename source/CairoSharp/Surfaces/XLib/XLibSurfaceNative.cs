@@ -1,11 +1,11 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
-using unsafe Display  = void*;
-using Drawable        = uint;
-using Pixmap          = uint;
-using unsafe Screen   = void*;
-using unsafe Visual   = void*;
+using unsafe Display = void*;
+using Drawable       = uint;
+using Pixmap         = uint;
+using unsafe Screen  = void*;
+using unsafe Visual  = void*;
 
 namespace Cairo.Surfaces.XLib;
 
