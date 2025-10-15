@@ -3,7 +3,6 @@
 global using unsafe GDestroyNotify = delegate*<void*, void>;
 global using RsvgRectangle         = Cairo.Rectangle;
 
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Cairo.Extensions.Loading.PDF;
@@ -18,17 +17,6 @@ public static unsafe partial class LoadingNative
     public const string LibGioName     = "libgio-2.0.so.0";
     public const string LibRSvgName    = "librsvg-2.so.2";
     public const string LibPopplerName = "libpoppler-glib.so.8";
-
-    [DisallowNull]
-    public static DllImportResolver? DllImportResolver
-    {
-        get => field;
-        set
-        {
-            field = value;
-            NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), value);
-        }
-    }
     //-------------------------------------------------------------------------
     public static string? GetLibRsvgVersion()
     {

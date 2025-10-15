@@ -1,11 +1,11 @@
 // (c) gfoidl, all rights reserved
 
-using System.Reflection;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Cairo.Extensions.Loading.Script;
 
-partial class ScriptNative
+static partial class ScriptNative
 {
     private static readonly Native.LibNames s_libNames = new(
         "libcairo-script-interpreter.so.2",
@@ -14,24 +14,18 @@ partial class ScriptNative
 
     private static nint s_libHandle;
 
-    static ScriptNative()
+    internal static DllImportResolver Resolver { get; } = static (libraryName, assembly, searchPath) =>
     {
-        NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), static (libraryName, assembly, searchPath) =>
+        Debug.Assert(libraryName == LibCairoScriptInterpreter);
+
+        nint libHandle = Volatile.Read(ref s_libHandle);
+
+        if (libHandle == 0)
         {
-            if (libraryName == LibCairoScriptInterpreter)
-            {
-                nint libHandle = Volatile.Read(ref s_libHandle);
+            libHandle = Native.GetLibHandle(s_libNames);
+            Volatile.Write(ref s_libHandle, libHandle);
+        }
 
-                if (libHandle == 0)
-                {
-                    libHandle = Native.GetLibHandle(s_libNames);
-                    Volatile.Write(ref s_libHandle, libHandle);
-                }
-
-                return libHandle;
-            }
-
-            return default;
-        });
-    }
+        return libHandle;
+    };
 }

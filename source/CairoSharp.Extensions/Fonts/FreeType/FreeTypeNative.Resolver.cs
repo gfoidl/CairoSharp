@@ -1,11 +1,11 @@
 // (c) gfoidl, all rights reserved
 
-using System.Reflection;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Cairo.Extensions.Fonts.FreeType;
 
-partial class FreeTypeNative
+static partial class FreeTypeNative
 {
     private static readonly Native.LibNames s_freeTypeLibNames = new(
         "libfreetype.so.6",         // Linux
@@ -14,24 +14,18 @@ partial class FreeTypeNative
 
     private static nint s_libHandle;
 
-    static FreeTypeNative()
+    internal static DllImportResolver Resolver { get; } = static (libraryName, assembly, searchPath) =>
     {
-        NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), static (libraryName, assembly, searchPath) =>
+        Debug.Assert(libraryName == LibFreeType);
+
+        nint libHandle = Volatile.Read(ref s_libHandle);
+
+        if (libHandle == 0)
         {
-            if (libraryName == LibFreeType)
-            {
-                nint libHandle = Volatile.Read(ref s_libHandle);
+            libHandle = Native.GetLibHandle(s_freeTypeLibNames);
+            Volatile.Write(ref s_libHandle, libHandle);
+        }
 
-                if (libHandle == 0)
-                {
-                    libHandle = Native.GetLibHandle(s_freeTypeLibNames);
-                    Volatile.Write(ref s_libHandle, libHandle);
-                }
-
-                return libHandle;
-            }
-
-            return default;
-        });
-    }
+        return libHandle;
+    };
 }
