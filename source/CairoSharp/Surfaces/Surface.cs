@@ -17,8 +17,6 @@ using static Cairo.Surfaces.SurfaceNative;
 
 namespace Cairo.Surfaces;
 
-internal struct cairo_surface_t;
-
 /// <summary>
 /// Base class for surfaces
 /// </summary>
@@ -129,12 +127,12 @@ public unsafe class Surface : CairoObject
     /// </para>
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
-    public Surface CreateSimilarImage(Format format, int width, int height)
+    public ImageSurface CreateSimilarImage(Format format, int width, int height)
     {
         this.CheckDisposed();
 
         cairo_surface_t* handle = cairo_surface_create_similar_image(this.Handle, format, width, height);
-        return new Surface(handle);
+        return new ImageSurface(handle);
     }
 
     /// <summary>
@@ -564,12 +562,12 @@ public unsafe class Surface : CairoObject
     /// Changing the device transform of the image surface or of surface before the image surface is unmapped
     /// results in undefined behavior.
     /// </remarks>
-    public Surface MapToImage(RectangleInt extents)
+    public ImageSurface MapToImage(RectangleInt extents)
     {
         this.CheckDisposed();
 
         void* handle = cairo_surface_map_to_image(this.Handle, &extents);
-        return new Surface(handle, isOwnedByCairo: false, needsDestroy: false);
+        return new ImageSurface(handle, isOwnedByCairo: false, needsDestroy: false);
     }
 
     /// <summary>
@@ -580,12 +578,12 @@ public unsafe class Surface : CairoObject
     /// <remarks>
     /// <see cref="MapToImage(RectangleInt)"/> for futher information.
     /// </remarks>
-    public Surface MapToImage()
+    public ImageSurface MapToImage()
     {
         this.CheckDisposed();
 
         void* handle = cairo_surface_map_to_image(this.Handle, null);
-        return new Surface(handle, isOwnedByCairo: false, needsDestroy: false);
+        return new ImageSurface(handle, isOwnedByCairo: false, needsDestroy: false);
     }
 
     /// <summary>

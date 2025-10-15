@@ -10,14 +10,14 @@ namespace Cairo;
 /// </summary>
 public sealed unsafe class RectangleList : CairoObject
 {
-    internal RectangleList(RectangleListRaw* handle) : base(handle) { }
+    internal RectangleList(cairo_rectangle_list_t* handle) : base(handle) { }
 
     protected override void DisposeCore(void* handle) => cairo_rectangle_list_destroy(handle);
 
     /// <summary>
     /// Status of the current clip region.
     /// </summary>
-    public Status Status => ((RectangleListRaw*)this.Handle)->Status;
+    public Status Status => ((cairo_rectangle_list_t*)this.Handle)->status;
 
     /// <summary>
     /// The <see cref="Rectangle"/> in the clip region.
@@ -29,16 +29,16 @@ public sealed unsafe class RectangleList : CairoObject
     {
         get
         {
-            RectangleListRaw* ptr = (RectangleListRaw*)this.Handle;
-            return new ReadOnlySpan<Rectangle>(ptr->Rectangles, ptr->Count);
+            cairo_rectangle_list_t* ptr = (cairo_rectangle_list_t*)this.Handle;
+            return new ReadOnlySpan<Rectangle>(ptr->rectangles, ptr->num_rectangles);
         }
     }
 }
 
 [StructLayout(LayoutKind.Sequential)]
-internal unsafe struct RectangleListRaw
+internal unsafe struct cairo_rectangle_list_t
 {
-    public Status Status;
-    public Rectangle* Rectangles;
-    public int Count;
+    public Status     status;
+    public Rectangle* rectangles;
+    public int        num_rectangles;
 }

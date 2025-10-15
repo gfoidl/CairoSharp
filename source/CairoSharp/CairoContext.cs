@@ -27,7 +27,7 @@ public struct cairo_t;
 /// restore to the saved state.
 /// </para>
 /// </remarks>
-public sealed unsafe class CairoContext : CairoObject
+public sealed unsafe class CairoContext : CairoObject<cairo_t>
 {
     /// <summary>
     /// Creates a new <see cref="CairoContext"/> with all graphics state parameters set to default
@@ -47,7 +47,7 @@ public sealed unsafe class CairoContext : CairoObject
     public CairoContext(Surface target) : this(CreateCore(target), isOwnedByCairo: false) { }
 
     [StackTraceHidden]
-    private static void* CreateCore(Surface target)
+    private static cairo_t* CreateCore(Surface target)
     {
         ArgumentNullException.ThrowIfNull(target);
         return cairo_create(target.Handle);
@@ -944,7 +944,7 @@ public sealed unsafe class CairoContext : CairoObject
     {
         this.CheckDisposed();
 
-        RectangleListRaw* handle = cairo_copy_clip_rectangle_list(this.Handle);
+        cairo_rectangle_list_t* handle = cairo_copy_clip_rectangle_list(this.Handle);
         return new RectangleList(handle);
     }
 
