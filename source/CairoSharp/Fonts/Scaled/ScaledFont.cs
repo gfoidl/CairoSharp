@@ -55,7 +55,7 @@ public sealed unsafe class ScaledFont : FontFace
         }
     }
 
-    private cairo_scaled_font_t* ScaledFontHandle => this.ScaledFontHandle;
+    private cairo_scaled_font_t* ScaledFontHandle => (cairo_scaled_font_t*)this.Handle;
 
     /// <summary>
     /// Checks whether an error has previously occurred for this scaled_font.
