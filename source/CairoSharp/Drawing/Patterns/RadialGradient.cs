@@ -10,8 +10,8 @@ namespace Cairo.Drawing.Patterns;
 /// </summary>
 public sealed unsafe class RadialGradient : Gradient
 {
-    internal RadialGradient(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal RadialGradient(cairo_pattern_t* pattern, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(pattern, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new radial gradient <see cref="Pattern"/> between the two circles defined by (cx0, cy0, radius0)

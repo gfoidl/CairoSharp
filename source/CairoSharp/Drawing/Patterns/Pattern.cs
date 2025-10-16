@@ -1,9 +1,13 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Diagnostics;
 using static Cairo.Drawing.Patterns.PatternNative;
 
 namespace Cairo.Drawing.Patterns;
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public struct cairo_pattern_t;
 
 /// <summary>
 /// cairo_pattern_t — Sources for drawing
@@ -17,29 +21,29 @@ namespace Cairo.Drawing.Patterns;
 /// or implicitly through cairo_set_source_type() functions.
 /// </para>
 /// </remarks>
-public unsafe class Pattern : CairoObject
+public unsafe class Pattern : CairoObject<cairo_pattern_t>
 {
-    protected internal Pattern(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy)
+    protected internal Pattern(cairo_pattern_t* pattern, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(pattern, isOwnedByCairo, needsDestroy)
     {
         this.Status.ThrowIfNotSuccess();
 
         if (isOwnedByCairo && needsDestroy)
         {
-            cairo_pattern_reference(handle);
+            cairo_pattern_reference(pattern);
         }
     }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_pattern_t* pattern)
     {
-        cairo_pattern_destroy(handle);
+        cairo_pattern_destroy(pattern);
 
-        PrintDebugInfo(handle);
+        PrintDebugInfo(pattern);
         [Conditional("DEBUG")]
-        static void PrintDebugInfo(void* handle)
+        static void PrintDebugInfo(cairo_pattern_t* pattern)
         {
-            uint rc = cairo_pattern_get_reference_count(handle);
-            Debug.WriteLine($"Pattern 0x{(nint)handle}: reference count = {rc}");
+            uint rc = cairo_pattern_get_reference_count(pattern);
+            Debug.WriteLine($"Pattern 0x{(nint)pattern}: reference count = {rc}");
         }
     }
 
@@ -227,7 +231,7 @@ public unsafe class Pattern : CairoObject
         }
     }
 
-    internal static Pattern? Lookup(void* pattern, bool isOwnedByCairo, bool needsDestroy = true)
+    internal static Pattern? Lookup(cairo_pattern_t* pattern, bool isOwnedByCairo, bool needsDestroy = true)
     {
         if (pattern is null)
         {

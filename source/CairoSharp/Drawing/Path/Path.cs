@@ -15,13 +15,13 @@ namespace Cairo.Drawing.Path;
 /// <c>foreach</c>-loop over the path, to get the <see cref="PathElement"/>s.
 /// </para>
 /// </remarks>
-public sealed unsafe class Path : CairoObject
+public sealed unsafe class Path : CairoObject<PathRaw>
 {
     internal Path(PathRaw* handle) : base(handle) { }
 
-    protected override void DisposeCore(void* handle) => cairo_path_destroy((PathRaw*)handle);
+    protected override void DisposeCore(PathRaw* handle) => cairo_path_destroy(handle);
 
-    public PathIterator GetEnumerator() => new((PathRaw*)this.Handle);
+    public PathIterator GetEnumerator() => new(this.Handle);
 
     // https://www.cairographics.org/manual/bindings-path.html
     public struct PathIterator

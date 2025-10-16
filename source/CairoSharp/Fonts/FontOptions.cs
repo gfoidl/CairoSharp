@@ -1,8 +1,12 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using static Cairo.Fonts.FontOptionsNative;
 
 namespace Cairo.Fonts;
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public struct cairo_font_options_t;
 
 /// <summary>
 /// cairo_font_options_t — How a font should be rendered
@@ -12,10 +16,10 @@ namespace Cairo.Fonts;
 /// implied by a surface are just right and do not need any changes, but for pixel-based targets
 /// tweaking font options may result in superior output on a particular display.
 /// </remarks>
-public sealed unsafe class FontOptions : CairoObject, IEquatable<FontOptions>
+public sealed unsafe class FontOptions : CairoObject<cairo_font_options_t>, IEquatable<FontOptions>
 {
-    internal FontOptions(void* handle, bool isOwnedByCairo = false)
-        : base(handle, isOwnedByCairo)
+    internal FontOptions(cairo_font_options_t* fontOptions, bool isOwnedByCairo = false)
+        : base(fontOptions, isOwnedByCairo)
         => _customColorPaletteEntry = new CustomColorPaletteEntry(this);
 
     /// <summary>
@@ -28,7 +32,7 @@ public sealed unsafe class FontOptions : CairoObject, IEquatable<FontOptions>
     /// </remarks>
     public FontOptions() : this(cairo_font_options_create()) { }
 
-    protected override void DisposeCore(void* handle) => cairo_font_options_destroy(handle);
+    protected override void DisposeCore(cairo_font_options_t* handle) => cairo_font_options_destroy(handle);
 
     /// <summary>
     /// Allocates a new font options object copying the option values from original.

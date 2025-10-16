@@ -17,7 +17,7 @@ namespace Cairo.Surfaces.XLib;
 /// </remarks>
 public sealed unsafe class XLibXRenderSurface : Surface
 {
-    internal XLibXRenderSurface(void* handle, bool isOwnedByCairo = false) : base(handle, isOwnedByCairo) { }
+    internal XLibXRenderSurface(cairo_surface_t* surface, bool isOwnedByCairo = false) : base(surface, isOwnedByCairo) { }
 
     /// <summary>
     /// Creates an Xlib surface that draws to the given drawable. The way that colors are represented

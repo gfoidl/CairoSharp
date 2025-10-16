@@ -16,8 +16,8 @@ namespace Cairo.Surfaces.XCB;
 /// </remarks>
 public sealed unsafe class XCBSurface : Surface
 {
-    internal XCBSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal XCBSurface(cairo_surface_t* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates an XCB surface that draws to the given drawable. The way that colors are represented
@@ -38,7 +38,7 @@ public sealed unsafe class XCBSurface : Surface
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     public XCBSurface(IntPtr connection, uint drawable, IntPtr visual, int widht, int height)
-        : base(cairo_xcb_surface_create(connection.ToPointer(), drawable, visual.ToPointer(), widht, height)) { }
+        : base(cairo_xcb_surface_create((uint*)connection.ToPointer(), drawable, (uint*)visual.ToPointer(), widht, height)) { }
 
     /// <summary>
     /// Creates an XCB surface that draws to the given bitmap. This will be drawn to as a <see cref="Format.A1"/> object.
@@ -57,10 +57,10 @@ public sealed unsafe class XCBSurface : Surface
     /// </para>
     /// </returns>
     /// <exception cref="CairoException">when construction fails</exception>
-    public static XCBSurface FromBitmap(IntPtr connection, uint bitmap, IntPtr screen, int width, int height)
+    public static XCBSurface FromBitmap(IntPtr connection, IntPtr screen, uint bitmap, int width, int height)
     {
-        void* handle = cairo_xcb_surface_create_for_bitmap(connection.ToPointer(), bitmap, screen.ToPointer(), width, height);
-        return new XCBSurface(handle);
+        cairo_surface_t* surface = cairo_xcb_surface_create_for_bitmap((uint*)connection.ToPointer(), (uint*)screen.ToPointer(), bitmap, width, height);
+        return new XCBSurface(surface);
     }
 
     /// <summary>
@@ -134,7 +134,9 @@ public sealed unsafe class XCBSurface : Surface
         get
         {
             this.CheckDisposed();
-            return new IntPtr(cairo_xcb_device_get_connection(this.Handle));
+
+            Device device = this.GetDeviceOrThrow();
+            return new IntPtr(cairo_xcb_device_get_connection(device.Handle));
         }
     }
 
@@ -151,7 +153,9 @@ public sealed unsafe class XCBSurface : Surface
     public void DebugCapXrenderVersion(int majorVersion, int minorVersion)
     {
         this.CheckDisposed();
-        cairo_xcb_device_debug_cap_xrender_version(this.Handle, majorVersion, minorVersion);
+
+        Device device = this.GetDeviceOrThrow();
+        cairo_xcb_device_debug_cap_xrender_version(device.Handle, majorVersion, minorVersion);
     }
 
     /// <summary>
@@ -167,7 +171,9 @@ public sealed unsafe class XCBSurface : Surface
     public void DebugCapXshmVersion(int majorVersion, int minorVersion)
     {
         this.CheckDisposed();
-        cairo_xcb_device_debug_cap_xshm_version(this.Handle, majorVersion, minorVersion);
+
+        Device device = this.GetDeviceOrThrow();
+        cairo_xcb_device_debug_cap_xshm_version(device.Handle, majorVersion, minorVersion);
     }
 
     /// <summary>
@@ -178,12 +184,16 @@ public sealed unsafe class XCBSurface : Surface
         get
         {
             this.CheckDisposed();
-            return cairo_xcb_device_debug_get_precision(this.Handle);
+
+            Device device = this.GetDeviceOrThrow();
+            return cairo_xcb_device_debug_get_precision(device.Handle);
         }
         set
         {
             this.CheckDisposed();
-            cairo_xcb_device_debug_set_precision(this.Handle, value);
+
+            Device device = this.GetDeviceOrThrow();
+            cairo_xcb_device_debug_set_precision(device.Handle, value);
         }
     }
 }

@@ -1,8 +1,12 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using static Cairo.Drawing.Regions.RegionNative;
 
 namespace Cairo.Drawing.Regions;
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public struct cairo_region_t;
 
 /// <summary>
 /// Regions — Representing a pixel-aligned area
@@ -11,9 +15,9 @@ namespace Cairo.Drawing.Regions;
 /// Regions are a simple graphical data type representing an area of integer-aligned rectangles.
 /// They are often used on raster surfaces to track areas of interest, such as change or clip areas.
 /// </remarks>
-public sealed unsafe class Region : CairoObject, IEquatable<Region>
+public sealed unsafe class Region : CairoObject<cairo_region_t>, IEquatable<Region>
 {
-    private Region(void* handle, bool isOwnedByCairo = false) : base(handle, isOwnedByCairo)
+    private Region(cairo_region_t* region, bool isOwnedByCairo = false) : base(region, isOwnedByCairo)
         => this.Status.ThrowIfNotSuccess();
 
     /// <summary>
@@ -33,7 +37,7 @@ public sealed unsafe class Region : CairoObject, IEquatable<Region>
     /// <param name="rectangles">an array of rectangles</param>
     public Region(params ReadOnlySpan<RectangleInt> rectangles) : this(CreateForRectangles(rectangles)) { }
 
-    private static void* CreateForRectangles(ReadOnlySpan<RectangleInt> rectangles)
+    private static cairo_region_t* CreateForRectangles(ReadOnlySpan<RectangleInt> rectangles)
     {
         fixed (RectangleInt* ptr = rectangles)
         {
@@ -41,7 +45,7 @@ public sealed unsafe class Region : CairoObject, IEquatable<Region>
         }
     }
 
-    protected override void DisposeCore(void* handle) => cairo_region_destroy(this.Handle);
+    protected override void DisposeCore(cairo_region_t* region) => cairo_region_destroy(region);
 
     /// <summary>
     /// Allocates a new region object copying the area from this one.
@@ -54,8 +58,8 @@ public sealed unsafe class Region : CairoObject, IEquatable<Region>
     {
         this.CheckDisposed();
 
-        void* handle = cairo_region_copy(this.Handle);
-        Region region = new(handle, isOwnedByCairo: false);
+        cairo_region_t* copy = cairo_region_copy(this.Handle);
+        Region region        = new(copy, isOwnedByCairo: false);
 
         region.Status.ThrowIfNotSuccess();
         return region;
@@ -65,7 +69,7 @@ public sealed unsafe class Region : CairoObject, IEquatable<Region>
     /// Increases the reference count on region by one. This prevents region from being destroyed
     /// until a matching call to cairo_region_destroy() is made.
     /// </summary>
-    private void Reference()
+    internal void Reference()
     {
         this.CheckDisposed();
         cairo_region_reference(this.Handle);

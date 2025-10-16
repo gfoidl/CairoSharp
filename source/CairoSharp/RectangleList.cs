@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using static Cairo.CairoContextNative;
 
@@ -8,16 +9,17 @@ namespace Cairo;
 /// <summary>
 /// A data structure for holding a dynamically allocated array of rectangles.
 /// </summary>
-public sealed unsafe class RectangleList : CairoObject
+public sealed unsafe class RectangleList : CairoObject<RectangleListRaw>
 {
-    internal RectangleList(RectangleListRaw* handle) : base(handle) { }
+    internal RectangleList(RectangleListRaw* rectangleList) : base(rectangleList) { }
 
-    protected override void DisposeCore(void* handle) => cairo_rectangle_list_destroy(handle);
+    protected override void DisposeCore(RectangleListRaw* rectangleList)
+        => cairo_rectangle_list_destroy(rectangleList);
 
     /// <summary>
     /// Status of the current clip region.
     /// </summary>
-    public Status Status => ((RectangleListRaw*)this.Handle)->Status;
+    public Status Status => (this.Handle)->Status;
 
     /// <summary>
     /// The <see cref="Rectangle"/> in the clip region.
@@ -29,16 +31,17 @@ public sealed unsafe class RectangleList : CairoObject
     {
         get
         {
-            RectangleListRaw* ptr = (RectangleListRaw*)this.Handle;
+            RectangleListRaw* ptr = this.Handle;
             return new ReadOnlySpan<Rectangle>(ptr->Rectangles, ptr->Count);
         }
     }
 }
 
+[EditorBrowsable(EditorBrowsableState.Never)]
 [StructLayout(LayoutKind.Sequential)]
-internal unsafe struct RectangleListRaw
+public unsafe struct RectangleListRaw
 {
-    public Status Status;
+    public Status     Status;
     public Rectangle* Rectangles;
-    public int Count;
+    public int        Count;
 }

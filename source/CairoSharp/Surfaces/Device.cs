@@ -28,12 +28,12 @@ namespace Cairo.Surfaces;
 /// but can also be used by applications.
 /// </para>
 /// </remarks>
-public unsafe class Device : CairoObject
+public unsafe class Device : CairoObject<cairo_device_t>
 {
-    internal Device(void* device, bool needsReference = true) : base(CreateCore(device, needsReference)) { }
+    internal Device(cairo_device_t* device, bool needsReference = true) : base(CreateCore(device, needsReference)) { }
 
     [StackTraceHidden]
-    private static void* CreateCore(void* device, bool needsReference = true)
+    private static cairo_device_t* CreateCore(cairo_device_t* device, bool needsReference = true)
     {
         if (needsReference)
         {
@@ -43,16 +43,16 @@ public unsafe class Device : CairoObject
         return device;
     }
 
-    protected override void DisposeCore(void* device)
+    protected override void DisposeCore(cairo_device_t* device)
     {
         cairo_device_destroy(device);
 
         PrintDebugInfo(device);
         [Conditional("DEBUG")]
-        static void PrintDebugInfo(void* handle)
+        static void PrintDebugInfo(cairo_device_t* device)
         {
-            uint rc = cairo_device_get_reference_count(handle);
-            Debug.WriteLine($"Device 0x{(nint)handle}: reference count = {rc}");
+            uint rc = cairo_device_get_reference_count(device);
+            Debug.WriteLine($"Device 0x{(nint)device}: reference count = {rc}");
         }
     }
 

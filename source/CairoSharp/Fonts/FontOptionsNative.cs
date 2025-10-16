@@ -10,94 +10,94 @@ internal static unsafe partial class FontOptionsNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_font_options_create();
+    internal static partial cairo_font_options_t* cairo_font_options_create();
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_font_options_copy(void* original);
+    internal static partial cairo_font_options_t* cairo_font_options_copy(cairo_font_options_t* original);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_destroy(void* options);
+    internal static partial void cairo_font_options_destroy(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Status cairo_font_options_status(void* options);
+    internal static partial Status cairo_font_options_status(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_merge(void* options, void* other);
+    internal static partial void cairo_font_options_merge(cairo_font_options_t* options, cairo_font_options_t* other);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial CULong cairo_font_options_hash(void* options);
+    internal static partial CULong cairo_font_options_hash(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     [return: MarshalAs(UnmanagedType.U1)]
-    internal static partial bool cairo_font_options_equal(void* options, void* other);
+    internal static partial bool cairo_font_options_equal(cairo_font_options_t* options, cairo_font_options_t* other);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_antialias(void* options, Antialias aa);
+    internal static partial void cairo_font_options_set_antialias(cairo_font_options_t* options, Antialias aa);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Antialias cairo_font_options_get_antialias(void* options);
+    internal static partial Antialias cairo_font_options_get_antialias(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_subpixel_order(void* options, SubpixelOrder order);
+    internal static partial void cairo_font_options_set_subpixel_order(cairo_font_options_t* options, SubpixelOrder order);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial SubpixelOrder cairo_font_options_get_subpixel_order(void* options);
+    internal static partial SubpixelOrder cairo_font_options_get_subpixel_order(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_hint_style(void* options, HintStyle style);
+    internal static partial void cairo_font_options_set_hint_style(cairo_font_options_t* options, HintStyle style);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial HintStyle cairo_font_options_get_hint_style(void* options);
+    internal static partial HintStyle cairo_font_options_get_hint_style(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_hint_metrics(void* options, HintMetrics metrics);
+    internal static partial void cairo_font_options_set_hint_metrics(cairo_font_options_t* options, HintMetrics metrics);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial HintMetrics cairo_font_options_get_hint_metrics(void* options);
+    internal static partial HintMetrics cairo_font_options_get_hint_metrics(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_font_options_get_variations(void* options);
+    internal static partial sbyte* cairo_font_options_get_variations(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_variations(void* options, string? variations);
+    internal static partial void cairo_font_options_set_variations(cairo_font_options_t* options, string? variations);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_color_mode(void* options, ColorMode color_mode);
+    internal static partial void cairo_font_options_set_color_mode(cairo_font_options_t* options, ColorMode color_mode);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial ColorMode cairo_font_options_get_color_mode(void* options);
+    internal static partial ColorMode cairo_font_options_get_color_mode(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_color_palette(void* options, uint palette_index);
+    internal static partial void cairo_font_options_set_color_palette(cairo_font_options_t* options, uint palette_index);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial uint cairo_font_options_get_color_palette(void* options);
+    internal static partial uint cairo_font_options_get_color_palette(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_options_set_custom_palette_color(void* options, uint index, double red, double green, double blue, double alpha);
+    internal static partial void cairo_font_options_set_custom_palette_color(cairo_font_options_t* options, uint index, double red, double green, double blue, double alpha);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Status cairo_font_options_get_custom_palette_color(void* options, uint index, out double red, out double green, out double blue, out double alpha);
+    internal static partial Status cairo_font_options_get_custom_palette_color(cairo_font_options_t* options, uint index, out double red, out double green, out double blue, out double alpha);
 }

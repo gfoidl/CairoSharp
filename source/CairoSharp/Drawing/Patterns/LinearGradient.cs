@@ -10,8 +10,8 @@ namespace Cairo.Drawing.Patterns;
 /// </summary>
 public sealed unsafe class LinearGradient : Gradient
 {
-    internal LinearGradient(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal LinearGradient(cairo_pattern_t* pattern, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(pattern, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Create a new linear gradient <see cref="Pattern"/> along the line defined by (x0, y0) and (x1, y1).

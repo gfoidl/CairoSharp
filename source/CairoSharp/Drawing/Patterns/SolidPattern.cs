@@ -9,8 +9,8 @@ namespace Cairo.Drawing.Patterns;
 /// </summary>
 public sealed unsafe class SolidPattern : Pattern
 {
-    internal SolidPattern(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal SolidPattern(cairo_pattern_t* pattern, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(pattern, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new <see cref="SolidPattern"/> corresponding to an opaque color. The color

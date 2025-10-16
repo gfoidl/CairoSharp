@@ -8,7 +8,7 @@ namespace Cairo.Surfaces.Images;
 internal static unsafe class PngHelper
 {
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
-    public static void* CreateForPngData(ReadOnlySpan<byte> pngData)
+    public static cairo_surface_t* CreateForPngData(ReadOnlySpan<byte> pngData)
     {
         ReadState readState        = new(pngData);
         cairo_read_func_t readFunc = &ReadFunc;

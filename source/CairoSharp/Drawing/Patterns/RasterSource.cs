@@ -90,8 +90,8 @@ public sealed unsafe class RasterSource : Pattern
     private readonly State? _state;
     private GCHandle        _stateHandle;
 
-    internal RasterSource(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    internal RasterSource(cairo_pattern_t* pattern, bool isOwnedByCairo, bool needsDestroy = true)
+        : base(pattern, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new user pattern for providing pixel data.
@@ -141,9 +141,9 @@ public sealed unsafe class RasterSource : Pattern
         this.SetAcquire(acquire);
     }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_pattern_t* pattern)
     {
-        base.DisposeCore(handle);
+        base.DisposeCore(pattern);
 
         if (_stateHandle.IsAllocated)
         {
@@ -273,7 +273,7 @@ public sealed unsafe class RasterSource : Pattern
 
         cairo_raster_source_pattern_set_acquire(this.Handle, &AcquireCore, &ReleaseCore);
 
-        static void* AcquireCore(void* pattern, void* callbackData, void* target, ref RectangleInt extents)
+        static cairo_surface_t* AcquireCore(cairo_pattern_t* pattern, void* callbackData, cairo_surface_t* target, ref RectangleInt extents)
         {
             GCHandle gcHandle = GCHandle.FromIntPtr(new IntPtr(callbackData));
             State state       = (State)gcHandle.Target!;
@@ -288,7 +288,7 @@ public sealed unsafe class RasterSource : Pattern
             return result.Handle;
         }
 
-        static void ReleaseCore(void* pattern, void* callbackData, void* surface)
+        static void ReleaseCore(cairo_pattern_t* pattern, void* callbackData, cairo_surface_t* surface)
         {
             SurfaceNative.cairo_surface_destroy(surface);
         }

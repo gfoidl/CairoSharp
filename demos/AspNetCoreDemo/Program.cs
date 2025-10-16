@@ -39,6 +39,7 @@ static async ValueTask GetSvg(HttpResponse response)
 #endif
 }
 
+#if CAIRO_USE_CALLBACK
 static void DrawSvgViaCallback(PipeWriter bodyWriter, int size = 500)
 {
     using SvgSurface surface = new(static (state, data) =>
@@ -53,12 +54,13 @@ static void DrawSvgViaCallback(PipeWriter bodyWriter, int size = 500)
 
     DrawCore(surface, size);
 }
-
+#else
 static void DrawSvgViaStream(Stream stream, int size = 500)
 {
     using SvgSurface surface = new(stream, size, size);
     DrawCore(surface, size);
 }
+#endif
 
 static void DrawCore(SvgSurface surface, int size)
 {

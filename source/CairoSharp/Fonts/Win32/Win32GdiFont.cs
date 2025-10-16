@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Fonts.Scaled;
 using static Cairo.Fonts.Win32.Win32GdiFontNative;
 
 namespace Cairo.Fonts.Win32;
@@ -15,7 +16,7 @@ namespace Cairo.Fonts.Win32;
 /// </remarks>
 public sealed unsafe class Win32GdiFont : FontFace
 {
-    private Win32GdiFont(void* handle) : base(handle) { }
+    private Win32GdiFont(cairo_font_face_t* handle) : base(handle) { }
 
     /// <summary>
     /// Creates a new font for the Win32 font backend based on a LOGFONT.
@@ -32,8 +33,8 @@ public sealed unsafe class Win32GdiFont : FontFace
     /// </remarks>
     public static Win32GdiFont CreateForLogFont(IntPtr logfont)
     {
-        void* handle = cairo_win32_font_face_create_for_logfontw(logfont.ToPointer());
-        return new Win32GdiFont(handle);
+        cairo_font_face_t* fontFace = cairo_win32_font_face_create_for_logfontw(logfont.ToPointer());
+        return new Win32GdiFont(fontFace);
     }
 
     /// <summary>
@@ -48,8 +49,8 @@ public sealed unsafe class Win32GdiFont : FontFace
     /// </remarks>
     public static Win32GdiFont CreateForHFont(IntPtr hFont)
     {
-        void* handle = cairo_win32_font_face_create_for_hfont(hFont.ToPointer());
-        return new Win32GdiFont(handle);
+        cairo_font_face_t* fontFace = cairo_win32_font_face_create_for_hfont(hFont.ToPointer());
+        return new Win32GdiFont(fontFace);
     }
 
     /// <summary>
@@ -71,8 +72,8 @@ public sealed unsafe class Win32GdiFont : FontFace
     /// </remarks>
     public static Win32GdiFont CreateForLogFontHFont(IntPtr logfont, IntPtr hFont)
     {
-        void* handle = cairo_win32_font_face_create_for_logfontw_hfont(logfont.ToPointer(), hFont.ToPointer());
-        return new Win32GdiFont(handle);
+        cairo_font_face_t* fontFace = cairo_win32_font_face_create_for_logfontw_hfont(logfont.ToPointer(), hFont.ToPointer());
+        return new Win32GdiFont(fontFace);
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ public sealed unsafe class Win32GdiFont : FontFace
     {
         this.CheckDisposed();
 
-        Status status = cairo_win32_scaled_font_select_font(this.Handle, hdc.ToPointer());
+        Status status = cairo_win32_scaled_font_select_font((cairo_scaled_font_t*)this.Handle, hdc.ToPointer());
         status.ThrowIfNotSuccess();
     }
 
@@ -107,7 +108,7 @@ public sealed unsafe class Win32GdiFont : FontFace
     public void DoneFont()
     {
         this.CheckDisposed();
-        cairo_win32_scaled_font_done_font(this.Handle);
+        cairo_win32_scaled_font_done_font((cairo_scaled_font_t*)this.Handle);
     }
 
     /// <summary>
@@ -118,7 +119,7 @@ public sealed unsafe class Win32GdiFont : FontFace
     public double GetMetricsFactor()
     {
         this.CheckDisposed();
-        return cairo_win32_scaled_font_get_metrics_factor(this.Handle);
+        return cairo_win32_scaled_font_get_metrics_factor((cairo_scaled_font_t*)this.Handle);
     }
 
     /// <summary>
@@ -128,7 +129,7 @@ public sealed unsafe class Win32GdiFont : FontFace
     public void GetLogicalToDevice(out Matrix logicalToDevice)
     {
         this.CheckDisposed();
-        cairo_win32_scaled_font_get_logical_to_device(this.Handle, out logicalToDevice);
+        cairo_win32_scaled_font_get_logical_to_device((cairo_scaled_font_t*)this.Handle, out logicalToDevice);
     }
 
     /// <summary>
@@ -138,6 +139,6 @@ public sealed unsafe class Win32GdiFont : FontFace
     public void GetDeviceToLogical(out Matrix deviceToLogical)
     {
         this.CheckDisposed();
-        cairo_win32_scaled_font_get_device_to_logical(this.Handle, out deviceToLogical);
+        cairo_win32_scaled_font_get_device_to_logical((cairo_scaled_font_t*)this.Handle, out deviceToLogical);
     }
 }

@@ -234,9 +234,9 @@ public sealed unsafe class UserFont : FontFace
         }
     }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_font_face_t* fontFace)
     {
-        base.DisposeCore(handle);
+        base.DisposeCore(fontFace);
 
         if (_stateHandle.IsAllocated)
         {
@@ -275,7 +275,7 @@ public sealed unsafe class UserFont : FontFace
         {
             this.CheckDisposed();
 
-            void* handle = cairo_user_scaled_font_get_foreground_marker(this.Handle);
+            cairo_pattern_t* handle = cairo_user_scaled_font_get_foreground_marker((cairo_scaled_font_t*)this.Handle);
             return Pattern.Lookup(handle, isOwnedByCairo: true);
         }
     }
@@ -311,23 +311,23 @@ public sealed unsafe class UserFont : FontFace
         {
             this.CheckDisposed();
 
-            void* handle = cairo_user_scaled_font_get_foreground_source(this.Handle);
+            cairo_pattern_t* handle = cairo_user_scaled_font_get_foreground_source((cairo_scaled_font_t*)this.Handle);
             return Pattern.Lookup(handle, isOwnedByCairo: true);
         }
     }
 
-    private static State GetState(void* scaledFont)
+    private static State GetState(cairo_scaled_font_t* scaledFont)
     {
-        void* fontFace    = cairo_scaled_font_get_font_face(scaledFont);
-        void* userData    = cairo_font_face_get_user_data(fontFace, ref s_stateKey);
-        GCHandle gcHandle = GCHandle.FromIntPtr(new IntPtr(userData));
+        cairo_font_face_t* fontFace    = cairo_scaled_font_get_font_face(scaledFont);
+        void* userData                 = cairo_font_face_get_user_data(fontFace, ref s_stateKey);
+        GCHandle gcHandle              = GCHandle.FromIntPtr(new IntPtr(userData));
 
         Debug.Assert(gcHandle.IsAllocated);
 
         return (State)gcHandle.Target!;
     }
 
-    private static Status InitCore(void* scaledFont, void* cr, ref FontExtents fontExtents)
+    private static Status InitCore(cairo_scaled_font_t* scaledFont, cairo_t* cr, ref FontExtents fontExtents)
     {
         State state = GetState(scaledFont);
 
@@ -340,7 +340,7 @@ public sealed unsafe class UserFont : FontFace
         return state.Init(sf, context, ref fontExtents);
     }
 
-    private static Status RenderGlyphCore(void* scaledFont, CULong glyph, void* cr, ref TextExtents textExtents)
+    private static Status RenderGlyphCore(cairo_scaled_font_t* scaledFont, CULong glyph, cairo_t* cr, ref TextExtents textExtents)
     {
         State state = GetState(scaledFont);
 
@@ -351,7 +351,7 @@ public sealed unsafe class UserFont : FontFace
         return state.RenderGlyph(sf, (int)glyph.Value, context, ref textExtents);
     }
 
-    private static Status RenderColorGlyphCore(void* scaledFont, CULong glyph, void* cr, ref TextExtents textExtents)
+    private static Status RenderColorGlyphCore(cairo_scaled_font_t* scaledFont, CULong glyph, cairo_t* cr, ref TextExtents textExtents)
     {
         State state = GetState(scaledFont);
 
@@ -368,14 +368,14 @@ public sealed unsafe class UserFont : FontFace
     }
 
     private static Status TextToGlyphsCore(
-        void*         scaledFont,
-        byte*         utf8,
-        int           utf8Len,
-        Glyph**       glyphs,
-        ref int       numGlyphs,
-        TextCluster** clusters,
-        ref int       numClusters,
-        out           ClusterFlags clusterFlags)
+        cairo_scaled_font_t* scaledFont,
+        byte*                utf8,
+        int                  utf8Len,
+        Glyph**              glyphs,
+        ref int              numGlyphs,
+        TextCluster**        clusters,
+        ref int              numClusters,
+        out                  ClusterFlags clusterFlags)
     {
         State state = GetState(scaledFont);
 
@@ -423,7 +423,7 @@ public sealed unsafe class UserFont : FontFace
         }
     }
 
-    private static Status UnicodeToGlyphCore(void* scaledFont, CULong unicode, out CULong glyphIndex)
+    private static Status UnicodeToGlyphCore(cairo_scaled_font_t* scaledFont, CULong unicode, out CULong glyphIndex)
     {
         State state = GetState(scaledFont);
 

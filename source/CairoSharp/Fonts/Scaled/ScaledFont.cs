@@ -15,8 +15,13 @@ namespace Cairo.Fonts.Scaled;
 /// </remarks>
 public sealed unsafe class ScaledFont : FontFace
 {
-    internal ScaledFont(void* handle, bool isOwnedByCairo, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy, &cairo_scaled_font_reference) { }
+    internal ScaledFont(cairo_scaled_font_t* scaledFont, bool isOwnedByCairo, bool needsDestroy = true)
+        : base((cairo_font_face_t*)scaledFont, isOwnedByCairo, needsDestroy, &ScaledFontReference) { }
+
+    private static cairo_font_face_t* ScaledFontReference(cairo_font_face_t* fontFace)
+    {
+        return (cairo_font_face_t*)cairo_scaled_font_reference((cairo_scaled_font_t*)fontFace);
+    }
 
     /// <summary>
     /// Creates a <see cref="ScaledFont"/> object from a font face and matrices that describe
@@ -34,20 +39,23 @@ public sealed unsafe class ScaledFont : FontFace
     /// Destroy with <see cref="CairoObject.Dispose()"/>.
     /// </remarks>
     public ScaledFont(FontFace fontFace, ref Matrix fontMatrix, ref Matrix ctm, FontOptions fontOptions)
-        : base(cairo_scaled_font_create(fontFace.Handle, ref fontMatrix, ref ctm, fontOptions.Handle)) { }
+        : base((cairo_font_face_t*)cairo_scaled_font_create(fontFace.Handle, ref fontMatrix, ref ctm, fontOptions.Handle)) { }
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_font_face_t* fontFace)
     {
-        cairo_scaled_font_destroy(handle);
+        cairo_scaled_font_t* scaledFont = (cairo_scaled_font_t*)fontFace;
+        cairo_scaled_font_destroy(scaledFont);
 
-        PrintDebugInfo(handle);
+        PrintDebugInfo(scaledFont);
         [Conditional("DEBUG")]
-        static void PrintDebugInfo(void* handle)
+        static void PrintDebugInfo(cairo_scaled_font_t* scaledFont)
         {
-            uint rc = cairo_scaled_font_get_reference_count(handle);
-            Debug.WriteLine($"ScaledFont 0x{(nint)handle}: reference count = {rc}");
+            uint rc = cairo_scaled_font_get_reference_count(scaledFont);
+            Debug.WriteLine($"ScaledFont 0x{(nint)scaledFont}: reference count = {rc}");
         }
     }
+
+    private cairo_scaled_font_t* ScaledFontHandle => (cairo_scaled_font_t*)this.Handle;
 
     /// <summary>
     /// Checks whether an error has previously occurred for this scaled_font.
@@ -60,7 +68,7 @@ public sealed unsafe class ScaledFont : FontFace
         get
         {
             this.CheckDisposed();
-            return cairo_scaled_font_status(this.Handle);
+            return cairo_scaled_font_status(this.ScaledFontHandle);
         }
     }
 
@@ -73,7 +81,7 @@ public sealed unsafe class ScaledFont : FontFace
         {
             this.CheckDisposed();
 
-            cairo_scaled_font_extents(this.Handle, out FontExtents fontExtents);
+            cairo_scaled_font_extents(this.ScaledFontHandle, out FontExtents fontExtents);
             return fontExtents;
         }
     }
@@ -97,7 +105,7 @@ public sealed unsafe class ScaledFont : FontFace
     public void TextExtents(string text, out TextExtents textExtents)
     {
         this.CheckDisposed();
-        cairo_scaled_font_text_extents(this.Handle, text, out textExtents);
+        cairo_scaled_font_text_extents(this.ScaledFontHandle, text, out textExtents);
     }
 
     /// <summary>
@@ -116,7 +124,7 @@ public sealed unsafe class ScaledFont : FontFace
 
         fixed (Glyph* ptr = glyphs)
         {
-            cairo_scaled_font_glyph_extents(this.Handle, ptr, glyphs.Length, out textExtents);
+            cairo_scaled_font_glyph_extents(this.ScaledFontHandle, ptr, glyphs.Length, out textExtents);
         }
     }
 
@@ -154,7 +162,7 @@ public sealed unsafe class ScaledFont : FontFace
         if (useClusterMapping)
         {
             Status status = cairo_scaled_font_text_to_glyphs(
-                this.Handle,
+                this.ScaledFontHandle,
                 x, y,
                 text, -1,
                 out Glyph* glyphs, out int numGlyphs,
@@ -169,7 +177,7 @@ public sealed unsafe class ScaledFont : FontFace
         else
         {
             Status status = cairo_scaled_font_text_to_glyphs(
-                this.Handle,
+                this.ScaledFontHandle,
                 x, y,
                 text, -1,
                 out Glyph* glyphs, out int numGlyphs,
@@ -220,8 +228,8 @@ public sealed unsafe class ScaledFont : FontFace
         {
             this.CheckDisposed();
 
-            void* handle= cairo_scaled_font_get_font_face(this.Handle);
-            return new FontFace(handle, isOwnedByCairo: true, referenceFunc: &cairo_scaled_font_reference);
+            cairo_font_face_t* fontFace = cairo_scaled_font_get_font_face(this.ScaledFontHandle);
+            return new FontFace(fontFace, isOwnedByCairo: true, referenceFunc: &ScaledFontReference);
         }
     }
 
@@ -234,7 +242,7 @@ public sealed unsafe class ScaledFont : FontFace
         this.CheckDisposed();
         ArgumentNullException.ThrowIfNull(options);
 
-        cairo_scaled_font_get_font_options(this.Handle, options.Handle);
+        cairo_scaled_font_get_font_options(this.ScaledFontHandle, options.Handle);
     }
 
     /// <summary>
@@ -243,7 +251,7 @@ public sealed unsafe class ScaledFont : FontFace
     public void GetFontMatrix(out Matrix fontMatrix)
     {
         this.CheckDisposed();
-        cairo_scaled_font_get_font_matrix(this.Handle, out fontMatrix);
+        cairo_scaled_font_get_font_matrix(this.ScaledFontHandle, out fontMatrix);
     }
 
     /// <summary>
@@ -257,7 +265,7 @@ public sealed unsafe class ScaledFont : FontFace
     public void GetCtm(out Matrix ctm)
     {
         this.CheckDisposed();
-        cairo_scaled_font_get_ctm(this.Handle, out ctm);
+        cairo_scaled_font_get_ctm(this.ScaledFontHandle, out ctm);
     }
 
     /// <summary>
@@ -270,7 +278,7 @@ public sealed unsafe class ScaledFont : FontFace
     public void GetScaleMatrix(out Matrix scaleMatrix)
     {
         this.CheckDisposed();
-        cairo_scaled_font_get_scale_matrix(this.Handle, out scaleMatrix);
+        cairo_scaled_font_get_scale_matrix(this.ScaledFontHandle, out scaleMatrix);
     }
 
     /// <summary>
@@ -283,7 +291,7 @@ public sealed unsafe class ScaledFont : FontFace
         get
         {
             this.CheckDisposed();
-            return cairo_scaled_font_get_type(this.Handle);
+            return cairo_scaled_font_get_type(this.ScaledFontHandle);
         }
     }
 
@@ -295,7 +303,7 @@ public sealed unsafe class ScaledFont : FontFace
         get
         {
             this.CheckDisposed();
-            return (int)cairo_scaled_font_get_reference_count(this.Handle);
+            return (int)cairo_scaled_font_get_reference_count(this.ScaledFontHandle);
         }
     }
 }

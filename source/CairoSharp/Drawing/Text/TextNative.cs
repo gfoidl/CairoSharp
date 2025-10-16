@@ -2,6 +2,7 @@
 
 using System.Runtime.InteropServices;
 using Cairo.Fonts;
+using Cairo.Fonts.Scaled;
 
 namespace Cairo.Drawing.Text;
 
@@ -11,83 +12,83 @@ internal static unsafe partial class TextNative
 {
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_select_font_face(void* cr, string family, FontSlant slant, FontWeight weight);
+    internal static partial void cairo_select_font_face(cairo_t* cr, string family, FontSlant slant, FontWeight weight);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_set_font_size(void* cr, double size);
+    internal static partial void cairo_set_font_size(cairo_t* cr, double size);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_set_font_matrix(void* cr, ref Matrix matrix);
+    internal static partial void cairo_set_font_matrix(cairo_t* cr, ref Matrix matrix);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_get_font_matrix(void* cr, out Matrix matrix);
+    internal static partial void cairo_get_font_matrix(cairo_t* cr, out Matrix matrix);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_set_font_options(void* cr, void* options);
+    internal static partial void cairo_set_font_options(cairo_t* cr, cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_get_font_options(void* cr, void* options);
+    internal static partial void cairo_get_font_options(cairo_t* cr, cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_set_font_face(void* cr, void* fontFace);
+    internal static partial void cairo_set_font_face(cairo_t* cr, cairo_font_face_t* fontFace);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_get_font_face(void* cr);
+    internal static partial cairo_font_face_t* cairo_get_font_face(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_set_scaled_font(void* cr, void* scaled_font);
+    internal static partial void cairo_set_scaled_font(cairo_t* cr, cairo_scaled_font_t* scaled_font);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_get_scaled_font(void* cr);
+    internal static partial cairo_scaled_font_t* cairo_get_scaled_font(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_show_text(void* cr, string utf8);
+    internal static partial void cairo_show_text(cairo_t* cr, string utf8);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_show_glyphs(void* cr, Glyph* glyphs, int num_glyphs);
+    internal static partial void cairo_show_glyphs(cairo_t* cr, Glyph* glyphs, int num_glyphs);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_show_text_glyphs(void* cr, string utf8, int utf8_len, Glyph* glyphs, int num_glyphs, TextCluster* clusters, int num_clusters, ClusterFlags cluster_flags);
+    internal static partial void cairo_show_text_glyphs(cairo_t* cr, string utf8, int utf8_len, Glyph* glyphs, int num_glyphs, TextCluster* clusters, int num_clusters, ClusterFlags cluster_flags);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_font_extents(void* cr, out FontExtents extents);
+    internal static partial void cairo_font_extents(cairo_t* cr, out FontExtents extents);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_text_extents(void* cr, string? utf8, out TextExtents extents);
+    internal static partial void cairo_text_extents(cairo_t* cr, string? utf8, out TextExtents extents);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_glyph_extents(void* cr, Glyph* glyphs, int num_glyphs, out TextExtents extents);
+    internal static partial void cairo_glyph_extents(cairo_t* cr, Glyph* glyphs, int num_glyphs, out TextExtents extents);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_toy_font_face_create(string family, FontSlant slant, FontWeight weight);
+    internal static partial cairo_font_face_t* cairo_toy_font_face_create(string family, FontSlant slant, FontWeight weight);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_toy_font_face_get_family(void* font_face);
+    internal static partial sbyte* cairo_toy_font_face_get_family(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial FontSlant cairo_toy_font_face_get_slant(void* font_face);
+    internal static partial FontSlant cairo_toy_font_face_get_slant(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial FontWeight cairo_toy_font_face_get_weight(void* font_face);
+    internal static partial FontWeight cairo_toy_font_face_get_weight(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

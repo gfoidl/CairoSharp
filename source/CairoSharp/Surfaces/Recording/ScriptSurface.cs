@@ -31,7 +31,7 @@ public sealed unsafe class ScriptSurface : Surface
         : base(CreateCore(script, content, widthInPixels, heightInPixels)) { }
 
     [StackTraceHidden]
-    private static void* CreateCore(ScriptDevice script, Content content, double width, double height)
+    private static cairo_surface_t* CreateCore(ScriptDevice script, Content content, double width, double height)
     {
         ArgumentNullException.ThrowIfNull(script);
 
@@ -53,7 +53,7 @@ public sealed unsafe class ScriptSurface : Surface
     public ScriptSurface(ScriptDevice script, Surface target) : base(CreateCore(script, target)) { }
 
     [StackTraceHidden]
-    private static void* CreateCore(ScriptDevice script, Surface target)
+    private static cairo_surface_t* CreateCore(ScriptDevice script, Surface target)
     {
         ArgumentNullException.ThrowIfNull(script);
         ArgumentNullException.ThrowIfNull(target);

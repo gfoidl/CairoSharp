@@ -159,8 +159,8 @@ public static unsafe class TextExtensions
             {
                 cr.CheckDisposed();
 
-                void* handle = cairo_get_font_face(cr.Handle);
-                return new FontFace(handle, isOwnedByCairo: true);
+                cairo_font_face_t* fontFace = cairo_get_font_face(cr.Handle);
+                return new FontFace(fontFace, isOwnedByCairo: true);
             }
             set
             {
@@ -182,15 +182,15 @@ public static unsafe class TextExtensions
             {
                 cr.CheckDisposed();
 
-                void* handle = cairo_get_scaled_font(cr.Handle);
-                return new ScaledFont(handle, isOwnedByCairo: true);
+                cairo_scaled_font_t* scaledFont = cairo_get_scaled_font(cr.Handle);
+                return new ScaledFont(scaledFont, isOwnedByCairo: true);
             }
             set
             {
                 ArgumentNullException.ThrowIfNull(value);
 
                 cr.CheckDisposed();
-                cairo_set_scaled_font(cr.Handle, value.Handle);
+                cairo_set_scaled_font(cr.Handle, (cairo_scaled_font_t*)value.Handle);
             }
         }
 

@@ -13,16 +13,16 @@ public abstract unsafe class StreamSurface : Surface
 {
     protected GCHandle _stateHandle;        // mutable struct
 
-    protected StreamSurface(void* handle, bool isOwnedByCairo = false, bool needsDestroy = true)
-        : base(handle, isOwnedByCairo, needsDestroy) { }
+    protected StreamSurface(cairo_surface_t* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(surface, isOwnedByCairo, needsDestroy) { }
 
     protected StreamSurface((IntPtr Handle, GCHandle StateHandle) arg, bool isOwnedByCairo = false)
-        : base(arg.Handle.ToPointer(), isOwnedByCairo)
+        : base((cairo_surface_t*)arg.Handle.ToPointer(), isOwnedByCairo)
         => _stateHandle = arg.StateHandle;
 
-    protected override void DisposeCore(void* handle)
+    protected override void DisposeCore(cairo_surface_t* surface)
     {
-        base.DisposeCore(handle);
+        base.DisposeCore(surface);
 
         // Need to free the surface first, so that the write function (if any)
         // can be called on a valid handle.
