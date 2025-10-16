@@ -15,7 +15,7 @@ internal static unsafe partial class Native
     private const string LibGLibName    = "libglib-2.0.so.0";
     private const string LibGObjectName = "libgobject-2.0.so.0";
     private const string LibGioName     = "libgio-2.0.so.0";
-    private const string LibGtkName     = "libgtk-3-0.so.0";
+    private const string LibGtkName     = "libgtk-3.so.0";
 
     static Native()
     {
