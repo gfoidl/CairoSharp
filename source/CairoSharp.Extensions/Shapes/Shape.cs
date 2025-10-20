@@ -36,13 +36,17 @@ public abstract class Shape(CairoContext cr) : IDisposable
     /// </summary>
     /// <param name="centerX">The x-coordinate of the center</param>
     /// <param name="centerY">The y-coordinate of the center</param>
-    public void Draw(double centerX, double centerY)
+    public void Draw(double centerX, double centerY, bool stroke = true)
     {
         using (_cr.Save())
         {
             _cr.Translate(centerX, centerY);
             _cr.AppendPath(this.Path);
-            _cr.Stroke();
+
+            if (stroke)
+            {
+                _cr.Stroke();
+            }
         }
     }
 

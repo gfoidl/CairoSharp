@@ -355,42 +355,44 @@ static void Honeycomb()
 
     using Hexagon hexagon = new(cr, 100);
 
-    hexagon.Draw(  0, 0);
-    hexagon.Draw(200, 0);
-    hexagon.Draw(400, 0);
-    hexagon.Draw(600, 0);
-    hexagon.Draw(800, 0);
+    hexagon.Draw(  0, 0, stroke: false);
+    hexagon.Draw(200, 0, stroke: false);
+    hexagon.Draw(400, 0, stroke: false);
+    hexagon.Draw(600, 0, stroke: false);
+    hexagon.Draw(800, 0, stroke: false);
 
     using (cr.Save())
     {
         cr.Translate(100, 1.5 * hexagon.Circumradius);
 
-        hexagon.Draw(  0, 0);
-        hexagon.Draw(200, 0);
-        hexagon.Draw(400, 0);
-        hexagon.Draw(600, 0);
-        hexagon.Draw(800, 0);
+        hexagon.Draw(  0, 0, stroke: false);
+        hexagon.Draw(200, 0, stroke: false);
+        hexagon.Draw(400, 0, stroke: false);
+        hexagon.Draw(600, 0, stroke: false);
+        hexagon.Draw(800, 0, stroke: false);
     }
 
     using (cr.Save())
     {
         cr.Translate(0, 3d * hexagon.Circumradius);
 
-        hexagon.Draw(  0, 0);
-        hexagon.Draw(200, 0);
-        hexagon.Draw(400, 0);
-        hexagon.Draw(600, 0);
-        hexagon.Draw(800, 0);
+        hexagon.Draw(  0, 0, stroke: false);
+        hexagon.Draw(200, 0, stroke: false);
+        hexagon.Draw(400, 0, stroke: false);
+        hexagon.Draw(600, 0, stroke: false);
+        hexagon.Draw(800, 0, stroke: false);
     }
 
     using (cr.Save())
     {
         cr.Translate(100, 4.5 * hexagon.Circumradius);
 
-        hexagon.Draw(  0, 0);
-        hexagon.Draw(200, 0);
-        hexagon.Draw(400, 0);
-        hexagon.Draw(600, 0);
-        hexagon.Draw(800, 0);
+        hexagon.Draw(  0, 0, stroke: false);
+        hexagon.Draw(200, 0, stroke: false);
+        hexagon.Draw(400, 0, stroke: false);
+        hexagon.Draw(600, 0, stroke: false);
+        hexagon.Draw(800, 0, stroke: false);
     }
+
+    cr.Stroke();
 }
