@@ -63,6 +63,16 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// </remarks>
     public CairoContext(cairo_t* cr) : base(cr, needsDestroy: false) { }
 
+    /// <summary>
+    /// Creates a new <see cref="CairoContext"/> from the given native handle.
+    /// </summary>
+    /// <param name="cr">the native handle to a cairo context</param>
+    /// <remarks>
+    /// Ownership of the handle is not transferred. <see cref="CairoObject.Dispose()"/> can be called,
+    /// but it will not free the native cairo context (it is actually a no-op here).
+    /// </remarks>
+    public CairoContext(IntPtr cr) : base((cairo_t*)cr.ToPointer(), needsDestroy: false) { }
+
     internal CairoContext(cairo_t* cr, bool isOwnedByCairo, bool needsDestroy = true)
         : base(cr, isOwnedByCairo, needsDestroy)
     {
