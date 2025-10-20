@@ -28,11 +28,11 @@ Further there are some repositories which showcases the use of _cairo_ or bear s
 
 ## _cairo_ vs Skia
 
-Botht are (vector) graphic libraries, and the drawing model differs a bit. Naturally both have pros and cons, but -- experience in the drawing models aside -- I'd choose based on usage:
+Both are (vector) graphic libraries, and the drawing model differs a bit. Naturally both have pros and cons, but -- experience in the drawing models aside -- I'd choose based on usage:
 * UI rendering: Skia due it's capabilities to use GPU
 * everything else: _cairo_, especially as with the same code you can write to different backends like PDF, SVG, PNG, PS
 
-For UI rendering I also use _cairo_, but this is just simple animations in WinForms, and not very hardware demanding. The reason for this is just as I know _cairo_ quite well and can keep the same drawing model for file / stream based backends and for UI.
+For UI rendering I also use _cairo_, but this is just simple animations in WinForms or GTK (4), and not very hardware demanding. The reason for this is just as I know _cairo_ quite well and can keep the same drawing model for file / stream based backends and for UI.
 
 ## License and history
 
@@ -41,7 +41,7 @@ Time passed by and the zwcloud-wrapper got outdated and not maintained anymore (
 
 _cairo_ got some updates in the meantime, so I started from scratch with a new wrapper for .NET. So this project here isn't a fork of some other wrapper, it's a new project with just some examples / demos taken over. The actual wrapper-code is completely new and based on modern .NET features.
 
-As _cairo_ and all other wrappers are licensed under the GNU LGPL, so does this project too. But this doesn't mean that using this project in your work bring copyleft-virality with it.
+As _cairo_ and all other wrappers are licensed under the GNU LGPL, so does this project too. But this doesn't mean that using this project in your work brings copyleft-virality with it.
 
 The license says
 > a larger work using the licensed work through interfaces provided by the licensed work may be distributed under different terms and without source code for the larger work
@@ -67,7 +67,7 @@ All features, functions, etc. as of _cairo_ version 1.18.5 are implemented. Furt
 
 ## Supported platforms
 
-This project only supports .NET 8 onwards. For older .NET targets please use https://github.com/zwcloud/CairoSharp, but note that lots of newer _cairo_ APIs are missing there.
+This project only supports .NET 8 onwards. For older .NET targets please use https://github.com/zwcloud/CairoSharp, but note that lots of newer _cairo_ APIs are missing there, and that there are no xml-doc comments available.
 
 | Operating system  | _cairo_ shipped with the package | manual installation                                                           |
 |-------------------|----------------------------------|-------------------------------------------------------------------------------|
@@ -75,7 +75,7 @@ This project only supports .NET 8 onwards. For older .NET targets please use htt
 | Windows x64 / x86 | :heavy_check_mark:               | not needed                                                                    |
 | Mac OS            | :x:                              | :heavy_check_mark: (see [downloads](https://www.cairographics.org/download/)) |
 
-* for Windows x64 / x86 the _cairo_ DLL is bundled with the NuGet package, not further installation needed
+* for Windows x64 / x86 the _cairo_ DLL is bundled with the NuGet package, not further installation is needed
 
 I don't have Mac OS, thus there are no stubs available, and I can't tell whether it will work or not.
 
@@ -94,7 +94,7 @@ There is an accompanying project calls [CairoSharp.Extensions](source/CairoSharp
 
 So instead of polishing an old wrapper, I chose to start a fresh one. For the name I chose _CairoSharp_, because I'm so used to it, and I dislike names like NCairo, CairoDotNet, and so on.
 
-The NuGet is named `gfoidl.CairoSharp` to have a distincition (and at the moment it's only one for a .NET 8 and newer target).
+The NuGet is named `gfoidl.CairoSharp` to have a distincition (and at the moment it's the only one for a .NET 8 and newer target).
 
 ## Building
 
@@ -102,7 +102,7 @@ The NuGet is named `gfoidl.CairoSharp` to have a distincition (and at the moment
 
 Just like any other .NET project / solution. So either via `dotnet build` or via Visual Studio.
 
-When a _cairo_ shared library / DLL is available, that's all and you can start drawing.
+When a _cairo_ shared library / DLL is available, that's all, and you can start drawing.
 
 ### Windows native _cairo_ build
 

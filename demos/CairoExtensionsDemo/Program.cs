@@ -247,7 +247,7 @@ static void PaintAfter()
 
             cr.SetSource(pattern);
 
-            // Draw (withou mask, hence everything that's in the in the source)
+            // Draw (without mask, hence everything that's in the in the source)
             cr.Paint();
         }
 
