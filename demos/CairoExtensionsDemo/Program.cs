@@ -28,6 +28,7 @@ try
     KnownColorsView();
     Arrows();
     PaintAfter();       // "layered painting"
+    Honeycomb();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -341,5 +342,55 @@ static void PaintAfter()
     finally
     {
         pattern?.Dispose();
+    }
+}
+//-----------------------------------------------------------------------------
+static void Honeycomb()
+{
+    using SvgSurface svg = new("honeycomb.svg", 800, 600);
+    using CairoContext cr = new(svg);
+
+    cr.Rectangle(0, 0, 800, 600);
+    cr.Stroke();
+
+    using Hexagon hexagon = new(cr, 100);
+
+    hexagon.Draw(  0, 0);
+    hexagon.Draw(200, 0);
+    hexagon.Draw(400, 0);
+    hexagon.Draw(600, 0);
+    hexagon.Draw(800, 0);
+
+    using (cr.Save())
+    {
+        cr.Translate(100, 1.5 * hexagon.Circumradius);
+
+        hexagon.Draw(  0, 0);
+        hexagon.Draw(200, 0);
+        hexagon.Draw(400, 0);
+        hexagon.Draw(600, 0);
+        hexagon.Draw(800, 0);
+    }
+
+    using (cr.Save())
+    {
+        cr.Translate(0, 3d * hexagon.Circumradius);
+
+        hexagon.Draw(  0, 0);
+        hexagon.Draw(200, 0);
+        hexagon.Draw(400, 0);
+        hexagon.Draw(600, 0);
+        hexagon.Draw(800, 0);
+    }
+
+    using (cr.Save())
+    {
+        cr.Translate(100, 4.5 * hexagon.Circumradius);
+
+        hexagon.Draw(  0, 0);
+        hexagon.Draw(200, 0);
+        hexagon.Draw(400, 0);
+        hexagon.Draw(600, 0);
+        hexagon.Draw(800, 0);
     }
 }
