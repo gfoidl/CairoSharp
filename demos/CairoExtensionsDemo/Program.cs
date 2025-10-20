@@ -347,52 +347,137 @@ static void PaintAfter()
 //-----------------------------------------------------------------------------
 static void Honeycomb()
 {
-    using SvgSurface svg = new("honeycomb.svg", 800, 600);
-    using CairoContext cr = new(svg);
-
-    cr.Rectangle(0, 0, 800, 600);
-    cr.Stroke();
-
-    using Hexagon hexagon = new(cr, 100);
-
-    hexagon.Draw(  0, 0, stroke: false);
-    hexagon.Draw(200, 0, stroke: false);
-    hexagon.Draw(400, 0, stroke: false);
-    hexagon.Draw(600, 0, stroke: false);
-    hexagon.Draw(800, 0, stroke: false);
-
-    using (cr.Save())
+    // Honeycomb a single path
     {
-        cr.Translate(100, 1.5 * hexagon.Circumradius);
+        using SvgSurface svg  = new("honeycomb_0.svg", 800, 600);
+        using CairoContext cr = new(svg);
+
+        cr.Rectangle(0, 0, 800, 600);
+        cr.Stroke();
+
+        using Hexagon hexagon = new(cr, 100);
 
         hexagon.Draw(  0, 0, stroke: false);
         hexagon.Draw(200, 0, stroke: false);
         hexagon.Draw(400, 0, stroke: false);
         hexagon.Draw(600, 0, stroke: false);
         hexagon.Draw(800, 0, stroke: false);
+
+        using (cr.Save())
+        {
+            cr.Translate(100, 1.5 * hexagon.Circumradius);
+
+            hexagon.Draw(  0, 0, stroke: false);
+            hexagon.Draw(200, 0, stroke: false);
+            hexagon.Draw(400, 0, stroke: false);
+            hexagon.Draw(600, 0, stroke: false);
+            hexagon.Draw(800, 0, stroke: false);
+        }
+
+        using (cr.Save())
+        {
+            cr.Translate(0, 3d * hexagon.Circumradius);
+
+            hexagon.Draw(  0, 0, stroke: false);
+            hexagon.Draw(200, 0, stroke: false);
+            hexagon.Draw(400, 0, stroke: false);
+            hexagon.Draw(600, 0, stroke: false);
+            hexagon.Draw(800, 0, stroke: false);
+        }
+
+        using (cr.Save())
+        {
+            cr.Translate(100, 4.5 * hexagon.Circumradius);
+
+            hexagon.Draw(  0, 0, stroke: false);
+            hexagon.Draw(200, 0, stroke: false);
+            hexagon.Draw(400, 0, stroke: false);
+            hexagon.Draw(600, 0, stroke: false);
+            hexagon.Draw(800, 0, stroke: false);
+        }
+
+        cr.Stroke();
     }
 
-    using (cr.Save())
+    // Honeycomb as pattern -> def/use in SVG
     {
-        cr.Translate(0, 3d * hexagon.Circumradius);
+        using SvgSurface svg  = new("honeycomb_1.svg", 800, 600);
+        using CairoContext cr = new(svg);
 
-        hexagon.Draw(  0, 0, stroke: false);
-        hexagon.Draw(200, 0, stroke: false);
-        hexagon.Draw(400, 0, stroke: false);
-        hexagon.Draw(600, 0, stroke: false);
-        hexagon.Draw(800, 0, stroke: false);
+        cr.Rectangle(0, 0, 800, 600);
+        cr.Stroke();
+
+        using Hexagon hexagon               = new(cr, 100);
+        const int PatternConstructionOffset = 200;
+
+        cr.PushGroup();
+        cr.Translate(PatternConstructionOffset, PatternConstructionOffset);
+        hexagon.Draw(0, 0);
+        using SurfacePattern hexagonPattern = cr.PopGroup();
+        using Surface hexagonSurface        = hexagonPattern.Surface;
+
+        using (cr.Save())
+        {
+            cr.Translate(-PatternConstructionOffset, -PatternConstructionOffset);
+
+            cr.SetSourceSurface(hexagonSurface, 0, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 200, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 400, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 600, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 800, 0);
+            cr.Paint();
+
+            using (cr.Save())
+            {
+                cr.Translate(100, 1.5 * hexagon.Circumradius);
+
+                cr.SetSourceSurface(hexagonSurface, 0, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 200, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 400, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 600, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 800, 0);
+                cr.Paint();
+            }
+
+            using (cr.Save())
+            {
+                cr.Translate(0, 3d * hexagon.Circumradius);
+
+                cr.SetSourceSurface(hexagonSurface, 0, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 200, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 400, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 600, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 800, 0);
+                cr.Paint();
+            }
+
+            using (cr.Save())
+            {
+                cr.Translate(100, 4.5 * hexagon.Circumradius);
+
+                cr.SetSourceSurface(hexagonSurface, 0, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 200, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 400, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 600, 0);
+                cr.Paint();
+                cr.SetSourceSurface(hexagonSurface, 800, 0);
+                cr.Paint();
+            }
+        }
     }
-
-    using (cr.Save())
-    {
-        cr.Translate(100, 4.5 * hexagon.Circumradius);
-
-        hexagon.Draw(  0, 0, stroke: false);
-        hexagon.Draw(200, 0, stroke: false);
-        hexagon.Draw(400, 0, stroke: false);
-        hexagon.Draw(600, 0, stroke: false);
-        hexagon.Draw(800, 0, stroke: false);
-    }
-
-    cr.Stroke();
 }
