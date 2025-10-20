@@ -73,6 +73,8 @@ Another possibility is to re-use the libraries from an already installed applica
 
 One such application is the great [Inkscape](https://inkscape.org).
 
+The Gtk-based libraries can also be obtained via [Setting up GTK for Windows](https://www.gtk.org/docs/installations/windows/).
+
 #### PDF
 
 poppler can be downloaded e.g. from  Owen Schwartz 's [poppler-windows](https://github.com/oschwartz10612/poppler-windows).
