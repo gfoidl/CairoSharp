@@ -1,4 +1,4 @@
-## WinFormsAnimation
+## Gtk4Animation
 
 When the check box for _creating images_ is checked, then it's possible to create a video from the sequence of stored images.
 

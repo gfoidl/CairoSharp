@@ -21,6 +21,7 @@ if (OperatingSystem.IsWindows())
     {
         string? path = libraryName switch
         {
+            // For simplicity we re-use the DLLs from Inkscape.
             LoadingNative.LibRSvgName    => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "librsvg-2-2.dll"),
             LoadingNative.LibPopplerName => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libpoppler-glib-8.dll"),
             LoadingNative.LibGLibName    => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libglib-2.0-0.dll"),
