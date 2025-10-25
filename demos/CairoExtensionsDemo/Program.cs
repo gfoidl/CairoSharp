@@ -10,6 +10,7 @@ using Cairo.Extensions.Shapes;
 using Cairo.Surfaces;
 using Cairo.Surfaces.PDF;
 using Cairo.Surfaces.PostScript;
+using Cairo.Surfaces.Recording;
 using Cairo.Surfaces.SVG;
 using Cairo.Surfaces.Tee;
 using IOPath = System.IO.Path;
@@ -528,6 +529,84 @@ static void Honeycomb()
                 cr.SetSourceSurface(hexagonSurface, 800, 0);
                 cr.Paint();
             }
+        }
+    }
+
+    // Honeycomb as pattern via RecordingSurface -> def/use in SVG
+    {
+        using SvgSurface svg  = new("honeycomb_3.svg", 800, 600);
+        using CairoContext cr = new(svg);
+
+        cr.Rectangle(0, 0, 800, 600);
+        cr.Stroke();
+
+        double hexagonCircumradius;
+        using RecordingSurface hexagonSurface = new(Content.ColorAlpha);
+
+        using (CairoContext cr1 = new(hexagonSurface))
+        using (Hexagon hexagon  = new(cr1, 100))
+        {
+            hexagonCircumradius = hexagon.Circumradius;
+            hexagon.Draw(0, 0);
+        }
+
+        cr.SetSourceSurface(hexagonSurface, 0, 0);
+        cr.Paint();
+        cr.SetSourceSurface(hexagonSurface, 200, 0);
+        cr.Paint();
+        cr.SetSourceSurface(hexagonSurface, 400, 0);
+        cr.Paint();
+        cr.SetSourceSurface(hexagonSurface, 600, 0);
+        cr.Paint();
+        cr.SetSourceSurface(hexagonSurface, 800, 0);
+        cr.Paint();
+
+        using (cr.Save())
+        {
+            cr.Translate(100, 1.5 * hexagonCircumradius);
+
+            cr.SetSourceSurface(hexagonSurface, 0, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 200, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 400, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 600, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 800, 0);
+            cr.Paint();
+        }
+
+        using (cr.Save())
+        {
+            cr.Translate(0, 3d * hexagonCircumradius);
+
+            cr.SetSourceSurface(hexagonSurface, 0, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 200, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 400, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 600, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 800, 0);
+            cr.Paint();
+        }
+
+        using (cr.Save())
+        {
+            cr.Translate(100, 4.5 * hexagonCircumradius);
+
+            cr.SetSourceSurface(hexagonSurface, 0, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 200, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 400, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 600, 0);
+            cr.Paint();
+            cr.SetSourceSurface(hexagonSurface, 800, 0);
+            cr.Paint();
         }
     }
 }
