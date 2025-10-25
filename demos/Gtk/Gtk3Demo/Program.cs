@@ -5,8 +5,8 @@ using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
 using Cairo.Extensions.Shapes;
-using GtkDemo;
-using static GtkDemo.Native;
+using Gtk3Demo;
+using static Gtk3Demo.Native;
 
 unsafe
 {

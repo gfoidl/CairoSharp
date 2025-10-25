@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Cairo;
 using IOPath = System.IO.Path;
 
-namespace GtkDemo;
+namespace Gtk3Demo;
 
 internal struct GtkApplication;
 internal struct GtkWidget;

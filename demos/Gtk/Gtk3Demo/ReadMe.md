@@ -1,0 +1,1 @@
+For GTK 3 there exist wrappers for .NET like https://github.com/GtkSharp/GtkSharp with some tutorials like [Introduction to GTK 3 in C#](https://ksvi.mff.cuni.cz/~dingle/2022-3/prog_2/gtk_introduction.html) but for simplicity and to avoid an external dependency here the needed native function are imported manually (they are just a few).
