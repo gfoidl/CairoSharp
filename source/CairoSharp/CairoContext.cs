@@ -225,9 +225,9 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// any portion of the fill being visible under the stroke:
     /// <code>
     /// context.PushGroup();
-    /// context.Source = fillPattern;
+    /// context.SetSource(fillPattern);
     /// context.FillPreserve();
-    /// context.Source = strokePattern;
+    /// context.SetSource(strokePattern);
     /// context.Stroke();
     /// context.PopGroupToSource();
     /// context.PaintWithAlpha(alpha);
@@ -306,7 +306,7 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// The behavior of this method is equivalent to the sequence of operations:
     /// <code>
     /// using Pattern pattern = context.PopGroup();
-    /// context.Source        = pattern;
+    /// context.SetSource(pattern);
     /// </code>
     /// but is more convenient as there is no need for a variable to store the short-lived
     /// pointer to the pattern.
