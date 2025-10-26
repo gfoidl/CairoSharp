@@ -17,6 +17,7 @@
     <Project Path="demos/Gtk/Gtk3Demo/Gtk3Demo.csproj" Id="3d4a5834-c72d-49df-a5e9-1bf21a27ffe3" />
     <Project Path="demos/Gtk/Gtk4Animation/Gtk4Animation.csproj" Id="3873f366-3943-4999-be0b-5ae6cf9a33ca" />
     <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" Id="0dd8d4f2-2ed5-48f0-b22e-1c9ac0f0aaf4" />
+    <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" Id="663ff908-a037-4049-97cb-d5c724930254" />
   </Folder>
   <Folder Name="/demos/Windows/">
     <Project Path="demos/Windows/WinFormsAnimation/WinFormsAnimation.csproj" />

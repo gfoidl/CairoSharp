@@ -1,0 +1,22 @@
+// (c) gfoidl, all rights reserved
+
+using Gtk;
+using Gtk4DemoSimple;
+
+if (OperatingSystem.IsWindows())
+{
+    // GTK 4 is installed via https://www.gtk.org/docs/installations/windows/#using-gtk-from-msys2-packages
+    // For simplicity we just append the PATH so that Windows knows where to look for the DLLs.
+    string path = Environment.GetEnvironmentVariable("PATH")!;
+    path        = $@"C:\Program Files\msys64\ucrt64\bin;{path}";
+    Environment.SetEnvironmentVariable("PATH", path);
+}
+
+Application app = Application.New("at.gfoidl.cairo.gtk4.demo.simple", Gio.ApplicationFlags.FlagsNone);
+app.OnActivate += static (Gio.Application app, EventArgs args) =>
+{
+    MainWindow window = new((Application)app);
+    window.Show();
+};
+
+return app.RunWithSynchronizationContext(args);

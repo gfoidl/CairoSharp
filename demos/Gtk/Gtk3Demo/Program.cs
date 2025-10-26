@@ -10,7 +10,7 @@ using static Gtk3Demo.Native;
 
 unsafe
 {
-    GtkApplication* app = gtk_application_new("at.gfoidl.cairo.gtk.demo", 0);
+    GtkApplication* app = gtk_application_new("at.gfoidl.cairo.gtk3.demo", 0);
     int status          = 0;
 
     try
@@ -37,7 +37,7 @@ static unsafe void Activate(void* type, void* userData)
 
     g_signal_connect(window, "destroy", &CloseWindow, null);
 
-    GtkWidget* frame = gtk_frame_new(null);
+    GtkWidget* frame = gtk_frame_new(label: null);
     gtk_frame_set_shadow_type(frame, /*  GTK_SHADOW_IN */ 1);
     gtk_container_add(window, frame);
 
