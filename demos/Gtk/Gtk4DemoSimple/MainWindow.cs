@@ -17,8 +17,8 @@ public sealed class MainWindow : ApplicationWindow
 {
     public MainWindow(Application app)
     {
-        this.SetApplication(app);
-        this.SetTitle("CairoSharp");
+        this.Application = app;
+        this.Title       = "CairoSharp";
         //this.SetDefaultSize(500, 500);    // set below for the drawingArea
 
         DrawingArea drawingArea = DrawingArea.New();

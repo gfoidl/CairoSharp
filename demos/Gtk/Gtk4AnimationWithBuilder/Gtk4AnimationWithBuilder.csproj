@@ -3,6 +3,11 @@
     <PropertyGroup>
         <!-- WinExe in order to hide the console window. -->
         <OutputType>WinExe</OutputType>
+        <RootNamespace>Gtk4Animation</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!--<DefineConstants>$(DefineConstants);USE_CSS</DefineConstants>-->
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,6 +16,14 @@
 
     <ItemGroup>
         <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Gtk4Animation\Program.cs" Link="Program.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="designer\Animation.ui" LogicalName="AnimationWindow.4.ui" />
     </ItemGroup>
 
 </Project>

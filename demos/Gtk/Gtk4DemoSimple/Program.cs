@@ -12,7 +12,7 @@ if (OperatingSystem.IsWindows())
     Environment.SetEnvironmentVariable("PATH", path);
 }
 
-Application app = Application.New("at.gfoidl.cairo.gtk4.demo.simple", Gio.ApplicationFlags.FlagsNone);
+using Application app = Application.New("at.gfoidl.cairo.gtk4.demo.simple", Gio.ApplicationFlags.FlagsNone);
 app.OnActivate += static (Gio.Application app, EventArgs args) =>
 {
     MainWindow window = new((Application)app);

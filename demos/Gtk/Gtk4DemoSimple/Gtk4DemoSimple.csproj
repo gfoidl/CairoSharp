@@ -3,7 +3,6 @@
     <PropertyGroup>
         <!-- WinExe in order to hide the console window. -->
         <OutputType>WinExe</OutputType>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
