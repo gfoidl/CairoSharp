@@ -21,6 +21,11 @@ public sealed unsafe class Path : CairoObject<PathRaw>
 
     protected override void DisposeCore(PathRaw* handle) => cairo_path_destroy(handle);
 
+    /// <summary>
+    /// the current error status
+    /// </summary>
+    public Status Status => this.Handle->Status;
+
     public PathIterator GetEnumerator() => new(this.Handle);
 
     // https://www.cairographics.org/manual/bindings-path.html

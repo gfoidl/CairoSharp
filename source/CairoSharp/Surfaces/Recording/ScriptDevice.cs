@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using static Cairo.Surfaces.Recording.ScriptSurfaceNative;
 

@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="*.png" CopyToOutputDirectory="PreserveNewest" />
+        <ProjectReference Include="..\..\..\source\CairoSharp\CairoSharp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\source\CairoSharp\CairoSharp.csproj" />
+        <Content Include="*.png" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

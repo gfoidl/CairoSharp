@@ -44,11 +44,11 @@ public static unsafe class PathExtensions
         /// (data==NULL and num_data==0), if either of the following conditions hold:
         /// <list type="number">
         /// <item>
-        /// If there is insufficient memory to copy the path. In this case path->status will be set to
+        /// If there is insufficient memory to copy the path. In this case <see cref="Path.Status"/> will be set to
         /// <see cref="Status.NoMemory"/>.
         /// </item>
         /// <item>
-        /// If cr is already in an error state. In this case path->status will contain the same status that would
+        /// If cr is already in an error state. In this case <see cref="Path.Status"/> will contain the same status that would
         /// be returned by <see cref="CairoContext.Status"/>.
         /// </item>
         /// </list>
@@ -80,11 +80,11 @@ public static unsafe class PathExtensions
         /// (data==NULL and num_data==0), if either of the following conditions hold:
         /// <list type="number">
         /// <item>
-        /// If there is insufficient memory to copy the path. In this case path->status will be set to
+        /// If there is insufficient memory to copy the path. In this case <see cref="Path.Status"/> will be set to
         /// <see cref="Status.NoMemory"/>.
         /// </item>
         /// <item>
-        /// If cr is already in an error state. In this case path->status will contain the same status that would
+        /// If cr is already in an error state. In this case <see cref="Path.Status"/> will contain the same status that would
         /// be returned by <see cref="CairoContext.Status"/>.
         /// </item>
         /// </list>
@@ -114,7 +114,7 @@ public static unsafe class PathExtensions
             cr.CheckDisposed();
             ArgumentNullException.ThrowIfNull(path);
 
-            cairo_append_path(cr.Handle, (PathRaw*)path.Handle);
+            cairo_append_path(cr.Handle, path.Handle);
         }
 
         /// <summary>
@@ -471,7 +471,7 @@ public static unsafe class PathExtensions
         /// Like cairo_show_text(), after this call the current point is moved to the origin of where the
         /// next glyph would be placed in this same progression. That is, the current point will be at the
         /// origin of the final glyph offset by its advance values. This allows for chaining multiple calls
-        /// to to cairo_text_path() without having to set current point in between.
+        /// to cairo_text_path() without having to set current point in between.
         /// </para>
         /// <para>
         /// Note: The cairo_text_path() function call is part of what the cairo designers call the

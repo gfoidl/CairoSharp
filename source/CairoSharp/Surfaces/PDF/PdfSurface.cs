@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.IO;
 using static Cairo.Surfaces.PDF.PdfSurfaceNative;
 
 namespace Cairo.Surfaces.PDF;

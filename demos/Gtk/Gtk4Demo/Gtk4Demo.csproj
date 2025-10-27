@@ -6,11 +6,20 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\source\CairoSharp\CairoSharp.csproj" Aliases="CairoSharp" />
         <ProjectReference Include="..\..\..\source\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="designer\demo.ui" LogicalName="demo.4.ui" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

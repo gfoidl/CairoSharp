@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Drawing.Path;
+
 namespace Cairo.Extensions.Shapes;
 
 /// <summary>

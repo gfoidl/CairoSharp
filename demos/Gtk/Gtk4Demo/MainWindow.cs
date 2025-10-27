@@ -1,99 +1,160 @@
 // (c) gfoidl, all rights reserved
 
+extern alias CairoSharp;
+
 using System.Diagnostics;
-using Cairo;
-using Cairo.Drawing;
-using Cairo.Drawing.Path;
-using Cairo.Drawing.Patterns;
-using Cairo.Drawing.Text;
-using Cairo.Fonts;
-using Cairo.Fonts.Scaled;
-using Cairo.Surfaces.Images;
-using Cairo.Surfaces.Win32;
-using Path = Cairo.Drawing.Path.Path;
+using CairoSharp::Cairo;
+using CairoSharp::Cairo.Drawing;
+using CairoSharp::Cairo.Drawing.Path;
+using CairoSharp::Cairo.Drawing.Patterns;
+using CairoSharp::Cairo.Drawing.Text;
+using CairoSharp::Cairo.Fonts;
+using CairoSharp::Cairo.Fonts.Scaled;
+using CairoSharp::Cairo.Surfaces;
+using CairoSharp::Cairo.Surfaces.Images;
+using CairoSharp::Cairo.Surfaces.Recording;
+using Gtk;
+using GtkCairo = Cairo.Context;
+using Path     = CairoSharp::Cairo.Drawing.Path.Path;
 
-namespace WinFormsDemo;
+namespace Gtk4Demo;
 
-public partial class Form1 : Form
+public sealed class MainWindow : ApplicationWindow
 {
+    // The should be exposed by GirCore ideally.
+    private const uint GdkButtonAll       = 0;
+    private const uint GdkButtonPrimary   = 1;
+    private const uint GdkButtonMiddle    = 2;
+    private const uint GdkButtonSecondary = 3;
+
     private string?               _lastSelectedDemo;
-    private Action<CairoContext>? _onPaintAction;
+    private Action<CairoContext>? _onDrawAction;
     private readonly byte[]       _pngData = File.ReadAllBytes("romedalen.png");
     private Path?                 _hitPath;
+    private bool                  _isInHitArea;
 
-    public Form1()
+#pragma warning disable CS0649 // field is never assigned to
+    [Connect] private readonly DrawingArea _drawingArea;
+#pragma warning restore CS0649
+
+    public MainWindow(Application app) : this(app, new Builder("demo.4.ui"), "mainWindow") { }
+
+    private MainWindow(Application app, Builder builder, string name)
+        : base(new Gtk.Internal.ApplicationWindowHandle(builder.GetPointer(name), ownsHandle: false))
     {
-        InitializeComponent();
+        this.Application = app;
+
+        builder.Connect(this);
+        this.AddMenuActions();
+
+        Debug.Assert(_drawingArea is not null);
+        _drawingArea.SetDrawFunc(this.Draw);
+
+        GestureClick clickGesture = GestureClick.New();
+        clickGesture.Button       = GdkButtonAll;
+        clickGesture.OnPressed   += this.DrawingAreaClicked;
+        _drawingArea.AddController(clickGesture);
     }
 
-    private void drawPanel_Paint(object sender, PaintEventArgs e)
+    private void AddMenuActions()
+    {
+        this.AddAction("saveAsPng"           , this.SaveAsPng);
+        this.AddAction("drawArc"             , this.DrawArc);
+        this.AddAction("drawArcNegative"     , this.DrawArcNegative);
+        this.AddAction("drawClip"            , this.DrawClip);
+        this.AddAction("drawClipImage"       , this.DrawClipImage);
+        this.AddAction("drawCurvedRectangle" , this.DrawCurvedRectangle);
+        this.AddAction("drawRoundedRectangle", this.DrawRoundedRectangle);
+        this.AddAction("drawCurveTo"         , this.DrawCurveTo);
+        this.AddAction("drawDash"            , this.DrawDash);
+        this.AddAction("drawFillAndStroke"   , this.DrawFillAndStroke);
+        this.AddAction("drawFillStyle"       , this.DrawFillStyle);
+        this.AddAction("drawGradient"        , this.DrawGradient);
+        this.AddAction("drawImage"           , this.DrawImage);
+        this.AddAction("drawImagePattern"    , this.DrawImagePattern);
+        this.AddAction("drawMultiSegmentCaps", this.DrawMultiSegmentCaps);
+        this.AddAction("drawLineCap"         , this.DrawLineCap);
+        this.AddAction("drawLineJoin"        , this.DrawLineJoin);
+        this.AddAction("drawText"            , this.DrawText);
+        this.AddAction("drawTextCenter"      , this.DrawTextCenter);
+        this.AddAction("drawTextExtents"     , this.DrawTextExtents);
+        this.AddAction("drawGlyphs"          , this.DrawGlyphs);
+        this.AddAction("drawGlyphExtents"    , this.DrawGlyphExtents);
+        this.AddAction("hitTest"             , this.DrawHitTest);
+    }
+
+    private async Task SaveAsPng()
+    {
+        using FileFilter fileFilter = FileFilter.New();
+        fileFilter.AddSuffix("png");
+
+        using FileDialog fileDialog = FileDialog.New();
+        fileDialog.InitialName      = $"{_lastSelectedDemo}.png";
+        fileDialog.DefaultFilter    = fileFilter;
+
+        try
+        {
+            using Gio.File? file = await fileDialog.SaveAsync(this);
+
+            if (file?.GetPath() is string path)
+            {
+                // Based on https://discourse.gnome.org/t/gtk4-screenshot-with-gtksnapshot/27981/3
+
+                using Snapshot snapshot = Snapshot.New();
+                // _drawingArea.Snapshot(snapshot);
+                // The above isn't available in GirCore, so use this workaround:
+                _drawingArea.Parent!.SnapshotChild(_drawingArea, snapshot);
+
+                Gsk.RenderNode? renderNode = snapshot.FreeToNode();
+                Debug.Assert(renderNode is not null);
+
+                try
+                {
+                    // Just for fun
+                    renderNode.WriteToFile($"{path}.node");
+
+                    using Gsk.Renderer? renderer = _drawingArea.GetNative()?.GetRenderer();
+                    Debug.Assert(renderer is not null);
+
+                    using Gdk.Texture texture = renderer.RenderTexture(renderNode, null);
+                    texture.SaveToPng(path);
+                }
+                finally
+                {
+                    // IMO a Dispose method should be exposed by GirCore
+                    renderNode.Unref();
+                }
+            }
+        }
+        catch (GLib.GException ex) when (ex.Message == "Dismissed by user")
+        {
+            // ignore
+        }
+    }
+
+    private void Draw(DrawingArea drawingArea, GtkCairo gtkCairoContext, int width, int height)
     {
         if (_lastSelectedDemo != "hit path" && _hitPath is not null)
         {
             _hitPath.Dispose();
         }
 
-        nint hdc = e.Graphics.GetHdc();
-        try
+        using CairoContext cr = gtkCairoContext.ToCairoSharp();
+
+        using (cr.Save())
         {
-            using Win32Surface surface = new(hdc);
-            using CairoContext context = new(surface);
-
-            using (context.Save())
-            {
-                context.Rectangle(0, 0, 256, 256);
-                context.LineWidth = 1d;
-                context.Stroke();
-            }
-
-            if (_onPaintAction is null)
-            {
-                return;
-            }
-
-            _onPaintAction(context);
+            cr.Rectangle(0, 0, drawingArea.ContentWidth, drawingArea.ContentHeight);
+            cr.LineWidth = 1d;
+            cr.Stroke();
         }
-        finally
-        {
-            e.Graphics.ReleaseHdc(hdc);
-        }
+
+        _onDrawAction?.Invoke(cr);
     }
 
-    private void saveAsPNGToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawArc()
     {
-        using SaveFileDialog saveFileDialog = new();
-        saveFileDialog.Filter               = "PNG|*.png";
-        saveFileDialog.FileName             = _lastSelectedDemo;
-
-        if (saveFileDialog.ShowDialog() == DialogResult.OK)
-        {
-            Graphics graphics = drawPanel.CreateGraphics();
-            nint hdc          = graphics.GetHdc();
-
-            try
-            {
-                using Win32Surface surface = new(hdc);
-                surface.WriteToPng(saveFileDialog.FileName);
-            }
-            finally
-            {
-                graphics.ReleaseHdc(hdc);
-                graphics.Dispose();
-            }
-        }
-    }
-
-    private static string GetMenuText(object sender)
-    {
-        Debug.Assert(sender is ToolStripMenuItem);
-        ToolStripMenuItem menuItem = (sender as ToolStripMenuItem)!;
-        return menuItem.Text!;
-    }
-
-    private void arcToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "arc";
+        _onDrawAction     = static cr =>
         {
             const double Xc     = 128.0;
             const double Yc     = 128.0;
@@ -121,13 +182,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void arcNegativeToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawArcNegative()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "arc_negative";
+        _onDrawAction     = static cr =>
         {
             const double Xc     = 128.0;
             const double Yc     = 128.0;
@@ -153,13 +214,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void clipToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawClip()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "clip";
+        _onDrawAction     = static cr =>
         {
             cr.Arc(128.0, 128.0, 76.8, 0, 2 * Math.PI);
             cr.Clip();
@@ -178,13 +239,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void clipImageToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawClipImage()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = cr =>
+        _lastSelectedDemo = "clip_image";
+        _onDrawAction     = cr =>
         {
             cr.Arc(128.0, 128.0, 76.8, 0, 2 * Math.PI);
             cr.Clip();
@@ -199,13 +260,13 @@ public partial class Form1 : Form
             cr.Paint();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void curvedRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawCurvedRectangle()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "curved_rectangle";
+        _onDrawAction     = static cr =>
         {
             // a custom shape that could be wrapped in a function
             double x0         = 25.6,       // parameters like cairo_rectangle
@@ -270,13 +331,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void roundedRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawRoundedRectangle()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "rounded_rectangle";
+        _onDrawAction     = static cr =>
         {
             // a custom shape that could be wrapped in a function
             double x            = 25.6,             // parameters like cairo_rectangle
@@ -303,13 +364,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void curveToToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawCurveTo()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "curve_to";
+        _onDrawAction     = static cr =>
         {
             double  x = 25.6,   y = 128.0;
             double x1 = 102.4, y1 = 230.4,
@@ -329,13 +390,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void dashToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawDash()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "dash";
+        _onDrawAction     = static cr =>
         {
             ReadOnlySpan<double> dashes =
             [
@@ -357,13 +418,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void fillAndStroke2ToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawFillAndStroke()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "fill_and_stroke";
+        _onDrawAction     = static cr =>
         {
             cr.MoveTo(128.0, 25.6);
             cr.LineTo(230.4, 230.4);
@@ -384,13 +445,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void fillStyleToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawFillStyle()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "fill_style";
+        _onDrawAction     = static cr =>
         {
             cr.LineWidth = 6;
 
@@ -412,13 +473,13 @@ public partial class Form1 : Form
             cr.SetSourceRgb(0, 0, 0); cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void gradientToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawGradient()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "gradient";
+        _onDrawAction     = static cr =>
         {
             using (Gradient pat = new LinearGradient(0.0, 0.0, 0.0, 256.0))
             {
@@ -442,13 +503,13 @@ public partial class Form1 : Form
             }
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void imageToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawImage()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = cr =>
+        _lastSelectedDemo = "image";
+        _onDrawAction     = cr =>
         {
             using ImageSurface image = new(_pngData);
             int w = image.Width;
@@ -463,13 +524,13 @@ public partial class Form1 : Form
             cr.Paint();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void imagePatternToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawImagePattern()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = cr =>
+        _lastSelectedDemo = "image_pattern";
+        _onDrawAction     = cr =>
         {
             using ImageSurface image = new(_pngData);
             int w = image.Width;
@@ -493,13 +554,13 @@ public partial class Form1 : Form
             cr.Fill();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void multiSegmentCapsToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawMultiSegmentCaps()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "multi_segment_caps";
+        _onDrawAction     = static cr =>
         {
             cr.MoveTo(50.0, 75.0);
             cr.LineTo(200.0, 75.0);
@@ -515,13 +576,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void setLineCapToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawLineCap()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "line_cap";
+        _onDrawAction     = static cr =>
         {
             cr.LineWidth = 30.0;
 
@@ -547,13 +608,13 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void setLineJoinToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawLineJoin()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "line_join";
+        _onDrawAction     = static cr =>
         {
             cr.LineWidth = 40.96;
 
@@ -576,15 +637,15 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void textToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawText()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "text";
+        _onDrawAction     = static cr =>
         {
-            cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Bold);
+            cr.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
             cr.SetFontSize(90d);
 
             cr.MoveTo(10.0, 135.0);
@@ -608,17 +669,17 @@ public partial class Form1 : Form
             cr.Fill();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void textAlignCenterToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawTextCenter()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "text_center";
+        _onDrawAction     = static cr =>
         {
             const string Text = "cairo";
 
-            cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
+            cr.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(52);
 
             cr.TextExtents(Text, out TextExtents extents);
@@ -643,17 +704,17 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void textExtentsToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawTextExtents()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "text_extents";
+        _onDrawAction     = static cr =>
         {
             const string Text = "cairo";
 
-            cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
+            cr.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(100);
 
             cr.TextExtents(Text, out TextExtents extents);
@@ -678,17 +739,17 @@ public partial class Form1 : Form
             cr.Stroke();
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void glyphsToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawGlyphs()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "glyphs";
+        _onDrawAction     = static cr =>
         {
             const string Text = "cairo";
 
-            cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
+            cr.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(100);
 
             const double X = 25.0;
@@ -699,17 +760,17 @@ public partial class Form1 : Form
             cr.ShowTextGlyphs(Text);
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void glyphExtentsToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawGlyphExtents()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = static cr =>
+        _lastSelectedDemo = "glyph_extents";
+        _onDrawAction     = static cr =>
         {
             const string Text = "cairo";
 
-            cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
+            cr.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(100);
 
             const double X =  25.0;
@@ -742,14 +803,13 @@ public partial class Form1 : Form
             }
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-
-    private void hitTestToolStripMenuItem_Click(object sender, EventArgs e)
+    private void DrawHitTest()
     {
-        _lastSelectedDemo = GetMenuText(sender);
-        _onPaintAction    = cr =>
+        _lastSelectedDemo = "hit_test";
+        _onDrawAction     = cr =>
         {
             using (cr.Save())
             {
@@ -777,21 +837,36 @@ public partial class Form1 : Form
             cr.SetSourceRgba(1, 0, 0, 0.5);
             cr.FillPreserve();
             cr.SetSourceRgb(1, 0, 0);
-            cr.Stroke();
+
+            if (!_isInHitArea)
+            {
+                cr.Stroke();
+            }
+            else
+            {
+                cr.StrokePreserve();
+
+                cr.LineWidth = 5;
+                cr.SetSourceRgb(0, 1, 0);
+                cr.Stroke();
+            }
         };
 
-        drawPanel.Invalidate();
+        _drawingArea.QueueDraw();
     }
 
-    private void drawPanel_MouseClick(object sender, MouseEventArgs e)
+    private void DrawingAreaClicked(GestureClick gesture, GestureClick.PressedSignalArgs eventArgs)
     {
-        if (e.Button == MouseButtons.Right)
+        uint clickButton = gesture.GetCurrentButton();
+
+        if (clickButton == GdkButtonSecondary)
         {
-            drawPanel.Invalidate();
+            _isInHitArea = false;
+            _drawingArea.QueueDraw();
             return;
         }
 
-        if (_hitPath is null)
+        if (_hitPath is null || clickButton != GdkButtonPrimary)
         {
             return;
         }
@@ -805,29 +880,20 @@ public partial class Form1 : Form
             }
         }
 
-        Graphics graphics = drawPanel.CreateGraphics();
-        nint hdc          = graphics.GetHdc();
+        // Just any CairoContext is needed.
+        using RecordingSurface surface = new(Content.Alpha);
+        using CairoContext cr          = new(surface);
 
-        try
+        cr.AppendPath(_hitPath);
+        bool isInHitArea = cr.InFill(eventArgs.X, eventArgs.Y);
+
+        if (_isInHitArea != isInHitArea)
         {
-            using Win32Surface surface = new(hdc);
-            using CairoContext context = new(surface);
-
-            context.AppendPath(_hitPath);
-
-            bool isInHitArea = context.InFill(new PointD(e.Location.X, e.Location.Y));
-
-            if (isInHitArea)
-            {
-                context.LineWidth = 5;
-                context.SetSourceRgb(0, 1, 0);
-                context.Stroke();
-            }
+            _drawingArea.QueueDraw();
         }
-        finally
-        {
-            graphics.ReleaseHdc(hdc);
-            graphics.Dispose();
-        }
+
+        _isInHitArea = isInHitArea;
+
+        Console.WriteLine($"click at ({eventArgs.X:N3}, {eventArgs.Y:N3}), is in hit area: {_isInHitArea}");
     }
 }

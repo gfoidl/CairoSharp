@@ -31,6 +31,8 @@ public sealed class AnimationWindow : ApplicationWindow
     private AnimationWindow(Application app, Builder builder, string name)
         : base(new Gtk.Internal.ApplicationWindowHandle(builder.GetPointer(name), ownsHandle: false))
     {
+        this.Application = app;
+
         builder.Connect(this);
 
         Debug.Assert(_showTrajectoryCheckBox is not null);
@@ -38,8 +40,6 @@ public sealed class AnimationWindow : ApplicationWindow
         Debug.Assert(_saveImagesCheckBox     is not null);
         Debug.Assert(_drawingArea            is not null);
         Debug.Assert(_iterationLabel         is not null);
-
-        this.Application = app;
 
         _drawingArea.SetDrawFunc(this.Draw);
 
