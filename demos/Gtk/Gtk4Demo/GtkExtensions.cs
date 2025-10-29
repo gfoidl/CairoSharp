@@ -22,7 +22,7 @@ internal static class GtkExtensions
         public SimpleAction AddAction(string name, Action onActivateCallback)
         {
             SimpleAction simpleAction = SimpleAction.New(name, null);
-            simpleAction.OnActivate += (sa, args) => onActivateCallback();
+            simpleAction.OnActivate  += (sa, args) => onActivateCallback();
 
             map.AddAction(simpleAction);
             return simpleAction;
@@ -40,7 +40,7 @@ internal static class GtkExtensions
         public SimpleAction AddAction(string name, Func<Task> onActivateCallback)
         {
             SimpleAction simpleAction = SimpleAction.New(name, null);
-            simpleAction.OnActivate += async (sa, args) => await onActivateCallback();
+            simpleAction.OnActivate  += async (sa, args) => await onActivateCallback();
 
             map.AddAction(simpleAction);
             return simpleAction;
