@@ -34,6 +34,7 @@ public sealed class AnimationWindow : ApplicationWindow
         this.Application = app;
 
         builder.Connect(this);
+        builder.Dispose();
 
         Debug.Assert(_showTrajectoryCheckBox is not null);
         Debug.Assert(_showCrosshairsCheckBox is not null);

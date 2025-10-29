@@ -43,8 +43,11 @@ public sealed class MainWindow : ApplicationWindow
         : base(new Gtk.Internal.ApplicationWindowHandle(builder.GetPointer(name), ownsHandle: false))
     {
         this.Application = app;
+        this.ShowMenubar = true;
 
         builder.Connect(this);
+        builder.Dispose();
+
         this.AddMenuActions();
 
         Debug.Assert(_drawingArea is not null);
