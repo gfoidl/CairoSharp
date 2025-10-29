@@ -1,6 +1,5 @@
 // (c) gfoidl, all rights reserved
 
-using System.Diagnostics;
 using Gtk;
 using Gtk4Demo;
 
@@ -18,14 +17,6 @@ app.OnActivate += static (Gio.Application app, EventArgs args) =>
 {
     MainWindow window = new((Application)app);
     window.Show();
-};
-app.OnStartup += static (Gio.Application app, EventArgs args) =>
-{
-    using Builder builder = new("demo.4.ui");
-    Gio.MenuModel? mainMenu = builder.GetObject("mainMenu") as Gio.MenuModel;
-
-    Debug.Assert(mainMenu is not null);
-    ((Application)app).SetMenubar(mainMenu);
 };
 
 return app.RunWithSynchronizationContext(args);

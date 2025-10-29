@@ -43,7 +43,10 @@ public sealed class MainWindow : ApplicationWindow
         : base(new Gtk.Internal.ApplicationWindowHandle(builder.GetPointer(name), ownsHandle: false))
     {
         this.Application = app;
-        this.ShowMenubar = true;
+
+        Gio.MenuModel? mainMenu = builder.GetObject("mainMenu") as Gio.MenuModel;
+        Debug.Assert(mainMenu is not null);
+        app.SetMenubar(mainMenu);
 
         builder.Connect(this);
         builder.Dispose();
