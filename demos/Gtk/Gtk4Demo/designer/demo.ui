@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
+<interface>
+  <!-- interface-name demo.ui -->
+  <!-- interface-copyright gfoidl -->
+  <!-- interface-authors gfoidl -->
+  <requires lib="gio" version="2.0"/>
+  <requires lib="gtk" version="4.6"/>
+  <object class="GtkApplicationWindow" id="mainWindow">
+    <property name="resizable">False</property>
+    <property name="title">CairoSamples</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkPopoverMenuBar">
+            <property name="menu-model">mainMenu</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkDrawingArea" id="_drawingArea">
+            <property name="content-height">256</property>
+            <property name="content-width">256</property>
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <menu id="mainMenu">
+    <submenu>
+      <attribute name="label">Select a sample</attribute>
+      <item>
+        <attribute name="action">win.drawArc</attribute>
+        <attribute name="label">arc</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawArcNegative</attribute>
+        <attribute name="label">arc negative</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawClip</attribute>
+        <attribute name="label">clip</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawClipImage</attribute>
+        <attribute name="label">clip image</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawCurvedRectangle</attribute>
+        <attribute name="label">curved rectangle</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawRoundedRectangle</attribute>
+        <attribute name="label">rounded rectangle</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawCurveTo</attribute>
+        <attribute name="label">curve to</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawDash</attribute>
+        <attribute name="label">dash</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawFillAndStroke</attribute>
+        <attribute name="label">fill and stroke2</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawFillStyle</attribute>
+        <attribute name="label">fill style</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawGradient</attribute>
+        <attribute name="label">gradient</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawImage</attribute>
+        <attribute name="label">image</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawImagePattern</attribute>
+        <attribute name="label">image pattern</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawMultiSegmentCaps</attribute>
+        <attribute name="label">multi segment caps</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawLineCap</attribute>
+        <attribute name="label">set line cap</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawLineJoin</attribute>
+        <attribute name="label">line join</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawText</attribute>
+        <attribute name="label">text</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawTextCenter</attribute>
+        <attribute name="label">text align center</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawTextExtents</attribute>
+        <attribute name="label">text extents</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawGlyphs</attribute>
+        <attribute name="label">glyphs</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawGlyphExtents</attribute>
+        <attribute name="label">glyph extents</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.hitTest</attribute>
+        <attribute name="label">hit test</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label">Export</attribute>
+      <item>
+        <attribute name="action">win.saveAsPng</attribute>
+        <attribute name="label">Save as PNG</attribute>
+      </item>
+    </submenu>
+  </menu>
+</interface>

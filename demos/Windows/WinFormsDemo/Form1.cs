@@ -10,6 +10,7 @@ using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
 using Cairo.Surfaces.Images;
 using Cairo.Surfaces.Win32;
+using Path = Cairo.Drawing.Path.Path;
 
 namespace WinFormsDemo;
 
@@ -72,8 +73,6 @@ public partial class Form1 : Form
             try
             {
                 using Win32Surface surface = new(hdc);
-                using CairoContext context = new(surface);
-
                 surface.WriteToPng(saveFileDialog.FileName);
             }
             finally
@@ -472,12 +471,12 @@ public partial class Form1 : Form
         _lastSelectedDemo = GetMenuText(sender);
         _onPaintAction    = cr =>
         {
-            using ImageSurface image = new ImageSurface(_pngData);
+            using ImageSurface image = new(_pngData);
             int w = image.Width;
             int h = image.Height;
 
-            using Pattern pattern = new SurfacePattern(image);
-            pattern.Extend        = Extend.Repeat;
+            using SurfacePattern pattern = new(image);
+            pattern.Extend               = Extend.Repeat;
 
             cr.Translate(128.0, 128.0);
             cr.Rotate(Math.PI / 4);
@@ -512,7 +511,7 @@ public partial class Form1 : Form
             cr.LineTo(200.0, 175.0);
 
             cr.LineWidth = 30.0;
-            cr.LineCap = LineCap.Round;
+            cr.LineCap   = LineCap.Round;
             cr.Stroke();
         };
 
@@ -542,7 +541,7 @@ public partial class Form1 : Form
             cr.LineCap = LineCap.Butt;
             cr.SetSourceRgb(1, 0.2, 0.2);
             cr.LineWidth = 2.56;
-            cr.MoveTo(64.0, 50.0); cr.LineTo(64.0, 200.0);
+            cr.MoveTo( 64.0, 50.0); cr.LineTo( 64.0, 200.0);
             cr.MoveTo(128.0, 50.0); cr.LineTo(128.0, 200.0);
             cr.MoveTo(192.0, 50.0); cr.LineTo(192.0, 200.0);
             cr.Stroke();
@@ -624,7 +623,7 @@ public partial class Form1 : Form
 
             cr.TextExtents(Text, out TextExtents extents);
 
-            double x = 128.0 - (extents.Width / 2 + extents.XBearing);
+            double x = 128.0 - (extents.Width  / 2 + extents.XBearing);
             double y = 128.0 - (extents.Height / 2 + extents.YBearing);
 
             cr.MoveTo(x, y);
@@ -682,7 +681,7 @@ public partial class Form1 : Form
         drawPanel.Invalidate();
     }
 
-    private void glyphsToolStripMenuItem1_Click(object sender, EventArgs e)
+    private void glyphsToolStripMenuItem_Click(object sender, EventArgs e)
     {
         _lastSelectedDemo = GetMenuText(sender);
         _onPaintAction    = static cr =>
@@ -703,7 +702,7 @@ public partial class Form1 : Form
         drawPanel.Invalidate();
     }
 
-    private void glyphsToolStripMenuItem_Click(object sender, EventArgs e)
+    private void glyphExtentsToolStripMenuItem_Click(object sender, EventArgs e)
     {
         _lastSelectedDemo = GetMenuText(sender);
         _onPaintAction    = static cr =>
@@ -713,7 +712,7 @@ public partial class Form1 : Form
             cr.SelectFontFace("Microsoft Sans Serif", FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(100);
 
-            const double X = 25.0;
+            const double X =  25.0;
             const double Y = 150.0;
 
             using ScaledFont scaledFont = cr.ScaledFont;
@@ -816,7 +815,6 @@ public partial class Form1 : Form
 
             context.AppendPath(_hitPath);
 
-            // different coordinates?
             bool isInHitArea = context.InFill(new PointD(e.Location.X, e.Location.Y));
 
             if (isInHitArea)

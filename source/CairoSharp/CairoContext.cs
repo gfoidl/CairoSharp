@@ -108,7 +108,7 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// undefined behavior can occur.
     /// </para>
     /// </remarks>
-    public cairo_t* NativeContext => (cairo_t*)this.Handle;
+    public cairo_t* NativeContext => this.Handle;
 
     /// <summary>
     /// Checks whether an error has previously occurred for this context.

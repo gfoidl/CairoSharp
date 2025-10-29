@@ -1,7 +1,6 @@
-## WinFormsAnimation
+## Gtk4Animation
 
-When the check box for _creating images_ is check, then it's possible to create
-a video from the sequence of stored images.
+When the check box for _creating images_ is checked, then it's possible to create a video from the sequence of stored images.
 
 ```bash
 # To start at a specific number, see https://trac.ffmpeg.org/wiki/Slideshow

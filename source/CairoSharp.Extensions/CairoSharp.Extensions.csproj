@@ -57,4 +57,9 @@
         <ProjectReference Include="..\CairoSharp\CairoSharp.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- cairo has a Path too, and to avoid collissions. -->
+        <Using Remove="System.IO" />
+    </ItemGroup>
+
 </Project>

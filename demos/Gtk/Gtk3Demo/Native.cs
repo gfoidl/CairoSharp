@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Cairo;
 using IOPath = System.IO.Path;
 
-namespace GtkDemo;
+namespace Gtk3Demo;
 
 internal struct GtkApplication;
 internal struct GtkWidget;
@@ -25,6 +25,7 @@ internal static unsafe partial class Native
             {
                 string? path = libraryName switch
                 {
+                    // For simplicity we re-use the DLLs from Inkscape.
                     LibGLibName    => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libglib-2.0-0.dll"),
                     LibGObjectName => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgobject-2.0-0.dll"),
                     LibGioName     => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libgio-2.0-0.dll"),

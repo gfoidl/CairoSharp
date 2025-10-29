@@ -21,6 +21,7 @@ if (OperatingSystem.IsWindows())
     {
         string? path = libraryName switch
         {
+            // For simplicity we re-use the DLLs from Inkscape.
             LoadingNative.LibRSvgName    => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "librsvg-2-2.dll"),
             LoadingNative.LibPopplerName => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libpoppler-glib-8.dll"),
             LoadingNative.LibGLibName    => IOPath.Combine(@"C:\Program Files\Inkscape\bin", "libglib-2.0-0.dll"),
@@ -244,12 +245,12 @@ static void Pdf2Png()
 static void ScriptLoading()
 {
     // Note: we set the current dir to output
-    foreach (string script in Directory.EnumerateFiles("../scripts", "*.cs"))
+    foreach (string script in Directory.EnumerateFiles("../scripts", "*.cairo"))
     {
         string scriptName = IOPath.GetFileNameWithoutExtension(script);
         Console.Write($"Replaying script '{scriptName}'...");
 
-        using Surface surfaceFromScript = ScriptSurface.CreateFromScript($"../scripts/{scriptName}.cs", SurfaceType.Svg, out double width, out double height);
+        using Surface surfaceFromScript = ScriptSurface.CreateFromScript($"../scripts/{scriptName}.cairo", SurfaceType.Svg, out double width, out double height);
 
         using SvgSurface svgSurface = new($"{scriptName}.svg", width, height);
         using CairoContext cr       = new(svgSurface);

@@ -11,11 +11,19 @@
     <Project Path="demos/CairoDemo/CairoDemo.csproj" />
     <Project Path="demos/CairoExtensionsDemo/CairoExtensionsDemo.csproj" Id="5969c885-11f8-484f-88a5-6303a9143369" />
     <Project Path="demos/FreeTypeDemo/FreeTypeDemo.csproj" Id="4df878ab-7f2d-4bfd-8f14-76c9fdccd25a" />
-    <Project Path="demos/GtkDemo/GtkDemo.csproj" Id="a83aa5a0-031f-4379-aaeb-be2ab7d9a5db" />
     <Project Path="demos/SvgPdfLoading/SvgPdfLoading.csproj" Id="a66e1ace-bf43-47a6-9f7b-c3481cf7a5a8" />
-    <Project Path="demos/WinFormsAnimation/WinFormsAnimation.csproj" Id="f9d1c9a6-89c1-4ee8-b4a2-ff67112c7639" />
-    <Project Path="demos/WinFormsDemo/WinFormsDemo.csproj" Id="e6ab799a-f171-47b7-aacc-c6b37f3d4041" />
-    <Project Path="demos/WpfDemo/WpfDemo.csproj" Id="800d210e-339c-471c-b670-f1903925373d" />
+  </Folder>
+  <Folder Name="/demos/Gtk/">
+    <Project Path="demos/Gtk/Gtk3Demo/Gtk3Demo.csproj" Id="3d4a5834-c72d-49df-a5e9-1bf21a27ffe3" />
+    <Project Path="demos/Gtk/Gtk4Animation/Gtk4Animation.csproj" Id="3873f366-3943-4999-be0b-5ae6cf9a33ca" />
+    <Project Path="demos/Gtk/Gtk4AnimationWithBuilder/Gtk4AnimationWithBuilder.csproj" Id="94aca97a-31be-4d64-abca-f51eed9bba9b" />
+    <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" Id="0dd8d4f2-2ed5-48f0-b22e-1c9ac0f0aaf4" />
+    <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" Id="663ff908-a037-4049-97cb-d5c724930254" />
+  </Folder>
+  <Folder Name="/demos/Windows/">
+    <Project Path="demos/Windows/WinFormsAnimation/WinFormsAnimation.csproj" />
+    <Project Path="demos/Windows/WinFormsDemo/WinFormsDemo.csproj" />
+    <Project Path="demos/Windows/WpfDemo/WpfDemo.csproj" />
   </Folder>
   <Folder Name="/native/">
     <File Path="native/ReadMe.md" />
