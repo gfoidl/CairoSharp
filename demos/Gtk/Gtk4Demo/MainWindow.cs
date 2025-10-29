@@ -3,6 +3,7 @@
 extern alias CairoSharp;
 
 using System.Diagnostics;
+using Cairo.Extensions.Gtk4;
 using CairoSharp::Cairo;
 using CairoSharp::Cairo.Drawing;
 using CairoSharp::Cairo.Drawing.Path;
@@ -14,8 +15,7 @@ using CairoSharp::Cairo.Surfaces;
 using CairoSharp::Cairo.Surfaces.Images;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
-using GtkCairo = Cairo.Context;
-using Path     = CairoSharp::Cairo.Drawing.Path.Path;
+using Path = CairoSharp::Cairo.Drawing.Path.Path;
 
 namespace Gtk4Demo;
 
@@ -138,14 +138,12 @@ public sealed class MainWindow : ApplicationWindow
         }
     }
 
-    private void Draw(DrawingArea drawingArea, GtkCairo gtkCairoContext, int width, int height)
+    private void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
         if (_lastSelectedDemo != "hit path" && _hitPath is not null)
         {
             _hitPath.Dispose();
         }
-
-        using CairoContext cr = gtkCairoContext.ToCairoSharp();
 
         using (cr.Save())
         {

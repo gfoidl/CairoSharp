@@ -48,6 +48,7 @@
     <File Path="ReadMe.md" />
   </Folder>
   <Folder Name="/source/">
+    <Project Path="source/CairoSharp.Extensions.Gtk4/CairoSharp.Extensions.Gtk4.csproj" Id="1b60cc60-14cc-4e8e-ae6a-2c33e3f1593a" />
     <Project Path="source/CairoSharp.Extensions/CairoSharp.Extensions.csproj" Id="729707e5-2bf4-4c70-908c-d91d2d9b4dc8" />
     <Project Path="source/CairoSharp/CairoSharp.csproj" />
   </Folder>

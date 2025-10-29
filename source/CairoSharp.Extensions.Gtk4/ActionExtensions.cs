@@ -1,22 +1,11 @@
-// (c) gfoidl, all rights reserved
-
-extern alias CairoSharp;
-
-using CairoSharp::Cairo;
 using Gio;
-using Action   = System.Action;
-using GtkCairo = Cairo.Context;
-using Task     = System.Threading.Tasks.Task;
+using Action = System.Action;
+using Task   = System.Threading.Tasks.Task;
 
-namespace Gtk4Demo;
+namespace Cairo.Extensions.Gtk4;
 
-internal static class GtkExtensions
+public static class ActionExtensions
 {
-    extension(GtkCairo gtkCairo)
-    {
-        public CairoContext ToCairoSharp() => new(gtkCairo.Handle.DangerousGetHandle());
-    }
-
     extension(ActionMap map)
     {
         public SimpleAction AddAction(string name, Action onActivateCallback)

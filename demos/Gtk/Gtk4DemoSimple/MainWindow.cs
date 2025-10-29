@@ -5,9 +5,9 @@
 
 using Cairo;
 using Cairo.Extensions;
+using Cairo.Extensions.Gtk4;
 using Cairo.Extensions.Shapes;
 using Gtk;
-using GtkCairo       = Cairo.Context;
 using LinearGradient = Cairo.Drawing.Patterns.LinearGradient;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 
@@ -44,10 +44,8 @@ public sealed class MainWindow : ApplicationWindow
 #endif
     }
 
-    private static void Draw(DrawingArea drawingArea, GtkCairo gtkCairoContext, int width, int height)
+    private static void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
-        using CairoContext cr = new(gtkCairoContext.Handle.DangerousGetHandle());
-
         cr.Color = KnownColors.OldLace;
         cr.Paint();
 

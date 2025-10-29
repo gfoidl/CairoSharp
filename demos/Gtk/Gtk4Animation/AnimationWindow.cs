@@ -3,8 +3,8 @@
 using System.Diagnostics;
 using Cairo;
 using Cairo.Extensions;
+using Cairo.Extensions.Gtk4;
 using Gtk;
-using GtkCairo       = Cairo.Context;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 
 namespace Gtk4Animation;
@@ -112,11 +112,9 @@ public sealed class AnimationWindow : ApplicationWindow
         _points.Add(new PointD(_curX, _curY));
     }
 
-    private void Draw(DrawingArea drawingArea, GtkCairo gtkCairoContext, int width, int height)
+    private unsafe void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
-        Debug.WriteLine($"Drawing {drawingArea.Handle.DangerousGetHandle()} with context {gtkCairoContext.Handle.DangerousGetHandle()} and w x h = {width} x {height}");
-
-        using CairoContext cr = new(gtkCairoContext.Handle.DangerousGetHandle());
+        Debug.WriteLine($"Drawing {drawingArea.Handle.DangerousGetHandle()} with context {(nint)cr.NativeContext} and w x h = {width} x {height}");
 
         // Background
         using (cr.Save())

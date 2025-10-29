@@ -6,11 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\source\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
+        <ProjectReference Include="..\..\..\source\CairoSharp.Extensions.Gtk4\CairoSharp.Extensions.Gtk4.csproj" />
     </ItemGroup>
 
 </Project>

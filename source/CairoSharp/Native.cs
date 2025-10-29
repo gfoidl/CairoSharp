@@ -22,7 +22,11 @@ internal static class Native
     // Then the dependencies from the OS loader's PoV are listed.
     private static readonly LibNames s_cairoLibNames = new(
         "libcairo.so.2",        // Linux
+#if USE_LIBCAIRO_PREFIX
+        "libcairo-2.dll",       // Windows
+#else
         "cairo-2.dll",          // Windows
+#endif
         "libcairo.2.dylib")     // MacOS
     {
         LinuxStubName = "libcairo.so"

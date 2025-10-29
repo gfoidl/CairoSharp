@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="native.props" />
-
     <PropertyGroup>
-        <RootNamespace>Cairo.Extensions</RootNamespace>
+        <RootNamespace>Cairo.Extensions.Gtk4</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <SignAssembly>True</SignAssembly>
@@ -13,8 +11,8 @@
     <PropertyGroup>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-        <!-- Missing XML comments -->
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <!-- Missing XML comments and strong naming warning for referenced package -->
+        <NoWarn>$(NoWarn);CS1591;CS8002</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
@@ -27,15 +25,15 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Title>CairoSharp Extensions</Title>
-        <PackageId>gfoidl.CairoSharp.Extensions</PackageId>
+        <Title>CairoSharp Extensions.Gtk4</Title>
+        <PackageId>gfoidl.CairoSharp.Extensions.Gtk4</PackageId>
         <Description>
-            Extensions for Cairo Graphics Library -- .NET 8+ wrapper
+            Extensions for Cairo Graphics Library and GTK 4 -- .NET 8+ wrapper
         </Description>
         <PackageIconUrl>http://cairographics.org/cairo-banner.png</PackageIconUrl>
         <PackageIcon>icon.png</PackageIcon>
         <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
-        <PackageTags>cairo vector-graphics</PackageTags>
+        <PackageTags>cairo vector-graphics gtk-4</PackageTags>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/gfoidl/CairoSharp</RepositoryUrl>
         <PackageProjectUrl>https://github.com/gfoidl/CairoSharp</PackageProjectUrl>
@@ -55,7 +53,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CairoSharp\CairoSharp.csproj" />
+        <ProjectReference Include="..\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
     </ItemGroup>
 
     <ItemGroup>
