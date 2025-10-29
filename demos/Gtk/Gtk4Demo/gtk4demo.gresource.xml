@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    https://docs.gtk.org/gio/struct.Resource.html
+    https://gnome.pages.gitlab.gnome.org/libsoup/gio/glib-compile-resources.html
+
+    Compile with
+    glib-compile-resources gtk4demo.gresource.xml
+
+    Inspect with
+    gresource.exe list gtk4demo.gresource
+
+    GTK programs can be found on Windows e.g. under C:\Program Files\msys64\ucrt64\bin
+-->
+<gresources>
+    <gresource prefix="/at/gfoidl/cairo/gtk4/demo">
+        <file alias="demo.ui" compressed="true">designer/demo.ui</file>
+    </gresource>
+    <gresource prefix="/at/gfoidl/cairo/gtk4/demo/icons">
+        <file alias="gtk4demo.png">icon.png</file>        
+    </gresource>
+</gresources>

@@ -19,4 +19,11 @@ app.OnActivate += static (Gio.Application app, EventArgs args) =>
     window.Show();
 };
 
+#if UI_FROM_RESOURCE
+using (Gio.Resource resource = Gio.Resource.Load("gtk4demo.gresource"))
+{
+    resource.Register();
+}
+#endif
+
 return app.RunWithSynchronizationContext(args);

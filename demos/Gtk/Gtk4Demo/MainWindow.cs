@@ -37,7 +37,11 @@ public sealed class MainWindow : ApplicationWindow
     [Connect] private readonly DrawingArea _drawingArea;
 #pragma warning restore CS0649
 
+#if UI_FROM_RESOURCE
+    public MainWindow(Application app) : this(app, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/demo.ui"), "mainWindow") { }
+#else
     public MainWindow(Application app) : this(app, new Builder("demo.4.ui"), "mainWindow") { }
+#endif
 
     private MainWindow(Application app, Builder builder, string name)
         : base(new Gtk.Internal.ApplicationWindowHandle(builder.GetPointer(name), ownsHandle: false))
@@ -52,6 +56,7 @@ public sealed class MainWindow : ApplicationWindow
         builder.Dispose();
 
         this.AddMenuActions();
+        this.SetIcon();
 
         Debug.Assert(_drawingArea is not null);
         _drawingArea.SetDrawFunc(this.Draw);
@@ -87,6 +92,44 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("drawGlyphs"          , this.DrawGlyphs);
         this.AddAction("drawGlyphExtents"    , this.DrawGlyphExtents);
         this.AddAction("hitTest"             , this.DrawHitTest);
+    }
+
+    private void SetIcon()
+    {
+        IconTheme iconTheme = IconTheme.GetForDisplay(this.GetDisplay());
+
+        DumpPaths(iconTheme);
+
+        using (IconPaintable icon = iconTheme.LookupIcon("gtk4demo", fallbacks: null, 48, 1, TextDirection.None, IconLookupFlags.None))
+        {
+            Console.WriteLine($"icon: {icon.IconName}, {icon.GetIntrinsicWidth()} x {icon.GetIntrinsicHeight()}");
+        }
+
+        if (iconTheme.HasIcon("gtk4demo"))
+        {
+            this.SetIconName("gtk4demo");
+            Debug.WriteLine("icon set");
+        }
+        else
+        {
+            throw new InvalidOperationException("No icon available");
+        }
+
+        [Conditional("DEBUG")]
+        static void DumpPaths(IconTheme iconTheme)
+        {
+            Console.WriteLine("IconTheme search path:");
+            foreach (string path in iconTheme.SearchPath)
+            {
+                Console.WriteLine($"\t{path}");
+            }
+
+            Console.WriteLine("IconTheme resource path");
+            foreach (string path in iconTheme.ResourcePath)
+            {
+                Console.WriteLine($"\t{path}");
+            }
+        }
     }
 
     private async Task SaveAsPng()
