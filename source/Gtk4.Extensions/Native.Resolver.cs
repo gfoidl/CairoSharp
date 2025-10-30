@@ -3,7 +3,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Cairo.Extensions.Gtk4;
+namespace Gtk4.Extensions;
 
 static partial class Native
 {

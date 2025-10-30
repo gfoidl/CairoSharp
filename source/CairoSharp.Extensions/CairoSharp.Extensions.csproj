@@ -30,7 +30,7 @@
         <Title>CairoSharp Extensions</Title>
         <PackageId>gfoidl.CairoSharp.Extensions</PackageId>
         <Description>
-            Extensions for Cairo Graphics Library -- .NET 8+ wrapper
+            Extensions for cairo Graphics Library -- .NET 8+ wrapper
         </Description>
         <PackageIconUrl>http://cairographics.org/cairo-banner.png</PackageIconUrl>
         <PackageIcon>icon.png</PackageIcon>

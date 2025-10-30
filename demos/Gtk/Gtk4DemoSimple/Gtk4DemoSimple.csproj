@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\source\CairoSharp.Extensions.Gtk4\CairoSharp.Extensions.Gtk4.csproj" />
+        <ProjectReference Include="..\..\..\source\Gtk4.Extensions\Gtk4.Extensions.csproj" />
     </ItemGroup>
 
 </Project>

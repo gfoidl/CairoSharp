@@ -3,7 +3,6 @@
 extern alias CairoSharp;
 
 using System.Diagnostics;
-using Cairo.Extensions.Gtk4;
 using CairoSharp::Cairo;
 using CairoSharp::Cairo.Drawing;
 using CairoSharp::Cairo.Drawing.Path;
@@ -15,6 +14,7 @@ using CairoSharp::Cairo.Surfaces;
 using CairoSharp::Cairo.Surfaces.Images;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
+using Gtk4.Extensions;
 using Path = CairoSharp::Cairo.Drawing.Path.Path;
 
 namespace Gtk4Demo;

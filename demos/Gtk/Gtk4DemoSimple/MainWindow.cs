@@ -5,9 +5,9 @@
 
 using Cairo;
 using Cairo.Extensions;
-using Cairo.Extensions.Gtk4;
 using Cairo.Extensions.Shapes;
 using Gtk;
+using Gtk4.Extensions;
 using LinearGradient = Cairo.Drawing.Patterns.LinearGradient;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 

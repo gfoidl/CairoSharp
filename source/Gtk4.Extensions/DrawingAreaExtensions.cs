@@ -12,8 +12,9 @@ using GtkCairo = Cairo.Context;
 #endif
 
 using Gtk;
+using Cairo;
 
-namespace Cairo.Extensions.Gtk4;
+namespace Gtk4.Extensions;
 
 public delegate void DrawingAreaDrawFunc(DrawingArea drawingArea, CairoContext cr, int width, int height);
 

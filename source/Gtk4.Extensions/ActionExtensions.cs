@@ -2,7 +2,7 @@ using Gio;
 using Action = System.Action;
 using Task   = System.Threading.Tasks.Task;
 
-namespace Cairo.Extensions.Gtk4;
+namespace Gtk4.Extensions;
 
 public static class ActionExtensions
 {

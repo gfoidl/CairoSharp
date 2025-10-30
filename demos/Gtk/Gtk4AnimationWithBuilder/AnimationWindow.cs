@@ -3,8 +3,8 @@
 using System.Diagnostics;
 using Cairo;
 using Cairo.Extensions;
-using Cairo.Extensions.Gtk4;
 using Gtk;
+using Gtk4.Extensions;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 
 namespace Gtk4Animation;

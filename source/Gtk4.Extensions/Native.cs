@@ -1,6 +1,6 @@
 // (c) gfoidl, all rights reserved
 
-global using unsafe GtkDrawingAreaDrawFunc = delegate*<Cairo.Extensions.Gtk4.GtkDrawingArea*, Cairo.cairo_t*, int, int, void*, void>;
+global using unsafe GtkDrawingAreaDrawFunc = delegate*<Gtk4.Extensions.GtkDrawingArea*, Cairo.cairo_t*, int, int, void*, void>;
 global using unsafe GDestroyNotify         = delegate*<void*, void>;
 
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
@@ -10,7 +10,7 @@ global using unsafe gpointer = void*;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace Cairo.Extensions.Gtk4;
+namespace Gtk4.Extensions;
 
 internal struct GtkDrawingArea;
 
