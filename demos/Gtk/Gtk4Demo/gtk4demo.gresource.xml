@@ -14,6 +14,10 @@
 <gresources>
     <gresource prefix="/at/gfoidl/cairo/gtk4/demo">
         <file alias="demo.ui" compressed="true">designer/demo.ui</file>
+
+        <!-- Instead of the alias it could also be a separate gresource element with the prefix -->
+        <file alias="function/peaks.svg">images/peaks_function.svg</file>
+        <file alias="function/mexican.svg">images/mexican_hat_function.svg</file>
     </gresource>
     <gresource prefix="/at/gfoidl/cairo/gtk4/demo/icons">
         <file alias="gtk4demo.png">icon.png</file>        

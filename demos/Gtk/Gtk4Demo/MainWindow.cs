@@ -92,6 +92,11 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("drawGlyphs"          , this.DrawGlyphs);
         this.AddAction("drawGlyphExtents"    , this.DrawGlyphExtents);
         this.AddAction("hitTest"             , this.DrawHitTest);
+
+        this.AddAction("funcPeaks"  , PixelGraphics);
+        this.AddAction("funcMexican", PixelGraphics);
+
+        static void PixelGraphics(string? name) => PixelWindow.Show(name);
     }
 
     private void SetIcon()
