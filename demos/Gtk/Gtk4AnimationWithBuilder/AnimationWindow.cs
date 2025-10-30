@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+#define USE_TICK_CALLBACK
+
 using System.Diagnostics;
 using Cairo;
 using Cairo.Extensions;
@@ -11,6 +13,9 @@ namespace Gtk4Animation;
 
 public sealed class AnimationWindow : ApplicationWindow
 {
+    private const bool SourceContinue = true;
+    private const bool SourceRemove   = false;
+
     private const int BallSize = 20;
 
 #pragma warning disable CS0649 // field is never assigned to
@@ -19,12 +24,17 @@ public sealed class AnimationWindow : ApplicationWindow
     [Connect] private readonly CheckButton _saveImagesCheckBox;
     [Connect] private readonly DrawingArea _drawingArea;
     [Connect] private readonly Label       _iterationLabel;
+    [Connect] private readonly Label       _fpsLabel;
 #pragma warning restore CS0649
 
     private readonly List<PointD> _points;
 
     private double _curX;
     private double _curY;
+
+#if USE_TICK_CALLBACK
+    private long _frameTimeMicros;
+#endif
 
     public AnimationWindow(Application app) : this(app, new Builder("AnimationWindow.4.ui"), "animationWindow") { }
 
@@ -41,6 +51,7 @@ public sealed class AnimationWindow : ApplicationWindow
         Debug.Assert(_saveImagesCheckBox     is not null);
         Debug.Assert(_drawingArea            is not null);
         Debug.Assert(_iterationLabel         is not null);
+        Debug.Assert(_fpsLabel               is not null);
 
         _drawingArea.SetDrawFunc(this.Draw);
 
@@ -49,15 +60,30 @@ public sealed class AnimationWindow : ApplicationWindow
 
         _points = [new PointD(_curX, _curY)];
 
+#if !USE_TICK_CALLBACK
         GLib.Functions.TimeoutAdd(priority: 0, interval: 50, this.OnTimeout);
+#else
+        this.AddTickCallback((Widget widget, Gdk.FrameClock frameClock) =>
+        {
+            long frameTimeMicros = frameClock.GetFrameTime();
+
+            if (frameTimeMicros - _frameTimeMicros > 50 * 1000)
+            {
+                double fps = frameClock.GetFps();
+                _fpsLabel.SetText($"FPS: {fps:N1}");
+
+                _frameTimeMicros = frameTimeMicros;
+                return this.OnTimeout();
+            }
+
+            return SourceContinue;
+        });
+#endif
     }
 
     private bool OnTimeout()
     {
         Debug.WriteLine("Timeout triggered");
-
-        const bool SourceContinue = true;
-        const bool SourceRemove   = false;
 
         _drawingArea.QueueDraw();
 
