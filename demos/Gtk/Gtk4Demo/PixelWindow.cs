@@ -3,7 +3,10 @@
 extern alias CairoSharp;
 
 using System.Diagnostics;
+using Cairo.Extensions.Pixels;
 using CairoSharp::Cairo;
+using CairoSharp::Cairo.Surfaces;
+using CairoSharp::Cairo.Surfaces.Images;
 using Gtk;
 using Gtk4.Extensions;
 
@@ -82,76 +85,110 @@ public sealed class PixelWindow : Window
             cr.Stroke();
         }
 
-        switch (_funcName)
+        ImageSurface imageSurface = cr.Target.MapToImage();
+        try
         {
-            case "funcPeaks":
+            switch (_funcName)
             {
-                this.DrawFunction<PeaksFunction>(cr, width, height);
-                break;
+                case "funcPeaks":
+                {
+                    DrawFunction<PeaksFunction>(imageSurface, width, height);
+                    break;
+                }
+                case "funcMexican":
+                {
+                    DrawFunction<MexicanHatFunction>(imageSurface, width, height);
+                    break;
+                }
+                default:
+                    throw new NotSupportedException($"Function {_funcName} is not supported");
             }
-            case "funcMexican":
-            {
-                this.DrawFunction<MexicanHatFunction>(cr, width, height);
-                break;
-            }
-            default:
-                throw new NotSupportedException($"Function {_funcName} is not supported");
+        }
+        finally
+        {
+            cr.Target.UnmapImage(imageSurface);
         }
     }
 
-    private void DrawFunction<TFunction>(CairoContext cr, int width, int height) where TFunction : IFunction
+    private static void DrawFunction<TFunction>(ImageSurface imageSurface, int width, int height) where TFunction : IFunction
     {
-        double[][] data = new double[width][];
-        for (int j = 0; j < data.Length; ++j)
+        double[][] data = GetData(width, height);
+
+        // Scale to [0, 255] for colormaps.
+        Scale(data, 0, 255);
+
+        using PixelAccessor pixelAccessor = imageSurface.GetPixelAccessor();
+
+        for (int /* i */ y = 0; y < data.Length; ++y)
         {
-            data[j] = new double[height];
-            for (int i = 0; i < data[j].Length; ++i)
+            double[] data_y = data[y];
+
+            for (int /* j */ x = 0; x < data_y.Length; ++x)
             {
-                // x, y in [0, 1]:
-                double x = (double)j / (width - 1);
-                double y = (double)i / (height - 1);
+                const double OneBy255 = 1 / 255d;
 
-                // x, y, in [-3, 3]:
-                x = 6 * x - 3;
-                y = 6 * y - 3;
-
-                data[j][i] = TFunction.Calculate(x, y);
+                double zForColor    = data_y[x] * OneBy255;
+                pixelAccessor[x, y] = new Color(zForColor, zForColor, zForColor);
             }
         }
 
-        Scale(data, 0, 255);
-
-        for (int x = 0; x < data.Length; ++x)
+        static double[][] GetData(int width, int height)
         {
-            for (int y = 0; y < data[x].Length; ++y)
-            {
-                double z         = data[x][y];
-                double zForColor = z / 255;
-                cr.Color         = new Color(zForColor, zForColor, zForColor);
+            double[][] data = new double[height][];
 
-                cr.Rectangle(x, y, 1, 1);
-                cr.Fill();
+            double widthInv  = 1d / (width  - 1);
+            double heightInv = 1d / (height - 1);
+
+            for (int i = 0; i < data.Length; ++i)
+            {
+                double[] data_i = data[i] = new double[width];
+                double y_i      = i * heightInv;
+
+                for (int j = 0; j < data_i.Length; ++j)
+                {
+                    // x, y in [0, 1]:
+                    double x = j * widthInv;
+                    double y = y_i;
+
+                    // x, y, in [-3, 3]:
+                    x = 6 * x - 3;
+                    y = 6 * y - 3;
+
+                    data_i[j] = TFunction.Calculate(x, y);
+                }
             }
+
+            return data;
         }
 
         static void Scale(double[][] data, double start, double end)
         {
+            // Linear scaling [c,d] -> [a,b]
+            // x in [a,b], t in [c,d] => x = m.t + o
+            // a = m.c + o
+            // b = m.d + o
+            // => m = (b-a)/(d-c), o = (a.d-c.b)/(d-c)
+
             double c = double.MaxValue;
             double d = double.MinValue;
 
             // Max / min
-            for (int j = 0; j < data.Length; ++j)
+            for (int i = 0; i < data.Length; ++i)
             {
-                for (int i = 0; i < data[j].Length; ++i)
+                double[] data_i = data[i];
+
+                for (int j = 0; j < data_i.Length; ++j)
                 {
-                    if (data[j][i] < c)
+                    double dij = data_i[j];
+
+                    if (dij < c)
                     {
-                        c = data[j][i];
+                        c = dij;
                     }
 
-                    if (data[j][i] > d)
+                    if (dij > d)
                     {
-                        d = data[j][i];
+                        d = dij;
                     }
                 }
             }
@@ -159,14 +196,18 @@ public sealed class PixelWindow : Window
             double a = start;
             double b = end;
 
-            double m = (b - a)         / (d - c);
-            double o = (a * d - b * c) / (d - c);
+            double divisorInv = 1d / (d - c);
 
-            for (int j = 0; j < data.Length; ++j)
+            double m = (b - a)         * divisorInv;
+            double o = (a * d - b * c) * divisorInv;
+
+            for (int i = 0; i < data.Length; ++i)
             {
-                for (int i = 0; i < data[j].Length; ++i)
+                double[] data_i = data[i];
+
+                for (int j = 0; j < data_i.Length; ++j)
                 {
-                    data[j][i] = m * data[j][i] + o;
+                    data_i[j] = m * data_i[j] + o;
                 }
             }
         }

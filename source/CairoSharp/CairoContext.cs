@@ -353,8 +353,12 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// be used for any subsequent drawing operation until a new source pattern is set.
     /// </summary>
     /// <remarks>
+    /// The color components are floating point numbers in the range 0 to 1. If the values
+    /// passed in are outside that range, they will be clamped.
+    /// <para>
     /// The default source pattern is opaque black, (that is, it is equivalent to
     /// <c>SetSourceRgb(0, 0, 0)</c>).
+    /// </para>
     /// </remarks>
     public void SetSourceRgb(double red, double green, double blue)
     {
@@ -367,7 +371,11 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// used for any subsequent drawing operation until a new source pattern is set.
     /// </summary>
     /// <remarks>
+    /// The color and alpha components are floating point numbers in the range 0 to 1.
+    /// If the values passed in are outside that range, they will be clamped.
+    /// <para>
     /// Note that the color and alpha values are not premultiplied.
+    /// </para>
     /// <para>
     /// The default source pattern is opaque black, (that is, it is equivalent to
     /// <c>SetSourceRgba(0, 0, 0, 1)</c>).

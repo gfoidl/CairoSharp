@@ -26,8 +26,6 @@ public abstract unsafe class CairoObject<T> : CairoObject, IEquatable<CairoObjec
         _handle         = handle;
         _isOwnedByCairo = isOwnedByCairo;
         _needsDestroy   = needsDestroy;
-
-        CairoDebug.OnAllocated(handle);
     }
 
     protected internal T* Handle => _handle;
@@ -37,11 +35,6 @@ public abstract unsafe class CairoObject<T> : CairoObject, IEquatable<CairoObjec
 
     protected sealed override void Dispose(bool disposing)
     {
-        if (!disposing || CairoDebug.Enabled)
-        {
-            CairoDebug.OnDisposed(_handle, disposing, this.GetType());
-        }
-
         if (_handle is not null && _needsDestroy)
         {
             this.DisposeCore(_handle);

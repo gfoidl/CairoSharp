@@ -206,7 +206,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// <summary>
     /// Do any pending drawing for the surface and also restore any temporary modifications cairo has made
     /// to the surface's state. This method must be called before switching from drawing on the surface
-    /// with cairo to drawing on it directly with native APIs, or accessing its memory outside of Cairo.
+    /// with cairo to drawing on it directly with native APIs, or accessing its memory outside of cairo.
     /// If the surface doesn't support direct access, then this method does nothing.
     /// </summary>
     public void Flush()
@@ -603,7 +603,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// Using an image surface which wasn't returned by <see cref="MapToImage()"/> results in undefined behavior.
     /// </para>
     /// </remarks>
-    public void UnmapImage(Surface image)
+    public void UnmapImage(ImageSurface image)
     {
         this.CheckDisposed();
 
