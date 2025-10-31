@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+#define USE_PIXEL_ROW_ACCESSOR
+
 extern alias CairoSharp;
 
 using System.Diagnostics;
@@ -119,6 +121,7 @@ public sealed class PixelWindow : Window
 
         using PixelAccessor pixelAccessor = imageSurface.GetPixelAccessor();
 
+#if !USE_PIXEL_ROW_ACCESSOR
         for (int /* i */ y = 0; y < data.Length; ++y)
         {
             double[] data_y = data[y];
@@ -131,7 +134,24 @@ public sealed class PixelWindow : Window
                 pixelAccessor[x, y] = new Color(zForColor, zForColor, zForColor);
             }
         }
+#else
+        for (int /* i */ y = 0; y < data.Length; ++y)
+        {
+            double[] data_y                   = data[y];
+            PixelRowAccessor pixelRowAccessor = pixelAccessor.GetRowAccessor(y);
 
+            for (int /* j */ x = 0; x < data_y.Length; ++x)
+            {
+                const double OneBy255 = 1 / 255d;
+
+                double zForColor    = data_y[x] * OneBy255;
+                pixelRowAccessor[x] = new Color(zForColor, zForColor, zForColor);
+            }
+        }
+#endif
+
+        // Implementation is naive regarding easy readability.
+        // In real production code parts could be collapsed and vectorized.
         static double[][] GetData(int width, int height)
         {
             double[][] data = new double[height][];
