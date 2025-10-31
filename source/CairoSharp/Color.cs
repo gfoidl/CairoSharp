@@ -13,7 +13,11 @@ namespace Cairo;
 /// <param name="Blue">blue component of color</param>
 /// <param name="Alpha">alpha component of color</param>
 /// <remarks>
+/// The color and alpha components are floating point numbers in the range 0 to 1.
 /// If the values passed in are outside that range, they will be clamped.
+/// <para>
+/// Note that the color and alpha values are not premultiplied.
+/// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 [DebuggerNonUserCode]
@@ -25,6 +29,10 @@ public readonly record struct Color(double Red, double Green, double Blue, doubl
     /// <param name="red">red component of color</param>
     /// <param name="green">green component of color</param>
     /// <param name="blue">blue component of color</param>
+    /// <remarks>
+    /// The color components are floating point numbers in the range 0 to 1. If the values
+    /// passed in are outside that range, they will be clamped.
+    /// </remarks>
     public Color(double red, double green, double blue) : this(red, green, blue, 1d) { }
 
     /// <summary>

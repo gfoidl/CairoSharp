@@ -2,10 +2,17 @@
 
     <PropertyGroup>
         <UseNativeStubs>false</UseNativeStubs>
+        <UseLibCairoPrefix>true</UseLibCairoPrefix>
     </PropertyGroup>
 
-    <ItemGroup Label="Native cairo DLLs for Windows">
+    <PropertyGroup>
+        <DefineConstants Condition="'$(UseLibCairoPrefix)' == 'true'">$(DefineConstants);USE_LIBCAIRO_PREFIX</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup Label="Native cairo DLLs for Windows" Condition="'$(UseLibCairoPrefix)' != 'true'">
         <CairoWinLib Include="cairo-2" />
+    </ItemGroup>
+    <ItemGroup Label="Native cairo DLLs for Windows">
         <CairoWinLib Include="fontconfig-1" />
         <CairoWinLib Include="freetype-6" />
         <CairoWinLib Include="pixman-1-0" />
@@ -20,11 +27,23 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Condition="'$(UseLibCairoPrefix)' == 'true'"
+                 Include="..\..\artifacts\native\win-x64\cairo\out\bin\cairo-2.dll"
+                 Link="runtimes\win-x64\native\libcairo-2.dll"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x64\native" />
+        
         <Content Include="@(CairoWinLib_x64)"
                  Link="runtimes\win-x64\native\%(FileName).dll"
                  CopyToOutputDirectory="PreserveNewest"
                  PackagePath="runtimes\win-x64\native" />
 
+        <Content Condition="'$(UseLibCairoPrefix)' == 'true'"
+                 Include="..\..\artifacts\native\win-x86\cairo\out\bin\cairo-2.dll"
+                 Link="runtimes\win-x86\native\libcairo-2.dll"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x86\native" />
+        
         <Content Include="@(CairoWinLib_x86)"
                  Link="runtimes\win-x86\native\%(FileName).dll"
                  CopyToOutputDirectory="PreserveNewest"

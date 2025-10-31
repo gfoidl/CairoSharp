@@ -49,10 +49,22 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="_iterationLabel">
-            <property name="halign">start</property>
-            <property name="label">Iteration: 0</property>
-            <property name="single-line-mode">True</property>
+          <object class="GtkBox">
+            <child>
+              <object class="GtkLabel" id="_iterationLabel">
+                <property name="halign">start</property>
+                <property name="label">Iteration: 0</property>
+                <property name="single-line-mode">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="_fpsLabel">
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="label">FPS: 120</property>
+                <property name="single-line-mode">True</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

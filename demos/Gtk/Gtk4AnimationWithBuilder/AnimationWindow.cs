@@ -1,16 +1,21 @@
 // (c) gfoidl, all rights reserved
 
+#define USE_TICK_CALLBACK
+
 using System.Diagnostics;
 using Cairo;
 using Cairo.Extensions;
 using Gtk;
-using GtkCairo       = Cairo.Context;
+using Gtk4.Extensions;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 
 namespace Gtk4Animation;
 
 public sealed class AnimationWindow : ApplicationWindow
 {
+    private const bool SourceContinue = true;
+    private const bool SourceRemove   = false;
+
     private const int BallSize = 20;
 
 #pragma warning disable CS0649 // field is never assigned to
@@ -19,12 +24,17 @@ public sealed class AnimationWindow : ApplicationWindow
     [Connect] private readonly CheckButton _saveImagesCheckBox;
     [Connect] private readonly DrawingArea _drawingArea;
     [Connect] private readonly Label       _iterationLabel;
+    [Connect] private readonly Label       _fpsLabel;
 #pragma warning restore CS0649
 
     private readonly List<PointD> _points;
 
     private double _curX;
     private double _curY;
+
+#if USE_TICK_CALLBACK
+    private long _frameTimeMicros;
+#endif
 
     public AnimationWindow(Application app) : this(app, new Builder("AnimationWindow.4.ui"), "animationWindow") { }
 
@@ -34,12 +44,14 @@ public sealed class AnimationWindow : ApplicationWindow
         this.Application = app;
 
         builder.Connect(this);
+        builder.Dispose();
 
         Debug.Assert(_showTrajectoryCheckBox is not null);
         Debug.Assert(_showCrosshairsCheckBox is not null);
         Debug.Assert(_saveImagesCheckBox     is not null);
         Debug.Assert(_drawingArea            is not null);
         Debug.Assert(_iterationLabel         is not null);
+        Debug.Assert(_fpsLabel               is not null);
 
         _drawingArea.SetDrawFunc(this.Draw);
 
@@ -48,15 +60,30 @@ public sealed class AnimationWindow : ApplicationWindow
 
         _points = [new PointD(_curX, _curY)];
 
+#if !USE_TICK_CALLBACK
         GLib.Functions.TimeoutAdd(priority: 0, interval: 50, this.OnTimeout);
+#else
+        this.AddTickCallback((Widget widget, Gdk.FrameClock frameClock) =>
+        {
+            long frameTimeMicros = frameClock.GetFrameTime();
+
+            if (frameTimeMicros - _frameTimeMicros > 50 * 1000)
+            {
+                double fps = frameClock.GetFps();
+                _fpsLabel.SetText($"FPS: {fps:N1}");
+
+                _frameTimeMicros = frameTimeMicros;
+                return this.OnTimeout();
+            }
+
+            return SourceContinue;
+        });
+#endif
     }
 
     private bool OnTimeout()
     {
         Debug.WriteLine("Timeout triggered");
-
-        const bool SourceContinue = true;
-        const bool SourceRemove   = false;
 
         _drawingArea.QueueDraw();
 
@@ -80,11 +107,9 @@ public sealed class AnimationWindow : ApplicationWindow
         _points.Add(new PointD(_curX, _curY));
     }
 
-    private void Draw(DrawingArea drawingArea, GtkCairo gtkCairoContext, int width, int height)
+    private unsafe void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
-        Debug.WriteLine($"Drawing {drawingArea.Handle.DangerousGetHandle()} with context {gtkCairoContext.Handle.DangerousGetHandle()} and w x h = {width} x {height}");
-
-        using CairoContext cr = new(gtkCairoContext.Handle.DangerousGetHandle());
+        Debug.WriteLine($"Drawing {drawingArea.Handle.DangerousGetHandle()} with context {(nint)cr.NativeContext} and w x h = {width} x {height}");
 
         // Background
         using (cr.Save())

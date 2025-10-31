@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="native.props" />
-
     <PropertyGroup>
-        <RootNamespace>Cairo.Extensions</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <SignAssembly>True</SignAssembly>
@@ -13,8 +10,8 @@
     <PropertyGroup>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-        <!-- Missing XML comments -->
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <!-- Missing XML comments and strong naming warning for referenced package -->
+        <NoWarn>$(NoWarn);CS1591;CS8002</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
@@ -27,15 +24,15 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Title>CairoSharp Extensions</Title>
-        <PackageId>gfoidl.CairoSharp.Extensions</PackageId>
+        <Title>Gtk4.Extensions</Title>
+        <PackageId>gfoidl.Gtk4.Extensions</PackageId>
         <Description>
-            Extensions for cairo Graphics Library -- .NET 8+ wrapper
+            Extensions for GTK4 with cairo Graphics Library in mind
         </Description>
         <PackageIconUrl>http://cairographics.org/cairo-banner.png</PackageIconUrl>
-        <PackageIcon>icon.png</PackageIcon>
+        <PackageIcon>gtk-logo.png</PackageIcon>
         <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
-        <PackageTags>cairo vector-graphics</PackageTags>
+        <PackageTags>cairo vector-graphics gtk-4</PackageTags>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/gfoidl/CairoSharp</RepositoryUrl>
         <PackageProjectUrl>https://github.com/gfoidl/CairoSharp</PackageProjectUrl>
@@ -48,14 +45,18 @@
             <PackagePath>\</PackagePath>
         </None>
 
-        <None Include="..\..\icon.png" Label="icon.png" Visible="false">
+        <None Include="gtk-logo.png" Label="gtk-logo.png" Visible="false">
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CairoSharp\CairoSharp.csproj" />
+        <ProjectReference Include="..\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -14,8 +14,8 @@ using CairoSharp::Cairo.Surfaces;
 using CairoSharp::Cairo.Surfaces.Images;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
-using GtkCairo = Cairo.Context;
-using Path     = CairoSharp::Cairo.Drawing.Path.Path;
+using Gtk4.Extensions;
+using Path = CairoSharp::Cairo.Drawing.Path.Path;
 
 namespace Gtk4Demo;
 
@@ -37,15 +37,26 @@ public sealed class MainWindow : ApplicationWindow
     [Connect] private readonly DrawingArea _drawingArea;
 #pragma warning restore CS0649
 
+#if UI_FROM_RESOURCE
+    public MainWindow(Application app) : this(app, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/demo.ui"), "mainWindow") { }
+#else
     public MainWindow(Application app) : this(app, new Builder("demo.4.ui"), "mainWindow") { }
+#endif
 
     private MainWindow(Application app, Builder builder, string name)
         : base(new Gtk.Internal.ApplicationWindowHandle(builder.GetPointer(name), ownsHandle: false))
     {
         this.Application = app;
 
+        Gio.MenuModel? mainMenu = builder.GetObject("mainMenu") as Gio.MenuModel;
+        Debug.Assert(mainMenu is not null);
+        app.SetMenubar(mainMenu);
+
         builder.Connect(this);
+        builder.Dispose();
+
         this.AddMenuActions();
+        this.SetIcon();
 
         Debug.Assert(_drawingArea is not null);
         _drawingArea.SetDrawFunc(this.Draw);
@@ -81,6 +92,49 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("drawGlyphs"          , this.DrawGlyphs);
         this.AddAction("drawGlyphExtents"    , this.DrawGlyphExtents);
         this.AddAction("hitTest"             , this.DrawHitTest);
+
+        this.AddAction("funcPeaks"  , PixelGraphics);
+        this.AddAction("funcMexican", PixelGraphics);
+
+        static void PixelGraphics(string? name) => PixelWindow.Show(name);
+    }
+
+    private void SetIcon()
+    {
+        IconTheme iconTheme = IconTheme.GetForDisplay(this.GetDisplay());
+
+        DumpPaths(iconTheme);
+
+        using (IconPaintable icon = iconTheme.LookupIcon("gtk4demo", fallbacks: null, 48, 1, TextDirection.None, IconLookupFlags.None))
+        {
+            Console.WriteLine($"icon: {icon.IconName}, {icon.GetIntrinsicWidth()} x {icon.GetIntrinsicHeight()}");
+        }
+
+        if (iconTheme.HasIcon("gtk4demo"))
+        {
+            this.SetIconName("gtk4demo");
+            Debug.WriteLine("icon set");
+        }
+        else
+        {
+            throw new InvalidOperationException("No icon available");
+        }
+
+        [Conditional("DEBUG")]
+        static void DumpPaths(IconTheme iconTheme)
+        {
+            Console.WriteLine("IconTheme search path:");
+            foreach (string path in iconTheme.SearchPath)
+            {
+                Console.WriteLine($"\t{path}");
+            }
+
+            Console.WriteLine("IconTheme resource path");
+            foreach (string path in iconTheme.ResourcePath)
+            {
+                Console.WriteLine($"\t{path}");
+            }
+        }
     }
 
     private async Task SaveAsPng()
@@ -132,14 +186,12 @@ public sealed class MainWindow : ApplicationWindow
         }
     }
 
-    private void Draw(DrawingArea drawingArea, GtkCairo gtkCairoContext, int width, int height)
+    private void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
         if (_lastSelectedDemo != "hit path" && _hitPath is not null)
         {
             _hitPath.Dispose();
         }
-
-        using CairoContext cr = gtkCairoContext.ToCairoSharp();
 
         using (cr.Save())
         {

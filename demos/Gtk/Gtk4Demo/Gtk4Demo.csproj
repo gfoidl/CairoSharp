@@ -2,23 +2,29 @@
 
     <PropertyGroup>
         <!-- WinExe in order to hide the console window. -->
-        <OutputType>WinExe</OutputType>
+        <OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
+        <OutputType Condition="'$(Configuration)' != 'Debug'">WinExe</OutputType>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <UIFromResource>true</UIFromResource>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(UIFromResource)' == 'true'">
+        <DefineConstants>$(DefineConstants);UI_FROM_RESOURCE</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\source\CairoSharp\CairoSharp.csproj" Aliases="CairoSharp" />
-        <ProjectReference Include="..\..\..\source\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
+        <ProjectReference Include="..\..\..\source\Gtk4.Extensions\Gtk4.Extensions.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
-    </ItemGroup>
-
-    <ItemGroup>
+    <ItemGroup Condition="'$(UIFromResource)' != 'true'">
         <EmbeddedResource Include="designer\demo.ui" LogicalName="demo.4.ui" />
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="gtk4demo.gresource" CopyToOutputDirectory="PreserveNewest" Visible="false" />
         <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 

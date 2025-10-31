@@ -13,6 +13,7 @@
     <PropertyGroup>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
+        <!-- Missing XML comments -->
         <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
 
@@ -29,9 +30,9 @@
         <Title>CairoSharp</Title>
         <PackageId>gfoidl.CairoSharp</PackageId>
         <Description>
-            Cairo Graphics Library -- .NET 8+ wrapper
+            cairo Graphics Library -- .NET 8+ wrapper
 
-            Cairo is designed to produce consistent output on all output media while taking advantage of display hardware acceleration when available.
+            cairo is designed to produce consistent output on all output media while taking advantage of display hardware acceleration when available.
             The cairo API provides operations similar to the drawing operators of PostScript and PDF.
             Operations in cairo including stroking and filling cubic Bézier splines, transforming and compositing translucent images, and antialiased text rendering.
             All drawing operations can be transformed by any affine transformation (scale, rotation, shear, etc.).
@@ -49,6 +50,7 @@
     <ItemGroup>
         <InternalsVisibleTo Include="CairoSharp.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b92824db26ef87d6c74c58d964e829f9414739a3cad9bd6b7643680cf23b0f6a16c3896a1b12d67ef19efaac3a5665fc76a48876e612072ec9f380a8e07044cfc6a2dd0d73bf26cb7e0267a2a5e70c54e0d0f905d929d4f576bdf6b2556ef1ff6272ceabd24ec769164e6f0f939c2228ce9593c5e355562c3432c8cab808f6be" />
         <InternalsVisibleTo Include="CairoSharp.Extensions, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b92824db26ef87d6c74c58d964e829f9414739a3cad9bd6b7643680cf23b0f6a16c3896a1b12d67ef19efaac3a5665fc76a48876e612072ec9f380a8e07044cfc6a2dd0d73bf26cb7e0267a2a5e70c54e0d0f905d929d4f576bdf6b2556ef1ff6272ceabd24ec769164e6f0f939c2228ce9593c5e355562c3432c8cab808f6be" />
+        <InternalsVisibleTo Include="Gtk4.Extensions, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b92824db26ef87d6c74c58d964e829f9414739a3cad9bd6b7643680cf23b0f6a16c3896a1b12d67ef19efaac3a5665fc76a48876e612072ec9f380a8e07044cfc6a2dd0d73bf26cb7e0267a2a5e70c54e0d0f905d929d4f576bdf6b2556ef1ff6272ceabd24ec769164e6f0f939c2228ce9593c5e355562c3432c8cab808f6be" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,16 +1,21 @@
 // (c) gfoidl, all rights reserved
 
+#define USE_TICK_CALLBACK
+
 using System.Diagnostics;
 using Cairo;
 using Cairo.Extensions;
 using Gtk;
-using GtkCairo       = Cairo.Context;
+using Gtk4.Extensions;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 
 namespace Gtk4Animation;
 
 public sealed class AnimationWindow : ApplicationWindow
 {
+    private const bool SourceContinue = true;
+    private const bool SourceRemove   = false;
+
     private const int BallSize = 20;
 
     private readonly List<PointD> _points;
@@ -19,9 +24,14 @@ public sealed class AnimationWindow : ApplicationWindow
     private readonly CheckButton  _saveImagesCheckBox;
     private readonly DrawingArea  _drawingArea;
     private readonly Label        _iterationLabel;
+    private readonly Label        _fpsLabel;
 
     private double _curX;
     private double _curY;
+
+#if USE_TICK_CALLBACK
+    private long _frameTimeMicros;
+#endif
 
     public AnimationWindow(Application app)
     {
@@ -29,7 +39,7 @@ public sealed class AnimationWindow : ApplicationWindow
         this.Title       = "Cairo Animation Demo";
         this.Resizable   = false;
 
-        Box checkBoxHorizontalBox = Box.New(Orientation.Horizontal, 0);
+        Box checkBoxHorizontalBox = Box.New(Orientation.Horizontal, spacing: 0);
         {
             _showTrajectoryCheckBox        = CheckButton.NewWithLabel("show trajectory");
             _showTrajectoryCheckBox.Active = true;
@@ -53,16 +63,28 @@ public sealed class AnimationWindow : ApplicationWindow
             _drawingArea.SetDrawFunc(this.Draw);
         }
 
-        _iterationLabel = Label.New(str: null);
+        Box footerBox = Box.New(Orientation.Horizontal, spacing: 0);
         {
-            _iterationLabel.Halign         = Align.Start;
-            _iterationLabel.SingleLineMode = true;
+            _iterationLabel = Label.New(str: null);
+            {
+                _iterationLabel.Halign         = Align.Start;
+                _iterationLabel.SingleLineMode = true;
+            }
+            footerBox.Append(_iterationLabel);
+
+            _fpsLabel = Label.New(str: null);
+            {
+                _fpsLabel.Halign         = Align.End;
+                _fpsLabel.Hexpand        = true;
+                _fpsLabel.SingleLineMode = true;
+            }
+            footerBox.Append(_fpsLabel);
         }
 
         Box mainBox = Box.New(Orientation.Vertical, 12);
         mainBox.Append(checkBoxHorizontalBox);
         mainBox.Append(_drawingArea);
-        mainBox.Append(_iterationLabel);
+        mainBox.Append(footerBox);
 
         this.Child = mainBox;
 
@@ -80,15 +102,30 @@ public sealed class AnimationWindow : ApplicationWindow
 
         _points = [new PointD(_curX, _curY)];
 
+#if !USE_TICK_CALLBACK
         GLib.Functions.TimeoutAdd(priority: 0, interval: 50, this.OnTimeout);
+#else
+        this.AddTickCallback((Widget widget, Gdk.FrameClock frameClock) =>
+        {
+            long frameTimeMicros = frameClock.GetFrameTime();
+
+            if (frameTimeMicros - _frameTimeMicros > 50 * 1000)
+            {
+                double fps = frameClock.GetFps();
+                _fpsLabel.SetText($"FPS: {fps:N1}");
+
+                _frameTimeMicros = frameTimeMicros;
+                return this.OnTimeout();
+            }
+
+            return SourceContinue;
+        });
+#endif
     }
 
     private bool OnTimeout()
     {
         Debug.WriteLine("Timeout triggered");
-
-        const bool SourceContinue = true;
-        const bool SourceRemove   = false;
 
         _drawingArea.QueueDraw();
 
@@ -112,11 +149,9 @@ public sealed class AnimationWindow : ApplicationWindow
         _points.Add(new PointD(_curX, _curY));
     }
 
-    private void Draw(DrawingArea drawingArea, GtkCairo gtkCairoContext, int width, int height)
+    private unsafe void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
-        Debug.WriteLine($"Drawing {drawingArea.Handle.DangerousGetHandle()} with context {gtkCairoContext.Handle.DangerousGetHandle()} and w x h = {width} x {height}");
-
-        using CairoContext cr = new(gtkCairoContext.Handle.DangerousGetHandle());
+        Debug.WriteLine($"Drawing {drawingArea.Handle.DangerousGetHandle()} with context {(nint)cr.NativeContext} and w x h = {width} x {height}");
 
         // Background
         using (cr.Save())
