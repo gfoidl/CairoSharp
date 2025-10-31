@@ -6,6 +6,7 @@ using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
 using Cairo.Extensions.Arrows;
+using Cairo.Extensions.Colors;
 using Cairo.Extensions.Shapes;
 using Cairo.Surfaces;
 using Cairo.Surfaces.PDF;

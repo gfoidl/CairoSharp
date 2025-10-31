@@ -4,26 +4,6 @@
 
     <PropertyGroup>
         <RootNamespace>Cairo</RootNamespace>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-        <SignAssembly>True</SignAssembly>
-        <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-
-        <!-- Missing XML comments -->
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
-        <IsTrimmable>True</IsTrimmable>
-        <IsAotCompatible>True</IsAotCompatible>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-        <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup>

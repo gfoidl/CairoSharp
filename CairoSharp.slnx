@@ -48,11 +48,13 @@
     <File Path="ReadMe.md" />
   </Folder>
   <Folder Name="/source/">
+    <File Path="source/Directory.Build.props" />
     <Project Path="source/CairoSharp.Extensions/CairoSharp.Extensions.csproj" Id="729707e5-2bf4-4c70-908c-d91d2d9b4dc8" />
     <Project Path="source/CairoSharp/CairoSharp.csproj" />
     <Project Path="source/Gtk4.Extensions/Gtk4.Extensions.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/CairoSharp.Extensions.Tests/CairoSharp.Extensions.Tests.csproj" Id="36414b16-49b5-49ed-8784-6a82d2ee51bf" />
     <Project Path="tests/CairoSharp.Tests/CairoSharp.Tests.csproj" Id="5ef421ba-93dc-4b6b-804b-fe2a81017dcf" />
   </Folder>
   <Folder Name="/tools/">

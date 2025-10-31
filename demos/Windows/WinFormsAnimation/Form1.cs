@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
+using Cairo.Extensions.Colors;
 using Cairo.Surfaces.Win32;
 using Color     = Cairo.Color;
 using Rectangle = Cairo.Rectangle;

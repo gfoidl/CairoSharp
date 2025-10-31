@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
+using Cairo.Extensions.Colors;
 using Cairo.Extensions.Shapes;
 using Gtk3Demo;
 using static Gtk3Demo.Native;

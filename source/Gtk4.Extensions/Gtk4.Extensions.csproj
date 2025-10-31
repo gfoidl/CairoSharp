@@ -1,26 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-        <SignAssembly>True</SignAssembly>
-        <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-
-        <!-- Missing XML comments and strong naming warning for referenced package -->
-        <NoWarn>$(NoWarn);CS1591;CS8002</NoWarn>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
-        <IsTrimmable>True</IsTrimmable>
-        <IsAotCompatible>True</IsAotCompatible>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <!-- Strong naming warning for referenced package -->
+        <NoWarn>$(NoWarn);CS8002</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>

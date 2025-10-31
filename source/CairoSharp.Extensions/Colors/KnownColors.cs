@@ -2,7 +2,7 @@
 
 /* Created with CreateKnownColors. */
 
-namespace Cairo.Extensions;
+namespace Cairo.Extensions.Colors;
 
 /// <summary>
 /// Predefined colors.

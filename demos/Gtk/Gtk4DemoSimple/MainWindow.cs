@@ -5,6 +5,7 @@
 
 using Cairo;
 using Cairo.Extensions;
+using Cairo.Extensions.Colors;
 using Cairo.Extensions.Shapes;
 using Gtk;
 using Gtk4.Extensions;

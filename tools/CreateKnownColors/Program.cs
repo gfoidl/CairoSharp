@@ -62,7 +62,7 @@ static void WriteHeader(StreamWriter sw)
     sw.WriteLine();
     sw.WriteLine("/* Created with CreateKnownColors. */");
     sw.WriteLine();
-    sw.WriteLine("namespace Cairo.Extensions;");
+    sw.WriteLine("namespace Cairo.Extensions.Colors;");
     sw.WriteLine();
     sw.WriteLine("/// <summary>");
     sw.WriteLine("/// Predefined colors.");
