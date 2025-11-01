@@ -6,19 +6,19 @@
   </Folder>
   <Folder Name="/demos/">
     <File Path="demos/ReadMe.md" />
-    <Project Path="demos/AspNetCoreDemo/AspNetCoreDemo.csproj" Id="cd2d8994-351f-4af5-be56-25fafc22623e" />
-    <Project Path="demos/CairoDemo.NuGet/CairoDemo.NuGet.csproj" Id="75ce7d03-c812-4855-8806-b24854ce1590" />
+    <Project Path="demos/AspNetCoreDemo/AspNetCoreDemo.csproj" />
+    <Project Path="demos/CairoDemo.NuGet/CairoDemo.NuGet.csproj" />
     <Project Path="demos/CairoDemo/CairoDemo.csproj" />
-    <Project Path="demos/CairoExtensionsDemo/CairoExtensionsDemo.csproj" Id="5969c885-11f8-484f-88a5-6303a9143369" />
-    <Project Path="demos/FreeTypeDemo/FreeTypeDemo.csproj" Id="4df878ab-7f2d-4bfd-8f14-76c9fdccd25a" />
-    <Project Path="demos/SvgPdfLoading/SvgPdfLoading.csproj" Id="a66e1ace-bf43-47a6-9f7b-c3481cf7a5a8" />
+    <Project Path="demos/CairoExtensionsDemo/CairoExtensionsDemo.csproj" />
+    <Project Path="demos/FreeTypeDemo/FreeTypeDemo.csproj" />
+    <Project Path="demos/SvgPdfLoading/SvgPdfLoading.csproj" />
   </Folder>
   <Folder Name="/demos/Gtk/">
-    <Project Path="demos/Gtk/Gtk3Demo/Gtk3Demo.csproj" Id="3d4a5834-c72d-49df-a5e9-1bf21a27ffe3" />
-    <Project Path="demos/Gtk/Gtk4Animation/Gtk4Animation.csproj" Id="3873f366-3943-4999-be0b-5ae6cf9a33ca" />
-    <Project Path="demos/Gtk/Gtk4AnimationWithBuilder/Gtk4AnimationWithBuilder.csproj" Id="94aca97a-31be-4d64-abca-f51eed9bba9b" />
-    <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" Id="0dd8d4f2-2ed5-48f0-b22e-1c9ac0f0aaf4" />
-    <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" Id="663ff908-a037-4049-97cb-d5c724930254" />
+    <Project Path="demos/Gtk/Gtk3Demo/Gtk3Demo.csproj" />
+    <Project Path="demos/Gtk/Gtk4Animation/Gtk4Animation.csproj" />
+    <Project Path="demos/Gtk/Gtk4AnimationWithBuilder/Gtk4AnimationWithBuilder.csproj" />
+    <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" />
+    <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" />
   </Folder>
   <Folder Name="/demos/Windows/">
     <Project Path="demos/Windows/WinFormsAnimation/WinFormsAnimation.csproj" />
@@ -49,15 +49,16 @@
   </Folder>
   <Folder Name="/source/">
     <File Path="source/Directory.Build.props" />
-    <Project Path="source/CairoSharp.Extensions/CairoSharp.Extensions.csproj" Id="729707e5-2bf4-4c70-908c-d91d2d9b4dc8" />
+    <Project Path="source/CairoSharp.Extensions/CairoSharp.Extensions.csproj" />
     <Project Path="source/CairoSharp/CairoSharp.csproj" />
     <Project Path="source/Gtk4.Extensions/Gtk4.Extensions.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/CairoSharp.Extensions.Tests/CairoSharp.Extensions.Tests.csproj" Id="36414b16-49b5-49ed-8784-6a82d2ee51bf" />
-    <Project Path="tests/CairoSharp.Tests/CairoSharp.Tests.csproj" Id="5ef421ba-93dc-4b6b-804b-fe2a81017dcf" />
+    <Project Path="tests/CairoSharp.Extensions.Tests/CairoSharp.Extensions.Tests.csproj" />
+    <Project Path="tests/CairoSharp.Tests/CairoSharp.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
-    <Project Path="tools/CreateKnownColors/CreateKnownColors.csproj" Id="45755ffc-6644-4803-a22e-1b51d9767568" />
+    <Project Path="tools/CreateColorMaps/CreateColorMaps.csproj" />
+    <Project Path="tools/CreateKnownColors/CreateKnownColors.csproj" />
   </Folder>
 </Solution>
