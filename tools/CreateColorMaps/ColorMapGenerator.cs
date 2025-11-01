@@ -7,8 +7,8 @@ namespace CreateColorMaps;
 
 internal abstract class ColorMapGenerator(string name, string? comment = null)
 {
-    protected readonly string  _name    = name;
-    private readonly string?   _comment = comment;
+    protected readonly string _name    = name;
+    private readonly string?  _comment = comment;
 
     protected abstract string Type { get; }
     //-------------------------------------------------------------------------
@@ -74,6 +74,10 @@ internal abstract class ColorMapGenerator(string name, string? comment = null)
         for (int i = 0; i < colors.Count; ++i)
         {
             (double red, double green, double blue) = colors[i];
+
+            Debug.Assert(0 <= red   && red   <= 1);
+            Debug.Assert(0 <= green && green <= 1);
+            Debug.Assert(0 <= blue  && blue  <= 1);
 
             sw.Write($"{Spaces8}{red}, {green}, {blue}");
 

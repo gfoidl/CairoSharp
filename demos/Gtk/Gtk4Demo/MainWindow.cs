@@ -15,18 +15,13 @@ using CairoSharp::Cairo.Surfaces.Images;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
 using Gtk4.Extensions;
+using static Gtk4.Extensions.Gtk4Constants;
 using Path = CairoSharp::Cairo.Drawing.Path.Path;
 
 namespace Gtk4Demo;
 
 public sealed class MainWindow : ApplicationWindow
 {
-    // The should be exposed by GirCore ideally.
-    private const uint GdkButtonAll       = 0;
-    private const uint GdkButtonPrimary   = 1;
-    private const uint GdkButtonMiddle    = 2;
-    private const uint GdkButtonSecondary = 3;
-
     private string?               _lastSelectedDemo;
     private Action<CairoContext>? _onDrawAction;
     private readonly byte[]       _pngData = File.ReadAllBytes("romedalen.png");

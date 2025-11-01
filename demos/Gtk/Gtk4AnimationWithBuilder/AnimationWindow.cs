@@ -8,15 +8,13 @@ using Cairo.Extensions;
 using Cairo.Extensions.Colors;
 using Gtk;
 using Gtk4.Extensions;
+using static Gtk4.Extensions.Gtk4Constants;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 
 namespace Gtk4Animation;
 
 public sealed class AnimationWindow : ApplicationWindow
 {
-    private const bool SourceContinue = true;
-    private const bool SourceRemove   = false;
-
     private const int BallSize = 20;
 
 #pragma warning disable CS0649 // field is never assigned to

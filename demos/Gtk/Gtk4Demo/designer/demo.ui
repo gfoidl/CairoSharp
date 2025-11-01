@@ -5,7 +5,7 @@
   <!-- interface-copyright gfoidl -->
   <!-- interface-authors gfoidl -->
   <requires lib="gio" version="2.0"/>
-  <requires lib="gtk" version="4.6"/>
+  <requires lib="gtk" version="4.12"/>
   <object class="GtkApplicationWindow" id="mainWindow">
     <property name="resizable">False</property>
     <property name="show-menubar">True</property>
@@ -145,8 +145,30 @@
         <property name="orientation">vertical</property>
         <property name="spacing">10</property>
         <child>
-          <object class="GtkBox">
-            <child>
+          <object class="GtkPicture" id="_equationImage"/>
+        </child>
+        <child>
+          <object class="GtkSeparator"/>
+        </child>
+        <child>
+          <object class="GtkCenterBox">
+            <child type="start">
+              <object class="GtkDropDown" id="_colorMapsDropDown"/>
+            </child>
+            <child type="center">
+              <object class="GtkBox">
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkSpinButton" id="_colorMapsSpinButton"/>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="_colorMapInvertedCheckBox">
+                    <property name="label">invert color map</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="end">
               <object class="GtkButton" id="_pixelSaveAsPngButton">
                 <property name="label">Save as PNG</property>
               </object>
@@ -154,13 +176,25 @@
           </object>
         </child>
         <child>
-          <object class="GtkPicture" id="_equationImage"/>
-        </child>
-        <child>
           <object class="GtkSeparator"/>
         </child>
         <child>
-          <object class="GtkDrawingArea" id="_drawingAreaPixelWindow">
+          <object class="GtkExpander" id="_colorMapInfoExpander">
+            <property name="label">Info about color map</property>
+            <property name="visible">False</property>
+            <child>
+              <object class="GtkTextView" id="_colorMapInfoTextView">
+                <property name="cursor-visible">False</property>
+                <property name="editable">False</property>
+                <property name="pixels-above-lines">2</property>
+                <property name="pixels-below-lines">2</property>
+                <property name="wrap-mode">word</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkDrawingArea" id="_drawingAreaPixels">
             <property name="content-height">400</property>
             <property name="content-width">400</property>
             <property name="halign">center</property>
