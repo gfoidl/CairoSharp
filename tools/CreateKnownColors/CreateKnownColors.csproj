@@ -5,8 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="System.Drawing.Primitives.xml" CopyToOutputDirectory="PreserveNewest" />
-        <Compile Remove="KnownColors.cs" Condition="Exists('KnownColors.cs')" />
+        <Content Include="data\*" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
