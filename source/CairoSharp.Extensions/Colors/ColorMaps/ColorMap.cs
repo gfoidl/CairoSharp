@@ -39,6 +39,7 @@ public abstract class ColorMap
     /// <para>
     /// No validation is done whether the value is in the interval [0,1] or not.
     /// </para>
+    /// </param>
     /// <returns>The <see cref="Color"/> according the color map</returns>
     public Color GetColorInverted(double value) => this.GetColor<InvertedIndex>(value);
 

@@ -271,7 +271,7 @@ public static class ColorExtensions
         /// <returns>
         /// <see cref="HsvColor"/> for this color.
         /// </returns>
-        /// <seealso cref="HsvColorExtensions.ToRGB(HsvColor)"/>
+        /// <seealso cref="HsvColor.ToRGB"/>
         public HsvColor ToHSV()
         {
             double r = color.Red;

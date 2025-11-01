@@ -20,10 +20,6 @@ Provides some common extensions like drawing shapes, and other helpful[^1] stuff
 * circle arrow head
 * open arrow head
 
-## KnownColors
-
-Are based on the color in `System.Drawing`. See [known_colors.svg](../../known_colors.svg) for an image that uses all these colors.
-
 ## Fonts
 
 ### FreeType
@@ -38,3 +34,26 @@ Loading of FreeType fonts either from
 PDF, and SVG can be parsed and the drawing loading into a cairo context, for further use.
 
 See [ReadMe in loading](./Loading/ReadMe.md) for further details.
+
+## Pixels
+
+Extension methods for `ImageSurface` to allow easy and fast operation on the pixel data.
+
+## Colors
+
+### Color spaces
+
+The following color spaces are available:
+* sRGB (the default `Color` struct as used in _cairo_)
+* HSV
+* CIE-L\*a\*b\*
+
+There are also methods to convert between these color spaces. See [Colors](./Colors/ReadMe.md) for further information.
+
+### KnownColors
+
+Are based on the color in `System.Drawing` which are equal to the web named colors (and they are equal to the SVG named colors). See [known_colors.svg](../../images/colors/known_colors.svg) for an image that uses all these colors.
+
+### Color maps
+
+See [Color maps](./Colors/ColorMaps/ReadMe.md) for information.
