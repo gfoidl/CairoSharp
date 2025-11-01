@@ -16,16 +16,17 @@ namespace Gtk4Demo;
 
 public sealed class PixelWindow : Window
 {
-    private readonly string? _funcName;
+    private readonly string _funcName;
 
 #pragma warning disable CS0649 // field is never assigned to
     [Connect] private readonly Picture     _equationImage;
     [Connect] private readonly DrawingArea _drawingAreaPixelWindow;
+    [Connect] private readonly Button      _pixelSaveAsPngButton;
 #pragma warning restore CS0649
 
-    private PixelWindow(string? funcName) : this(funcName, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/demo.ui"), "pixelWindow") { }
+    private PixelWindow(string funcName) : this(funcName, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/demo.ui"), "pixelWindow") { }
 
-    private PixelWindow(string? funcName, Builder builder, string name)
+    private PixelWindow(string funcName, Builder builder, string name)
         : base(new Gtk.Internal.WindowHandle(builder.GetPointer(name), ownsHandle: false))
     {
         _funcName = funcName;
@@ -35,13 +36,16 @@ public sealed class PixelWindow : Window
 
         Debug.Assert(_drawingAreaPixelWindow  is not null);
         Debug.Assert(_equationImage           is not null);
+        Debug.Assert(_pixelSaveAsPngButton    is not null);
 
         _drawingAreaPixelWindow.SetDrawFunc(this.Draw);
-
         this.PrepareFunction();
+
+        _pixelSaveAsPngButton.OnClicked += async (Button sender, EventArgs args)
+            => await _drawingAreaPixelWindow.SaveAsPngWithFileDialog(this, _funcName);
     }
 
-    public static void Show(string? funcName)
+    public static void Show(string funcName)
     {
         using PixelWindow pixelWindow = new(funcName);
         pixelWindow.Show();

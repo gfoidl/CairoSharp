@@ -69,7 +69,8 @@ public sealed class MainWindow : ApplicationWindow
 
     private void AddMenuActions()
     {
-        this.AddAction("saveAsPng"           , this.SaveAsPng);
+        this.AddAction("saveAsPng", async () => await _drawingArea.SaveAsPngWithFileDialog(this, _lastSelectedDemo));
+
         this.AddAction("drawArc"             , this.DrawArc);
         this.AddAction("drawArcNegative"     , this.DrawArcNegative);
         this.AddAction("drawClip"            , this.DrawClip);
@@ -96,7 +97,7 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("funcPeaks"  , PixelGraphics);
         this.AddAction("funcMexican", PixelGraphics);
 
-        static void PixelGraphics(string? name) => PixelWindow.Show(name);
+        static void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!);
     }
 
     private void SetIcon()
@@ -134,55 +135,6 @@ public sealed class MainWindow : ApplicationWindow
             {
                 Console.WriteLine($"\t{path}");
             }
-        }
-    }
-
-    private async Task SaveAsPng()
-    {
-        using FileFilter fileFilter = FileFilter.New();
-        fileFilter.AddSuffix("png");
-
-        using FileDialog fileDialog = FileDialog.New();
-        fileDialog.InitialName      = $"{_lastSelectedDemo}.png";
-        fileDialog.DefaultFilter    = fileFilter;
-
-        try
-        {
-            using Gio.File? file = await fileDialog.SaveAsync(this);
-
-            if (file?.GetPath() is string path)
-            {
-                // Based on https://discourse.gnome.org/t/gtk4-screenshot-with-gtksnapshot/27981/3
-
-                using Snapshot snapshot = Snapshot.New();
-                // _drawingArea.Snapshot(snapshot);
-                // The above isn't available in GirCore, so use this workaround:
-                _drawingArea.Parent!.SnapshotChild(_drawingArea, snapshot);
-
-                Gsk.RenderNode? renderNode = snapshot.FreeToNode();
-                Debug.Assert(renderNode is not null);
-
-                try
-                {
-                    // Just for fun
-                    renderNode.WriteToFile($"{path}.node");
-
-                    using Gsk.Renderer? renderer = _drawingArea.GetNative()?.GetRenderer();
-                    Debug.Assert(renderer is not null);
-
-                    using Gdk.Texture texture = renderer.RenderTexture(renderNode, null);
-                    texture.SaveToPng(path);
-                }
-                finally
-                {
-                    // IMO a Dispose method should be exposed by GirCore
-                    renderNode.Unref();
-                }
-            }
-        }
-        catch (GLib.GException ex) when (ex.Message == "Dismissed by user")
-        {
-            // ignore
         }
     }
 
