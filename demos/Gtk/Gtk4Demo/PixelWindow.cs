@@ -1,6 +1,9 @@
 // (c) gfoidl, all rights reserved
 
-#define DROPDOWN_SIMPLE_STRING_LIST
+//#define DROPDOWN_SIMPLE_STRING_LIST
+//#define DROPDOWN_USE_SEPARATOR
+//#define DROPDOWN_ENABLE_SEARCH
+#define DROPDOWN_BIND_TO_SPIN_VIA_UI
 #define USE_PIXEL_ROW_ACCESSOR
 
 extern alias CairoSharp;
@@ -18,7 +21,7 @@ using Gtk4.Extensions;
 
 namespace Gtk4Demo;
 
-public sealed class PixelWindow : Window
+public sealed partial class PixelWindow : Window
 {
     private readonly string           _funcName;
     private readonly Task<double[][]> _data;
@@ -62,7 +65,7 @@ public sealed class PixelWindow : Window
             => await this.DrawAsync(drawingArea, cr, width, height));
 
         _pixelSaveAsPngButton.OnClicked += async (Button sender, EventArgs args)
-            => await _drawingAreaPixels.SaveAsPngWithFileDialog(this, $"{_funcName}_{_selectedColorMapName}");
+            => await _drawingAreaPixels.SaveAsPngWithFileDialog(this, this.GetPngFileName());
 
         _colorMapInvertedCheckBox.OnToggled += (CheckButton sender, EventArgs args)
             => _drawingAreaPixels.QueueDraw();
@@ -129,15 +132,7 @@ public sealed class PixelWindow : Window
             return [.. entries];
         }
 
-        // Link the dropdown and the spinbutton (nice :-)).
-        _colorMapsDropDown.BindProperty(
-            DropDown.SelectedPropertyDefinition.UnmanagedName,
-            _colorMapsSpinButton,
-            SpinButton.ValuePropertyDefinition.UnmanagedName,
-            GObject.BindingFlags.SyncCreate | GObject.BindingFlags.Bidirectional);
-
-        _colorMapsSpinButton.SetRange(-1, entries.Length);
-        _colorMapsSpinButton.SetIncrements(1, 2);
+        LinkDropDownAndSpinButton(entries.Length);
 
         _colorMapsDropDown.OnNotifySelected((DropDown sender, DropDownNotifySelectedArgs args) =>
         {
@@ -162,17 +157,192 @@ public sealed class PixelWindow : Window
                 _selectedColorMap = Activator.CreateInstance(colorMapType) as ColorMap;
                 Debug.Assert(_selectedColorMap is not null);
 
-                // GTK adds a reference to the buffer once assigned to the TextView.
-                using TextBuffer textBuffer = TextBuffer.New(table: null);
-                textBuffer.SetText(_selectedColorMap.Description, -1);
+                DisplayDescriptionOfSelectedColorMap();
+            }
 
-                _colorMapInfoTextView.SetBuffer(textBuffer);
-                _colorMapInfoExpander.Visible = true;
+            _drawingAreaPixels.QueueDraw();
+        });
+#else
+        ColorMapInfo[] entries = GetEntries();
+
+        static ColorMapInfo[] GetEntries()
+        {
+            List<ColorMapInfo> entries = [..GetColorMapInfos()
+                .OrderBy(ci => ci.Optimized)
+                .ThenBy(ci => ci.Name)
+            ];
+
+            // In Gtk 4.16.5 cannot prevent DropDown from preselecting the first item
+            // Cf. https://gitlab.gnome.org/GNOME/gtk/-/issues/7168
+            entries.Insert(0, new ColorMapInfo("(none)", default, default));
+
+#if DROPDOWN_USE_SEPARATOR
+            // Insert a separator
+            int idx = entries.FindIndex(ci => ci.Optimized);
+            Debug.Assert(idx >= 0);
+            entries.Insert(idx, new ColorMapInfo("(separator)", default, default));
+            entries.Insert(1  , new ColorMapInfo("(separator)", default, default));
+#endif
+
+            return [.. entries];
+        }
+
+        // Factory must be set first, otherwise GTK doesn't know how to handle the model.
+        _colorMapsDropDown.Factory = CreateFactory();
+        _colorMapsDropDown.Model   = CreateModel(entries);
+
+        static Gio.ListModel CreateModel(ColorMapInfo[] entries)
+        {
+            Gio.ListStore listStore = Gio.ListStore.New(ColorMapInfo.GetGType());
+
+            foreach (ColorMapInfo entry in entries)
+            {
+                listStore.Append(entry);
+            }
+
+            return listStore;
+        }
+
+        static ListItemFactory CreateFactory()
+        {
+            SignalListItemFactory factory = SignalListItemFactory.New();
+
+            // See https://docs.gtk.org/gtk4/class.SignalListItemFactory.html for description of the signals.
+
+            factory.OnSetup += (SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args) =>
+            {
+                Debug.Assert(args.Object is ListItem);
+                ListItem listItem = (args.Object as ListItem)!;
+
+                Box box     = Box.New(Orientation.Horizontal, 10);
+                Image image = Image.New();
+                Label label = Label.New(str: null);
+
+                label.Xalign = 0f;
+
+                box.Append(image);
+                box.Append(label);
+
+                listItem.SetData("image", image.Handle.DangerousGetHandle());
+                listItem.SetData("label", label.Handle.DangerousGetHandle());
+
+                listItem.Child = box;
+            };
+
+            factory.OnBind += (SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args) =>
+            {
+                Debug.Assert(args.Object is ListItem);
+                ListItem listItem = (args.Object as ListItem)!;
+
+                ColorMapInfo? colorMapInfo = listItem.GetItem() as ColorMapInfo;
+                Debug.Assert(colorMapInfo is not null);
+
+                // Are set by SetData in OnSetup above.
+                using Image image = new(new Gtk.Internal.ImageHandle(listItem.GetData("image"), ownsHandle: false));
+                using Label label = new(new Gtk.Internal.LabelHandle(listItem.GetData("label"), ownsHandle: false));
+
+                label.SetText(colorMapInfo.Name);
+
+                if (colorMapInfo.Name == "(none)")
+                {
+                    image.Visible = false;
+                }
+                else if (colorMapInfo.Name == "(separator)")
+                {
+                    listItem.Child      = Separator.New(Orientation.Horizontal);
+                    listItem.Selectable = false;
+                }
+                else
+                {
+                    Debug.Assert(colorMapInfo.Type is not null);
+
+                    // Default GTK icons (found via IconLibrary).
+                    // They're OS dependent icons, so they're only available on Linux.
+                    if (OperatingSystem.IsLinux())
+                    {
+                        string iconName = colorMapInfo.Optimized
+                            ? "favorite-new"
+                            : "edit-tag";
+
+                        image.SetFromIconName(iconName);
+                    }
+                    else
+                    {
+                        // They're the same as on linux, just renamed in the gresource by me.
+                        string iconName = colorMapInfo.Optimized
+                            ? "colormap_optimized.svg"
+                            : "colormap_default.svg";
+
+                        image.SetFromResource($"/at/gfoidl/cairo/gtk4/demo/icons/{iconName}");
+                    }
+                }
+            };
+
+            return factory;
+        }
+
+        LinkDropDownAndSpinButton(entries.Length);
+
+#if DROPDOWN_ENABLE_SEARCH
+        _colorMapsDropDown.EnableSearch = true;
+        _colorMapsDropDown.Expression   = PropertyExpression.Create(ColorMapInfo.GetGType(), nameof(ColorMapInfo.Name));
+#endif
+
+        _colorMapsDropDown.OnNotifySelected((DropDown sender, DropDownNotifySelectedArgs args) =>
+        {
+            Debug.Assert(args.SelectedItem is ColorMapInfo);
+            ColorMapInfo colorMapInfo = (args.SelectedItem as ColorMapInfo)!;
+
+            if (colorMapInfo.Name == "(none)")
+            {
+                _colorMapInfoExpander.Visible = false;
+                _selectedColorMap             = null;
+            }
+            else if (colorMapInfo.Name == "(separator)")
+            {
+                return;
+            }
+            else
+            {
+                Debug.Assert(colorMapInfo.Type is not null);
+                _selectedColorMap     = Activator.CreateInstance(colorMapInfo.Type) as ColorMap;
+                _selectedColorMapName = colorMapInfo.Name;
+
+                DisplayDescriptionOfSelectedColorMap();
             }
 
             _drawingAreaPixels.QueueDraw();
         });
 #endif
+
+        void LinkDropDownAndSpinButton(int entriesCount)
+        {
+            // Link the dropdown and the spinbutton (nice :-)).
+#if !DROPDOWN_BIND_TO_SPIN_VIA_UI
+            _colorMapsDropDown.BindProperty(
+                DropDown.SelectedPropertyDefinition.UnmanagedName,
+                _colorMapsSpinButton,
+                SpinButton.ValuePropertyDefinition.UnmanagedName,
+                GObject.BindingFlags.SyncCreate | GObject.BindingFlags.Bidirectional);
+#endif
+
+            _colorMapsSpinButton.SetRange(-1, entriesCount + 1);
+
+            // Is set via the ui-file (extra fragments in Cambalache). 
+            //_colorMapsSpinButton.SetIncrements(1, 2);
+        }
+
+        void DisplayDescriptionOfSelectedColorMap()
+        {
+            Debug.Assert(_selectedColorMap is not null);
+
+            // GTK adds a reference to the buffer once assigned to the TextView.
+            using TextBuffer textBuffer = TextBuffer.New(table: null);
+            textBuffer.SetText(_selectedColorMap.Description, -1);
+
+            _colorMapInfoTextView.SetBuffer(textBuffer);
+            _colorMapInfoExpander.Visible = true;
+        }
     }
 
     private async ValueTask DrawAsync(DrawingArea drawingArea, CairoContext cr, int width, int height)
@@ -194,7 +364,7 @@ public sealed class PixelWindow : Window
             await this.DrawFunctionAsync(imageSurface);
 
 #if DEBUG
-            imageSurface.WriteToPng($"{_funcName}_{_selectedColorMapName}.png");
+            imageSurface.WriteToPng($"{this.GetPngFileName()}.png");
 #endif
         }
         finally
@@ -377,6 +547,23 @@ public sealed class PixelWindow : Window
         }
     }
 
+    private string GetPngFileName()
+    {
+        ReadOnlySpan<char> funcName = _funcName.AsSpan("func".Length);
+
+        if (_selectedColorMapName is null)
+        {
+            return $"{funcName}";
+        }
+
+        if (_colorMapInvertedCheckBox.Active)
+        {
+            return $"{funcName}_{_selectedColorMapName}_inverted";
+        }
+
+        return $"{funcName}_{_selectedColorMapName}";
+    }
+
     private static IEnumerable<ColorMapInfo> GetColorMapInfos()
     {
         Assembly assembly = typeof(ColorMap).Assembly;
@@ -389,12 +576,12 @@ public sealed class PixelWindow : Window
                 {
                     case "Cairo.Extensions.Colors.ColorMaps.Default":
                     {
-                        yield return new ColorMapInfo(type.Name.Replace("ColorMap", null), Optimized: false, type);
+                        yield return new ColorMapInfo(type.Name.Replace("ColorMap", null), optimized: false, type);
                         break;
                     }
                     case "Cairo.Extensions.Colors.ColorMaps.Optimized":
                     {
-                        yield return new ColorMapInfo(type.Name.Replace("ColorMap", null), Optimized: true, type);
+                        yield return new ColorMapInfo(type.Name.Replace("ColorMap", null), optimized: true, type);
                         break;
                     }
                 }
@@ -402,5 +589,22 @@ public sealed class PixelWindow : Window
         }
     }
 
-    private record ColorMapInfo(string Name, bool Optimized, Type Type);
+    // https://gircore.github.io/docs/faq.html#how-to-create-subclasses-of-a-gobject-based-class
+    [GObject.Subclass<GObject.Object>]
+    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+    private partial class ColorMapInfo
+    {
+        public string Name    { get; }
+        public bool Optimized { get; }
+        public Type? Type     { get; }
+
+        public ColorMapInfo(string name, bool optimized, Type? type) : this()
+        {
+            this.Name      = name;
+            this.Optimized = optimized;
+            this.Type      = type;
+        }
+
+        private string GetDebuggerDisplay() => $"{this.Name} (optimized: {this.Optimized})";
+    }
 }

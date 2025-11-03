@@ -14,14 +14,16 @@ if (OperatingSystem.IsWindows())
 }
 
 using Application app = Application.New("at.gfoidl.cairo.gtk4.animation", Gio.ApplicationFlags.FlagsNone);
-app.OnActivate += static (Gio.Application app, EventArgs args) =>
+app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
 {
     if (Directory.Exists("output"))
     {
         Directory.Delete("output", recursive: true);
     }
 
-    AnimationWindow window = new((Application)app);
+    Application app = (Application)gioApp;
+    Window window   = app.ActiveWindow ?? new AnimationWindow(app);
+
     window.Show();
 };
 

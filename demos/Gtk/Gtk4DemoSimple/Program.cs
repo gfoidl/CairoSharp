@@ -13,9 +13,11 @@ if (OperatingSystem.IsWindows())
 }
 
 using Application app = Application.New("at.gfoidl.cairo.gtk4.demo.simple", Gio.ApplicationFlags.FlagsNone);
-app.OnActivate += static (Gio.Application app, EventArgs args) =>
+app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
 {
-    MainWindow window = new((Application)app);
+    Application app = (Application)gioApp;
+    Window window   = app.ActiveWindow ?? new MainWindow(app);
+
     window.Show();
 };
 

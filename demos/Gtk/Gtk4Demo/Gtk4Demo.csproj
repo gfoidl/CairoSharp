@@ -19,6 +19,14 @@
         <ProjectReference Include="..\..\..\source\Gtk4.Extensions\Gtk4.Extensions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- https://gircore.github.io/docs/faq.html#how-to-create-subclasses-of-a-gobject-based-class -->
+        <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.6.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
     <ItemGroup Condition="'$(UIFromResource)' != 'true'">
         <EmbeddedResource Include="designer\demo.ui" LogicalName="demo.4.ui" />
     </ItemGroup>
