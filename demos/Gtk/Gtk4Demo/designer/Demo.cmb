@@ -2,9 +2,6 @@
 <!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
 <!-- Created with Cambalache 0.96.1 -->
 <cambalache-project version="0.96.0" target_tk="gtk-4.0">
+  <gresources filename="../gtk4demo.gresource.xml" sha256="3a1f05919dfe5f582b88e140e5815a13a016690d5cc3e24d30b40d140a297d8a"/>
   <ui filename="demo.ui" sha256="535f2332431661c3da8da99627079c42644c4e166f2c92d86d5d06715c2d8c83"/>
-  <ui>
-    <content><![CDATA[<interface/>
-]]></content>
-  </ui>
 </cambalache-project>
