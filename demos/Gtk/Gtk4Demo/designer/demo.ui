@@ -125,11 +125,19 @@
       </item>
     </submenu>
     <submenu>
-      <attribute name="label">Export</attribute>
-      <item>
-        <attribute name="action">win.saveAsPng</attribute>
-        <attribute name="label">Save as PNG</attribute>
-      </item>
+      <attribute name="label">Actions</attribute>
+      <section>
+        <item>
+          <attribute name="action">win.saveAsPng</attribute>
+          <attribute name="label">Save as PNG</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="action">win.showAbout</attribute>
+          <attribute name="label">About</attribute>
+        </item>
+      </section>
     </submenu>
   </menu>
   <object class="GtkWindow" id="pixelWindow">

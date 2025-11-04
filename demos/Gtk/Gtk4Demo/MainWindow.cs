@@ -93,6 +93,12 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("funcMexican", PixelGraphics);
 
         static void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!);
+
+        this.AddAction("showAbout", () =>
+        {
+            MyAboutDialog aboutDialog = new();
+            aboutDialog.Show();
+        });
     }
 
     private void SetIcon()
