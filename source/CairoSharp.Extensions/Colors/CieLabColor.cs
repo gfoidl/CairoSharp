@@ -1,6 +1,8 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 
 namespace Cairo.Extensions.Colors;
 
@@ -28,6 +30,7 @@ namespace Cairo.Extensions.Colors;
 /// For further information see e.g. <a href="https://kaizoudou.com/from-rgb-to-lab-color-space/">From RGB to L*a*b* color space</a>.
 /// </para>
 /// </remarks>
+[StructLayout(LayoutKind.Sequential, Size = 4 * sizeof(double))]    // speed over size here
 public readonly record struct CieLabColor(double L, double A, double B)
 {
     /// <summary>
@@ -35,9 +38,9 @@ public readonly record struct CieLabColor(double L, double A, double B)
     /// </summary>
     public void Validate()
     {
-        if (this.L <    0 || this.L > 100) ThrowL();
-        if (this.A < -110 || this.A > 110) ThrowA();
-        if (this.B < -110 || this.B > 110) ThrowB();
+        if (this.L < 0              || this.L > 100)            ThrowL();
+        if (this.A < sbyte.MinValue || this.A > sbyte.MaxValue) ThrowA();
+        if (this.B < sbyte.MinValue || this.B > sbyte.MaxValue) ThrowB();
 
         static void ThrowL() => throw new ArgumentException("L is outside of [0,100].");
         static void ThrowA() => throw new ArgumentException("a is outside of [-110,110].");
@@ -47,7 +50,8 @@ public readonly record struct CieLabColor(double L, double A, double B)
     /// <summary>
     /// Reference white D65.
     /// </summary>
-    public static CieLabColor Xn { get; } = new CieLabColor(0.950456, 1, 1.088754);
+    public static CieLabColor Xn { get; }   = new CieLabColor(0.950456, 1, 1.088754);
+    internal static Vector256<double> XnVec => Vector256.Create(0.950456, 1, 1.088754, 0);
 
     /// <summary>
     /// Returns the sRGB (<see cref="Color"/>) for this color.
@@ -67,46 +71,7 @@ public readonly record struct CieLabColor(double L, double A, double B)
     /// </remarks>
     /// <exception cref="ArgumentException">a color component is outside the valid bounds</exception>
     /// <seealso cref="ColorExtensions.ToCieLab(Color)"/>
-    public Color ToRGB()
-    {
-        double y = (this.L + 16d) / 116d;
-        double x = this.A / 500d + y;
-        double z = y - this.B / 200d;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static double Inv_f_of_t(double value)
-        {
-            double value3 = value * value * value;
-
-            if (value3 > 0.008856)
-            {
-                return value3;
-            }
-
-            return (value - 16d / 116d) / 7.787;
-        }
-
-        x = Inv_f_of_t(x);
-        y = Inv_f_of_t(y);
-        z = Inv_f_of_t(z);
-
-        // Normalize with reference white
-        x *= Xn.L;
-        y *= Xn.A;
-        z *= Xn.B;
-
-        // XYZ -> RGB, thereby use the same reference white D65.
-        double r =  3.24045480 * x + -1.53713890 * y + -0.49853155 * z;
-        double g = -0.96926639 * x +  1.87601093 * y +  0.04155608 * z;
-        double b =  0.05564342 * x + -0.20402585 * y +  1.05722516 * z;
-
-        r = Math.Clamp(r, 0, 1);
-        g = Math.Clamp(g, 0, 1);
-        b = Math.Clamp(b, 0, 1);
-
-        Color color = new(r, g, b);
-        return color.GammaCorrection(gammaExpansion: false);
-    }
+    public Color ToRGB() => CieLabHelper.ToRGB(this);
 
     /// <summary>
     /// Calculates the quadratic perceptual distance of the colors in the CIE-L*a*b*
@@ -114,18 +79,29 @@ public readonly record struct CieLabColor(double L, double A, double B)
     /// </summary>
     /// <param name="other">the other <see cref="CieLabColor"/></param>
     /// <returns>the quadratic perceptual distance of the colors</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public double ColorDistance2(CieLabColor other)
     {
-        double dL  = this.L - other.L;
-        double dL2 = dL * dL;
+        if (!Vector256.IsHardwareAccelerated)
+        {
+            double dL  = this.L - other.L;
+            double dL2 = dL * dL;
 
-        double da  = this.A - other.A;
-        double da2 = da * da;
+            double da  = this.A - other.A;
+            double da2 = da * da;
 
-        double db  = this.B - other.B;
-        double db2 = db * db;
+            double db  = this.B - other.B;
+            double db2 = db * db;
 
-        return dL2 + da2 + db2;
+            return dL2 + da2 + db2;
+        }
+
+        Vector256<double> thisVec  = Unsafe.BitCast<CieLabColor, Vector256<double>>(this);
+        Vector256<double> otherVec = Unsafe.BitCast<CieLabColor, Vector256<double>>(other);
+        Vector256<double> diff     = thisVec - otherVec;
+        Vector256<double> diff2    = diff * diff;
+
+        return diff2[0] + diff2[1] + diff2[2];
     }
 
     /// <summary>

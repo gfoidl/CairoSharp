@@ -38,6 +38,7 @@ public static class ColorExtensions
         /// <param name="blue">blue component of color</param>
         /// <param name="alpha">alpha component of color</param>
         /// <returns>the <see cref="Color"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color FromRgbaBytes(byte red, byte green, byte blue, byte alpha)
         {
             if (!Vector256.IsHardwareAccelerated)
@@ -228,12 +229,17 @@ public static class ColorExtensions
                     double most  = Math.Max(color.Red, color.Green, color.Blue);
                     double least = Math.Min(color.Red, color.Green, color.Blue);
 
-                    yLinear = (most + least) / 2;
+                    Debug.Assert(0 <= most  && most  <= 1);
+                    Debug.Assert(0 <= least && least <= 1);
+
+                    yLinear = (most + least) * 0.5;
                     break;
                 }
                 case GrayScaleMode.Average:
                 {
-                    yLinear = (color.Red + color.Green + color.Blue) / 3;
+                    const double OneBy3 = 1d / 3d;
+
+                    yLinear = (color.Red + color.Green + color.Blue) * OneBy3;
                     break;
                 }
                 case GrayScaleMode.Luminosity:
@@ -244,13 +250,27 @@ public static class ColorExtensions
 
                     Debug.Assert(WeightRed + WeightGreen + WeightBlue == 1);
 
-                    yLinear = WeightRed * color.Red + WeightGreen * color.Green + WeightBlue * color.Blue;
+                    if (!Vector256.IsHardwareAccelerated)
+                    {
+                        yLinear = WeightRed * color.Red + WeightGreen * color.Green + WeightBlue * color.Blue;
+                    }
+                    else
+                    {
+                        Vector256<double> colorVec = Unsafe.BitCast<Color, Vector256<double>>(color);
+                        Vector256<double> weights  = Vector256.Create(WeightRed, WeightGreen, WeightBlue, 0);
+                        colorVec                  *= weights;
+
+                        yLinear = colorVec[0] + colorVec[1] + colorVec[2];
+                    }
+
                     break;
                 }
                 case GrayScaleMode.CieLab:
                 {
                     CieLabColor cieLab = color.ToCieLab();
-                    yLinear            = cieLab.L;
+
+                    // L* is [0,100]
+                    yLinear = cieLab.L * 1e-2;
                     break;
                 }
                 case GrayScaleMode.GammaExpandedAverage:
@@ -262,6 +282,7 @@ public static class ColorExtensions
                     throw new InvalidOperationException();
             }
 
+            Debug.Assert(0 <= yLinear && yLinear <= 1);
             return new Color(yLinear, yLinear, yLinear);
         }
 
@@ -325,41 +346,11 @@ public static class ColorExtensions
         {
             // Based on https://kaizoudou.com/from-rgb-to-lab-color-space/
 
-            Color rgb = color.GammaCorrection(gammaExpansion: true);
-            double r  = rgb.Red;
-            double g  = rgb.Green;
-            double b  = rgb.Blue;
+            Color rgbLinear = color.GammaCorrection(gammaExpansion: true);
 
-            // RGB -> XYZ, thereby use the same reference white D65.
-            double x = 0.4124564 * r + 0.3575761 * g + 0.1804375 * b;
-            double y = 0.2126729 * r + 0.7151522 * g + 0.0721750 * b;
-            double z = 0.0193339 * r + 0.1191920 * g + 0.9503041 * b;
-
-            // Normalize to reference white
-            x /= CieLabColor.Xn.L;
-            y /= CieLabColor.Xn.A;
-            z /= CieLabColor.Xn.B;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static double f_of_t(double t)
-            {
-                if (t > 0.008856)
-                {
-                    return Math.Pow(t, 1d / 3d);
-                }
-
-                return 7.787 * t + 16d / 116d;
-            }
-
-            double fx = f_of_t(x);
-            double fy = f_of_t(y);
-            double fz = f_of_t(z);
-
-            double cie_L = 116 * fy - 16;
-            double cie_a = 500 * (fx - fy);
-            double cie_b = 200 * (fy - fz);
-
-            return new CieLabColor(cie_L, cie_a, cie_b);
+            return Vector256.IsHardwareAccelerated
+                ? CieLabHelper.ToCieLabVector256(rgbLinear)
+                : CieLabHelper.ToCieLabScalar   (rgbLinear);
         }
     }
 }
