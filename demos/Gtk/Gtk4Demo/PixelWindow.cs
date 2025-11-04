@@ -2,7 +2,7 @@
 
 //#define DROPDOWN_SIMPLE_STRING_LIST
 //#define DROPDOWN_USE_SEPARATOR
-//#define DROPDOWN_ENABLE_SEARCH
+#define DROPDOWN_ENABLE_SEARCH
 #define DROPDOWN_BIND_TO_SPIN_VIA_UI
 #define USE_PIXEL_ROW_ACCESSOR
 
@@ -198,6 +198,35 @@ public sealed partial class PixelWindow : Window
             return [.. entries];
         }
 
+#if DROPDOWN_ENABLE_SEARCH
+        _colorMapsDropDown.EnableSearch = true;
+
+        // The expression must be set before the factory, otherwise the factory / factories will
+        // be overwritten, and only the string is shown.
+
+        // PropertyExpression can't be used here, as ColorMapInfo has not unmanaged property.
+        // Gtk-CRITICAL **: Type `Gtk4DemoPixelWindowColorMapInfo` does not have a property named `Name`
+        //_colorMapsDropDown.Expression = Expression.CreateForProperty(ColorMapInfo.GetGType(), nameof(ColorMapInfo.Name));
+
+        // This throws 'Type Gtk.CClosureExpression is not supported as a value type', but why?
+        //_colorMapsDropDown.Expression = Expression.CreateForClosure(static (ColorMapInfo colorMapInfo) => colorMapInfo.Name);
+
+        // That's the discrepancy with the native objects...the managed objects can't be recreated easily.
+        // Thus a mapping is used.
+        _colorMapsDropDown.SetExpression<ColorMapInfo>(static (IntPtr nativeObjHandle) =>
+        {
+            if (ColorMapInfo.s_handleMap.TryGetValue(nativeObjHandle, out ColorMapInfo? colorMapInfo))
+            {
+                return colorMapInfo.Name;
+            }
+
+            throw new InvalidOperationException();
+        });
+
+        // In https://discourse.gnome.org/t/example-of-gtk-dropdown-with-search-enabled-without-gtk-expression/12748
+        // there's another way on how to search w/o expressions.
+#endif
+
         // Factory must be set first, otherwise GTK doesn't know how to handle the model.
         _colorMapsDropDown.Factory = CreateFactory();
         _colorMapsDropDown.Model   = CreateModel(entries);
@@ -294,33 +323,6 @@ public sealed partial class PixelWindow : Window
 
         LinkDropDownAndSpinButton(entries.Length);
 
-#if DROPDOWN_ENABLE_SEARCH
-        _colorMapsDropDown.EnableSearch = true;
-
-        // PropertyExpression can't be used here, as ColorMapInfo has not unmanaged property.
-        // Gtk-CRITICAL **: Type `Gtk4DemoPixelWindowColorMapInfo` does not have a property named `Name`
-        //_colorMapsDropDown.Expression = Expression.CreateForProperty(ColorMapInfo.GetGType(), nameof(ColorMapInfo.Name));
-
-        // This throws 'Type Gtk.CClosureExpression is not supported as a value type', but why?
-        //_colorMapsDropDown.Expression = Expression.CreateForClosure(static (ColorMapInfo colorMapInfo) => colorMapInfo.Name);
-
-        // That's the discrepancy with the native objects...the managed objects can't be recreated easily.
-        // Thus a mapping is used.
-        _colorMapsDropDown.SetExpression<ColorMapInfo>(static (IntPtr nativeObjHandle) =>
-        {
-            if (ColorMapInfo.s_handleMap.TryGetValue(nativeObjHandle, out ColorMapInfo? colorMapInfo))
-            {
-                return colorMapInfo.Name;
-            }
-
-            throw new InvalidOperationException();
-        });
-
-        // Search / the expression lets the icons disappear (I don't know why).
-        // In https://discourse.gnome.org/t/example-of-gtk-dropdown-with-search-enabled-without-gtk-expression/12748
-        // there's another way on how to search w/o expressions.
-#endif
-
         _colorMapsDropDown.OnNotifySelected((DropDown sender, DropDownNotifySelectedArgs args) =>
         {
             Debug.Assert(args.SelectedItem is ColorMapInfo);
@@ -358,7 +360,6 @@ public sealed partial class PixelWindow : Window
                 SpinButton.ValuePropertyDefinition.UnmanagedName,
                 GObject.BindingFlags.SyncCreate | GObject.BindingFlags.Bidirectional);
 #endif
-
             _colorMapsSpinButton.SetRange(-1, entriesCount + 1);
 
             // Is set via the ui-file (extra fragments in Cambalache). 
