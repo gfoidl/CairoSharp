@@ -3,5 +3,5 @@
 <!-- Created with Cambalache 0.96.1 -->
 <cambalache-project version="0.96.0" target_tk="gtk-4.0">
   <gresources filename="../gtk4demo.gresource.xml" sha256="d5d018af5131389db618bdce9044db8d5408db7d5e18d8034854202ac59849d4"/>
-  <ui filename="demo.ui" sha256="7fa4dc7d5f47b684d9b3d661aaec5b216941092861a3273a5092e491072f1910"/>
+  <ui filename="demo.ui" sha256="8db832294d4ced669909d0750ed7c2cec317b1fb27bf8912cfb37383749935ad"/>
 </cambalache-project>

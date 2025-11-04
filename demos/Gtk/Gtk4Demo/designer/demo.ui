@@ -158,8 +158,10 @@
               <object class="GtkCenterBox">
                 <child type="start">
                   <object class="GtkDropDown" id="_colorMapsDropDown">
+                    <property name="margin-end">10</property>
                     <property name="search-match-mode">substring</property>
                     <property name="selected" bind-source="_colorMapsSpinButton" bind-property="value" bind-flags="bidirectional | sync-create">4294967295</property>
+                    <property name="width-request">165</property>
                   </object>
                 </child>
                 <child type="center">
@@ -201,6 +203,7 @@
                 <child>
                   <object class="GtkDropDown" id="_grayscaleModeDropDown">
                     <property name="visible" bind-source="_grayscaleCheckButton" bind-property="active" bind-flags="sync-create">True</property>
+                    <property name="width-request">200</property>
                   </object>
                 </child>
               </object>

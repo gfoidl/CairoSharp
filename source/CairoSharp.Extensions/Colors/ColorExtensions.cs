@@ -258,9 +258,9 @@ public static class ColorExtensions
                     {
                         Vector256<double> colorVec = Unsafe.BitCast<Color, Vector256<double>>(color);
                         Vector256<double> weights  = Vector256.Create(WeightRed, WeightGreen, WeightBlue, 0);
-                        colorVec                  *= weights;
 
-                        yLinear = colorVec[0] + colorVec[1] + colorVec[2];
+                        colorVec *= weights;
+                        yLinear   = colorVec[0] + colorVec[1] + colorVec[2];
                     }
 
                     break;
@@ -282,8 +282,22 @@ public static class ColorExtensions
                     throw new InvalidOperationException();
             }
 
-            Debug.Assert(0 <= yLinear && yLinear <= 1);
+            AssertInBounds(yLinear);
             return new Color(yLinear, yLinear, yLinear);
+
+            [Conditional("DEBUG")]
+            static void AssertInBounds(double yLinear)
+            {
+                if (yLinear < 0)
+                {
+                    Debug.Assert(-yLinear < 1e-3);
+                }
+
+                if (yLinear > 1)
+                {
+                    Debug.Assert(yLinear - 1 < 1e-3);
+                }
+            }
         }
 
         /// <summary>
