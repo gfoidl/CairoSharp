@@ -5,6 +5,7 @@
 #define SELECTED_VIA_NOTIFY
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Gtk;
 using static GObject.Object;
 
@@ -74,5 +75,26 @@ public static class DropDownExtensions
                 signalHandler(dropDown, new DropDownNotifySelectedArgs(selected, selectedItem));
             }
         }
+
+        public unsafe void SetExpression<TObject>(Func<IntPtr, string> propertyAccessor) where TObject : GObject.Object
+        {
+            Native.PropertyAccessor func = Callback;
+            SetExpressionState state     = new(propertyAccessor, func);
+            GCHandle gcHandle            = GCHandle.Alloc(state, GCHandleType.Normal);
+
+            nint cClosureExpressionHandle = Native.gtk_cclosure_expression_new(
+                GObject.Type.String,
+                null,
+                0, null,
+                state.NativeAccessor,
+                GCHandle.ToIntPtr(gcHandle).ToPointer(),
+                &Native.ClosureDestroy);
+
+            Gtk.Internal.DropDown.SetExpression(dropDown.Handle.DangerousGetHandle(), cClosureExpressionHandle);
+
+            string Callback(IntPtr nativeObjHandle) => propertyAccessor(nativeObjHandle);
+        }
     }
+
+    private record SetExpressionState(Func<IntPtr, string> PropertyAccessor, Native.PropertyAccessor NativeAccessor);
 }

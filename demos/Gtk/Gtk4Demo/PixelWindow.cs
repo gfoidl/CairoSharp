@@ -285,7 +285,29 @@ public sealed partial class PixelWindow : Window
 
 #if DROPDOWN_ENABLE_SEARCH
         _colorMapsDropDown.EnableSearch = true;
-        _colorMapsDropDown.Expression   = PropertyExpression.Create(ColorMapInfo.GetGType(), nameof(ColorMapInfo.Name));
+
+        // PropertyExpression can't be used here, as ColorMapInfo has not unmanaged property.
+        // Gtk-CRITICAL **: Type `Gtk4DemoPixelWindowColorMapInfo` does not have a property named `Name`
+        //_colorMapsDropDown.Expression = Expression.CreateForProperty(ColorMapInfo.GetGType(), nameof(ColorMapInfo.Name));
+
+        // This throws 'Type Gtk.CClosureExpression is not supported as a value type', but why?
+        //_colorMapsDropDown.Expression = Expression.CreateForClosure(static (ColorMapInfo colorMapInfo) => colorMapInfo.Name);
+
+        // That's the discrepancy with the native objects...the managed objects can't be recreated easily.
+        // Thus a mapping is used.
+        _colorMapsDropDown.SetExpression<ColorMapInfo>(static (IntPtr nativeObjHandle) =>
+        {
+            if (ColorMapInfo.s_handleMap.TryGetValue(nativeObjHandle, out ColorMapInfo? colorMapInfo))
+            {
+                return colorMapInfo.Name;
+            }
+
+            throw new InvalidOperationException();
+        });
+
+        // Search / the expression lets the icons disappear (I don't know why).
+        // In https://discourse.gnome.org/t/example-of-gtk-dropdown-with-search-enabled-without-gtk-expression/12748
+        // there's another way on how to search w/o expressions.
 #endif
 
         _colorMapsDropDown.OnNotifySelected((DropDown sender, DropDownNotifySelectedArgs args) =>
@@ -603,8 +625,16 @@ public sealed partial class PixelWindow : Window
             this.Name      = name;
             this.Optimized = optimized;
             this.Type      = type;
+
+#if DROPDOWN_ENABLE_SEARCH
+            s_handleMap.TryAdd(this.Handle.DangerousGetHandle(), this);
+#endif
         }
 
         private string GetDebuggerDisplay() => $"{this.Name} (optimized: {this.Optimized})";
+
+#if DROPDOWN_ENABLE_SEARCH
+        internal static readonly Dictionary<nint, ColorMapInfo> s_handleMap = [];
+#endif
     }
 }

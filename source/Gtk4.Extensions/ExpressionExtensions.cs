@@ -6,11 +6,11 @@ using Gtk;
 
 namespace Gtk4.Extensions;
 
-public static class PropertyExpressionExtensions
+public static class ExpressionExtensions
 {
-    extension(PropertyExpression)
+    extension(Expression)
     {
-        public static PropertyExpression Create(GObject.Type type, string propertyName)
+        public static PropertyExpression CreateForProperty(GObject.Type type, string propertyName)
         {
             ArgumentNullException.ThrowIfNull(propertyName);
 
