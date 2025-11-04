@@ -113,6 +113,8 @@ public sealed class MainWindow : ApplicationWindow
 
         if (iconTheme.HasIcon(IconName))
         {
+            // Actually the icon is ignored on Wayland and Windows.
+            // https://discourse.gnome.org/t/set-window-icon-gtk4/10183
             this.SetIconName(IconName);
             Debug.WriteLine("icon set");
         }

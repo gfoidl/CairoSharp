@@ -4,6 +4,8 @@
             "commandName"         : "Project",
             "environmentVariables": {
                 //"GSK_RENDERER": "cairo"
+                //"GTK_THEME": "Adwaita:dark"
+                //"GDK_BACKEND": "x11"
             }
         }
     }

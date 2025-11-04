@@ -5,6 +5,7 @@
         <OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
         <OutputType Condition="'$(Configuration)' != 'Debug'">WinExe</OutputType>
 
+        <!-- https://discourse.gnome.org/t/set-window-icon-gtk4/10183/6 -->
         <ApplicationIcon>icon.ico</ApplicationIcon>
     </PropertyGroup>
 
