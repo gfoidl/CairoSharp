@@ -4,6 +4,8 @@
         <!-- WinExe in order to hide the console window. -->
         <OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
         <OutputType Condition="'$(Configuration)' != 'Debug'">WinExe</OutputType>
+
+        <ApplicationIcon>icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -26,6 +28,7 @@
     <ItemGroup>
         <Content Include="gtk4demo.gresource" CopyToOutputDirectory="PreserveNewest" Visible="false" />
         <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="icon.ico" Link="icon.ico" />
     </ItemGroup>
 
     <!-- Compile gresource as part of this build. MSYS must be on the PATH. -->

@@ -103,18 +103,17 @@ public sealed class MainWindow : ApplicationWindow
 
     private void SetIcon()
     {
+        // https://discourse.gnome.org/t/how-are-icon-names-translated-in-gtk/20520
+        // So the -symbolic is a GTK suffix, when found it's used, otherwise gtk4demo will be used.
+        const string IconName = "gtk4demo-symbolic";
+
         IconTheme iconTheme = IconTheme.GetForDisplay(this.GetDisplay());
 
-        DumpPaths(iconTheme);
+        DumpInfos(iconTheme);
 
-        using (IconPaintable icon = iconTheme.LookupIcon("gtk4demo", fallbacks: null, 48, 1, TextDirection.None, IconLookupFlags.None))
+        if (iconTheme.HasIcon(IconName))
         {
-            Console.WriteLine($"icon: {icon.IconName}, {icon.GetIntrinsicWidth()} x {icon.GetIntrinsicHeight()}");
-        }
-
-        if (iconTheme.HasIcon("gtk4demo"))
-        {
-            this.SetIconName("gtk4demo");
+            this.SetIconName(IconName);
             Debug.WriteLine("icon set");
         }
         else
@@ -123,7 +122,7 @@ public sealed class MainWindow : ApplicationWindow
         }
 
         [Conditional("DEBUG")]
-        static void DumpPaths(IconTheme iconTheme)
+        static void DumpInfos(IconTheme iconTheme)
         {
             Console.WriteLine("IconTheme search path:");
             foreach (string path in iconTheme.SearchPath)
@@ -136,6 +135,11 @@ public sealed class MainWindow : ApplicationWindow
             {
                 Console.WriteLine($"\t{path}");
             }
+
+            Console.WriteLine();
+
+            using IconPaintable icon = iconTheme.LookupIcon(IconName, fallbacks: null, 48, 1, TextDirection.None, IconLookupFlags.None);
+            Console.WriteLine($"icon: {icon.IconName}, {icon.GetIntrinsicWidth()} x {icon.GetIntrinsicHeight()}");
         }
     }
 
