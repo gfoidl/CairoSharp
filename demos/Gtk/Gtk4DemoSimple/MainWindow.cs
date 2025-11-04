@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 // This won't work on Windows (why?), but it works on Linux.
+// On Windows it works with cairo as GSK renderer (see Program.cs).
 #define USE_FRAME_WIDGET
 
 using Cairo;

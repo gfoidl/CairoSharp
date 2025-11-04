@@ -1,0 +1,10 @@
+{
+    "profiles": {
+        "Gtk4Demo": {
+            "commandName"         : "Project",
+            "environmentVariables": {
+                //"GSK_RENDERER": "cairo"
+            }
+        }
+    }
+}
