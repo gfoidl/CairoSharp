@@ -151,37 +151,58 @@
           <object class="GtkSeparator"/>
         </child>
         <child>
-          <object class="GtkCenterBox">
-            <child type="start">
-              <object class="GtkDropDown" id="_colorMapsDropDown">
-                <property name="search-match-mode">substring</property>
-                <property name="selected" bind-source="_colorMapsSpinButton" bind-property="value" bind-flags="bidirectional | sync-create">4294967295</property>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkCenterBox">
+                <child type="start">
+                  <object class="GtkDropDown" id="_colorMapsDropDown">
+                    <property name="search-match-mode">substring</property>
+                    <property name="selected" bind-source="_colorMapsSpinButton" bind-property="value" bind-flags="bidirectional | sync-create">4294967295</property>
+                  </object>
+                </child>
+                <child type="center">
+                  <object class="GtkBox">
+                    <property name="spacing">10</property>
+                    <child>
+                      <object class="GtkSpinButton" id="_colorMapsSpinButton">
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="page-size">2.0</property>
+                            <property name="step-increment">1.0</property>
+                          </object>
+                        </property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="_colorMapInvertedCheckButton">
+                        <property name="label">invert color map</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="end">
+                  <object class="GtkButton" id="_pixelSaveAsPngButton">
+                    <property name="label">Save as PNG</property>
+                  </object>
+                </child>
               </object>
             </child>
-            <child type="center">
+            <child>
               <object class="GtkBox">
                 <property name="spacing">10</property>
                 <child>
-                  <object class="GtkSpinButton" id="_colorMapsSpinButton">
-                    <property name="adjustment">
-                      <object class="GtkAdjustment">
-                        <property name="page-size">2.0</property>
-                        <property name="step-increment">1.0</property>
-                      </object>
-                    </property>
-                    <property name="wrap">True</property>
+                  <object class="GtkCheckButton" id="_grayscaleCheckButton">
+                    <property name="label">gray scale</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="_colorMapInvertedCheckBox">
-                    <property name="label">invert color map</property>
+                  <object class="GtkDropDown" id="_grayscaleModeDropDown">
+                    <property name="visible" bind-source="_grayscaleCheckButton" bind-property="active" bind-flags="sync-create">True</property>
                   </object>
                 </child>
-              </object>
-            </child>
-            <child type="end">
-              <object class="GtkButton" id="_pixelSaveAsPngButton">
-                <property name="label">Save as PNG</property>
               </object>
             </child>
           </object>

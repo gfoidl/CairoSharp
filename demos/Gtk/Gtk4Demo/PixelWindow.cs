@@ -11,6 +11,8 @@ extern alias CairoSharp;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
+using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
 using Cairo.Extensions.Pixels;
 using CairoSharp::Cairo;
@@ -26,14 +28,17 @@ public sealed partial class PixelWindow : Window
     private readonly string           _funcName;
     private readonly Task<double[][]> _data;
 
-    private ColorMap? _selectedColorMap;
-    private string?   _selectedColorMapName;
+    private ColorMap?      _selectedColorMap;
+    private string?        _selectedColorMapName;
+    private GrayScaleMode? _grayScaleMode;
 
 #pragma warning disable CS0649 // field is never assigned to
     [Connect] private readonly DropDown    _colorMapsDropDown;
     [Connect] private readonly SpinButton  _colorMapsSpinButton;
-    [Connect] private readonly CheckButton _colorMapInvertedCheckBox;
+    [Connect] private readonly CheckButton _colorMapInvertedCheckButton;
     [Connect] private readonly Button      _pixelSaveAsPngButton;
+    [Connect] private readonly CheckButton _grayscaleCheckButton;
+    [Connect] private readonly DropDown    _grayscaleModeDropDown;
     [Connect] private readonly Picture     _equationImage;
     [Connect] private readonly Expander    _colorMapInfoExpander;
     [Connect] private readonly TextView    _colorMapInfoTextView;
@@ -50,14 +55,16 @@ public sealed partial class PixelWindow : Window
         builder.Connect(this);
         builder.Dispose();
 
-        Debug.Assert(_colorMapsDropDown        is not null);
-        Debug.Assert(_colorMapsSpinButton      is not null);
-        Debug.Assert(_colorMapInvertedCheckBox is not null);
-        Debug.Assert(_pixelSaveAsPngButton     is not null);
-        Debug.Assert(_equationImage            is not null);
-        Debug.Assert(_colorMapInfoExpander     is not null);
-        Debug.Assert(_colorMapInfoTextView     is not null);
-        Debug.Assert(_drawingAreaPixels        is not null);
+        Debug.Assert(_colorMapsDropDown           is not null);
+        Debug.Assert(_colorMapsSpinButton         is not null);
+        Debug.Assert(_colorMapInvertedCheckButton is not null);
+        Debug.Assert(_pixelSaveAsPngButton        is not null);
+        Debug.Assert(_grayscaleCheckButton        is not null);
+        Debug.Assert(_grayscaleModeDropDown       is not null);
+        Debug.Assert(_equationImage               is not null);
+        Debug.Assert(_colorMapInfoExpander        is not null);
+        Debug.Assert(_colorMapInfoTextView        is not null);
+        Debug.Assert(_drawingAreaPixels           is not null);
 
         _data = this.PrepareFunctionAsync();
 
@@ -67,10 +74,14 @@ public sealed partial class PixelWindow : Window
         _pixelSaveAsPngButton.OnClicked += async (Button sender, EventArgs args)
             => await _drawingAreaPixels.SaveAsPngWithFileDialog(this, this.GetPngFileName());
 
-        _colorMapInvertedCheckBox.OnToggled += (CheckButton sender, EventArgs args)
+        _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args)
             => _drawingAreaPixels.QueueDraw();
 
-        this.SetupDropDown();
+        _grayscaleCheckButton.OnToggled += (CheckButton sender, EventArgs args)
+            => _drawingAreaPixels.QueueDraw();
+
+        this.SetupColorMapDropDown();
+        this.SetupGrayscaleDropDown();
     }
 
     public static void Show(string funcName)
@@ -112,7 +123,7 @@ public sealed partial class PixelWindow : Window
         }
     }
 
-    private void SetupDropDown()
+    private void SetupColorMapDropDown()
     {
 #if DROPDOWN_SIMPLE_STRING_LIST
         string[] entries         = GetEntries();
@@ -367,6 +378,24 @@ public sealed partial class PixelWindow : Window
         }
     }
 
+    private void SetupGrayscaleDropDown()
+    {
+        string[] entries             = Enum.GetNames(typeof(GrayScaleMode));
+        _grayscaleModeDropDown.Model = StringList.New(entries);
+        _grayscaleModeDropDown.OnNotifySelected((DropDown sender, DropDownNotifySelectedArgs args) =>
+        {
+            Debug.Assert(args.SelectedItem is StringObject);
+            StringObject stringObject = (args.SelectedItem as StringObject)!;
+
+            if (stringObject.String is not null)
+            {
+                _grayScaleMode = Enum.Parse<GrayScaleMode>(stringObject.String);
+
+                _drawingAreaPixels.QueueDraw();
+            }
+        });
+    }
+
     private async ValueTask DrawAsync(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
         // They must not be equal.
@@ -386,7 +415,8 @@ public sealed partial class PixelWindow : Window
             await this.DrawFunctionAsync(imageSurface);
 
 #if DEBUG
-            imageSurface.WriteToPng($"{this.GetPngFileName()}.png");
+            Directory.CreateDirectory("images");
+            imageSurface.WriteToPng($"images/{this.GetPngFileName()}.png");
 #endif
         }
         finally
@@ -400,17 +430,26 @@ public sealed partial class PixelWindow : Window
         double[][] data                   = await _data;
         using PixelAccessor pixelAccessor = imageSurface.GetPixelAccessor();
 
-        ColorMap? colorMap   = _selectedColorMap;
-        bool inverseColorMap = _colorMapInvertedCheckBox.Active;
+        ColorMap? colorMap          = _selectedColorMap;
+        bool inverseColorMap        = _colorMapInvertedCheckButton.Active;
+        bool grayScale              = _grayscaleCheckButton.Active;
+        GrayScaleMode grayScaleMode = _grayScaleMode.GetValueOrDefault();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         Color GetColor(double zForColor)
         {
             if (colorMap is not null)
             {
-                return !inverseColorMap
+                Color color = !inverseColorMap
                     ? colorMap.GetColor(zForColor)
                     : colorMap.GetColorInverted(zForColor);
+
+                if (grayScale)
+                {
+                    color = color.ToGrayScale(grayScaleMode);
+                }
+
+                return color;
             }
             else
             {
@@ -572,18 +611,26 @@ public sealed partial class PixelWindow : Window
     private string GetPngFileName()
     {
         ReadOnlySpan<char> funcName = _funcName.AsSpan("func".Length);
+        StringBuilder sb            = new();
 
-        if (_selectedColorMapName is null)
+        sb.Append($"{funcName}");
+
+        if (_selectedColorMapName is not null)
         {
-            return $"{funcName}";
+            sb.Append($"_{_selectedColorMapName}");
         }
 
-        if (_colorMapInvertedCheckBox.Active)
+        if (_colorMapInvertedCheckButton.Active)
         {
-            return $"{funcName}_{_selectedColorMapName}_inverted";
+            sb.Append("_inverted");
         }
 
-        return $"{funcName}_{_selectedColorMapName}";
+        if (_grayscaleCheckButton.Active)
+        {
+            sb.Append($"_grayscale_{_grayScaleMode}");
+        }
+
+        return sb.ToString();
     }
 
     private static IEnumerable<ColorMapInfo> GetColorMapInfos()
