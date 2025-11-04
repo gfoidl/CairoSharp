@@ -28,4 +28,12 @@
         <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
+    <!-- Compile gresource as part of this build. MSYS must be on the PATH. -->
+    <Target Name="GResources" BeforeTargets="PreBuildEvent">
+        <Message Importance="high" Text="----------------- gresource -----------------" />
+        <Exec Command="glib-compile-resources gtk4demo.gresource.xml" />
+        <Exec Command="gresource list gtk4demo.gresource" />
+        <Message Importance="high" Text="----------------- gresource -----------------" />
+    </Target>
+
 </Project>
