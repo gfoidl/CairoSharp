@@ -23,7 +23,7 @@
     <!-- This is the default theme that GTK assumes for the App (with the correct applicationId set). -->
     <!-- https://discourse.gnome.org/t/how-are-icon-names-translated-in-gtk/20520 -->
     <gresource prefix="/at/gfoidl/cairo/gtk4/demo/icons">
-        <file alias="gtk4demo-symbolic.svg">../../../icon.svg</file>
+        <file alias="gtk4demo.svg">../../../icon.svg</file>
 
         <file preprocess="xml-stripblanks" alias="colormap_default.svg">images/icons/edit-tag-symbolic.svg</file>
         <file preprocess="xml-stripblanks" alias="colormap_optimized.svg">images/icons/favorite-new-symbolic.svg</file>

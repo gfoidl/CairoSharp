@@ -105,7 +105,7 @@ public sealed class MainWindow : ApplicationWindow
     {
         // https://discourse.gnome.org/t/how-are-icon-names-translated-in-gtk/20520
         // So the -symbolic is a GTK suffix, when found it's used, otherwise gtk4demo will be used.
-        const string IconName = "gtk4demo-symbolic";
+        const string IconName = "gtk4demo";
 
         IconTheme iconTheme = IconTheme.GetForDisplay(this.GetDisplay());
 

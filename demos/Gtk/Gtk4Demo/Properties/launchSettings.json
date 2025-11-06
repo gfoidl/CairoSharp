@@ -3,7 +3,7 @@
         "Gtk4Demo": {
             "commandName"         : "Project",
             "environmentVariables": {
-                //"GSK_RENDERER": "cairo"
+                //"GSK_RENDERER": "vulkan"    // help for options
                 //"GTK_THEME": "Adwaita:dark"
                 //"GDK_BACKEND": "x11"
             }
