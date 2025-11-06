@@ -1,10 +1,16 @@
 // (c) gfoidl, all rights reserved
 
 //#define DROPDOWN_SIMPLE_STRING_LIST
-//#define DROPDOWN_USE_SEPARATOR
+//#define DROPDOWN_USE_SEPARATOR        // With the spin button this can't work nicely, otherwise of course
 #define DROPDOWN_ENABLE_SEARCH
 #define DROPDOWN_BIND_TO_SPIN_VIA_UI
+//#define DROPDOWN_ITEM_SET_GET_DATA_HELPER
 #define USE_PIXEL_ROW_ACCESSOR
+
+// Doesn't work at the moment with Gir.Core. For BuilderListItemFactory there's an example in https://github.com/gircore/gir.core/blob/f15dc086bd70c2e0878ba686f750128b0eda00b7/src/Samples/Gtk-4.0/ListView/TemplateListViewWindow.cs#L20,
+// but the property expression doesn't work with our managed objects. Something like https://developer.gnome.org/documentation/tutorials/widget-templates.html for Vala
+// would be really cool to have.
+//#define DROPDOWN_ITEM_VIA_BUILDER     
 
 extern alias CairoSharp;
 
@@ -51,7 +57,6 @@ public sealed partial class PixelWindow : Window
         _funcName = funcName;
 
         builder.Connect(this);
-        builder.Dispose();
 
         Debug.Assert(_colorMapsDropDown           is not null);
         Debug.Assert(_colorMapsSpinButton         is not null);
@@ -250,21 +255,9 @@ public sealed partial class PixelWindow : Window
             factory.OnSetup += (SignalListItemFactory factory, SignalListItemFactory.SetupSignalArgs args) =>
             {
                 Debug.Assert(args.Object is ListItem);
+
                 ListItem listItem = (args.Object as ListItem)!;
-
-                Box box     = Box.New(Orientation.Horizontal, 10);
-                Image image = Image.New();
-                Label label = Label.New(str: null);
-
-                label.Xalign = 0f;
-
-                box.Append(image);
-                box.Append(label);
-
-                listItem.SetData("image", image.Handle.DangerousGetHandle());
-                listItem.SetData("label", label.Handle.DangerousGetHandle());
-
-                listItem.Child = box;
+                listItem.Child    = new ColorMapDropDownItem(listItem);
             };
 
             factory.OnBind += (SignalListItemFactory factory, SignalListItemFactory.BindSignalArgs args) =>
@@ -275,9 +268,7 @@ public sealed partial class PixelWindow : Window
                 ColorMapInfo? colorMapInfo = listItem.GetItem() as ColorMapInfo;
                 Debug.Assert(colorMapInfo is not null);
 
-                // Are set by SetData in OnSetup above.
-                using Image image = new(new Gtk.Internal.ImageHandle(listItem.GetData("image"), ownsHandle: false));
-                using Label label = new(new Gtk.Internal.LabelHandle(listItem.GetData("label"), ownsHandle: false));
+                (Image image, Label label) = ColorMapDropDownItem.GetChildren(listItem);
 
                 label.SetText(colorMapInfo.Name);
 
@@ -666,7 +657,7 @@ public sealed partial class PixelWindow : Window
     // https://gircore.github.io/docs/faq.html#how-to-create-subclasses-of-a-gobject-based-class
     [GObject.Subclass<GObject.Object>]
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-    private partial class ColorMapInfo
+    private sealed partial class ColorMapInfo
     {
         public string Name        { get; }
         public bool Optimized     { get; }
@@ -695,4 +686,49 @@ public sealed partial class PixelWindow : Window
         internal static readonly Dictionary<nint, ColorMapInfo> s_handleMap = [];
 #endif
     }
+
+
+#if !DROPDOWN_ITEM_VIA_BUILDER
+    private sealed class ColorMapDropDownItem : Box
+    {
+        public ColorMapDropDownItem(ListItem listItem)
+        {
+            this.SetOrientation(Orientation.Horizontal);
+            this.SetSpacing(10);
+
+            Image image = Image.New();
+            Label label = Label.New(str: null);
+
+            label.Xalign = 0f;
+
+            this.Append(image);
+            this.Append(label);
+
+#if DROPDOWN_ITEM_SET_GET_DATA_HELPER
+            listItem.SetData("image", image.Handle.DangerousGetHandle());
+            listItem.SetData("label", label.Handle.DangerousGetHandle());
+#endif
+        }
+
+        public static (Image image, Label label) GetChildren(ListItem listItem)
+        {
+#if DROPDOWN_ITEM_SET_GET_DATA_HELPER
+            // Are set by SetData in OnSetup above.
+            using Image image = new(new Gtk.Internal.ImageHandle(listItem.GetData("image"), ownsHandle: false));
+            using Label label = new(new Gtk.Internal.LabelHandle(listItem.GetData("label"), ownsHandle: false));
+#else
+            Box? box = listItem.Child as Box;
+            Debug.Assert(box is not null);
+
+            Image? image = box.GetFirstChild() as Image;
+            Debug.Assert(image is not null);
+
+            Label? label = image.GetNextSibling() as Label;
+            Debug.Assert(label is not null);
+#endif
+
+            return(image, label);
+        }
+    }
+#endif
 }

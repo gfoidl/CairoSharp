@@ -35,9 +35,9 @@ public sealed class MainWindow : ApplicationWindow
 #pragma warning restore CS0649
 
 #if UI_FROM_RESOURCE
-    public MainWindow(Application app) : this(app, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/demo.ui"), "mainWindow") { }
+    public MainWindow(Application app) : this(app, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/ui/windows.ui"), "mainWindow") { }
 #else
-    public MainWindow(Application app) : this(app, new Builder("demo.4.ui"), "mainWindow") { }
+    public MainWindow(Application app) : this(app, new Builder("windows.4.ui"), "mainWindow") { }
 #endif
 
     private MainWindow(Application app, Builder builder, string name)
@@ -54,7 +54,10 @@ public sealed class MainWindow : ApplicationWindow
         _builder = builder;
 
         this.AddMenuActions();
+
+#if UI_FROM_RESOURCE
         this.SetIcon();
+#endif
 
         Debug.Assert(_drawingArea is not null);
         _drawingArea.SetDrawFunc(this.Draw);
@@ -110,6 +113,7 @@ public sealed class MainWindow : ApplicationWindow
         });
     }
 
+#if UI_FROM_RESOURCE
     private void SetIcon()
     {
         // https://discourse.gnome.org/t/how-are-icon-names-translated-in-gtk/20520
@@ -153,6 +157,7 @@ public sealed class MainWindow : ApplicationWindow
             Console.WriteLine($"icon: {icon.IconName}, {icon.GetIntrinsicWidth()} x {icon.GetIntrinsicHeight()}");
         }
     }
+#endif
 
     private void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {

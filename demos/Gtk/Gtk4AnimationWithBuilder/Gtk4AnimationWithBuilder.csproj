@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="designer\Animation.ui" LogicalName="AnimationWindow.4.ui" />
+        <EmbeddedResource Include="builder\Animation.ui" LogicalName="AnimationWindow.4.ui" />
     </ItemGroup>
 
 </Project>

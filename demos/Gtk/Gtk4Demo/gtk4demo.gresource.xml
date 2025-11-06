@@ -12,9 +12,12 @@
     GTK programs can be found on Windows e.g. under C:\Program Files\msys64\ucrt64\bin
 -->
 <gresources>
+    <gresource prefix="/at/gfoidl/cairo/gtk4/demo/ui">
+        <file alias="windows.ui"              compressed="true">builder/windows.ui</file>
+        <file alias="colormapdropdownitem.ui" compressed="true">builder/colormapdropdownitem.ui</file>
+    </gresource>
+    
     <gresource prefix="/at/gfoidl/cairo/gtk4/demo">
-        <file alias="demo.ui" compressed="true">designer/demo.ui</file>
-
         <!-- Instead of the alias it could also be a separate gresource element with the prefix -->
         <file preprocess="xml-stripblanks" alias="function/peaks.svg">images/functions/peaks_function.svg</file>
         <file preprocess="xml-stripblanks" alias="function/mexican.svg">images/functions/mexican_hat_function.svg</file>

@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(UIFromResource)' != 'true'">
-        <EmbeddedResource Include="designer\demo.ui" LogicalName="demo.4.ui" />
+        <EmbeddedResource Include="builder\windows.ui" LogicalName="windows.4.ui" />
     </ItemGroup>
 
     <ItemGroup>
