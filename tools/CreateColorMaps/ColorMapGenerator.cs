@@ -7,8 +7,8 @@ namespace CreateColorMaps;
 
 internal abstract class ColorMapGenerator(string name, string? comment = null)
 {
-    protected readonly string _name    = name;
-    private readonly string?  _comment = comment;
+    protected readonly string  _name    = name;
+    private   readonly string? _comment = comment;
 
     protected abstract string Type { get; }
     //-------------------------------------------------------------------------

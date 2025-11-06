@@ -22,6 +22,8 @@ namespace Gtk4Demo;
 
 public sealed class MainWindow : ApplicationWindow
 {
+    private readonly Builder _builder;
+
     private string?               _lastSelectedDemo;
     private Action<CairoContext>? _onDrawAction;
     private readonly byte[]       _pngData = File.ReadAllBytes("romedalen.png");
@@ -48,7 +50,8 @@ public sealed class MainWindow : ApplicationWindow
         app.SetMenubar(mainMenu);
 
         builder.Connect(this);
-        builder.Dispose();
+        //builder.Dispose();    // Could be disposed here, when not needed later on.
+        _builder = builder;
 
         this.AddMenuActions();
         this.SetIcon();
@@ -60,6 +63,12 @@ public sealed class MainWindow : ApplicationWindow
         clickGesture.Button       = GdkButtonAll;
         clickGesture.OnPressed   += this.DrawingAreaClicked;
         _drawingArea.AddController(clickGesture);
+    }
+
+    public override void Dispose()
+    {
+        _builder.Dispose();
+        base.Dispose();
     }
 
     private void AddMenuActions()
@@ -92,7 +101,7 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("funcPeaks"  , PixelGraphics);
         this.AddAction("funcMexican", PixelGraphics);
 
-        static void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!);
+        void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!, _builder);
 
         this.AddAction("showAbout", () =>
         {

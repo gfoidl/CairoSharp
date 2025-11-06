@@ -80,6 +80,16 @@ internal sealed class DefaultCodeColorMapGenerator(string name, string? comment 
     //-------------------------------------------------------------------------
     private static IEnumerable<(double Red, double Green, double Blue)> CreateSine()
     {
+        /* GnuPlot
+            set xrange[0:255]
+
+            r(x) = (sin(x * 2 * pi / 255 - pi) + 1) / 2
+            g(x) = (sin(x * 2 * pi / 255 - pi / 2) + 1) / 2
+            b(x) = (sin(x * 2 * pi / 255) + 1) / 2         
+
+            plot r(x), g(x), b(x)
+        */
+
         for (int i = 0; i < Entries; ++i)
         {
             // new color in [-1,1]

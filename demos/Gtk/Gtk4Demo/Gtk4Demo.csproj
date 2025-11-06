@@ -32,7 +32,7 @@
         <Content Include="icon.ico" Link="icon.ico" />
     </ItemGroup>
 
-    <!-- Compile gresource as part of this build. MSYS must be on the PATH. -->
+    <!-- Compile gresource as part of this build. MSYS2 must be on the PATH. -->
     <Target Name="GResources" BeforeTargets="PreBuildEvent">
         <Message Importance="high" Text="----------------- gresource -----------------" />
         <Exec Command="glib-compile-resources gtk4demo.gresource.xml" />

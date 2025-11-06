@@ -45,10 +45,8 @@ public sealed partial class PixelWindow : Window
     [Connect] private readonly DrawingArea _drawingAreaPixels;
 #pragma warning restore CS0649
 
-    private PixelWindow(string funcName) : this(funcName, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/demo.ui"), "pixelWindow") { }
-
-    private PixelWindow(string funcName, Builder builder, string name)
-        : base(new Gtk.Internal.WindowHandle(builder.GetPointer(name), ownsHandle: false))
+    private PixelWindow(string funcName, Builder builder)
+        : base(new Gtk.Internal.WindowHandle(builder.GetPointer("pixelWindow"), ownsHandle: false))
     {
         _funcName = funcName;
 
@@ -84,9 +82,9 @@ public sealed partial class PixelWindow : Window
         this.SetupGrayscaleDropDown();
     }
 
-    public static void Show(string funcName)
+    public static void Show(string funcName, Builder builder)
     {
-        using PixelWindow pixelWindow = new(funcName);
+        using PixelWindow pixelWindow = new(funcName, builder);
 #if DEBUG
         pixelWindow.Modal = false;
 #endif
@@ -340,7 +338,7 @@ public sealed partial class PixelWindow : Window
             else
             {
                 Debug.Assert(colorMapInfo.Type is not null);
-                _selectedColorMap     = Activator.CreateInstance(colorMapInfo.Type) as ColorMap;
+                _selectedColorMap     = colorMapInfo.ColorMap;
                 _selectedColorMapName = colorMapInfo.Name;
 
                 DisplayDescriptionOfSelectedColorMap();
@@ -362,7 +360,7 @@ public sealed partial class PixelWindow : Window
 #endif
             _colorMapsSpinButton.SetRange(-1, entriesCount + 1);
 
-            // Is set via the ui-file (extra fragments in Cambalache). 
+            // Is set via the ui-file (`GtkAdjustment` in Cambalache).
             //_colorMapsSpinButton.SetIncrements(1, 2);
         }
 
@@ -370,11 +368,17 @@ public sealed partial class PixelWindow : Window
         {
             Debug.Assert(_selectedColorMap is not null);
 
-            // GTK adds a reference to the buffer once assigned to the TextView.
-            using TextBuffer textBuffer = TextBuffer.New(table: null);
-            textBuffer.SetText(_selectedColorMap.Description, -1);
+            TextBuffer? textBuffer = _colorMapInfoTextView.GetBuffer();
 
-            _colorMapInfoTextView.SetBuffer(textBuffer);
+            if (textBuffer is null)
+            {
+                textBuffer = TextBuffer.New(table: null);
+
+                // GTK adds a reference to the buffer once assigned to the TextView.
+                _colorMapInfoTextView.SetBuffer(textBuffer);
+            }
+
+            textBuffer.SetText(_selectedColorMap.Description, -1);
             _colorMapInfoExpander.Visible = true;
         }
     }
@@ -664,15 +668,21 @@ public sealed partial class PixelWindow : Window
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     private partial class ColorMapInfo
     {
-        public string Name    { get; }
-        public bool Optimized { get; }
-        public Type? Type     { get; }
+        public string Name        { get; }
+        public bool Optimized     { get; }
+        public Type? Type         { get; }
+        public ColorMap? ColorMap { get; }
 
         public ColorMapInfo(string name, bool optimized, Type? type) : this()
         {
             this.Name      = name;
             this.Optimized = optimized;
             this.Type      = type;
+
+            if (type is not null)
+            {
+                this.ColorMap = Activator.CreateInstance(type) as ColorMap;
+            }
 
 #if DROPDOWN_ENABLE_SEARCH
             s_handleMap.TryAdd(this.Handle.DangerousGetHandle(), this);

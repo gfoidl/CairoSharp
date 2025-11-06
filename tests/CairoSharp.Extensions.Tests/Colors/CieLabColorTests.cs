@@ -149,4 +149,32 @@ public class CieLabColorTests
             Assert.That(actual.Alpha, Is.EqualTo(rgb.Alpha));
         }
     }
+
+    [Test]
+    public void ColorDistance_with_same_color___0()
+    {
+        double r = TestContext.CurrentContext.Random.NextDouble();
+        double g = TestContext.CurrentContext.Random.NextDouble();
+        double b = TestContext.CurrentContext.Random.NextDouble();
+
+        Color rgb           = new(r, g, b);
+        CieLabColor cieLab0 = rgb.ToCieLab();
+        CieLabColor cieLab1 = rgb.ToCieLab();
+
+        double actual = cieLab0.ColorDistance(cieLab1);
+
+        Assert.That(actual, Is.Zero);
+    }
+
+    [Test]
+    public void ColorDistance___OK()
+    {
+        CieLabColor c0 = Color.FromRgbBytes(100, 100, 100).ToCieLab();
+        CieLabColor c1 = Color.FromRgbBytes(120, 120, 120).ToCieLab();
+
+        double actual = c0.ColorDistance(c1);
+
+        // https://colormine.org/delta-e-calculator
+        Assert.That(actual, Is.EqualTo(8.0567).Within(1e-2));
+    }
 }

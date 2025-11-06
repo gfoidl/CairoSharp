@@ -269,7 +269,7 @@ public static class ColorExtensions
                 {
                     CieLabColor cieLab = color.ToCieLab();
 
-                    // L* is [0,100]
+                    // L* is [0,100], scale to [0,1]
                     yLinear = cieLab.L * 1e-2;
                     break;
                 }

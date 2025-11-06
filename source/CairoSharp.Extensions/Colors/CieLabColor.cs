@@ -50,7 +50,7 @@ public readonly record struct CieLabColor(double L, double A, double B)
     /// <summary>
     /// Reference white D65.
     /// </summary>
-    public static CieLabColor Xn { get; }   = new CieLabColor(0.950456, 1, 1.088754);
+    public static CieLabColor Xn { get; }   = new CieLabColor  (0.950456, 1, 1.088754);
     internal static Vector256<double> XnVec => Vector256.Create(0.950456, 1, 1.088754, 0);
 
     /// <summary>
