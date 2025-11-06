@@ -4,6 +4,9 @@
         <!-- WinExe in order to hide the console window. -->
         <OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
         <OutputType Condition="'$(Configuration)' != 'Debug'">WinExe</OutputType>
+
+        <!-- https://discourse.gnome.org/t/set-window-icon-gtk4/10183/6 -->
+        <ApplicationIcon>icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -20,12 +23,21 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(UIFromResource)' != 'true'">
-        <EmbeddedResource Include="designer\demo.ui" LogicalName="demo.4.ui" />
+        <EmbeddedResource Include="builder\windows.ui" LogicalName="windows.4.ui" />
     </ItemGroup>
 
     <ItemGroup>
         <Content Include="gtk4demo.gresource" CopyToOutputDirectory="PreserveNewest" Visible="false" />
         <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="icon.ico" Link="icon.ico" />
     </ItemGroup>
+
+    <!-- Compile gresource as part of this build. MSYS2 must be on the PATH. -->
+    <Target Name="GResources" BeforeTargets="PreBuildEvent">
+        <Message Importance="high" Text="----------------- gresource -----------------" />
+        <Exec Command="glib-compile-resources gtk4demo.gresource.xml" />
+        <Exec Command="gresource list gtk4demo.gresource" />
+        <Message Importance="high" Text="----------------- gresource -----------------" />
+    </Target>
 
 </Project>

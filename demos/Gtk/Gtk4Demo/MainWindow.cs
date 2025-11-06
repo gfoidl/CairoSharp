@@ -15,17 +15,14 @@ using CairoSharp::Cairo.Surfaces.Images;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
 using Gtk4.Extensions;
+using static Gtk4.Extensions.Gtk4Constants;
 using Path = CairoSharp::Cairo.Drawing.Path.Path;
 
 namespace Gtk4Demo;
 
 public sealed class MainWindow : ApplicationWindow
 {
-    // The should be exposed by GirCore ideally.
-    private const uint GdkButtonAll       = 0;
-    private const uint GdkButtonPrimary   = 1;
-    private const uint GdkButtonMiddle    = 2;
-    private const uint GdkButtonSecondary = 3;
+    private readonly Builder _builder;
 
     private string?               _lastSelectedDemo;
     private Action<CairoContext>? _onDrawAction;
@@ -38,9 +35,9 @@ public sealed class MainWindow : ApplicationWindow
 #pragma warning restore CS0649
 
 #if UI_FROM_RESOURCE
-    public MainWindow(Application app) : this(app, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/demo.ui"), "mainWindow") { }
+    public MainWindow(Application app) : this(app, Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/ui/windows.ui"), "mainWindow") { }
 #else
-    public MainWindow(Application app) : this(app, new Builder("demo.4.ui"), "mainWindow") { }
+    public MainWindow(Application app) : this(app, new Builder("windows.4.ui"), "mainWindow") { }
 #endif
 
     private MainWindow(Application app, Builder builder, string name)
@@ -53,10 +50,14 @@ public sealed class MainWindow : ApplicationWindow
         app.SetMenubar(mainMenu);
 
         builder.Connect(this);
-        builder.Dispose();
+        //builder.Dispose();    // Could be disposed here, when not needed later on.
+        _builder = builder;
 
         this.AddMenuActions();
+
+#if UI_FROM_RESOURCE
         this.SetIcon();
+#endif
 
         Debug.Assert(_drawingArea is not null);
         _drawingArea.SetDrawFunc(this.Draw);
@@ -67,9 +68,16 @@ public sealed class MainWindow : ApplicationWindow
         _drawingArea.AddController(clickGesture);
     }
 
+    public override void Dispose()
+    {
+        _builder.Dispose();
+        base.Dispose();
+    }
+
     private void AddMenuActions()
     {
-        this.AddAction("saveAsPng"           , this.SaveAsPng);
+        this.AddAction("saveAsPng", async () => await _drawingArea.SaveAsPngWithFileDialog(this, _lastSelectedDemo));
+
         this.AddAction("drawArc"             , this.DrawArc);
         this.AddAction("drawArcNegative"     , this.DrawArcNegative);
         this.AddAction("drawClip"            , this.DrawClip);
@@ -96,23 +104,31 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("funcPeaks"  , PixelGraphics);
         this.AddAction("funcMexican", PixelGraphics);
 
-        static void PixelGraphics(string? name) => PixelWindow.Show(name);
+        void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!, _builder);
+
+        this.AddAction("showAbout", () =>
+        {
+            MyAboutDialog aboutDialog = new();
+            aboutDialog.Show();
+        });
     }
 
+#if UI_FROM_RESOURCE
     private void SetIcon()
     {
+        // https://discourse.gnome.org/t/how-are-icon-names-translated-in-gtk/20520
+        // So the -symbolic is a GTK suffix, when found it's used, otherwise gtk4demo will be used.
+        const string IconName = "gtk4demo";
+
         IconTheme iconTheme = IconTheme.GetForDisplay(this.GetDisplay());
 
-        DumpPaths(iconTheme);
+        DumpInfos(iconTheme);
 
-        using (IconPaintable icon = iconTheme.LookupIcon("gtk4demo", fallbacks: null, 48, 1, TextDirection.None, IconLookupFlags.None))
+        if (iconTheme.HasIcon(IconName))
         {
-            Console.WriteLine($"icon: {icon.IconName}, {icon.GetIntrinsicWidth()} x {icon.GetIntrinsicHeight()}");
-        }
-
-        if (iconTheme.HasIcon("gtk4demo"))
-        {
-            this.SetIconName("gtk4demo");
+            // Actually the icon is ignored on Wayland and Windows.
+            // https://discourse.gnome.org/t/set-window-icon-gtk4/10183
+            this.SetIconName(IconName);
             Debug.WriteLine("icon set");
         }
         else
@@ -121,7 +137,7 @@ public sealed class MainWindow : ApplicationWindow
         }
 
         [Conditional("DEBUG")]
-        static void DumpPaths(IconTheme iconTheme)
+        static void DumpInfos(IconTheme iconTheme)
         {
             Console.WriteLine("IconTheme search path:");
             foreach (string path in iconTheme.SearchPath)
@@ -134,57 +150,14 @@ public sealed class MainWindow : ApplicationWindow
             {
                 Console.WriteLine($"\t{path}");
             }
+
+            Console.WriteLine();
+
+            using IconPaintable icon = iconTheme.LookupIcon(IconName, fallbacks: null, 48, 1, TextDirection.None, IconLookupFlags.None);
+            Console.WriteLine($"icon: {icon.IconName}, {icon.GetIntrinsicWidth()} x {icon.GetIntrinsicHeight()}");
         }
     }
-
-    private async Task SaveAsPng()
-    {
-        using FileFilter fileFilter = FileFilter.New();
-        fileFilter.AddSuffix("png");
-
-        using FileDialog fileDialog = FileDialog.New();
-        fileDialog.InitialName      = $"{_lastSelectedDemo}.png";
-        fileDialog.DefaultFilter    = fileFilter;
-
-        try
-        {
-            using Gio.File? file = await fileDialog.SaveAsync(this);
-
-            if (file?.GetPath() is string path)
-            {
-                // Based on https://discourse.gnome.org/t/gtk4-screenshot-with-gtksnapshot/27981/3
-
-                using Snapshot snapshot = Snapshot.New();
-                // _drawingArea.Snapshot(snapshot);
-                // The above isn't available in GirCore, so use this workaround:
-                _drawingArea.Parent!.SnapshotChild(_drawingArea, snapshot);
-
-                Gsk.RenderNode? renderNode = snapshot.FreeToNode();
-                Debug.Assert(renderNode is not null);
-
-                try
-                {
-                    // Just for fun
-                    renderNode.WriteToFile($"{path}.node");
-
-                    using Gsk.Renderer? renderer = _drawingArea.GetNative()?.GetRenderer();
-                    Debug.Assert(renderer is not null);
-
-                    using Gdk.Texture texture = renderer.RenderTexture(renderNode, null);
-                    texture.SaveToPng(path);
-                }
-                finally
-                {
-                    // IMO a Dispose method should be exposed by GirCore
-                    renderNode.Unref();
-                }
-            }
-        }
-        catch (GLib.GException ex) when (ex.Message == "Dismissed by user")
-        {
-            // ignore
-        }
-    }
+#endif
 
     private void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {

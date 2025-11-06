@@ -5,6 +5,12 @@ using Gtk4Demo;
 
 if (OperatingSystem.IsWindows())
 {
+    // client-side decorations for a more Windows-like look and feel, cf. https://docs.gtk.org/gtk4/running.html#gtk_csd
+    Environment.SetEnvironmentVariable("GTK_CSD", "0");
+
+    // Renders are more beautiful Window w/o any artifacts from the rounded edges on Windows.
+    Environment.SetEnvironmentVariable("GSK_RENDERER", "vulkan");
+
     // GTK 4 is installed via https://www.gtk.org/docs/installations/windows/#using-gtk-from-msys2-packages
     // For simplicity we just append the PATH so that Windows knows where to look for the DLLs.
     string path = Environment.GetEnvironmentVariable("PATH")!;
@@ -13,9 +19,11 @@ if (OperatingSystem.IsWindows())
 }
 
 using Application app = Application.New("at.gfoidl.cairo.gtk4.demo", Gio.ApplicationFlags.FlagsNone);
-app.OnActivate += static (Gio.Application app, EventArgs args) =>
+app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
 {
-    MainWindow window = new((Application)app);
+    Application app = (Application)gioApp;
+    Window window   = app.ActiveWindow ?? new MainWindow(app);
+
     window.Show();
 };
 

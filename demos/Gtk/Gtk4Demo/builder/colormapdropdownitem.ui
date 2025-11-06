@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
+<interface>
+  <!-- interface-copyright gfoidl -->
+  <!-- interface-authors gfoidl -->
+  <requires lib="gtk" version="4.12"/>
+  <template class="ColorMapDropDownItem" parent="GtkBox">
+    <property name="spacing">10</property>
+    <child>
+      <object class="GtkImage" id="dropDownItemImage"/>
+    </child>
+    <child>
+      <object class="GtkLabel" id="dropDownItemLabel">
+        <property name="xalign">0.0</property>
+      </object>
+    </child>
+    <!-- Custom template fragments -->
+    <!-- needs to be a template, as several instances of this widget are created -->
+  </template>
+</interface>

@@ -12,14 +12,23 @@
     GTK programs can be found on Windows e.g. under C:\Program Files\msys64\ucrt64\bin
 -->
 <gresources>
-    <gresource prefix="/at/gfoidl/cairo/gtk4/demo">
-        <file alias="demo.ui" compressed="true">designer/demo.ui</file>
-
-        <!-- Instead of the alias it could also be a separate gresource element with the prefix -->
-        <file alias="function/peaks.svg">images/peaks_function.svg</file>
-        <file alias="function/mexican.svg">images/mexican_hat_function.svg</file>
+    <gresource prefix="/at/gfoidl/cairo/gtk4/demo/ui">
+        <file alias="windows.ui"              compressed="true">builder/windows.ui</file>
+        <file alias="colormapdropdownitem.ui" compressed="true">builder/colormapdropdownitem.ui</file>
     </gresource>
+    
+    <gresource prefix="/at/gfoidl/cairo/gtk4/demo">
+        <!-- Instead of the alias it could also be a separate gresource element with the prefix -->
+        <file preprocess="xml-stripblanks" alias="function/peaks.svg">images/functions/peaks_function.svg</file>
+        <file preprocess="xml-stripblanks" alias="function/mexican.svg">images/functions/mexican_hat_function.svg</file>
+    </gresource>
+
+    <!-- This is the default theme that GTK assumes for the App (with the correct applicationId set). -->
+    <!-- https://discourse.gnome.org/t/how-are-icon-names-translated-in-gtk/20520 -->
     <gresource prefix="/at/gfoidl/cairo/gtk4/demo/icons">
-        <file alias="gtk4demo.png">icon.png</file>        
+        <file alias="gtk4demo.svg">../../../icon.svg</file>
+
+        <file preprocess="xml-stripblanks" alias="colormap_default.svg">images/icons/edit-tag-symbolic.svg</file>
+        <file preprocess="xml-stripblanks" alias="colormap_optimized.svg">images/icons/favorite-new-symbolic.svg</file>
     </gresource>
 </gresources>

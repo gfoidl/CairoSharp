@@ -21,8 +21,13 @@
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UseArtifactsOutput>true</UseArtifactsOutput>
         <DebugType>embedded</DebugType>
+
+        <!-- Place all the artifacts in a central place, much nicer :-) -->
+        <!-- cf. https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#simplified-output-paths -->
+        <!-- But we need to specify a custom path, as we're one level deeper. -->
+        <!--<UseArtifactsOutput>true</UseArtifactsOutput>-->
+        <ArtifactsPath>$(MSBuildThisFileDirectory)\artifacts</ArtifactsPath>
     </PropertyGroup>
 
 </Project>

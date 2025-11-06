@@ -1,7 +1,9 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 
 namespace Cairo;
 
@@ -14,7 +16,8 @@ namespace Cairo;
 /// <param name="Alpha">alpha component of color</param>
 /// <remarks>
 /// The color and alpha components are floating point numbers in the range 0 to 1.
-/// If the values passed in are outside that range, they will be clamped.
+/// If the values passed in are outside that range, they will be clamped when used
+/// in cairo.
 /// <para>
 /// Note that the color and alpha values are not premultiplied.
 /// </para>
@@ -31,7 +34,7 @@ public readonly record struct Color(double Red, double Green, double Blue, doubl
     /// <param name="blue">blue component of color</param>
     /// <remarks>
     /// The color components are floating point numbers in the range 0 to 1. If the values
-    /// passed in are outside that range, they will be clamped.
+    /// passed in are outside that range, they will be clamped when used in cairo.
     /// </remarks>
     public Color(double red, double green, double blue) : this(red, green, blue, 1d) { }
 
@@ -39,4 +42,23 @@ public readonly record struct Color(double Red, double Green, double Blue, doubl
     /// Default color that is opaque black.
     /// </summary>
     public static Color Default { get; } = new Color(0, 0, 0, 1d);
+
+#pragma warning disable CS8851 // Record defines 'Equals' but not 'GetHashCode'.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(Color other)
+#pragma warning restore CS8851 // Record defines 'Equals' but not 'GetHashCode'.
+    {
+        if (Vector256.IsHardwareAccelerated)
+        {
+            Vector256<double> va = Unsafe.BitCast<Color, Vector256<double>>(this);
+            Vector256<double> vb = Unsafe.BitCast<Color, Vector256<double>>(other);
+
+            return va == vb;
+        }
+
+        return this.Red   == other.Red
+            && this.Green == other.Green
+            && this.Blue  == other.Blue
+            && this.Alpha == other.Alpha;
+    }
 }

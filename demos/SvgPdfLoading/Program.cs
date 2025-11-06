@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
+using Cairo.Extensions.Colors;
 using Cairo.Extensions.Loading;
 using Cairo.Extensions.Loading.PDF;
 using Cairo.Extensions.Loading.Script;

@@ -1,0 +1,13 @@
+{
+    "profiles": {
+        "Gtk4Demo": {
+            "commandName"         : "Project",
+            "environmentVariables": {
+                //"GSK_RENDERER": "vulkan"    // help for options
+                //"GTK_THEME": "Adwaita:dark"
+                //"GDK_BACKEND": "x11"
+                //"GTK_CSD": "0"              // client-side decorations, cf. https://docs.gtk.org/gtk4/running.html#gtk_csd
+            }
+        }
+    }
+}

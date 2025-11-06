@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
+<interface>
+  <!-- interface-name demo.ui -->
+  <!-- interface-copyright gfoidl -->
+  <!-- interface-authors gfoidl -->
+  <requires lib="gio" version="2.0"/>
+  <requires lib="gtk" version="4.12"/>
+  <object class="GtkApplicationWindow" id="mainWindow">
+    <property name="resizable">False</property>
+    <property name="show-menubar">True</property>
+    <property name="title">CairoSamples</property>
+    <child>
+      <object class="GtkDrawingArea" id="_drawingArea">
+        <property name="content-height">256</property>
+        <property name="content-width">256</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+      </object>
+    </child>
+  </object>
+  <menu id="mainMenu">
+    <submenu>
+      <attribute name="label">Select a sample</attribute>
+      <item>
+        <attribute name="action">win.drawArc</attribute>
+        <attribute name="label">arc</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawArcNegative</attribute>
+        <attribute name="label">arc negative</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawClip</attribute>
+        <attribute name="label">clip</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawClipImage</attribute>
+        <attribute name="label">clip image</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawCurvedRectangle</attribute>
+        <attribute name="label">curved rectangle</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawRoundedRectangle</attribute>
+        <attribute name="label">rounded rectangle</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawCurveTo</attribute>
+        <attribute name="label">curve to</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawDash</attribute>
+        <attribute name="label">dash</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawFillAndStroke</attribute>
+        <attribute name="label">fill and stroke2</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawFillStyle</attribute>
+        <attribute name="label">fill style</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawGradient</attribute>
+        <attribute name="label">gradient</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawImage</attribute>
+        <attribute name="label">image</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawImagePattern</attribute>
+        <attribute name="label">image pattern</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawMultiSegmentCaps</attribute>
+        <attribute name="label">multi segment caps</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawLineCap</attribute>
+        <attribute name="label">set line cap</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawLineJoin</attribute>
+        <attribute name="label">line join</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawText</attribute>
+        <attribute name="label">text</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawTextCenter</attribute>
+        <attribute name="label">text align center</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawTextExtents</attribute>
+        <attribute name="label">text extents</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawGlyphs</attribute>
+        <attribute name="label">glyphs</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.drawGlyphExtents</attribute>
+        <attribute name="label">glyph extents</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.hitTest</attribute>
+        <attribute name="label">hit test</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label">Pixels</attribute>
+      <item>
+        <attribute name="action">win.funcPeaks</attribute>
+        <attribute name="label">Peaks function</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.funcMexican</attribute>
+        <attribute name="label">Mexican hat</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label">Actions</attribute>
+      <section>
+        <item>
+          <attribute name="action">win.saveAsPng</attribute>
+          <attribute name="label">Save as PNG</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="action">win.showAbout</attribute>
+          <attribute name="label">About</attribute>
+        </item>
+      </section>
+    </submenu>
+  </menu>
+  <object class="GtkWindow" id="pixelWindow">
+    <property name="modal">True</property>
+    <property name="resizable">False</property>
+    <property name="title">Pixel graphics</property>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkPicture" id="_equationImage"/>
+        </child>
+        <child>
+          <object class="GtkSeparator"/>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkCenterBox">
+                <child type="start">
+                  <object class="GtkDropDown" id="_colorMapsDropDown">
+                    <property name="margin-end">10</property>
+                    <property name="search-match-mode">substring</property>
+                    <property name="selected" bind-source="_colorMapsSpinButton" bind-property="value" bind-flags="bidirectional | sync-create">4294967295</property>
+                    <property name="width-request">165</property>
+                  </object>
+                </child>
+                <child type="center">
+                  <object class="GtkBox">
+                    <property name="spacing">10</property>
+                    <child>
+                      <object class="GtkSpinButton" id="_colorMapsSpinButton">
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="page-size">2.0</property>
+                            <property name="step-increment">1.0</property>
+                          </object>
+                        </property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="_colorMapInvertedCheckButton">
+                        <property name="label">invert color map</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="end">
+                  <object class="GtkButton" id="_pixelSaveAsPngButton">
+                    <property name="label">Save as PNG</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkCheckButton" id="_grayscaleCheckButton">
+                    <property name="label">gray scale</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkDropDown" id="_grayscaleModeDropDown">
+                    <property name="visible" bind-source="_grayscaleCheckButton" bind-property="active" bind-flags="sync-create">True</property>
+                    <property name="width-request">200</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator"/>
+        </child>
+        <child>
+          <object class="GtkExpander" id="_colorMapInfoExpander">
+            <property name="label">Info about color map</property>
+            <property name="visible">False</property>
+            <child>
+              <object class="GtkTextView" id="_colorMapInfoTextView">
+                <property name="cursor-visible">False</property>
+                <property name="editable">False</property>
+                <property name="pixels-above-lines">2</property>
+                <property name="pixels-below-lines">2</property>
+                <property name="wrap-mode">word</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkDrawingArea" id="_drawingAreaPixels">
+            <property name="content-height">400</property>
+            <property name="content-width">400</property>
+            <property name="halign">center</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

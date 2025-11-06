@@ -1,0 +1,32 @@
+<Project>
+
+    <Import Project="../Directory.Build.props" />
+
+    <PropertyGroup>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        
+        <SignAssembly>True</SignAssembly>
+        <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <!-- Missing XML comments -->
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <!--
+        TODO: remove the TFM net9.0. At the moment with the preview features there's anywhere a bug in
+        Roslyn, cf. https://github.com/dotnet/runtime/issues/115949
+    -->
+    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0' AND '$(TargetFramework)' != 'net9.0'">
+        <IsTrimmable>True</IsTrimmable>
+        <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+
+</Project>

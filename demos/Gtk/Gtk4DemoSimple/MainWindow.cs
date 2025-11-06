@@ -1,10 +1,12 @@
 // (c) gfoidl, all rights reserved
 
 // This won't work on Windows (why?), but it works on Linux.
+// On Windows it works with vulkan or cairo as GSK renderer (see Program.cs).
 #define USE_FRAME_WIDGET
 
 using Cairo;
 using Cairo.Extensions;
+using Cairo.Extensions.Colors;
 using Cairo.Extensions.Shapes;
 using Gtk;
 using Gtk4.Extensions;

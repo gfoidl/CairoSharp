@@ -1,26 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-        <SignAssembly>True</SignAssembly>
-        <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-
-        <!-- Missing XML comments and strong naming warning for referenced package -->
-        <NoWarn>$(NoWarn);CS1591;CS8002</NoWarn>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
-        <IsTrimmable>True</IsTrimmable>
-        <IsAotCompatible>True</IsAotCompatible>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <!-- Strong naming warning for referenced package -->
+        <NoWarn>$(NoWarn);CS8002</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -57,6 +39,11 @@
 
     <ItemGroup>
         <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
+
+        <!-- https://gircore.github.io/docs/faq.html#how-to-create-subclasses-of-a-gobject-based-class -->
+        <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.6.3">
+            <IncludeAssets>analyzers</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
