@@ -142,6 +142,7 @@
   </menu>
   <object class="GtkWindow" id="pixelWindow">
     <property name="destroy-with-parent">True</property>
+    <property name="hide-on-close">True</property>
     <property name="modal">True</property>
     <property name="resizable">False</property>
     <property name="title">Pixel graphics</property>
