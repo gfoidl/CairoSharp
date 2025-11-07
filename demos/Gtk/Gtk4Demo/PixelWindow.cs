@@ -100,6 +100,15 @@ public sealed partial class PixelWindow : Window
         clickGesture.OnPressed   += (GestureClick gesture, GestureClick.PressedSignalArgs eventArgs) =>
         {
             Debug.Assert(gesture.GetCurrentButton() == GdkButtonSecondary);
+
+            _drawingAreaPixelsPopoverMenu.SetPointingTo(new Gdk.Rectangle()
+            {
+                X      = (int)eventArgs.X,
+                Y      = (int)eventArgs.Y,
+                Width  = 1,
+                Height = 1
+            });
+
             _drawingAreaPixelsPopoverMenu.Popup();
         };
         _drawingAreaPixels.AddController(clickGesture);

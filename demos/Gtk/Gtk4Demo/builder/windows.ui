@@ -254,13 +254,17 @@
     </child>
   </object>
   <menu id="pixelsContextMenu">
-    <item>
-      <attribute name="action">winPix.colorMapInvert</attribute>
-      <attribute name="label">invert color map</attribute>
-    </item>
-    <item>
-      <attribute name="action">winPix.colorMapGrayscale</attribute>
-      <attribute name="label">grayscale</attribute>
-    </item>
+    <section>
+      <item>
+        <attribute name="action">winPix.colorMapInvert</attribute>
+        <attribute name="label">invert color map</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="action">winPix.colorMapGrayscale</attribute>
+        <attribute name="label">grayscale</attribute>
+      </item>
+    </section>
   </menu>
 </interface>
