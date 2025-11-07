@@ -90,7 +90,7 @@ public sealed partial class PixelWindow : Window
 
         this.SetupColorMapDropDown();
         this.SetupGrayscaleDropDown();
-        this.DrawingAreaAddContextMenu();        
+        this.DrawingAreaAddContextMenu();
     }
 
     private void DrawingAreaAddContextMenu()
@@ -107,9 +107,9 @@ public sealed partial class PixelWindow : Window
         //_drawingAreaPixelsPopoverMenu.SetParent(_drawingAreaPixels);
 
         Gio.SimpleActionGroup actionGroup = Gio.SimpleActionGroup.New();
+        actionGroup.AddAction("colorMapInvert"   , _colorMapInvertedCheckButton.Active, () => _colorMapInvertedCheckButton.Active = !_colorMapInvertedCheckButton.Active);
+        actionGroup.AddAction("colorMapGrayscale", _grayscaleCheckButton       .Active, () => _grayscaleCheckButton.Active        = !_grayscaleCheckButton       .Active);
         this.InsertActionGroup("winPix", actionGroup);
-        actionGroup.AddAction("colorMapInvert"   , () => _colorMapInvertedCheckButton.Active = !_colorMapInvertedCheckButton.Active);
-        actionGroup.AddAction("colorMapGrayscale", () => _grayscaleCheckButton.Active        = !_grayscaleCheckButton       .Active);
     }
 
     public static void Show(string funcName, Builder builder)
