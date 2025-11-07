@@ -244,6 +244,7 @@
             <property name="halign">center</property>
             <child>
               <object class="GtkPopoverMenu" id="_drawingAreaPixelsPopoverMenu">
+                <property name="flags">nested</property>
                 <property name="menu-model">pixelsContextMenu</property>
                 <property name="position">right</property>
               </object>
@@ -261,10 +262,34 @@
       </item>
     </section>
     <section>
+      <attribute name="label">Gray</attribute>
       <item>
         <attribute name="action">winPix.colorMapGrayscale</attribute>
         <attribute name="label">grayscale</attribute>
       </item>
+      <submenu id="_grayscaleModeSubmenu">
+        <attribute name="label">grayscale mode</attribute>
+        <item>
+          <attribute name="action">winPix.grayScaleLightness</attribute>
+          <attribute name="label">Lightness</attribute>
+        </item>
+        <item>
+          <attribute name="action">winPix.grayScaleAverage</attribute>
+          <attribute name="label">Average</attribute>
+        </item>
+        <item>
+          <attribute name="action">winPix.grayScaleLuminosity</attribute>
+          <attribute name="label">Luminosity</attribute>
+        </item>
+        <item>
+          <attribute name="action">winPix.grayScaleCieLab</attribute>
+          <attribute name="label">CieLab</attribute>
+        </item>
+        <item>
+          <attribute name="action">winPix.grayScaleGammaExpandedAverage</attribute>
+          <attribute name="label">Gamma expanded average</attribute>
+        </item>
+      </submenu>
     </section>
   </menu>
 </interface>

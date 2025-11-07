@@ -119,6 +119,12 @@ public sealed partial class PixelWindow : Window
         actionGroup.AddAction("colorMapInvert"   , _colorMapInvertedCheckButton.Active, () => _colorMapInvertedCheckButton.Active = !_colorMapInvertedCheckButton.Active);
         actionGroup.AddAction("colorMapGrayscale", _grayscaleCheckButton       .Active, () => _grayscaleCheckButton.Active        = !_grayscaleCheckButton       .Active);
         this.InsertActionGroup("winPix", actionGroup);
+
+        actionGroup.AddAction("grayScaleLightness"           , () => _grayscaleModeDropDown.Selected = 0);
+        actionGroup.AddAction("grayScaleAverage"             , () => _grayscaleModeDropDown.Selected = 1);
+        actionGroup.AddAction("grayScaleLuminosity"          , () => _grayscaleModeDropDown.Selected = 2);
+        actionGroup.AddAction("grayScaleCieLab"              , () => _grayscaleModeDropDown.Selected = 3);
+        actionGroup.AddAction("grayScaleGammaExpandedAverage", () => _grayscaleModeDropDown.Selected = 4);
     }
 
     public static void Show(string funcName, Builder builder)
