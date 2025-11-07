@@ -141,6 +141,7 @@
     </submenu>
   </menu>
   <object class="GtkWindow" id="pixelWindow">
+    <property name="destroy-with-parent">True</property>
     <property name="modal">True</property>
     <property name="resizable">False</property>
     <property name="title">Pixel graphics</property>
@@ -241,9 +242,25 @@
             <property name="content-height">400</property>
             <property name="content-width">400</property>
             <property name="halign">center</property>
+            <child>
+              <object class="GtkPopoverMenu" id="_drawingAreaPixelsPopoverMenu">
+                <property name="menu-model">pixelsContextMenu</property>
+                <property name="position">right</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
     </child>
   </object>
+  <menu id="pixelsContextMenu">
+    <item>
+      <attribute name="action">winPix.colorMapInvert</attribute>
+      <attribute name="label">invert color map</attribute>
+    </item>
+    <item>
+      <attribute name="action">winPix.colorMapGrayscale</attribute>
+      <attribute name="label">grayscale</attribute>
+    </item>
+  </menu>
 </interface>

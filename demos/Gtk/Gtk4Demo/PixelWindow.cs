@@ -28,6 +28,7 @@ using CairoSharp::Cairo.Surfaces;
 using CairoSharp::Cairo.Surfaces.Images;
 using Gtk;
 using Gtk4.Extensions;
+using static Gtk4.Extensions.Gtk4Constants;
 
 namespace Gtk4Demo;
 
@@ -51,6 +52,7 @@ public sealed partial class PixelWindow : Window
     [Connect] private readonly Expander    _colorMapInfoExpander;
     [Connect] private readonly TextView    _colorMapInfoTextView;
     [Connect] private readonly DrawingArea _drawingAreaPixels;
+    [Connect] private readonly PopoverMenu _drawingAreaPixelsPopoverMenu;
 #pragma warning restore CS0649
 
     private PixelWindow(string funcName, Builder builder)
@@ -60,16 +62,17 @@ public sealed partial class PixelWindow : Window
 
         builder.Connect(this);
 
-        Debug.Assert(_colorMapsDropDown           is not null);
-        Debug.Assert(_colorMapsSpinButton         is not null);
-        Debug.Assert(_colorMapInvertedCheckButton is not null);
-        Debug.Assert(_pixelSaveAsPngButton        is not null);
-        Debug.Assert(_grayscaleCheckButton        is not null);
-        Debug.Assert(_grayscaleModeDropDown       is not null);
-        Debug.Assert(_equationImage               is not null);
-        Debug.Assert(_colorMapInfoExpander        is not null);
-        Debug.Assert(_colorMapInfoTextView        is not null);
-        Debug.Assert(_drawingAreaPixels           is not null);
+        Debug.Assert(_colorMapsDropDown            is not null);
+        Debug.Assert(_colorMapsSpinButton          is not null);
+        Debug.Assert(_colorMapInvertedCheckButton  is not null);
+        Debug.Assert(_pixelSaveAsPngButton         is not null);
+        Debug.Assert(_grayscaleCheckButton         is not null);
+        Debug.Assert(_grayscaleModeDropDown        is not null);
+        Debug.Assert(_equationImage                is not null);
+        Debug.Assert(_colorMapInfoExpander         is not null);
+        Debug.Assert(_colorMapInfoTextView         is not null);
+        Debug.Assert(_drawingAreaPixels            is not null);
+        Debug.Assert(_drawingAreaPixelsPopoverMenu is not null);
 
         _data = this.PrepareFunctionAsync();
 
@@ -87,6 +90,26 @@ public sealed partial class PixelWindow : Window
 
         this.SetupColorMapDropDown();
         this.SetupGrayscaleDropDown();
+        this.DrawingAreaAddContextMenu();        
+    }
+
+    private void DrawingAreaAddContextMenu()
+    {
+        GestureClick clickGesture = GestureClick.New();
+        clickGesture.Button       = GdkButtonSecondary;
+        clickGesture.OnPressed   += (GestureClick gesture, GestureClick.PressedSignalArgs eventArgs) =>
+        {
+            Debug.Assert(gesture.GetCurrentButton() == GdkButtonSecondary);
+            _drawingAreaPixelsPopoverMenu.Popup();
+        };
+        _drawingAreaPixels.AddController(clickGesture);
+        // Not needed, as in the ui-file it's defined as child.
+        //_drawingAreaPixelsPopoverMenu.SetParent(_drawingAreaPixels);
+
+        Gio.SimpleActionGroup actionGroup = Gio.SimpleActionGroup.New();
+        this.InsertActionGroup("winPix", actionGroup);
+        actionGroup.AddAction("colorMapInvert"   , () => _colorMapInvertedCheckButton.Active = !_colorMapInvertedCheckButton.Active);
+        actionGroup.AddAction("colorMapGrayscale", () => _grayscaleCheckButton.Active        = !_grayscaleCheckButton       .Active);
     }
 
     public static void Show(string funcName, Builder builder)
