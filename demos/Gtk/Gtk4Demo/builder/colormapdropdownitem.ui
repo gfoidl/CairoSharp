@@ -1,20 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.96.1 -->
 <interface>
+  <!-- interface-name colormapdropdownitem.ui -->
   <!-- interface-copyright gfoidl -->
   <!-- interface-authors gfoidl -->
   <requires lib="gtk" version="4.12"/>
-  <template class="ColorMapDropDownItem" parent="GtkBox">
+  <object class="GtkBox" id="ColorMapDropDownItem">
     <property name="spacing">10</property>
     <child>
-      <object class="GtkImage" id="dropDownItemImage"/>
+      <object class="GtkImage" id="_image"/>
     </child>
     <child>
-      <object class="GtkLabel" id="dropDownItemLabel">
+      <object class="GtkLabel" id="_label">
         <property name="xalign">0.0</property>
       </object>
     </child>
-    <!-- Custom template fragments -->
-    <!-- needs to be a template, as several instances of this widget are created -->
-  </template>
+  </object>
 </interface>

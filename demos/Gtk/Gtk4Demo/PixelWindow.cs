@@ -7,10 +7,12 @@
 //#define DROPDOWN_ITEM_SET_GET_DATA_HELPER
 #define USE_PIXEL_ROW_ACCESSOR
 
-// Doesn't work at the moment with Gir.Core. For BuilderListItemFactory there's an example in https://github.com/gircore/gir.core/blob/f15dc086bd70c2e0878ba686f750128b0eda00b7/src/Samples/Gtk-4.0/ListView/TemplateListViewWindow.cs#L20,
-// but the property expression doesn't work with our managed objects. Something like https://developer.gnome.org/documentation/tutorials/widget-templates.html for Vala
-// would be really cool to have.
-//#define DROPDOWN_ITEM_VIA_BUILDER     
+// Doesn't work for templates at the moment with Gir.Core. For BuilderListItemFactory there's an example
+// in https://github.com/gircore/gir.core/blob/f15dc086bd70c2e0878ba686f750128b0eda00b7/src/Samples/Gtk-4.0/ListView/TemplateListViewWindow.cs#L20,
+// but the property expression doesn't work with our managed objects. Something like https://developer.gnome.org/documentation/tutorials/widget-templates.html
+// for Vala would be really cool to have.
+// Here we use it with multiple builders (one for each instance).
+#define DROPDOWN_ITEM_VIA_BUILDER
 
 extern alias CairoSharp;
 
@@ -687,15 +689,15 @@ public sealed partial class PixelWindow : Window
 #endif
     }
 
-
-#if !DROPDOWN_ITEM_VIA_BUILDER
     private sealed class ColorMapDropDownItem : Box
     {
+#if !DROPDOWN_ITEM_VIA_BUILDER
         public ColorMapDropDownItem(ListItem listItem)
         {
             this.SetOrientation(Orientation.Horizontal);
             this.SetSpacing(10);
 
+            // These could also be stored in fields for easier access.
             Image image = Image.New();
             Label label = Label.New(str: null);
 
@@ -726,8 +728,47 @@ public sealed partial class PixelWindow : Window
             Label? label = image.GetNextSibling() as Label;
             Debug.Assert(label is not null);
 #endif
-
             return(image, label);
+        }
+    }
+#else
+#pragma warning disable CS0649 // field is never assigned to
+        [Connect] private readonly Image _image;
+        [Connect] private readonly Label _label;
+#pragma warning restore CS0649
+
+        public ColorMapDropDownItem(ListItem listItem) : this(Builder.NewFromResource("/at/gfoidl/cairo/gtk4/demo/ui/colormapdropdownitem.ui"), "ColorMapDropDownItem", listItem) { }
+
+        private ColorMapDropDownItem(Builder builder, string name, ListItem listItem)
+            : base(new Gtk.Internal.BoxHandle(builder.GetPointer(name), ownsHandle: false))
+        {
+            builder.Connect(this);
+            builder.Dispose();
+
+            Debug.Assert(_image is not null);
+            Debug.Assert(_label is not null);
+
+#if DROPDOWN_ITEM_SET_GET_DATA_HELPER
+            listItem.SetData("image", _image.Handle.DangerousGetHandle());
+            listItem.SetData("label", _label.Handle.DangerousGetHandle());
+#endif
+        }
+
+        public static (Image image, Label label) GetChildren(ListItem listItem)
+        {
+#if DROPDOWN_ITEM_SET_GET_DATA_HELPER
+            // Are set by SetData in OnSetup above.
+            using Image image = new(new Gtk.Internal.ImageHandle(listItem.GetData("image"), ownsHandle: false));
+            using Label label = new(new Gtk.Internal.LabelHandle(listItem.GetData("label"), ownsHandle: false));
+#else
+            ColorMapDropDownItem? cmddi = listItem.Child as ColorMapDropDownItem;
+            Debug.Assert(cmddi is not null);
+
+            Image image = cmddi._image;
+            Label label = cmddi._label;
+#endif
+
+            return (image, label);
         }
     }
 #endif

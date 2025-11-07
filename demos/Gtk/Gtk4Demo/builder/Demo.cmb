@@ -2,7 +2,7 @@
 <!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
 <!-- Created with Cambalache 0.96.1 -->
 <cambalache-project version="0.96.0" target_tk="gtk-4.0">
-  <gresources filename="../gtk4demo.gresource.xml" sha256="d5d018af5131389db618bdce9044db8d5408db7d5e18d8034854202ac59849d4"/>
+  <gresources filename="../gtk4demo.gresource.xml" sha256="4f206c876a0505e15631f77da597b1039b0a65b46a07c558a8824aa45e1a3b40"/>
   <ui filename="windows.ui" sha256="22f4be13ae1ce62fa8adccc29e91eebc0f17ffb710d6f6f9a583520bafdf5def"/>
-  <ui template-class="ColorMapDropDownItem" filename="colormapdropdownitem.ui" sha256="b2e79112718864626acd366f684dbe77fb04cb5f7596718a1bba0f588f438c61"/>
+  <ui filename="colormapdropdownitem.ui" sha256="3240dd98d6cf08a49a1fa8edc625933cd44e929a98ebce1ab8950deeb77bac42"/>
 </cambalache-project>
