@@ -1,0 +1,16 @@
+# goes to
+# $HOME/.local/share/applications
+
+[Desktop Entry]
+Type=Application
+Name=Gtk4Demo
+Path=$HOME/tests/gtk4
+Exec=$HOME/tests/gtk4/Gtk4Demo
+Icon=$HOME/tests/gtk4/icon.svg
+
+# optional entries
+GenericName  =Demo
+NoDisplay    =false
+Comment      =cairo examples and demos for GTK 4
+Terminal     =false
+StartupNotify=true
