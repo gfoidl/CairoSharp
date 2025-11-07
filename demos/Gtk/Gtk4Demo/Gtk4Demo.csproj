@@ -30,6 +30,7 @@
         <Content Include="gtk4demo.gresource" CopyToOutputDirectory="PreserveNewest" Visible="false" />
         <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="icon.ico" Link="icon.ico" />
+        <Content Include="*.desktop" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <!-- Compile gresource as part of this build. MSYS2 must be on the PATH. -->

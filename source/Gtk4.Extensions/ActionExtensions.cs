@@ -17,6 +17,20 @@ public static class ActionExtensions
             return simpleAction;
         }
 
+        public SimpleAction AddAction(string name, bool initialState, Func<bool> onActivateCallback)
+        {
+            SimpleAction simpleAction = SimpleAction.NewStateful(name, null, GLib.Variant.NewBoolean(initialState));
+            simpleAction.OnActivate  += (sa, args) =>
+            {
+                bool newState = onActivateCallback();
+                sa.SetState(GLib.Variant.NewBoolean(newState));
+            };
+
+            map.AddAction(simpleAction);
+            return simpleAction;
+
+        }
+
         public SimpleAction AddAction(string name, Action<string?> onActivateCallback)
         {
             SimpleAction simpleAction = SimpleAction.New(name, null);
