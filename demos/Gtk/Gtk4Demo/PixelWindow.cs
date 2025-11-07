@@ -17,6 +17,7 @@
 extern alias CairoSharp;
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -40,6 +41,9 @@ public sealed partial class PixelWindow : Window
     private ColorMap?      _selectedColorMap;
     private string?        _selectedColorMapName;
     private GrayScaleMode? _grayScaleMode;
+
+    private Gio.SimpleAction _invertColorMapMenuAction;
+    private Gio.SimpleAction _grayscaleMenuAction;
 
 #pragma warning disable CS0649 // field is never assigned to
     [Connect] private readonly DropDown    _colorMapsDropDown;
@@ -82,17 +86,28 @@ public sealed partial class PixelWindow : Window
         _pixelSaveAsPngButton.OnClicked += async (Button sender, EventArgs args)
             => await _drawingAreaPixels.SaveAsPngWithFileDialog(this, this.GetPngFileName());
 
-        _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args)
-            => _drawingAreaPixels.QueueDraw();
+        _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args) =>
+        {
+            Debug.Assert(_invertColorMapMenuAction is not null);
+            _invertColorMapMenuAction.ChangeState(GLib.Variant.NewBoolean(_colorMapInvertedCheckButton.Active));
 
-        _grayscaleCheckButton.OnToggled += (CheckButton sender, EventArgs args)
-            => _drawingAreaPixels.QueueDraw();
+            _drawingAreaPixels.QueueDraw();
+        };
+
+        _grayscaleCheckButton.OnToggled += (CheckButton sender, EventArgs args) =>
+        {
+            Debug.Assert(_grayscaleMenuAction is not null);
+            _grayscaleMenuAction.ChangeState(GLib.Variant.NewBoolean(_grayscaleCheckButton.Active));
+
+            _drawingAreaPixels.QueueDraw();
+        };
 
         this.SetupColorMapDropDown();
         this.SetupGrayscaleDropDown();
         this.DrawingAreaAddContextMenu();
     }
 
+    [MemberNotNull(nameof(_invertColorMapMenuAction), nameof(_grayscaleMenuAction))]
     private void DrawingAreaAddContextMenu()
     {
         GestureClick clickGesture = GestureClick.New();
@@ -116,8 +131,8 @@ public sealed partial class PixelWindow : Window
         //_drawingAreaPixelsPopoverMenu.SetParent(_drawingAreaPixels);
 
         Gio.SimpleActionGroup actionGroup = Gio.SimpleActionGroup.New();
-        actionGroup.AddAction("colorMapInvert"   , _colorMapInvertedCheckButton.Active, () => _colorMapInvertedCheckButton.Active = !_colorMapInvertedCheckButton.Active);
-        actionGroup.AddAction("colorMapGrayscale", _grayscaleCheckButton       .Active, () => _grayscaleCheckButton.Active        = !_grayscaleCheckButton       .Active);
+        _invertColorMapMenuAction = actionGroup.AddAction("colorMapInvert"   , _colorMapInvertedCheckButton.Active, () => _colorMapInvertedCheckButton.Active = !_colorMapInvertedCheckButton.Active);
+        _grayscaleMenuAction      = actionGroup.AddAction("colorMapGrayscale", _grayscaleCheckButton       .Active, () => _grayscaleCheckButton.Active        = !_grayscaleCheckButton       .Active);
         this.InsertActionGroup("winPix", actionGroup);
 
         actionGroup.AddAction("grayScaleLightness"           , () => _grayscaleModeDropDown.Selected = 0);
