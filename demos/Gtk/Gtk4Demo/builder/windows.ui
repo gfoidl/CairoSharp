@@ -117,11 +117,11 @@
       <attribute name="label">Pixels</attribute>
       <item>
         <attribute name="action">win.funcPeaks</attribute>
-        <attribute name="label">Peaks function</attribute>
+        <attribute name="label">_Peaks function</attribute>
       </item>
       <item>
         <attribute name="action">win.funcMexican</attribute>
-        <attribute name="label">Mexican hat</attribute>
+        <attribute name="label">_Mexican hat</attribute>
       </item>
     </submenu>
     <submenu>
@@ -129,13 +129,13 @@
       <section>
         <item>
           <attribute name="action">win.saveAsPng</attribute>
-          <attribute name="label">Save as PNG</attribute>
+          <attribute name="label">Save as _PNG</attribute>
         </item>
       </section>
       <section>
         <item>
           <attribute name="action">win.showAbout</attribute>
-          <attribute name="label">About</attribute>
+          <attribute name="label">_About</attribute>
         </item>
       </section>
     </submenu>
