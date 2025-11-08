@@ -116,11 +116,11 @@
     <submenu>
       <attribute name="label">Pixels</attribute>
       <item>
-        <attribute name="action">win.funcPeaks</attribute>
+        <attribute name="action">app.funcPeaks</attribute>
         <attribute name="label">_Peaks function</attribute>
       </item>
       <item>
-        <attribute name="action">win.funcMexican</attribute>
+        <attribute name="action">app.funcMexican</attribute>
         <attribute name="label">_Mexican hat</attribute>
       </item>
     </submenu>
@@ -134,7 +134,7 @@
       </section>
       <section>
         <item>
-          <attribute name="action">win.showAbout</attribute>
+          <attribute name="action">app.showAbout</attribute>
           <attribute name="label">_About</attribute>
         </item>
       </section>

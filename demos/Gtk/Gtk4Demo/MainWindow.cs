@@ -53,7 +53,8 @@ public sealed class MainWindow : ApplicationWindow
         //builder.Dispose();    // Could be disposed here, when not needed later on.
         _builder = builder;
 
-        this.AddMenuActions();
+        this.AddMenuActions(app);
+        this.AddShortcuts  (app);
 
 #if UI_FROM_RESOURCE
         this.SetIcon();
@@ -74,7 +75,7 @@ public sealed class MainWindow : ApplicationWindow
         base.Dispose();
     }
 
-    private void AddMenuActions()
+    private void AddMenuActions(Application app)
     {
         this.AddAction("saveAsPng", async () => await _drawingArea.SaveAsPngWithFileDialog(this, _lastSelectedDemo));
 
@@ -101,16 +102,22 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("drawGlyphExtents"    , this.DrawGlyphExtents);
         this.AddAction("hitTest"             , this.DrawHitTest);
 
-        this.AddAction("funcPeaks"  , PixelGraphics);
-        this.AddAction("funcMexican", PixelGraphics);
+        app.AddAction("funcPeaks"  , PixelGraphics);
+        app.AddAction("funcMexican", PixelGraphics);
 
         void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!, _builder);
 
-        this.AddAction("showAbout", () =>
+        app.AddAction("showAbout", () =>
         {
             MyAboutDialog aboutDialog = new();
             aboutDialog.Show();
         });
+    }
+
+    private void AddShortcuts(Application app)
+    {
+        app.SetAccelsForAction("app.showAbout", ["F1"]);
+        app.SetAccelsForAction("app.funcPeaks", ["F2"]);
     }
 
 #if UI_FROM_RESOURCE

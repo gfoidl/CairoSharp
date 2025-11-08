@@ -105,6 +105,7 @@ public sealed partial class PixelWindow : Window
         this.SetupColorMapDropDown();
         this.SetupGrayscaleDropDown();
         this.DrawingAreaAddContextMenu();
+        this.AddShortcuts();
     }
 
     [MemberNotNull(nameof(_invertColorMapMenuAction), nameof(_grayscaleMenuAction))]
@@ -140,13 +141,16 @@ public sealed partial class PixelWindow : Window
         actionGroup.AddAction("grayScaleLuminosity"          , () => _grayscaleModeDropDown.Selected = 2);
         actionGroup.AddAction("grayScaleCieLab"              , () => _grayscaleModeDropDown.Selected = 3);
         actionGroup.AddAction("grayScaleGammaExpandedAverage", () => _grayscaleModeDropDown.Selected = 4);
+    }
 
+    private void AddShortcuts()
+    {
         ShortcutController shortcutController = ShortcutController.New();
         this.AddController(shortcutController);
 
         shortcutController.AddShortcut(Shortcut.New(
             ShortcutTrigger.ParseString("<Ctrl>i"),
-            // See also https://docs.gtk.org/gtk4/ctor.ShortcutAction.parse_string.html
+            // See https://docs.gtk.org/gtk4/ctor.ShortcutAction.parse_string.html
             ShortcutAction.ParseString("action(winPix.colorMapInvert)")));
 
         shortcutController.AddShortcut(Shortcut.New(
