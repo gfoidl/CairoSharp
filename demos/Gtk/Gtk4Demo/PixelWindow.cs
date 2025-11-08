@@ -86,7 +86,7 @@ public sealed partial class PixelWindow : Window
         _pixelSaveAsPngButton.OnClicked += async (Button sender, EventArgs args)
             => await _drawingAreaPixels.SaveAsPngWithFileDialog(this, this.GetPngFileName());
 
-        // These two check buttons could also hav an action (e.g. like the _invertColorMapMenuAction,
+        // These two check buttons could also have an action (e.g. like the _invertColorMapMenuAction,
         // so this signal handler isn't needed and can be omitted.
         _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args)
             => CheckButtonToggled(sender, _invertColorMapMenuAction);
