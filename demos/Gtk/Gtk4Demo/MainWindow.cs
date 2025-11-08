@@ -24,13 +24,19 @@ public sealed class MainWindow : ApplicationWindow
 {
     private readonly Builder _builder;
 
+    private readonly byte[]                _pngData = File.ReadAllBytes("romedalen.png");
+    private readonly GestureClick          _gestureClick;
+    private readonly EventControllerMotion _mouseMove;
+
     private string?               _lastSelectedDemo;
     private Action<CairoContext>? _onDrawAction;
-    private readonly byte[]       _pngData = File.ReadAllBytes("romedalen.png");
     private Path?                 _hitPath;
     private bool                  _isInHitArea;
+    private double                _mouseX;
+    private double                _mouseY;
 
 #pragma warning disable CS0649 // field is never assigned to
+    [Connect] private readonly CheckButton _showCrosshairsCheckButton;
     [Connect] private readonly DrawingArea _drawingArea;
 #pragma warning restore CS0649
 
@@ -54,19 +60,23 @@ public sealed class MainWindow : ApplicationWindow
         _builder = builder;
 
         this.AddMenuActions(app);
-        this.AddShortcuts  (app);
+        AddShortcuts       (app);
 
 #if UI_FROM_RESOURCE
         this.SetIcon();
 #endif
 
-        Debug.Assert(_drawingArea is not null);
+        Debug.Assert(_showCrosshairsCheckButton is not null);
+        Debug.Assert(_drawingArea               is not null);
+
         _drawingArea.SetDrawFunc(this.Draw);
 
-        GestureClick clickGesture = GestureClick.New();
-        clickGesture.Button       = GdkButtonAll;
-        clickGesture.OnPressed   += this.DrawingAreaClicked;
-        _drawingArea.AddController(clickGesture);
+        _gestureClick            = GestureClick.New();
+        _gestureClick.Button     = GdkButtonAll;
+        _gestureClick.OnPressed += this.DrawingAreaClicked;
+
+        _mouseMove           = EventControllerMotion.New();
+        _mouseMove.OnMotion += this.DrawingAreaMouseMoved;
     }
 
     public override void Dispose()
@@ -114,7 +124,7 @@ public sealed class MainWindow : ApplicationWindow
         });
     }
 
-    private void AddShortcuts(Application app)
+    private static void AddShortcuts(Application app)
     {
         app.SetAccelsForAction("app.showAbout", ["F1"]);
         app.SetAccelsForAction("app.funcPeaks", ["F2"]);
@@ -168,9 +178,13 @@ public sealed class MainWindow : ApplicationWindow
 
     private void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
-        if (_lastSelectedDemo != "hit path" && _hitPath is not null)
+        if (_lastSelectedDemo != "hit_test" && _hitPath is not null)
         {
             _hitPath.Dispose();
+            _showCrosshairsCheckButton.Visible = false;
+
+            _drawingArea.RemoveController(_gestureClick);
+            _drawingArea.RemoveController(_mouseMove);
         }
 
         using (cr.Save())
@@ -840,6 +854,11 @@ public sealed class MainWindow : ApplicationWindow
 
     private void DrawHitTest()
     {
+        _showCrosshairsCheckButton.Visible = true;
+
+        _drawingArea.AddController(_gestureClick);
+        _drawingArea.AddController(_mouseMove);
+
         _lastSelectedDemo = "hit_test";
         _onDrawAction     = cr =>
         {
@@ -881,6 +900,25 @@ public sealed class MainWindow : ApplicationWindow
                 cr.LineWidth = 5;
                 cr.SetSourceRgb(0, 1, 0);
                 cr.Stroke();
+            }
+
+            if (_showCrosshairsCheckButton.Active)
+            {
+                using (cr.Save())
+                {
+                    cr.Color = Color.Default;
+                    cr.SetDash(10, 5, 2, 5);    // 10 long, 5 off, 2 long, 5 off and repeat
+
+                    cr.Hairline = true;
+
+                    cr.MoveTo(_mouseX, 0);
+                    cr.RelLineTo(0, _drawingArea.ContentHeight);
+                    cr.Stroke();
+
+                    cr.MoveTo(0, _mouseY);
+                    cr.RelLineTo(_drawingArea.ContentWidth, 0);
+                    cr.Stroke();
+                }
             }
         };
 
@@ -927,5 +965,15 @@ public sealed class MainWindow : ApplicationWindow
         _isInHitArea = isInHitArea;
 
         Console.WriteLine($"click at ({eventArgs.X:N3}, {eventArgs.Y:N3}), is in hit area: {_isInHitArea}");
+    }
+
+    private void DrawingAreaMouseMoved(EventControllerMotion sender, EventControllerMotion.MotionSignalArgs args)
+    {
+        _mouseX = args.X;
+        _mouseY = args.Y;
+
+        _drawingArea.QueueDraw();
+
+        Console.WriteLine($"mouse at ({args.X:N3}, {args.Y:N3})");
     }
 }

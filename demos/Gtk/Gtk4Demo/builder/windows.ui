@@ -11,13 +11,25 @@
     <property name="show-menubar">True</property>
     <property name="title">CairoSamples</property>
     <child>
-      <object class="GtkDrawingArea" id="_drawingArea">
-        <property name="content-height">256</property>
-        <property name="content-width">256</property>
+      <object class="GtkBox">
         <property name="margin-bottom">10</property>
         <property name="margin-end">10</property>
         <property name="margin-start">10</property>
         <property name="margin-top">10</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkCheckButton" id="_showCrosshairsCheckButton">
+            <property name="label">show crosshairs</property>
+            <property name="visible">False</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkDrawingArea" id="_drawingArea">
+            <property name="content-height">256</property>
+            <property name="content-width">256</property>
+          </object>
+        </child>
       </object>
     </child>
   </object>
@@ -255,12 +267,6 @@
         </child>
       </object>
     </child>
-    <!-- Custom object fragments -->
-    <!-- 
-    hide-on-close is set, as the same builder is used for the
-    PixelWindow as for the MainWindow. So destroying the
-    PixelWindow won't work.	
- -->
   </object>
   <menu id="pixelsContextMenu">
     <section>

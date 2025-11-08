@@ -22,19 +22,19 @@
         <child>
           <object class="GtkBox">
             <child>
-              <object class="GtkCheckButton" id="_showTrajectoryCheckBox">
+              <object class="GtkCheckButton" id="_showTrajectoryCheckButton">
                 <property name="active">True</property>
                 <property name="label">show trajectory</property>
               </object>
             </child>
             <child>
-              <object class="GtkCheckButton" id="_showCrosshairsCheckBox">
+              <object class="GtkCheckButton" id="_showCrosshairsCheckButton">
                 <property name="active">True</property>
                 <property name="label">show crosshairs</property>
               </object>
             </child>
             <child>
-              <object class="GtkCheckButton" id="_saveImagesCheckBox">
+              <object class="GtkCheckButton" id="_saveImagesCheckButton">
                 <property name="halign">end</property>
                 <property name="hexpand">True</property>
                 <property name="label">save images</property>

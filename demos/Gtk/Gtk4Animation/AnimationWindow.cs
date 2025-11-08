@@ -18,9 +18,9 @@ public sealed class AnimationWindow : ApplicationWindow
     private const int BallSize = 20;
 
     private readonly List<PointD> _points;
-    private readonly CheckButton  _showTrajectoryCheckBox;
-    private readonly CheckButton  _showCrosshairsCheckBox;
-    private readonly CheckButton  _saveImagesCheckBox;
+    private readonly CheckButton  _showTrajectoryCheckButton;
+    private readonly CheckButton  _showCrosshairsCheckButton;
+    private readonly CheckButton  _saveImagesCheckButton;
     private readonly DrawingArea  _drawingArea;
     private readonly Label        _iterationLabel;
     private readonly Label        _fpsLabel;
@@ -40,18 +40,18 @@ public sealed class AnimationWindow : ApplicationWindow
 
         Box checkBoxHorizontalBox = Box.New(Orientation.Horizontal, spacing: 0);
         {
-            _showTrajectoryCheckBox        = CheckButton.NewWithLabel("show trajectory");
-            _showTrajectoryCheckBox.Active = true;
-            checkBoxHorizontalBox.Append(_showTrajectoryCheckBox);
+            _showTrajectoryCheckButton        = CheckButton.NewWithLabel("show trajectory");
+            _showTrajectoryCheckButton.Active = true;
+            checkBoxHorizontalBox.Append(_showTrajectoryCheckButton);
 
-            _showCrosshairsCheckBox        = CheckButton.NewWithLabel("show crosshairs");
-            _showCrosshairsCheckBox.Active = true;
-            checkBoxHorizontalBox.Append(_showCrosshairsCheckBox);
+            _showCrosshairsCheckButton        = CheckButton.NewWithLabel("show crosshairs");
+            _showCrosshairsCheckButton.Active = true;
+            checkBoxHorizontalBox.Append(_showCrosshairsCheckButton);
 
-            _saveImagesCheckBox         = CheckButton.NewWithLabel("save images");
-            _saveImagesCheckBox.Hexpand = true;
-            _saveImagesCheckBox.Halign  = Align.End;
-            checkBoxHorizontalBox.Append(_saveImagesCheckBox);
+            _saveImagesCheckButton         = CheckButton.NewWithLabel("save images");
+            _saveImagesCheckButton.Hexpand = true;
+            _saveImagesCheckButton.Halign  = Align.End;
+            checkBoxHorizontalBox.Append(_saveImagesCheckButton);
         }
 
         _drawingArea = DrawingArea.New();
@@ -164,7 +164,7 @@ public sealed class AnimationWindow : ApplicationWindow
             cr.Stroke();
         }
 
-        if (_showCrosshairsCheckBox.Active)
+        if (_showCrosshairsCheckButton.Active)
         {
             using (cr.Save())
             {
@@ -183,7 +183,7 @@ public sealed class AnimationWindow : ApplicationWindow
             }
         }
 
-        if (_showTrajectoryCheckBox.Active && _points.Count > 0)
+        if (_showTrajectoryCheckButton.Active && _points.Count > 0)
         {
             cr.MoveTo(_points[0]);
 
@@ -215,7 +215,7 @@ public sealed class AnimationWindow : ApplicationWindow
             cr.Fill();
         }
 
-        if (_saveImagesCheckBox.Active)
+        if (_saveImagesCheckButton.Active)
         {
             Directory.CreateDirectory("output");
             cr.Target.WriteToPng($"output/img{_points.Count:000}.png");
