@@ -88,21 +88,19 @@ public sealed partial class PixelWindow : Window
 
         // These two check buttons could also hav an action (e.g. like the _invertColorMapMenuAction,
         // so this signal handler isn't needed and can be omitted.
-        _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args) =>
+        _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args)
+            => CheckButtonToggled(sender, _invertColorMapMenuAction);
+
+        _grayscaleCheckButton.OnToggled += (CheckButton sender, EventArgs args)
+            => CheckButtonToggled(sender, _grayscaleMenuAction);
+
+        void CheckButtonToggled(CheckButton sender, Gio.Action? action)
         {
-            Debug.Assert(_invertColorMapMenuAction is not null);
-            _invertColorMapMenuAction.ChangeState(GLib.Variant.NewBoolean(sender.Active));
+            Debug.Assert(action is not null);
+            action.ChangeState(GLib.Variant.NewBoolean(sender.Active));
 
             _drawingAreaPixels.QueueDraw();
-        };
-
-        _grayscaleCheckButton.OnToggled += (CheckButton sender, EventArgs args) =>
-        {
-            Debug.Assert(_grayscaleMenuAction is not null);
-            _grayscaleMenuAction.ChangeState(GLib.Variant.NewBoolean(sender.Active));
-
-            _drawingAreaPixels.QueueDraw();
-        };
+        }
 
         this.SetupColorMapDropDown();
         this.SetupGrayscaleDropDown();
