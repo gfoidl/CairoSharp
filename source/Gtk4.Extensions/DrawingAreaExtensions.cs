@@ -5,7 +5,6 @@
 //#define USE_NATIVE_DIRECT
 
 #if USE_NATIVE_DIRECT
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 #else
 using GtkCairo = Cairo.Context;

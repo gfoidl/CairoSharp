@@ -86,25 +86,26 @@ public sealed partial class PixelWindow : Window
         _pixelSaveAsPngButton.OnClicked += async (Button sender, EventArgs args)
             => await _drawingAreaPixels.SaveAsPngWithFileDialog(this, this.GetPngFileName());
 
-        _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args) =>
+        // These two check buttons could also have an action (e.g. like the _invertColorMapMenuAction,
+        // so this signal handler isn't needed and can be omitted.
+        _colorMapInvertedCheckButton.OnToggled += (CheckButton sender, EventArgs args)
+            => CheckButtonToggled(sender, _invertColorMapMenuAction);
+
+        _grayscaleCheckButton.OnToggled += (CheckButton sender, EventArgs args)
+            => CheckButtonToggled(sender, _grayscaleMenuAction);
+
+        void CheckButtonToggled(CheckButton sender, Gio.Action? action)
         {
-            Debug.Assert(_invertColorMapMenuAction is not null);
-            _invertColorMapMenuAction.ChangeState(GLib.Variant.NewBoolean(_colorMapInvertedCheckButton.Active));
+            Debug.Assert(action is not null);
+            action.ChangeState(GLib.Variant.NewBoolean(sender.Active));
 
             _drawingAreaPixels.QueueDraw();
-        };
-
-        _grayscaleCheckButton.OnToggled += (CheckButton sender, EventArgs args) =>
-        {
-            Debug.Assert(_grayscaleMenuAction is not null);
-            _grayscaleMenuAction.ChangeState(GLib.Variant.NewBoolean(_grayscaleCheckButton.Active));
-
-            _drawingAreaPixels.QueueDraw();
-        };
+        }
 
         this.SetupColorMapDropDown();
         this.SetupGrayscaleDropDown();
         this.DrawingAreaAddContextMenu();
+        this.AddShortcuts();
     }
 
     [MemberNotNull(nameof(_invertColorMapMenuAction), nameof(_grayscaleMenuAction))]
@@ -140,6 +141,21 @@ public sealed partial class PixelWindow : Window
         actionGroup.AddAction("grayScaleLuminosity"          , () => _grayscaleModeDropDown.Selected = 2);
         actionGroup.AddAction("grayScaleCieLab"              , () => _grayscaleModeDropDown.Selected = 3);
         actionGroup.AddAction("grayScaleGammaExpandedAverage", () => _grayscaleModeDropDown.Selected = 4);
+    }
+
+    private void AddShortcuts()
+    {
+        ShortcutController shortcutController = ShortcutController.New();
+        this.AddController(shortcutController);
+
+        shortcutController.AddShortcut(Shortcut.New(
+            ShortcutTrigger.ParseString("<Ctrl>i"),
+            // See https://docs.gtk.org/gtk4/ctor.ShortcutAction.parse_string.html
+            ShortcutAction.ParseString("action(winPix.colorMapInvert)")));
+
+        shortcutController.AddShortcut(Shortcut.New(
+            ShortcutTrigger.ParseString("<Ctrl>g"),
+            ShortcutAction.ParseString("action(winPix.colorMapGrayscale)")));
     }
 
     public static void Show(string funcName, Builder builder)

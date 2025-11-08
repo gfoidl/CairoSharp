@@ -3,6 +3,6 @@
 <!-- Created with Cambalache 0.96.1 -->
 <cambalache-project version="0.96.0" target_tk="gtk-4.0">
   <gresources filename="../gtk4demo.gresource.xml" sha256="4f206c876a0505e15631f77da597b1039b0a65b46a07c558a8824aa45e1a3b40"/>
-  <ui filename="windows.ui" sha256="e51bbd35620a84ee53d9ec08c04c165845ca089c74d5d79edf13f0e147ad8dfb"/>
+  <ui filename="windows.ui" sha256="aac8e37572d3550cf9f976c5efe9ac3d5d10fd4a7e24c510fc49e1bec5384048"/>
   <ui filename="colormapdropdownitem.ui" sha256="3240dd98d6cf08a49a1fa8edc625933cd44e929a98ebce1ab8950deeb77bac42"/>
 </cambalache-project>

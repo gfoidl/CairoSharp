@@ -36,11 +36,13 @@ Shows the [cairo examples](https://www.cairographics.org/samples/) in WinForms, 
 
 Even when you don't care about WinForms[^1], the _cairo_ stuff can be interesting. In this case, just ignore WinForms stuff and focus your eye on _cairo_.
 
-[^1]: actually I don't use WinForms extensively nowadays. Just here and there for some quick ad-hoc visualization of simulations, and that like.
+[^1]: actually I don't use WinForms extensively nowadays. Just here and there for some quick ad-hoc visualization of simulations, and that like when I don't use GTK 4.
 
 #### WinFormsAnimation
 
 Shows how to display an animation, drawed via _cairo_ on WinForms. For each iteration an image can be stored to the output folder, and in the [ReadMe](./Windows/WinFormsAnimation/ReadMe.md) over there is a command on how to create a `mp4`-video out of the created image files.
+
+A Linux / GTK version is in [Gtk4Animation](#gtk4animation).
 
 #### WpfDemo
 
@@ -56,10 +58,12 @@ Shows how to draw with _cairo_ in GTK 3 in a simple way and without any external
 
 Shows the [cairo examples](https://www.cairographics.org/samples/) in GTK 4, plus some little extras added by me.
 
-Linux / GTK equivalent of [WinFormsDemo](#winformsdemo).
+For more information see [Gtk4Demo ReadMe](./Gtk/Gtk4Demo/ReadMe.md).
+
+A Windows version is in [WinFormsDemo](#winformsdemo).
 
 #### Gtk4Animation
 
 Shows how to display an animation, drawed via _cairo_ in GTK 4. For each iteration an image can be stored to the output folder, and in the [ReadMe](./Gtk/Gtk4Animation/ReadMe.md) over there is a command on how to create a `mp4`-video out of the created image files.
 
-Linux / GTK equivalent of [WinFormsAnimation](#winformsanimation).
+A Windows version is in [WinFormsAnimation](#winformsanimation).

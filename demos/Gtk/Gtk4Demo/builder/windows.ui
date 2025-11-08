@@ -11,13 +11,25 @@
     <property name="show-menubar">True</property>
     <property name="title">CairoSamples</property>
     <child>
-      <object class="GtkDrawingArea" id="_drawingArea">
-        <property name="content-height">256</property>
-        <property name="content-width">256</property>
+      <object class="GtkBox">
         <property name="margin-bottom">10</property>
         <property name="margin-end">10</property>
         <property name="margin-start">10</property>
         <property name="margin-top">10</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkCheckButton" id="_showCrosshairsCheckButton">
+            <property name="label">show crosshairs</property>
+            <property name="visible">False</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkDrawingArea" id="_drawingArea">
+            <property name="content-height">256</property>
+            <property name="content-width">256</property>
+          </object>
+        </child>
       </object>
     </child>
   </object>
@@ -116,12 +128,12 @@
     <submenu>
       <attribute name="label">Pixels</attribute>
       <item>
-        <attribute name="action">win.funcPeaks</attribute>
-        <attribute name="label">Peaks function</attribute>
+        <attribute name="action">app.funcPeaks</attribute>
+        <attribute name="label">_Peaks function</attribute>
       </item>
       <item>
-        <attribute name="action">win.funcMexican</attribute>
-        <attribute name="label">Mexican hat</attribute>
+        <attribute name="action">app.funcMexican</attribute>
+        <attribute name="label">_Mexican hat</attribute>
       </item>
     </submenu>
     <submenu>
@@ -129,13 +141,13 @@
       <section>
         <item>
           <attribute name="action">win.saveAsPng</attribute>
-          <attribute name="label">Save as PNG</attribute>
+          <attribute name="label">Save as _PNG</attribute>
         </item>
       </section>
       <section>
         <item>
-          <attribute name="action">win.showAbout</attribute>
-          <attribute name="label">About</attribute>
+          <attribute name="action">app.showAbout</attribute>
+          <attribute name="label">_About</attribute>
         </item>
       </section>
     </submenu>
@@ -197,7 +209,8 @@
                 </child>
                 <child type="end">
                   <object class="GtkButton" id="_pixelSaveAsPngButton">
-                    <property name="label">Save as PNG</property>
+                    <property name="icon-name">document-save</property>
+                    <property name="tooltip-text">Save as PNG</property>
                   </object>
                 </child>
               </object>

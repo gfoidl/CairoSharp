@@ -18,9 +18,9 @@ public sealed class AnimationWindow : ApplicationWindow
     private const int BallSize = 20;
 
 #pragma warning disable CS0649 // field is never assigned to
-    [Connect] private readonly CheckButton _showTrajectoryCheckBox;
-    [Connect] private readonly CheckButton _showCrosshairsCheckBox;
-    [Connect] private readonly CheckButton _saveImagesCheckBox;
+    [Connect] private readonly CheckButton _showTrajectoryCheckButton;
+    [Connect] private readonly CheckButton _showCrosshairsCheckButton;
+    [Connect] private readonly CheckButton _saveImagesCheckButton;
     [Connect] private readonly DrawingArea _drawingArea;
     [Connect] private readonly Label       _iterationLabel;
     [Connect] private readonly Label       _fpsLabel;
@@ -45,12 +45,12 @@ public sealed class AnimationWindow : ApplicationWindow
         builder.Connect(this);
         builder.Dispose();
 
-        Debug.Assert(_showTrajectoryCheckBox is not null);
-        Debug.Assert(_showCrosshairsCheckBox is not null);
-        Debug.Assert(_saveImagesCheckBox     is not null);
-        Debug.Assert(_drawingArea            is not null);
-        Debug.Assert(_iterationLabel         is not null);
-        Debug.Assert(_fpsLabel               is not null);
+        Debug.Assert(_showTrajectoryCheckButton is not null);
+        Debug.Assert(_showCrosshairsCheckButton is not null);
+        Debug.Assert(_saveImagesCheckButton     is not null);
+        Debug.Assert(_drawingArea               is not null);
+        Debug.Assert(_iterationLabel            is not null);
+        Debug.Assert(_fpsLabel                  is not null);
 
         _drawingArea.SetDrawFunc(this.Draw);
 
@@ -122,7 +122,7 @@ public sealed class AnimationWindow : ApplicationWindow
             cr.Stroke();
         }
 
-        if (_showCrosshairsCheckBox.Active)
+        if (_showCrosshairsCheckButton.Active)
         {
             using (cr.Save())
             {
@@ -141,7 +141,7 @@ public sealed class AnimationWindow : ApplicationWindow
             }
         }
 
-        if (_showTrajectoryCheckBox.Active && _points.Count > 0)
+        if (_showTrajectoryCheckButton.Active && _points.Count > 0)
         {
             cr.MoveTo(_points[0]);
 
@@ -173,7 +173,7 @@ public sealed class AnimationWindow : ApplicationWindow
             cr.Fill();
         }
 
-        if (_saveImagesCheckBox.Active)
+        if (_saveImagesCheckButton.Active)
         {
             Directory.CreateDirectory("output");
             cr.Target.WriteToPng($"output/img{_points.Count:000}.png");
