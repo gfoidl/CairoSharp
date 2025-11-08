@@ -197,7 +197,8 @@
                 </child>
                 <child type="end">
                   <object class="GtkButton" id="_pixelSaveAsPngButton">
-                    <property name="label">Save as PNG</property>
+                    <property name="icon-name">document-save</property>
+                    <property name="tooltip-text">Save as PNG</property>
                   </object>
                 </child>
               </object>
@@ -254,6 +255,12 @@
         </child>
       </object>
     </child>
+    <!-- Custom object fragments -->
+    <!-- 
+    hide-on-close is set, as the same builder is used for the
+    PixelWindow as for the MainWindow. So destroying the
+    PixelWindow won't work.	
+ -->
   </object>
   <menu id="pixelsContextMenu">
     <section>
