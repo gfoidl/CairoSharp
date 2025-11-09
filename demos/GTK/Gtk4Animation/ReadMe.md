@@ -1,5 +1,9 @@
 ## Gtk4Animation
 
+[Gtk4AnimationWithBuilder](../Gtk4AnimationWithBuilder/ReadMe.md) is similar, just with UI builder.
+
+---
+
 When the check box for _creating images_ is checked, then it's possible to create a video from the sequence of stored images.
 
 ```bash

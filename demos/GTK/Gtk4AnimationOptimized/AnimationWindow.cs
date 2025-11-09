@@ -1,14 +1,18 @@
 // (c) gfoidl, all rights reserved
 
 #define USE_TICK_CALLBACK
+#define DUMP_FPS
 
 using System.Diagnostics;
+using System.Globalization;
 using Cairo;
 using Cairo.Extensions;
 using Cairo.Extensions.Colors;
 using Gtk;
 using Gtk4.Extensions;
 using static Gtk4.Extensions.Gtk4Constants;
+using Format         = Cairo.Surfaces.Format;
+using ImageSurface   = Cairo.Surfaces.Images.ImageSurface;
 using RadialGradient = Cairo.Drawing.Patterns.RadialGradient;
 
 namespace Gtk4Animation;
@@ -26,13 +30,21 @@ public sealed class AnimationWindow : ApplicationWindow
     [Connect] private readonly Label       _fpsLabel;
 #pragma warning restore CS0649
 
-    private readonly List<PointD> _points;
+    private ImageSurface? _ballSurface;
+    private ImageSurface? _trajectorySurface;
+    private CairoContext? _trajectoryContext;
 
     private double _curX;
     private double _curY;
+    private int    _moves;
+    private PointD _lastPoint;
 
 #if USE_TICK_CALLBACK
-    private long _frameTimeMicros;
+    private long _lastFrameTimeMicros;
+#endif
+
+#if DUMP_FPS
+    private readonly StreamWriter _fpsWriter;
 #endif
 
     public AnimationWindow(Application app) : this(app, new Builder("AnimationWindow.4.ui"), "animationWindow") { }
@@ -57,8 +69,6 @@ public sealed class AnimationWindow : ApplicationWindow
         _curX = Random.Shared.Next(0, _drawingArea.ContentWidth);
         _curY = Random.Shared.Next(0, _drawingArea.ContentHeight);
 
-        _points = [new PointD(_curX, _curY)];
-
 #if !USE_TICK_CALLBACK
         GLib.Functions.TimeoutAdd(priority: 0, interval: 50, this.OnTimeout);
 #else
@@ -66,17 +76,26 @@ public sealed class AnimationWindow : ApplicationWindow
         {
             long frameTimeMicros = frameClock.GetFrameTime();
 
-            if (frameTimeMicros - _frameTimeMicros > 50 * 1000)
+            if (frameTimeMicros - _lastFrameTimeMicros > 50 * 1000)
             {
                 double fps = frameClock.GetFps();
                 _fpsLabel.SetText($"FPS: {fps:N1}");
 
-                _frameTimeMicros = frameTimeMicros;
+#if DUMP_FPS
+                _fpsWriter?.WriteLine(string.Create(CultureInfo.InvariantCulture, $"{_moves};{fps}"));
+#endif
+
+                _lastFrameTimeMicros = frameTimeMicros;
                 return this.OnTimeout();
             }
 
             return SourceContinue;
         });
+#endif
+
+#if DUMP_FPS
+        _fpsWriter = File.CreateText("fps.csv");
+        _fpsWriter.WriteLine("Moves;FPS");
 #endif
     }
 
@@ -86,7 +105,7 @@ public sealed class AnimationWindow : ApplicationWindow
 
         _drawingArea.QueueDraw();
 
-        _iterationLabel.SetText($"Iteration: {_points.Count:D3}");
+        _iterationLabel.SetText($"Iteration: {_moves:D3}");
         this.CalculateNextPosition();
 
         return SourceContinue;
@@ -103,12 +122,50 @@ public sealed class AnimationWindow : ApplicationWindow
         _curX = Math.Clamp(_curX, 0 + BallSize, width  - BallSize);
         _curY = Math.Clamp(_curY, 0 + BallSize, height - BallSize);
 
-        _points.Add(new PointD(_curX, _curY));
+        _moves++;
+    }
+
+    private static ImageSurface CreateBallSurface(Cairo.Surfaces.Surface targetSurface, int width, int height)
+    {
+        ImageSurface imageSurface = targetSurface.CreateSimilarImage(Format.Argb32, width, height);
+        using CairoContext cr     = new(imageSurface);
+
+        cr.Translate(BallSize, BallSize);
+
+        using RadialGradient radialGradient = new(0, 0, BallSize * 0.8, 0, 0, 0);
+        radialGradient.AddColorStopRgba(0, 1, 0, 0, 1.0);
+        radialGradient.AddColorStopRgba(1, 1, 1, 1, 1.0);
+
+        cr.SetSource(radialGradient);
+        cr.Arc(0, 0, BallSize, 0, 2 * Math.PI);
+        cr.Fill();
+
+        return imageSurface;
     }
 
     private unsafe void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
         Debug.WriteLine($"Drawing {drawingArea.Handle.DangerousGetHandle()} with context {(nint)cr.NativeContext} and w x h = {width} x {height}");
+
+        _ballSurface ??= CreateBallSurface(cr.Target, width, height);
+
+        if (_trajectorySurface is null)
+        {
+            Debug.Assert(_trajectoryContext is null);
+
+            _trajectorySurface = cr.Target.CreateSimilarImage(Format.Argb32, width, height);
+            _trajectoryContext = new CairoContext(_trajectorySurface);
+
+            // Starting point
+            _trajectoryContext.Arc(_curX, _curY, 5, 0, 2 * Math.PI);
+            _trajectoryContext.Color = new Color(0, 1, 0);
+            _trajectoryContext.Fill();
+
+            _trajectoryContext.Color     = new Color(0, 0, 1);
+            _trajectoryContext.LineWidth = 2;
+            _lastPoint                   = new(_curX, _curY);
+        }
+        Debug.Assert(_trajectoryContext is not null);
 
         // Background
         using (cr.Save())
@@ -141,42 +198,35 @@ public sealed class AnimationWindow : ApplicationWindow
             }
         }
 
-        if (_showTrajectoryCheckButton.Active && _points.Count > 0)
+        if (_moves > 1)
         {
-            cr.MoveTo(_points[0]);
+            // It must be a Stroke, as with StrokePreserve the path gets longer, and longer,
+            // so it wouldn't be a improvement.
 
-            for (int i = 1; i < _points.Count; ++i)
+            _trajectoryContext.MoveTo(_lastPoint);
+            _lastPoint = new PointD(_curX, _curY);
+            _trajectoryContext.LineTo(_lastPoint);
+            _trajectoryContext.Stroke();
+
+            if (_showTrajectoryCheckButton.Active)
             {
-                cr.LineTo(_points[i]);
+                cr.SetSourceSurface(_trajectorySurface, 0, 0);
+                cr.Paint();
             }
-
-            cr.Color = new Color(0, 0, 1);
-            cr.LineWidth = 2;
-            cr.Stroke();
-
-            // Starting point
-            cr.Color = new Color(0, 1, 0);
-            cr.Arc(_points[0], 5, 0, 2 * Math.PI);
-            cr.Fill();
         }
 
         // Bullet
         using (cr.Save())
         {
-            using RadialGradient radialGradient = new(0, 0, BallSize * 0.8, 0, 0, 0);
-            radialGradient.AddColorStopRgba(0, 1, 0, 0, 1.0);
-            radialGradient.AddColorStopRgba(1, 1, 1, 1, 1.0);
-
-            cr.Translate(_curX, _curY);
-            cr.SetSource(radialGradient);
-            cr.Arc(0, 0, BallSize, 0, 2 * Math.PI);
-            cr.Fill();
+            cr.Translate(-BallSize, -BallSize);     // undo construction offset
+            cr.SetSourceSurface(_ballSurface, _curX, _curY);
+            cr.Paint();
         }
 
         if (_saveImagesCheckButton.Active)
         {
             Directory.CreateDirectory("output");
-            cr.Target.WriteToPng($"output/img{_points.Count:000}.png");
+            cr.Target.WriteToPng($"output/img{_moves:000}.png");
         }
     }
 }

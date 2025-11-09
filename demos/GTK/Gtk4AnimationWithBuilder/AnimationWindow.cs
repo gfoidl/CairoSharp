@@ -1,8 +1,10 @@
 // (c) gfoidl, all rights reserved
 
 #define USE_TICK_CALLBACK
+#define DUMP_FPS
 
 using System.Diagnostics;
+using System.Globalization;
 using Cairo;
 using Cairo.Extensions;
 using Cairo.Extensions.Colors;
@@ -17,84 +19,46 @@ public sealed class AnimationWindow : ApplicationWindow
 {
     private const int BallSize = 20;
 
+#pragma warning disable CS0649 // field is never assigned to
+    [Connect] private readonly CheckButton _showTrajectoryCheckButton;
+    [Connect] private readonly CheckButton _showCrosshairsCheckButton;
+    [Connect] private readonly CheckButton _saveImagesCheckButton;
+    [Connect] private readonly DrawingArea _drawingArea;
+    [Connect] private readonly Label       _iterationLabel;
+    [Connect] private readonly Label       _fpsLabel;
+#pragma warning restore CS0649
+
     private readonly List<PointD> _points;
-    private readonly CheckButton  _showTrajectoryCheckButton;
-    private readonly CheckButton  _showCrosshairsCheckButton;
-    private readonly CheckButton  _saveImagesCheckButton;
-    private readonly DrawingArea  _drawingArea;
-    private readonly Label        _iterationLabel;
-    private readonly Label        _fpsLabel;
 
     private double _curX;
     private double _curY;
 
 #if USE_TICK_CALLBACK
-    private long _frameTimeMicros;
+    private long _lastFrameTimeMicros;
 #endif
 
-    public AnimationWindow(Application app)
+#if DUMP_FPS
+    private readonly StreamWriter _fpsWriter;
+#endif
+
+    public AnimationWindow(Application app) : this(app, new Builder("AnimationWindow.4.ui"), "animationWindow") { }
+
+    private AnimationWindow(Application app, Builder builder, string name)
+        : base(new Gtk.Internal.ApplicationWindowHandle(builder.GetPointer(name), ownsHandle: false))
     {
         this.Application = app;
-        this.Title       = "Cairo Animation Demo";
-        this.Resizable   = false;
 
-        Box checkBoxHorizontalBox = Box.New(Orientation.Horizontal, spacing: 0);
-        {
-            _showTrajectoryCheckButton        = CheckButton.NewWithLabel("show trajectory");
-            _showTrajectoryCheckButton.Active = true;
-            checkBoxHorizontalBox.Append(_showTrajectoryCheckButton);
+        builder.Connect(this);
+        builder.Dispose();
 
-            _showCrosshairsCheckButton        = CheckButton.NewWithLabel("show crosshairs");
-            _showCrosshairsCheckButton.Active = true;
-            checkBoxHorizontalBox.Append(_showCrosshairsCheckButton);
+        Debug.Assert(_showTrajectoryCheckButton is not null);
+        Debug.Assert(_showCrosshairsCheckButton is not null);
+        Debug.Assert(_saveImagesCheckButton     is not null);
+        Debug.Assert(_drawingArea               is not null);
+        Debug.Assert(_iterationLabel            is not null);
+        Debug.Assert(_fpsLabel                  is not null);
 
-            _saveImagesCheckButton         = CheckButton.NewWithLabel("save images");
-            _saveImagesCheckButton.Hexpand = true;
-            _saveImagesCheckButton.Halign  = Align.End;
-            checkBoxHorizontalBox.Append(_saveImagesCheckButton);
-        }
-
-        _drawingArea = DrawingArea.New();
-        {
-            //_drawingArea.SetSizeRequest(600, 400);
-            _drawingArea.ContentWidth  = 600;
-            _drawingArea.ContentHeight = 400;
-            _drawingArea.SetDrawFunc(this.Draw);
-        }
-
-        Box footerBox = Box.New(Orientation.Horizontal, spacing: 0);
-        {
-            _iterationLabel = Label.New(str: null);
-            {
-                _iterationLabel.Halign         = Align.Start;
-                _iterationLabel.SingleLineMode = true;
-            }
-            footerBox.Append(_iterationLabel);
-
-            _fpsLabel = Label.New(str: null);
-            {
-                _fpsLabel.Halign         = Align.End;
-                _fpsLabel.Hexpand        = true;
-                _fpsLabel.SingleLineMode = true;
-            }
-            footerBox.Append(_fpsLabel);
-        }
-
-        Box mainBox = Box.New(Orientation.Vertical, 12);
-        mainBox.Append(checkBoxHorizontalBox);
-        mainBox.Append(_drawingArea);
-        mainBox.Append(footerBox);
-
-        this.Child = mainBox;
-
-#if USE_CSS
-        mainBox.AddCssClass("main-box");
-#else
-        mainBox.MarginStart  = 12;
-        mainBox.MarginTop    = 12;
-        mainBox.MarginEnd    = 12;
-        mainBox.MarginBottom = 12;
-#endif
+        _drawingArea.SetDrawFunc(this.Draw);
 
         _curX = Random.Shared.Next(0, _drawingArea.ContentWidth);
         _curY = Random.Shared.Next(0, _drawingArea.ContentHeight);
@@ -108,17 +72,26 @@ public sealed class AnimationWindow : ApplicationWindow
         {
             long frameTimeMicros = frameClock.GetFrameTime();
 
-            if (frameTimeMicros - _frameTimeMicros > 50 * 1000)
+            if (frameTimeMicros - _lastFrameTimeMicros > 50 * 1000)
             {
                 double fps = frameClock.GetFps();
                 _fpsLabel.SetText($"FPS: {fps:N1}");
 
-                _frameTimeMicros = frameTimeMicros;
+#if DUMP_FPS
+                _fpsWriter?.WriteLine(string.Create(CultureInfo.InvariantCulture, $"{_points.Count};{fps}"));
+#endif
+
+                _lastFrameTimeMicros = frameTimeMicros;
                 return this.OnTimeout();
             }
 
             return SourceContinue;
         });
+#endif
+
+#if DUMP_FPS
+        _fpsWriter = File.CreateText("fps.csv");
+        _fpsWriter.WriteLine("Moves;FPS");
 #endif
     }
 

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- WinExe in order to hide the console window. -->
+        <OutputType>WinExe</OutputType>
+        <RootNamespace>Gtk4Animation</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!--<DefineConstants>$(DefineConstants);USE_CSS</DefineConstants>-->
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\source\Gtk4.Extensions\Gtk4.Extensions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Gtk4Animation\Program.cs" Link="Program.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="..\Gtk4AnimationWithBuilder\builder\Animation.ui" Link="builder\Animation.ui" LogicalName="AnimationWindow.4.ui" />
+    </ItemGroup>
+
+</Project>
