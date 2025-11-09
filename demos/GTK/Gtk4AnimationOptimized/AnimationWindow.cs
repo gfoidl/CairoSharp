@@ -156,6 +156,7 @@ public sealed class AnimationWindow : ApplicationWindow
             _trajectorySurface = cr.Target.CreateSimilarImage(Format.Argb32, width, height);
             _trajectoryContext = new CairoContext(_trajectorySurface);
 
+            // Starting point
             _trajectoryContext.Arc(_curX, _curY, 5, 0, 2 * Math.PI);
             _trajectoryContext.Color = new Color(0, 1, 0);
             _trajectoryContext.Fill();
