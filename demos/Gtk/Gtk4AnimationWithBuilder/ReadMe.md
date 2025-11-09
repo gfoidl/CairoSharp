@@ -1,6 +1,6 @@
-## Gtk4Animation
+## Gtk4AnimationWithBuilder
 
-[Gtk4AnimationWithBuilder](../Gtk4AnimationWithBuilder/ReadMe.md) is similar, just with UI builder.
+This is similar to [Gtk4Animation](../Gtk4Animation/ReadMe.md). Instead of building the UI in code, this demo uses the GTK 4's UI builder (together with Cambalache).
 
 ---
 

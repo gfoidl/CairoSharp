@@ -1,8 +1,10 @@
 // (c) gfoidl, all rights reserved
 
 #define USE_TICK_CALLBACK
+#define DUMP_FPS
 
 using System.Diagnostics;
+using System.Globalization;
 using Cairo;
 using Cairo.Extensions;
 using Cairo.Extensions.Colors;
@@ -29,7 +31,11 @@ public sealed class AnimationWindow : ApplicationWindow
     private double _curY;
 
 #if USE_TICK_CALLBACK
-    private long _frameTimeMicros;
+    private long _lastFrameTimeMicros;
+#endif
+
+#if DUMP_FPS
+    private readonly StreamWriter _fpsWriter;
 #endif
 
     public AnimationWindow(Application app)
@@ -108,17 +114,26 @@ public sealed class AnimationWindow : ApplicationWindow
         {
             long frameTimeMicros = frameClock.GetFrameTime();
 
-            if (frameTimeMicros - _frameTimeMicros > 50 * 1000)
+            if (frameTimeMicros - _lastFrameTimeMicros > 50 * 1000)
             {
                 double fps = frameClock.GetFps();
                 _fpsLabel.SetText($"FPS: {fps:N1}");
 
-                _frameTimeMicros = frameTimeMicros;
+#if DUMP_FPS
+                _fpsWriter?.WriteLine(string.Create(CultureInfo.InvariantCulture, $"{_points.Count};{fps}"));
+#endif
+
+                _lastFrameTimeMicros = frameTimeMicros;
                 return this.OnTimeout();
             }
 
             return SourceContinue;
         });
+#endif
+
+#if DUMP_FPS
+        _fpsWriter = File.CreateText("fps.csv");
+        _fpsWriter.WriteLine("Moves;FPS");
 #endif
     }
 
