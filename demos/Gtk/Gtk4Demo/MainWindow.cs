@@ -862,6 +862,8 @@ public sealed class MainWindow : ApplicationWindow
         _lastSelectedDemo = "hit_test";
         _onDrawAction     = cr =>
         {
+            // Instead of repeated draw of the shape / path, it could be pre-rendered to
+            // an image surface, which is then just copied to the destination.
             using (cr.Save())
             {
                 cr.Translate(100, 50);
@@ -911,6 +913,7 @@ public sealed class MainWindow : ApplicationWindow
 
                     cr.Hairline = true;
 
+#if CROSSHAIRS_SIMPLE
                     cr.MoveTo(_mouseX, 0);
                     cr.RelLineTo(0, _drawingArea.ContentHeight);
                     cr.Stroke();
@@ -918,6 +921,23 @@ public sealed class MainWindow : ApplicationWindow
                     cr.MoveTo(0, _mouseY);
                     cr.RelLineTo(_drawingArea.ContentWidth, 0);
                     cr.Stroke();
+#else
+                    cr.MoveTo(_mouseX, _mouseY);
+                    cr.RelLineTo(_drawingArea.ContentWidth, 0);
+                    cr.Stroke();
+
+                    cr.MoveTo(_mouseX, _mouseY);
+                    cr.RelLineTo(-_drawingArea.ContentWidth, 0);
+                    cr.Stroke();
+
+                    cr.MoveTo(_mouseX, _mouseY);
+                    cr.RelLineTo(0, _drawingArea.ContentHeight);
+                    cr.Stroke();
+
+                    cr.MoveTo(_mouseX, _mouseY);
+                    cr.RelLineTo(0, -_drawingArea.ContentHeight);
+                    cr.Stroke();
+#endif
                 }
             }
         };
