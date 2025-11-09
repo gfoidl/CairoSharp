@@ -13,7 +13,7 @@
     <Project Path="demos/FreeTypeDemo/FreeTypeDemo.csproj" />
     <Project Path="demos/SvgPdfLoading/SvgPdfLoading.csproj" />
   </Folder>
-  <Folder Name="/demos/Gtk/">
+  <Folder Name="/demos/GTK/">
     <Project Path="demos/Gtk/Gtk3Demo/Gtk3Demo.csproj" />
     <Project Path="demos/Gtk/Gtk4Animation/Gtk4Animation.csproj" />
     <Project Path="demos/Gtk/Gtk4AnimationOptimized/Gtk4AnimationOptimized.csproj" Id="0d1d15f6-af83-428e-a491-4c44dff076f8" />
