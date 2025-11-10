@@ -99,10 +99,36 @@ public sealed unsafe class PostScriptSurface : StreamSurface
     /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>For a strong typed variant see <see cref="Create"/>.</remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
     public PostScriptSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints)
         : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream)) { }
+
+    /// <summary>
+    /// Creates a PostScript surface of the specified size in points to be written incrementally via the
+    /// <paramref name="callback"/>.
+    /// </summary>
+    /// <param name="callback">The callback to be invoked with the PS content to be written</param>
+    /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
+    /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>
+    /// This is the same as <see cref="PostScriptSurface(Callback{object}, object?, double, double)"/> just with strong
+    /// typed <paramref name="callback"/> and <paramref name="state"/>.
+    /// </remarks>
+    /// <exception cref="CairoException">when construction fails</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
+    public static PostScriptSurface Create<T>(Callback<T> callback, T? state, double widthInPoints, double heightInPoints)
+         where T : class
+    {
+        State tmp = CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream);
+
+        return new PostScriptSurface(tmp.Surface, isOwnedByCairo: false)
+        {
+            _stateHandle = tmp.StateHandle
+        };
+    }
 
     /// <summary>
     /// Restricts the generated PostSript file to level. See <see cref="PostScriptLevelExtensions.GetSupportedLevels"/>

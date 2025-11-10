@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 #define CAIRO_USE_CALLBACK
+#define USE_SVG_FACTORY_METHOD
 
 using System.Diagnostics;
 using System.IO.Pipelines;
@@ -42,6 +43,7 @@ static async ValueTask GetSvg(HttpResponse response)
 #if CAIRO_USE_CALLBACK
 static void DrawSvgViaCallback(PipeWriter bodyWriter, int size = 500)
 {
+#if !USE_SVG_FACTORY_METHOD
     using SvgSurface surface = new(static (state, data) =>
     {
         PipeWriter writer = (state as PipeWriter)!;
@@ -51,6 +53,17 @@ static void DrawSvgViaCallback(PipeWriter bodyWriter, int size = 500)
         writer.Advance(data.Length);
 
     }, bodyWriter, size, size);
+#else
+    using SvgSurface surface = SvgSurface.Create(static (state, data) =>
+    {
+        PipeWriter writer = state!;
+        Span<byte> buffer = writer.GetSpan(data.Length);
+
+        data.CopyTo(buffer);
+        writer.Advance(data.Length);
+
+    }, bodyWriter, size, size);
+#endif
 
     DrawCore(surface, size);
 }
@@ -62,7 +75,7 @@ static void DrawSvgViaStream(Stream stream, int size = 500)
 }
 #endif
 
-static void DrawCore(SvgSurface surface, int size)
+    static void DrawCore(SvgSurface surface, int size)
 {
     using CairoContext context = new(surface);
 
