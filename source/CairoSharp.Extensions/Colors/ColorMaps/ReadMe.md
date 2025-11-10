@@ -68,3 +68,5 @@ And some special notes about the (famous) rainbow color map:
 * [Rainbow Colormaps – What are they good for? Absolutely nothing!](https://medvis.org/2012/08/21/rainbow-colormaps-what-are-they-good-for-absolutely-nothing/)
 * [The end of the rainbow](https://www.climate-lab-book.ac.uk/2014/end-of-the-rainbow/)
 * [Why rainbow colour scales can be misleading](https://www.climate-lab-book.ac.uk/2016/why-rainbow-colour-scales-can-be-misleading/)
+
+Not directly related to color maps is [Data Visualisation: A Comprehensive Guide to Unlocking Your Data’s Potential](https://data.europa.eu/apps/data-visualisation-guide/), but it's interesting enough to have it linked here.
