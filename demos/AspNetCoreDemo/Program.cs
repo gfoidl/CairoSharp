@@ -75,7 +75,7 @@ static void DrawSvgViaStream(Stream stream, int size = 500)
 }
 #endif
 
-    static void DrawCore(SvgSurface surface, int size)
+static void DrawCore(SvgSurface surface, int size)
 {
     using CairoContext context = new(surface);
 
