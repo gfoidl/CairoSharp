@@ -17,9 +17,9 @@ public abstract unsafe class StreamSurface : Surface
     protected StreamSurface(cairo_surface_t* surface, bool isOwnedByCairo = false, bool needsDestroy = true)
         : base(surface, isOwnedByCairo, needsDestroy) { }
 
-    protected StreamSurface((IntPtr Handle, GCHandle StateHandle) arg, bool isOwnedByCairo = false)
-        : base((cairo_surface_t*)arg.Handle.ToPointer(), isOwnedByCairo)
-        => _stateHandle = arg.StateHandle;
+    protected StreamSurface(State state, bool isOwnedByCairo = false)
+        : base(state.Surface, isOwnedByCairo)
+        => _stateHandle = state.StateHandle;
 
     protected override void DisposeCore(cairo_surface_t* surface)
     {
@@ -34,7 +34,7 @@ public abstract unsafe class StreamSurface : Surface
         }
     }
 
-    protected static (IntPtr, GCHandle) CreateForWriteStream(Stream stream, double width, double height, NativeFactory factory)
+    protected static State CreateForWriteStream(Stream stream, double width, double height, NativeFactory factory)
     {
         ArgumentNullException.ThrowIfNull(stream);
 
@@ -49,7 +49,7 @@ public abstract unsafe class StreamSurface : Surface
 
         cairo_surface_t* handle = factory(writeFunc, state, width, height);
 
-        return (new IntPtr(handle), streamHandle);
+        return new State(handle, streamHandle);
 
         static Status WriteFunc(void* state, byte* data, uint length)
         {
@@ -74,7 +74,7 @@ public abstract unsafe class StreamSurface : Surface
         }
     }
 
-    protected static (IntPtr, GCHandle) CreateForDelegate<T>(T? obj, Callback<T> callback, double width, double height, NativeFactory factory)
+    protected static State CreateForDelegate<T>(T? obj, Callback<T> callback, double width, double height, NativeFactory factory)
         where T : class
     {
         CallbackState<T> callbackState = new(obj, callback);
@@ -84,7 +84,7 @@ public abstract unsafe class StreamSurface : Surface
 
         cairo_surface_t* handle = factory(writeFunc, state, width, height);
 
-        return (new IntPtr(handle), stateHandle);
+        return new State(handle, stateHandle);
 
         static Status WriteFunc(void* state, byte* data, uint length)
         {
@@ -117,4 +117,10 @@ public abstract unsafe class StreamSurface : Surface
     /// <param name="data">the data to be written</param>
     public delegate void Callback<T>(T? state, ReadOnlySpan<byte> data);
     private record CallbackState<T>(T? State, Callback<T> Callback);
+
+    protected readonly struct State(cairo_surface_t* surface, GCHandle stateHandle)
+    {
+        public cairo_surface_t* Surface { get; } = surface;
+        public GCHandle StateHandle     { get; } = stateHandle;
+    }
 }
