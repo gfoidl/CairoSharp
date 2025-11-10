@@ -22,6 +22,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DebugType>embedded</DebugType>
+        <IsPackable>false</IsPackable>
 
         <!-- Place all the artifacts in a central place, much nicer :-) -->
         <!-- cf. https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#simplified-output-paths -->
