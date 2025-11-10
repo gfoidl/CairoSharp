@@ -614,12 +614,11 @@ static void MeshPattern1()
 {
     // Based on https://gitlab.com/saiwp/cairo/-/blob/master/test/mesh-pattern.c?ref_type=heads
 
-    const int PatWidth  = 170;
-    const int PatHeight = 170;
-    const int Size      = PatWidth;
-    const int Pad       = 2;
-    const int Width     = Pad + Size + Pad;
-    const int Height    = Width;
+    const int PatWidth = 170;
+    const int Size     = PatWidth;
+    const int Pad      = 2;
+    const int Width    = Pad + Size + Pad;
+    const int Height   = Width;
 
     static void Draw(Surface surface)
     {

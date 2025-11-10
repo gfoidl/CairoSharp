@@ -3,6 +3,7 @@
     <Import Project="../Directory.Build.props" />
 
     <PropertyGroup>
+        <IsPackable>true</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         
         <SignAssembly>True</SignAssembly>
@@ -14,6 +15,9 @@
 
         <!-- Missing XML comments -->
         <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+        <!-- Pre-release dependency-->
+        <NoWarn>$(NoWarn);NU5104</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Release'">

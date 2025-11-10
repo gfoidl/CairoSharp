@@ -38,10 +38,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.2" />
+        <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0-preview.3" />
 
         <!-- https://gircore.github.io/docs/faq.html#how-to-create-subclasses-of-a-gobject-based-class -->
-        <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.6.3">
+        <PackageReference Include="GirCore.GObject-2.0.Integration" Version="0.7.0-preview.3">
             <IncludeAssets>analyzers</IncludeAssets>
         </PackageReference>
     </ItemGroup>

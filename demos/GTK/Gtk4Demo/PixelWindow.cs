@@ -730,7 +730,7 @@ public sealed partial class PixelWindow : Window
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     private sealed partial class ColorMapInfo
     {
-        public string Name        { get; }
+        public string Name        { get; } = "";
         public bool Optimized     { get; }
         public Type? Type         { get; }
         public ColorMap? ColorMap { get; }
