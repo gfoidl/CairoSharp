@@ -3,7 +3,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using unsafe NativeFactory = delegate*<delegate*<void*, byte*, uint, Cairo.Status>, void*, double, double, void*>;
+using unsafe NativeFactory = delegate*<delegate*<void*, byte*, uint, Cairo.Status>, void*, double, double, Cairo.Surfaces.cairo_surface_t*>;
 
 namespace Cairo.Surfaces;
 
@@ -47,7 +47,7 @@ public abstract unsafe class StreamSurface : Surface
         void* state                  = GCHandle.ToIntPtr(streamHandle).ToPointer();
         cairo_write_func_t writeFunc = &WriteFunc;
 
-        void* handle = factory(writeFunc, state, width, height);
+        cairo_surface_t* handle = factory(writeFunc, state, width, height);
 
         return (new IntPtr(handle), streamHandle);
 
@@ -82,7 +82,7 @@ public abstract unsafe class StreamSurface : Surface
         void* state                    = GCHandle.ToIntPtr(stateHandle).ToPointer();
         cairo_write_func_t writeFunc   = &WriteFunc;
 
-        void* handle = factory(writeFunc, state, width, height);
+        cairo_surface_t* handle = factory(writeFunc, state, width, height);
 
         return (new IntPtr(handle), stateHandle);
 
