@@ -8,7 +8,7 @@
 * [How Bad Is Your Colormap?](https://jakevdp.github.io/blog/2014/10/16/how-bad-is-your-colormap/)
 * [Color Map Advice for Scientific Visualization](https://www.kennethmoreland.com/color-advice/)
 * [Diverging Color Maps for Scientific Visualization](https://www.kennethmoreland.com/color-maps/)
-* [Paper: Diverging Color Maps for Scientific Visualization](https://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf)
+* [Paper: Diverging Color Maps for Scientific Visualization (PDF)](https://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf)
 * [Choosing Colormaps in Matplotlib](https://matplotlib.org/stable/users/explain/colors/colormaps.html)
 * [Colormap reference](https://matplotlib.org/stable/gallery/color/colormap_reference.html)
 * [mpl colormaps](https://bids.github.io/colormap/)
