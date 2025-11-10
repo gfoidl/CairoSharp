@@ -1,5 +1,34 @@
 ## Color maps
 
+### Background information
+
+* [Colour map guideline](https://s-ink.org/colour-map-guideline) -- a flowchart to pick the right type of color map
+* [Color gradient (Wikipedia)](https://en.wikipedia.org/wiki/Color_gradient)
+* [In Search of a Perfect Colormap](http://inversed.ru/Blog_2.htm)
+* [How Bad Is Your Colormap?](https://jakevdp.github.io/blog/2014/10/16/how-bad-is-your-colormap/)
+* [Color Map Advice for Scientific Visualization](https://www.kennethmoreland.com/color-advice/)
+* [Diverging Color Maps for Scientific Visualization](https://www.kennethmoreland.com/color-maps/)
+* [Paper: Diverging Color Maps for Scientific Visualization (PDF)](https://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf)
+* [Choosing Colormaps in Matplotlib](https://matplotlib.org/stable/users/explain/colors/colormaps.html)
+* [Colormap reference](https://matplotlib.org/stable/gallery/color/colormap_reference.html)
+* [mpl colormaps](https://bids.github.io/colormap/)
+* [Turbo, An Improved Rainbow Colormap for Visualization](https://research.google/blog/turbo-an-improved-rainbow-colormap-for-visualization/)
+* [ColorCET: Perceptually Uniform Colour Maps](https://colorcet.com/)
+* [Good Colour Maps: How to Design Them](https://arxiv.org/abs/1509.03700)
+
+And some special notes about the (famous) rainbow color map:
+
+* [The rainbow is dead…long live the rainbow! – series outline](https://mycartablog.com/2012/05/29/the-rainbow-is-dead-long-live-the-rainbow-series-outline/)
+* [Default colormaps: Are Parula and Viridis really an improvement over Jet?](https://brushingupscience.com/2019/10/01/default-colormaps-are-parula-and-viridis-really-an-improvement-over-jet/)
+* [Rainbow Color Map Critiques: An Overview and Annotated Bibliography (MathWorks, PDF)](https://de.mathworks.com/content/dam/mathworks/tag-team/Objects/r/81137_92238v00_RainbowColorMap_57312.pdf)
+* [Rainbow Colormaps – What are they good for? Absolutely nothing!](https://medvis.org/2012/08/21/rainbow-colormaps-what-are-they-good-for-absolutely-nothing/)
+* [The end of the rainbow](https://www.climate-lab-book.ac.uk/2014/end-of-the-rainbow/)
+* [Why rainbow colour scales can be misleading](https://www.climate-lab-book.ac.uk/2016/why-rainbow-colour-scales-can-be-misleading/)
+
+Not directly related to color maps is [Data Visualisation: A Comprehensive Guide to Unlocking Your Data’s Potential](https://data.europa.eu/apps/data-visualisation-guide/), but it's interesting enough to have it linked here.
+
+### Gallery
+
 For a full set of example images of the color maps and it's variants (inverted, grayscale) see [gallery](../../../../images/colors/colormaps/ReadMe.md).
 
 ### Default color maps
@@ -43,14 +72,3 @@ except turbo color map is taken from [Google Research](https://research.google/b
 | SmoothCoolWarm    | SmoothCoolWarm is a diverging (double-ended) color map with a smooth transition in the middle to prevent artifacts at the midpoint. Although not isoluminant, this color map avoids dark colors to allow shading cues throughout.                                                                                                                                                                                                                      | ![](../../../../images/colors/colormaps/gallery/Peaks_SmoothCoolWarm.png)    |
 | Turbo             | Turbo, a new colormap that has the desirable properties of Jet while also addressing some of its shortcomings, such as false detail, banding and color blindness ambiguity. Turbo was hand-crafted and fine-tuned to be effective for a variety of visualization tasks.                                                                                                                                                                                | ![](../../../../images/colors/colormaps/gallery/Peaks_Turbo.png)             |
 | Viridis           | Viridis is a perceptually uniform color map with monotonically increasing luminance and a pleasant smooth arc through blue, green, and yellow hues. Although none of the colors in viridis reach black, the bottom end of the scale does get dark, so map might need to be shortened for some 3D applications. Although viridis is very perceptually smooth and monotonically increasing, it does not have as much discrimination as other color maps. | ![](../../../../images/colors/colormaps/gallery/Peaks_Viridis.png)           |
-
-### Background information
-
-* [Color Map Advice for Scientific Visualization](https://www.kennethmoreland.com/color-advice/)
-* [Diverging Color Maps for Scientific Visualization](https://www.kennethmoreland.com/color-maps/)
-* [Paper: Diverging Color Maps for Scientific Visualization](https://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf)
-* [Choosing Colormaps in Matplotlib](https://matplotlib.org/stable/users/explain/colors/colormaps.html)
-* [Colormap reference](https://matplotlib.org/stable/gallery/color/colormap_reference.html)
-* [Turbo, An Improved Rainbow Colormap for Visualization](https://research.google/blog/turbo-an-improved-rainbow-colormap-for-visualization/)
-* [The rainbow is dead…long live the rainbow! – The rainbow is dead…long live the rainbow! – Perceptual palettes, part 3](https://mycartablog.com/2012/10/06/the-rainbow-is-deadlong-live-the-rainbow-part-3/)
-* [mpl colormaps](https://bids.github.io/colormap/)
