@@ -2,9 +2,14 @@
 
 ### Background information
 
+* [Color Use Guidelines for Mapping and Visualization (image)](https://i0.wp.com/mycartablog.com/wp-content/uploads/2012/05/color-guide-brewer.png) -- 
 * [Colour map guideline](https://s-ink.org/colour-map-guideline) -- a flowchart to pick the right type of color map
 * [Color gradient (Wikipedia)](https://en.wikipedia.org/wiki/Color_gradient)
+* [Subtleties of Color (Part 1 of 6)](https://earthobservatory.nasa.gov/blogs/elegantfigures/2013/08/05/subtleties-of-color-part-1-of-6/)
 * [In Search of a Perfect Colormap](http://inversed.ru/Blog_2.htm)
+* [Colour for numerical data: perceptual uniformity](https://data.europa.eu/apps/data-visualisation-guide/colour-for-numerical-data-perceptual-uniformity)
+* [Picking a colour scale for scientific graphics](https://betterfigures.org/2015/06/23/picking-a-colour-scale-for-scientific-graphics/)
+* [Playing “hunt the discontinuity”](https://betterfigures.org/2018/06/04/playing-hunt-the-discontinuity/)
 * [How Bad Is Your Colormap?](https://jakevdp.github.io/blog/2014/10/16/how-bad-is-your-colormap/)
 * [Color Map Advice for Scientific Visualization](https://www.kennethmoreland.com/color-advice/)
 * [Diverging Color Maps for Scientific Visualization](https://www.kennethmoreland.com/color-maps/)
@@ -14,7 +19,8 @@
 * [mpl colormaps](https://bids.github.io/colormap/)
 * [Turbo, An Improved Rainbow Colormap for Visualization](https://research.google/blog/turbo-an-improved-rainbow-colormap-for-visualization/)
 * [ColorCET: Perceptually Uniform Colour Maps](https://colorcet.com/)
-* [Good Colour Maps: How to Design Them](https://arxiv.org/abs/1509.03700)
+* [Paper: Good Colour Maps: How to Design Them](https://arxiv.org/abs/1509.03700)
+* [Better Palettes](https://betterfigures.org/2012/09/27/better-palettes/)
 
 And some special notes about the (famous) rainbow color map:
 
@@ -24,6 +30,9 @@ And some special notes about the (famous) rainbow color map:
 * [Rainbow Colormaps – What are they good for? Absolutely nothing!](https://medvis.org/2012/08/21/rainbow-colormaps-what-are-they-good-for-absolutely-nothing/)
 * [The end of the rainbow](https://www.climate-lab-book.ac.uk/2014/end-of-the-rainbow/)
 * [Why rainbow colour scales can be misleading](https://www.climate-lab-book.ac.uk/2016/why-rainbow-colour-scales-can-be-misleading/)
+* [End of the rainbow](https://betterfigures.org/2014/11/18/end-of-the-rainbow/)
+* [A New Colormap for MATLAB – Part 2 – Troubles with Rainbows](https://blogs.mathworks.com/steve/2014/10/20/a-new-colormap-for-matlab-part-2-troubles-with-rainbows/)
+* [The Rainbow Colour Map (repeatedly) considered harmful](https://blogs.egu.eu/divisions/gd/2017/08/23/the-rainbow-colour-map/)
 
 Not directly related to color maps is [Data Visualisation: A Comprehensive Guide to Unlocking Your Data’s Potential](https://data.europa.eu/apps/data-visualisation-guide/), but it's interesting enough to have it linked here.
 
