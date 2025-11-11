@@ -131,6 +131,54 @@ public class CieLabColorTests
     }
 
     [Test]
+    public void RGB_yellow_color_to_CieLab___OK()
+    {
+        Color rgb          = new(1, 1, 0);
+        CieLabColor cieLab = rgb.ToCieLab();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(cieLab.L, Is.EqualTo( 97.14).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo(-21.55).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo( 94.48).Within(1e-2));
+        }
+
+        Color actual = cieLab.ToRGB();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actual.Red  , Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Green, Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Blue , Is.Zero      .Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-2));
+        }
+    }
+
+    [Test]
+    public void RGB_cyan_color_to_CieLab___OK()
+    {
+        Color rgb          = new(0, 1, 1);
+        CieLabColor cieLab = rgb.ToCieLab();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(cieLab.L, Is.EqualTo( 91.11).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo(-48.09).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo(-14.13).Within(1e-2));
+        }
+
+        Color actual = cieLab.ToRGB();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actual.Red  , Is.Zero      .Within(1e-2));
+            Assert.That(actual.Green, Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Blue , Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-2));
+        }
+    }
+
+    [Test]
     public void RGB_to_CieLab_and_back()
     {
         double r = TestContext.CurrentContext.Random.NextDouble();

@@ -259,6 +259,10 @@ public static unsafe class PathExtensions
         /// context.Arc(0, 0, 1, 0, 2 * Math.Pi);
         /// context.Restore();
         /// </code>
+        /// Note: the line width is also affected by the CTM, so for uniform line width the scale must be undone
+        /// before calling <see cref="CairoContext.Stroke"/> (see
+        /// <a href="https://www.cairographics.org/tutorial/#L2linewidth">cairo Tutorial: Line Width</a> for more
+        /// information)
         /// </para>
         /// </remarks>
         public void Arc(double xc, double yc, double radius, double angle1, double angle2)

@@ -133,22 +133,9 @@ internal static class CieLabHelper
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static double Inv_f_of_t(double value)
-    {
-        double value3 = value * value * value;
-
-        if (value3 > 0.008856)
-        {
-            return value3;
-        }
-
-        return (value - 16d / 116d) / 7.787;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static CieLabColor CreateFromFValues(double fx, double fy, double fz)
     {
-        double cie_L = 116 * fy - 16;
+        double cie_L = Math.Clamp(116 * fy - 16, 0, 100);
         double cie_a = 500 * (fx - fy);
         double cie_b = 200 * (fy - fz);
 

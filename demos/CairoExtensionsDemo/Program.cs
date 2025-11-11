@@ -161,7 +161,7 @@ static void KnownColorsView()
 
         string name = colors[i].Name;
 
-        PointD textStart = cr.TextAlignCenter(name, SurfaceWidth, RectHeight);
+        PointD textStart = cr.TextAlignCenter(name, SurfaceWidth, RectHeight, out _);
         cr.MoveTo(textStart.X, y + textStart.Y);
 
         cr.Color = colors[i].Color.GetInverseColor();

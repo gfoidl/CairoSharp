@@ -59,6 +59,7 @@
     <Project Path="tests/CairoSharp.Tests/CairoSharp.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
+    <Project Path="tools/ColorMapLightnessPlotter/ColorMapLightnessPlotter.csproj" Id="3e20a223-9b8f-4a97-8a90-806876ab4a78" />
     <Project Path="tools/CreateColorMaps/CreateColorMaps.csproj" />
     <Project Path="tools/CreateKnownColors/CreateKnownColors.csproj" />
   </Folder>
