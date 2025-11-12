@@ -18,12 +18,15 @@ public static class ColorMapAnalysisExtensions
         /// <summary>
         /// Creates a plot with the lightness characteristics for the <see cref="ColorMap"/>.
         /// </summary>
+        /// <param name="chartWidthInPoints">the width of the chart area, defaults to 256</param>
+        /// <param name="chartHeightInPoints">the height of the chart area, defaults to 256</param>
         /// <returns>
         /// A <see cref="RecordingSurface"/> containing the plot, which can be replayed on other <see cref="Surface"/>s
         /// </returns>
         /// <remarks>
-        /// The size of the chart area is 266 x 256. Note: the overall chart is bigger, as title, axis, etc. need
-        /// to be accounted. Thus you can use <see cref="RecordingSurface.GetInkExtents"/> to get actual size information.
+        /// The size of the chart area is <paramref name="chartWidthInPoints"/> x <paramref name="chartHeightInPoints"/>.
+        /// Note: the overall chart is bigger, as title, axis, etc. need to be accounted. Thus you can use
+        /// <see cref="RecordingSurface.GetInkExtents"/> to get actual size information.
         /// Usage could look like:
         /// <code>
         /// using RecordingSurface recordingSurface = colorMap.PlotLightnessCharacteristics();
@@ -46,11 +49,8 @@ public static class ColorMapAnalysisExtensions
         /// As example for such a plot see <a href="https://github.com/gfoidl/CairoSharp/blob/main/images/colors/colormaps/gallery/lightness/Turbo_lightness.png">L* plot for Turbo</a>.
         /// </para>
         /// </remarks>
-        public RecordingSurface PlotLightnessCharacteristics()
+        public RecordingSurface PlotLightnessCharacteristics(int chartWidthInPoints = 256, int chartHeightInPoints = 256)
         {
-            const int ChartWidthInPoints  = 256;
-            const int ChartHeightInPoints = 256;
-
             string name              = colorMap.Name;
             RecordingSurface surface = new(Content.ColorAlpha);
             using CairoContext cr    = new(surface);
@@ -58,7 +58,7 @@ public static class ColorMapAnalysisExtensions
             SetAxisTitleFont(cr);
             const string YAxisTitle = "Lightness";
             // Will be printed 90° rotated
-            PointD yAxisTitlePoint = cr.TextAlignCenter(YAxisTitle, ChartHeightInPoints, ChartWidthInPoints, out TextExtents yAxisTitleExtents);
+            PointD yAxisTitlePoint = cr.TextAlignCenter(YAxisTitle, chartHeightInPoints, chartWidthInPoints, out TextExtents yAxisTitleExtents);
             double yAxisTitleWidth = yAxisTitleExtents.Height * 1.5;
 
             SetAxisTickFont(cr);
@@ -76,13 +76,13 @@ public static class ColorMapAnalysisExtensions
 
             // Chart area
             cr.LineWidth = 1d;
-            cr.Rectangle(0, 0, ChartWidthInPoints, ChartHeightInPoints);
+            cr.Rectangle(0, 0, chartWidthInPoints, chartHeightInPoints);
             cr.Stroke();
 
             DrawAxisWithLabels();
 
             // Move coordinate system to bottom left
-            cr.Translate(0, ChartHeightInPoints);
+            cr.Translate(0, chartHeightInPoints);
             // Invert y axis to have natural chart coordinate system
             cr.Scale(1, -1);
 
@@ -111,7 +111,7 @@ public static class ColorMapAnalysisExtensions
                 cr.SetFontSize(14);
 
                 string title      = $"L* plot for {name}";
-                PointD titlePoint = cr.TextAlignCenter(title, ChartWidthInPoints, ChartHeightInPoints, out titleExtents);
+                PointD titlePoint = cr.TextAlignCenter(title, chartWidthInPoints, chartHeightInPoints, out titleExtents);
                 cr.MoveTo(titlePoint.X, titleExtents.Height);
                 cr.ShowText(title);
             }
@@ -124,15 +124,15 @@ public static class ColorMapAnalysisExtensions
                 using (cr.Save())
                 {
                     const string XAxisTitle = "color map value";
-                    PointD xAxisTitlePoint  = cr.TextAlignCenter(XAxisTitle, ChartWidthInPoints, ChartHeightInPoints, out TextExtents xAxisTitleExtents);
-                    cr.MoveTo(xAxisTitlePoint.X, ChartHeightInPoints + xAxisTickHeight + xAxisTitleExtents.Height);
+                    PointD xAxisTitlePoint  = cr.TextAlignCenter(XAxisTitle, chartWidthInPoints, chartHeightInPoints, out TextExtents xAxisTitleExtents);
+                    cr.MoveTo(xAxisTitlePoint.X, chartHeightInPoints + xAxisTickHeight + xAxisTitleExtents.Height);
                     cr.ShowText(XAxisTitle);
                 }
 
                 // y axis title
                 using (cr.Save())
                 {
-                    cr.Translate(-yAxisTickWidth, ChartHeightInPoints);
+                    cr.Translate(-yAxisTickWidth, chartHeightInPoints);
                     cr.Rotate(-90.DegreesToRadians());
                     cr.MoveTo(yAxisTitlePoint.X, 0);
                     cr.ShowText(YAxisTitle);
@@ -143,15 +143,15 @@ public static class ColorMapAnalysisExtensions
                 // x ticks
                 using (cr.Save())
                 {
-                    cr.Translate(0, ChartHeightInPoints + xAxisTickHeight);
+                    cr.Translate(0, chartHeightInPoints + xAxisTickHeight);
 
-                    const double Scale = ChartWidthInPoints / 100d;
+                    double scale = chartWidthInPoints / 100d;
 
                     for (int i = 0; i <= 100; i += 10)
                     {
                         using (cr.Save())
                         {
-                            cr.Translate(i * Scale, 0);
+                            cr.Translate(i * scale, 0);
 
                             double xTick = i * 0.01;
                             string label = xTick.ToString("G1");
@@ -165,14 +165,14 @@ public static class ColorMapAnalysisExtensions
                             cr.LineTo(0, -5);
                             cr.Stroke();
 
-                            cr.MoveTo(0, -ChartHeightInPoints);
+                            cr.MoveTo(0, -chartHeightInPoints);
                             cr.RelLineTo(0, 5);
                             cr.Stroke();
 
                             // Grid line
                             SetGridLineStyle(cr);
                             cr.MoveTo(0, 0);
-                            cr.RelLineTo(0, -ChartHeightInPoints);
+                            cr.RelLineTo(0, -chartHeightInPoints);
                             cr.Stroke();
                         }
                     }
@@ -182,15 +182,15 @@ public static class ColorMapAnalysisExtensions
                 using (cr.Save())
                 {
                     double xOffset = yAxisTickWidth - yAxisTickExtents.Width;
-                    cr.Translate(-xOffset, ChartHeightInPoints);
+                    cr.Translate(-xOffset, chartHeightInPoints);
 
-                    const double Scale = ChartHeightInPoints / 100d;
+                    double scale = chartHeightInPoints / 100d;
 
                     for (int i = 0; i <= 100; i += 10)
                     {
                         using (cr.Save())
                         {
-                            cr.Translate(0, -i * Scale);
+                            cr.Translate(0, -i * scale);
 
                             string label = i.ToString();
                             cr.TextExtents(label, out TextExtents labelExtents);
@@ -202,14 +202,14 @@ public static class ColorMapAnalysisExtensions
                             cr.RelLineTo(5, 0);
                             cr.Stroke();
 
-                            cr.MoveTo(xOffset + ChartWidthInPoints, 0);
+                            cr.MoveTo(xOffset + chartWidthInPoints, 0);
                             cr.RelLineTo(-5, 0);
                             cr.Stroke();
 
                             // Grid line
                             SetGridLineStyle(cr);
                             cr.MoveTo(xOffset, 0);
-                            cr.RelLineTo(ChartWidthInPoints, 0);
+                            cr.RelLineTo(chartWidthInPoints, 0);
                             cr.Stroke();
                         }
                     }
@@ -228,8 +228,9 @@ public static class ColorMapAnalysisExtensions
             {
                 const int Steps          = 256;
                 const double PointRadius = 2;
-                const double XScale      = ChartWidthInPoints  / (double)Steps;
-                const double YScale      = ChartHeightInPoints / 100d;      // 100 = max value of CieLab L*
+
+                double xScale      = chartWidthInPoints  / (double)Steps;
+                double yScale      = chartHeightInPoints / 100d;      // 100 = max value of CieLab L*
 
                 for (int i = 0; i <= Steps; ++i)
                 {
@@ -240,7 +241,7 @@ public static class ColorMapAnalysisExtensions
                     Debug.Assert(cieLabColor.L is >= 0 and <= 100);
 
                     cr.Color = color;
-                    cr.Arc(i * XScale, cieLabColor.L * YScale, PointRadius, 0, Math.Tau);
+                    cr.Arc(i * xScale, cieLabColor.L * yScale, PointRadius, 0, Math.Tau);
                     cr.Fill();
                 }
             }
