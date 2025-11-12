@@ -57,8 +57,8 @@ public static unsafe class FreeTypeExtensions
         // the font_face. This only needs to be done once for each font face, while
         // cairo_ft_font_face_create_for_ft_face will return the same font_face if called
         // twice with the same FT face.
-        // The following check for whether the cleanpu has been attached or not is
-        // actually unnecessary in out situation, because each call to FT_New_Face
+        // The following check for whether the cleanup has been attached or not is
+        // actually unnecessary in our situation, because each call to FT_New_Face
         // will return a new FT Face, but we include it here to show how to handle the
         // general case.
         // See: 
