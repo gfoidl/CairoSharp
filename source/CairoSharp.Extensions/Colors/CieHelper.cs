@@ -6,9 +6,9 @@ using System.Runtime.Intrinsics;
 
 namespace Cairo.Extensions.Colors;
 
-internal static class CieLabHelper
+internal static class CieHelper
 {
-    public static CieLabColor ToCieLabScalar(Color rgbLinear)
+    public static CieXYZColor ToCieXYZScalar(Color rgbLinear)
     {
         double r = rgbLinear.Red;
         double g = rgbLinear.Green;
@@ -18,6 +18,13 @@ internal static class CieLabHelper
         double x = 0.4124564 * r + 0.3575761 * g + 0.1804375 * b;
         double y = 0.2126729 * r + 0.7151522 * g + 0.0721750 * b;
         double z = 0.0193339 * r + 0.1191920 * g + 0.9503041 * b;
+
+        return new CieXYZColor(x, y, z);
+    }
+
+    public static CieLabColor ToCieLabScalar(Color rgbLinear)
+    {
+        (double x, double y, double z) = ToCieXYZScalar(rgbLinear);
 
         // Normalize to reference white
         //x /= CieLabColor.Xn.L;
@@ -33,7 +40,8 @@ internal static class CieLabHelper
         return CreateFromFValues(fx, fy, fz);
     }
 
-    public static CieLabColor ToCieLabVector256(Color rgbLinear)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector256<double> ToCieXYZVector256Core(Color rgbLinear)
     {
         Debug.Assert(Vector256.IsHardwareAccelerated);
 
@@ -42,6 +50,23 @@ internal static class CieLabHelper
         xyzVec  = Vector256.Create(0.4124564, 0.2126729, 0.0193339, 0) * Vector256.Create(rgbLinear.Red);
         xyzVec += Vector256.Create(0.3575761, 0.7151522, 0.1191920, 0) * Vector256.Create(rgbLinear.Green);
         xyzVec += Vector256.Create(0.1804375, 0.0721750, 0.9503041, 0) * Vector256.Create(rgbLinear.Blue);
+
+        return xyzVec;
+    }
+
+    public static CieXYZColor ToCieXYZVector256(Color rgbLinear)
+    {
+        Debug.Assert(Vector256.IsHardwareAccelerated);
+
+        Vector256<double> xyzVec = ToCieXYZVector256Core(rgbLinear);
+        return CieXYZColor.FromVector256(xyzVec);
+    }
+
+    public static CieLabColor ToCieLabVector256(Color rgbLinear)
+    {
+        Debug.Assert(Vector256.IsHardwareAccelerated);
+
+        Vector256<double> xyzVec = ToCieXYZVector256Core(rgbLinear);
 
         // Normalize to reference white
         xyzVec /= CieLabColor.XnVec;
@@ -53,36 +78,29 @@ internal static class CieLabHelper
         return CreateFromFValues(fx, fy, fz);
     }
 
-    public static Color ToRGB(CieLabColor cieLabColor)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static double f_of_t(double t)
     {
-        double y = (cieLabColor.L + 16d) / 116d;
-        double x = cieLabColor.A / 500d + y;
-        double z = y - cieLabColor.B / 200d;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static double Inv_f_of_t(double value)
+        if (t > 0.008856)
         {
-            double value3 = value * value * value;
-
-            if (value3 > 0.008856)
-            {
-                return value3;
-            }
-
-            return (value - 16d / 116d) / 7.787;
+            return Math.Pow(t, 1d / 3d);
         }
 
-        x = Inv_f_of_t(x);
-        y = Inv_f_of_t(y);
-        z = Inv_f_of_t(z);
+        return 7.787 * t + 16d / 116d;
+    }
 
-        // Normalize with reference white
-        //x *= CieLabColor.Xn.L;
-        //y *= CieLabColor.Xn.A;    // = 1, so skip
-        //z *= CieLabColor.Xn.B;
-        x *= 0.950456;
-        z *= 1.088754;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static CieLabColor CreateFromFValues(double fx, double fy, double fz)
+    {
+        double cie_L = Math.Clamp(116 * fy - 16, 0, 100);
+        double cie_a = 500 * (fx - fy);
+        double cie_b = 200 * (fy - fz);
 
+        return new CieLabColor(cie_L, cie_a, cie_b);
+    }
+
+    private static Color ToRGB(double x, double y, double z)
+    {
         // XYZ -> RGB, thereby use the same reference white D65.
         // This is the inverse matrix from above.
         double r, g, b;
@@ -122,23 +140,43 @@ internal static class CieLabHelper
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static double f_of_t(double t)
+    public static Color ToRGB(CieXYZColor cieXYZColor)
     {
-        if (t > 0.008856)
-        {
-            return Math.Pow(t, 1d / 3d);
-        }
+        (double x, double y, double z) = cieXYZColor;
 
-        return 7.787 * t + 16d / 116d;
+        return ToRGB(x, y, z);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static CieLabColor CreateFromFValues(double fx, double fy, double fz)
+    public static Color ToRGB(CieLabColor cieLabColor)
     {
-        double cie_L = Math.Clamp(116 * fy - 16, 0, 100);
-        double cie_a = 500 * (fx - fy);
-        double cie_b = 200 * (fy - fz);
+        double y = (cieLabColor.L + 16d) / 116d;
+        double x = cieLabColor.A / 500d + y;
+        double z = y - cieLabColor.B / 200d;
 
-        return new CieLabColor(cie_L, cie_a, cie_b);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static double Inv_f_of_t(double value)
+        {
+            double value3 = value * value * value;
+
+            if (value3 > 0.008856)
+            {
+                return value3;
+            }
+
+            return (value - 16d / 116d) / 7.787;
+        }
+
+        x = Inv_f_of_t(x);
+        y = Inv_f_of_t(y);
+        z = Inv_f_of_t(z);
+
+        // Normalize with reference white
+        //x *= CieLabColor.Xn.L;
+        //y *= CieLabColor.Xn.A;    // = 1, so skip
+        //z *= CieLabColor.Xn.B;
+        x *= 0.950456;
+        z *= 1.088754;
+
+        return ToRGB(x, y, z);
     }
 }

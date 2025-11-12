@@ -7,9 +7,9 @@ namespace Cairo.Extensions.Colors;
 /// <summary>
 /// A color given in the <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">HSV</a> color space.
 /// </summary>
-/// <param name="Hue">hue component of color in [0, 360]</param>
+/// <param name="Hue">hue component of color in [0,360]</param>
 /// <param name="Saturation">saturation component of color in [0,1]</param>
-/// <param name="Value">value component of color [0,1]</param>
+/// <param name="Value">value component of color in [0,1]</param>
 /// <remarks>
 /// By variation of the <see cref="Hue"/> component from 0 to 360 the resulting color changes from
 /// red to yellow, green, cyan, blue, and magenta back to red.
