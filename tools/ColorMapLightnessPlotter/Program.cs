@@ -37,7 +37,7 @@ static IEnumerable<ColorMap> GetColorMaps()
 //-----------------------------------------------------------------------------
 static void PlotLightnessOfColorMap(ColorMap colorMap)
 {
-    (string name, RecordingSurface recordingSurface) = CreatePlotCore(colorMap);
+    RecordingSurface recordingSurface = CreatePlotCore(colorMap);
 
     try
     {
@@ -57,7 +57,7 @@ static void PlotLightnessOfColorMap(ColorMap colorMap)
         cr.SetSourceSurface(recordingSurface, -inkExtents.X, -inkExtents.Y);
         cr.Paint();
 
-        finalSurface.WriteToPng($"{name}_lightness.png");
+        finalSurface.WriteToPng($"{colorMap.Name}_lightness.png");
     }
     finally
     {
@@ -65,12 +65,12 @@ static void PlotLightnessOfColorMap(ColorMap colorMap)
     }
 }
 //-----------------------------------------------------------------------------
-static (string Name, RecordingSurface Surface) CreatePlotCore(ColorMap colorMap)
+static RecordingSurface CreatePlotCore(ColorMap colorMap)
 {
     const int ChartWidthInPoints  = 256;
     const int ChartHeightInPoints = 256;
 
-    string name              = colorMap.GetType().Name.Replace("ColorMap", "");
+    string name              = colorMap.Name;
     RecordingSurface surface = new(Content.ColorAlpha);
     using CairoContext cr    = new(surface);
 
@@ -112,7 +112,7 @@ static (string Name, RecordingSurface Surface) CreatePlotCore(ColorMap colorMap)
         DrawData();
     }
 
-    return (name, surface);
+    return surface;
     //-------------------------------------------------------------------------
     static void SetAxisTitleFont(CairoContext cr)
     {

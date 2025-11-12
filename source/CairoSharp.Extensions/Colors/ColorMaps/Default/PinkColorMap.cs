@@ -1,6 +1,6 @@
 // (c) gfoidl, all rights reserved
 
-/* Created by tool CreateColorMaps at 2025-11-03T00:55:00.2968287+00:00 */
+/* Created by tool CreateColorMaps at 2025-11-12T21:34:55.0037724+00:00 */
 
 using System.CodeDom.Compiler;
 
@@ -12,6 +12,7 @@ namespace Cairo.Extensions.Colors.ColorMaps.Default;
 [GeneratedCode("CreateKnownColors", "0.1.1.0")]
 public sealed class PinkColorMap : ColorMap
 {
+    public override string Name                  => "Pink";
     protected override int Entries               => 256;
     protected override double ScaleFactor        => 255;    // Entries - 1 (perf optimization)
     protected override ReadOnlySpan<double> Data =>
