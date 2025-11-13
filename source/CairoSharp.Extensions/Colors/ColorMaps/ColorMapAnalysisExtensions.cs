@@ -30,10 +30,9 @@ public static class ColorMapAnalysisExtensions
         /// Usage could look like:
         /// <code>
         /// using RecordingSurface recordingSurface = colorMap.PlotLightnessCharacteristics();
-        /// 
-        /// Rectangle inkExtents            = recordingSurface.GetInkExtents();
-        /// using ImageSurface finalSurface = new(Format.Argb32, (int)inkExtents.Width, (int)inkExtents.Height);
-        /// using CairoContext cr           = new (finalSurface);
+        /// Rectangle inkExtents                    = recordingSurface.GetInkExtents();
+        /// using ImageSurface finalSurface         = new(Format.Argb32, (int)inkExtents.Width, (int)inkExtents.Height);
+        /// using CairoContext cr                   = new (finalSurface);
         ///
         /// // White background
         /// cr.Color = KnownColors.White;

@@ -31,16 +31,40 @@ using Gtk;
 using Gtk4.Extensions;
 using static Gtk4.Extensions.Gtk4Constants;
 
-namespace Gtk4Demo;
+namespace Gtk4Demo.Pixels;
 
 public sealed partial class PixelWindow : Window
 {
-    private readonly string           _funcName;
-    private readonly Task<double[][]> _data;
+    [MemberNotNull(nameof(_funcName), nameof(_data))]
+    public static void Show(string funcName, Builder builder, Window? parent = null)
+    {
+        s_pixelWindow ??= new PixelWindow(builder);
 
-    private ColorMap?      _selectedColorMap;
-    private string?        _selectedColorMapName;
-    private GrayScaleMode? _grayScaleMode;
+        if (s_pixelWindow._funcName != funcName)
+        {
+            s_pixelWindow._funcName = funcName;
+            s_pixelWindow._data     = s_pixelWindow.PrepareFunctionAsync();
+        }
+
+#if DEBUG
+        s_pixelWindow.Modal = false;
+#endif
+
+        s_pixelWindow.DestroyWithParent = true;
+        s_pixelWindow.SetTransientFor(parent);
+        s_pixelWindow.Present();
+    }
+
+    // HideOnClose=true is set, so the same instance can be re-used.
+    // Re-creating would also have the drawback, that all eventlisteners must be de-registered on disposal.
+    private static PixelWindow?         s_pixelWindow;
+    private static LightnessPlotWindow? s_lightnessPlotWindow;
+
+    private string?           _funcName;
+    private Task<double[][]>? _data;
+    private ColorMap?         _selectedColorMap;
+    private string?           _selectedColorMapName;
+    private GrayScaleMode?    _grayScaleMode;
 
     private Gio.SimpleAction _invertColorMapMenuAction;
     private Gio.SimpleAction _grayscaleMenuAction;
@@ -53,17 +77,18 @@ public sealed partial class PixelWindow : Window
     [Connect] private readonly CheckButton _grayscaleCheckButton;
     [Connect] private readonly DropDown    _grayscaleModeDropDown;
     [Connect] private readonly Picture     _equationImage;
-    [Connect] private readonly Expander    _colorMapInfoExpander;
+    [Connect] private readonly Box         _colorMapInfoBox;
     [Connect] private readonly TextView    _colorMapInfoTextView;
+    [Connect] private readonly Button      _showLightnessPlotButton;
     [Connect] private readonly DrawingArea _drawingAreaPixels;
     [Connect] private readonly PopoverMenu _drawingAreaPixelsPopoverMenu;
 #pragma warning restore CS0649
 
-    private PixelWindow(string funcName, Builder builder)
+    // Note: this window must be HideOnClose=true, as otherwise the created instance by the builder
+    // will be destroyed, so it can't be re-shown.
+    private PixelWindow(Builder builder)
         : base(new Gtk.Internal.WindowHandle(builder.GetPointer("pixelWindow"), ownsHandle: false))
     {
-        _funcName = funcName;
-
         builder.Connect(this);
 
         Debug.Assert(_colorMapsDropDown            is not null);
@@ -73,12 +98,11 @@ public sealed partial class PixelWindow : Window
         Debug.Assert(_grayscaleCheckButton         is not null);
         Debug.Assert(_grayscaleModeDropDown        is not null);
         Debug.Assert(_equationImage                is not null);
-        Debug.Assert(_colorMapInfoExpander         is not null);
+        Debug.Assert(_colorMapInfoBox              is not null);
         Debug.Assert(_colorMapInfoTextView         is not null);
+        Debug.Assert(_showLightnessPlotButton      is not null);
         Debug.Assert(_drawingAreaPixels            is not null);
         Debug.Assert(_drawingAreaPixelsPopoverMenu is not null);
-
-        _data = this.PrepareFunctionAsync();
 
         _drawingAreaPixels.SetDrawFunc(async (DrawingArea drawingArea, CairoContext cr, int width, int height)
             => await this.DrawAsync(drawingArea, cr, width, height));
@@ -106,6 +130,7 @@ public sealed partial class PixelWindow : Window
         this.SetupGrayscaleDropDown();
         this.DrawingAreaAddContextMenu();
         this.AddShortcuts();
+        this.SetupLightnessPlot();
     }
 
     [MemberNotNull(nameof(_invertColorMapMenuAction), nameof(_grayscaleMenuAction))]
@@ -158,13 +183,39 @@ public sealed partial class PixelWindow : Window
             ShortcutAction.ParseString("action(winPix.colorMapGrayscale)")));
     }
 
-    public static void Show(string funcName, Builder builder)
+    private void SetupLightnessPlot()
     {
-        using PixelWindow pixelWindow = new(funcName, builder);
-#if DEBUG
-        pixelWindow.Modal = false;
-#endif
-        pixelWindow.Show();
+        _showLightnessPlotButton.OnClicked += (s, e) =>
+        {
+            Debug.Assert(_selectedColorMap is not null);
+
+            if (s_lightnessPlotWindow is null)
+            {
+                s_lightnessPlotWindow = new LightnessPlotWindow(this);
+
+                // event order is
+                // 1. realize
+                // 2. map
+                // 3. show
+                // 4. close request
+                // 6. unmap
+                // 7. hide
+                // 8. unrealize
+                static void OnHideHandler(Widget plotWindow, EventArgs e)
+                {
+                    Debug.Assert(s_lightnessPlotWindow is not null);
+
+                    s_lightnessPlotWindow.OnHide -= OnHideHandler;
+                    s_lightnessPlotWindow = null;
+                }
+
+                s_lightnessPlotWindow.OnHide += OnHideHandler;
+            }
+
+            s_lightnessPlotWindow.SetColorMapAndPresent(_selectedColorMap);
+        };
+
+        this.OnHide += (s, e) => s_lightnessPlotWindow?.Hide();
     }
 
     private Task<double[][]> PrepareFunctionAsync()
@@ -226,8 +277,8 @@ public sealed partial class PixelWindow : Window
 
             if (stringObject.String is null or "(none)")
             {
-                _colorMapInfoExpander.Visible = false;
-                _selectedColorMap = null;
+                _colorMapInfoBox.Visible = false;
+                _selectedColorMap        = null;
             }
             else
             {
@@ -243,6 +294,7 @@ public sealed partial class PixelWindow : Window
                 Debug.Assert(_selectedColorMap is not null);
 
                 DisplayDescriptionOfSelectedColorMap();
+                _lightnessPlotWindow?.SetColorMapAndPresent(_selectedColorMap);
             }
 
             _drawingAreaPixels.QueueDraw();
@@ -390,8 +442,8 @@ public sealed partial class PixelWindow : Window
 
             if (colorMapInfo.Name == "(none)")
             {
-                _colorMapInfoExpander.Visible = false;
-                _selectedColorMap             = null;
+                _colorMapInfoBox.Visible = false;
+                _selectedColorMap        = null;
             }
             else if (colorMapInfo.Name == "(separator)")
             {
@@ -404,6 +456,7 @@ public sealed partial class PixelWindow : Window
                 _selectedColorMapName = colorMapInfo.Name;
 
                 DisplayDescriptionOfSelectedColorMap();
+                s_lightnessPlotWindow?.SetColorMapAndPresent(_selectedColorMap);
             }
 
             _drawingAreaPixels.QueueDraw();
@@ -426,6 +479,7 @@ public sealed partial class PixelWindow : Window
             //_colorMapsSpinButton.SetIncrements(1, 2);
         }
 
+        [MemberNotNull(nameof(_selectedColorMap))]
         void DisplayDescriptionOfSelectedColorMap()
         {
             Debug.Assert(_selectedColorMap is not null);
@@ -441,7 +495,7 @@ public sealed partial class PixelWindow : Window
             }
 
             textBuffer.SetText(_selectedColorMap.Description, -1);
-            _colorMapInfoExpander.Visible = true;
+            _colorMapInfoBox.Visible = true;
         }
     }
 
@@ -494,6 +548,8 @@ public sealed partial class PixelWindow : Window
 
     private async ValueTask DrawFunctionAsync(ImageSurface imageSurface)
     {
+        Debug.Assert(_data is not null);
+
         double[][] data                   = await _data;
         using PixelAccessor pixelAccessor = imageSurface.GetPixelAccessor();
 

@@ -1,6 +1,8 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using Gtk;
+using Gtk4.Extensions;
 using Gtk4Demo;
 
 #if USE_LIB_ADWAITA
@@ -33,7 +35,7 @@ app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
     Application app = (Application)gioApp;
     Window window   = app.ActiveWindow ?? new MainWindow(app);
 
-    window.Show();
+    window.Present();
 };
 
 #if UI_FROM_RESOURCE
@@ -43,4 +45,28 @@ using (Gio.Resource resource = Gio.Resource.Load("gtk4demo.gresource"))
 }
 #endif
 
+AddCss();
+
 return app.RunWithSynchronizationContext(args);
+//-----------------------------------------------------------------------------
+static void AddCss()
+{
+    using CssProvider cssProvider = CssProvider.New();
+
+#if CSS_THROW_ON_PARSING_ERROR
+    cssProvider.OnParsingError += static (CssProvider cssProvider, CssProvider.ParsingErrorSignalArgs args) =>
+    {
+        throw new Exception($"""
+                    Section: {args.Section.ToString()}
+                    Error:   {args.Error.Message}
+                    """);
+    };
+#endif
+
+    cssProvider.LoadFromResource("/at/gfoidl/cairo/gtk4/demo/styles/builder/main.css");
+
+    Gdk.Display? display = Gdk.Display.GetDefault();
+    Debug.Assert(display is not null);
+
+    StyleContext.AddProviderForDisplay(display, cssProvider, Gtk4Constants.StyleProviderPriorityUser - 1);
+}

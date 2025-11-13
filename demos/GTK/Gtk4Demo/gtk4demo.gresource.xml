@@ -16,6 +16,9 @@
         <file alias="windows.ui"              compressed="true">builder/windows.ui</file>
         <file alias="colormapdropdownitem.ui" compressed="true">builder/colormapdropdownitem.ui</file>
     </gresource>
+    <gresource prefix="/at/gfoidl/cairo/gtk4/demo/styles">
+        <file>builder/main.css</file>
+    </gresource>
     
     <gresource prefix="/at/gfoidl/cairo/gtk4/demo">
         <!-- Instead of the alias it could also be a separate gresource element with the prefix -->
@@ -30,5 +33,6 @@
 
         <file preprocess="xml-stripblanks" alias="colormap_default.svg">images/icons/edit-tag-symbolic.svg</file>
         <file preprocess="xml-stripblanks" alias="colormap_optimized.svg">images/icons/favorite-new-symbolic.svg</file>
+        <file preprocess="xml-stripblanks" alias="stock-eye-symbolic.svg">images/icons/stock-eye-symbolic.svg</file>
     </gresource>
 </gresources>
