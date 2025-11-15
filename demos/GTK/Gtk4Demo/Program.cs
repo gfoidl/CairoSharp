@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Gtk;
 using Gtk4.Extensions;
 using Gtk4Demo;
+using Spectre.Console;
 
 #if USE_LIB_ADWAITA
 using Application = Adw.Application;
@@ -46,6 +47,7 @@ using (Gio.Resource resource = Gio.Resource.Load("gtk4demo.gresource"))
 #endif
 
 AddCss();
+PrintDisplayInformation();
 
 return app.RunWithSynchronizationContext(args);
 //-----------------------------------------------------------------------------
@@ -69,4 +71,41 @@ static void AddCss()
     Debug.Assert(display is not null);
 
     StyleContext.AddProviderForDisplay(display, cssProvider, Gtk4Constants.StyleProviderPriorityUser - 1);
+}
+//-----------------------------------------------------------------------------
+static void PrintDisplayInformation()
+{
+    DisplayInformation? displayInformation = DisplayInformation.GetForDefaultDisplay();
+
+    if (displayInformation is not null)
+    {
+        Tree tree = new("Display information");
+        tree.AddNode($"name:        {displayInformation.DisplayName}");
+        tree.AddNode($"GDK_BACKEND: {Environment.GetEnvironmentVariable("GDK_BACKEND") ?? "not set"}");
+
+        Table table = new();
+        table
+            .Title("Monitors")
+            .AddColumns("Manufacturer", "Description", "Model", "Refresh rate", "Width [[mm]]", "Height [[mm]]", "Scale", "Scale factor", "Subpixel layout");
+
+        foreach (MonitorInformation monitorInformation in displayInformation.MonitorInformations)
+        {
+            table.AddRow(
+                monitorInformation.Manufacturer ?? "-",
+                monitorInformation.Description  ?? "-",
+                monitorInformation.Model        ?? "-",
+                monitorInformation.RefreshRate         .ToString(),
+                monitorInformation.WidthInMillimeters  .ToString(),
+                monitorInformation.HeightInMillimeterrs.ToString(),
+                monitorInformation.Scale               .ToString(),
+                monitorInformation.ScaleFactor         .ToString(),
+                monitorInformation.SubpixelLayout      .ToString());
+        }
+
+        tree.AddNode(table);
+
+        AnsiConsole.Write(tree);
+
+        Console.WriteLine();
+    }
 }

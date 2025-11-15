@@ -30,6 +30,10 @@
         <PackageReference Include="GirCore.Adw-1" Version="0.7.0-preview.3" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Spectre.Console" Version="0.54.0" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(UIFromResource)' != 'true'">
         <EmbeddedResource Include="builder\windows.ui" LogicalName="windows.4.ui" />
     </ItemGroup>
