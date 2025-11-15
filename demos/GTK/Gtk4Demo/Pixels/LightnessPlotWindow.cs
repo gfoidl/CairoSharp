@@ -38,6 +38,13 @@ public sealed class LightnessPlotWindow : Window
 
             // Tries to center the window on the parent.
             //this.SetTransientFor(parent);
+
+            // Realize is a tad too early, so Map is fine.
+            this.OnMap += (s, e) =>
+            {
+                bool success = this.HintAlignToParent(parent, AlignPosition.Right);
+                Console.WriteLine($"Hint to align to parent success = {success}");
+            };
         }
     }
 

@@ -158,7 +158,7 @@ public sealed partial class PixelWindow : Window
 
         Gio.SimpleActionGroup actionGroup = Gio.SimpleActionGroup.New();
         _invertColorMapMenuAction = actionGroup.AddAction("colorMapInvert"   , _colorMapInvertedCheckButton.Active, () => _colorMapInvertedCheckButton.Active = !_colorMapInvertedCheckButton.Active);
-        _grayscaleMenuAction      = actionGroup.AddAction("colorMapGrayscale", _grayscaleCheckButton       .Active, () => _grayscaleCheckButton.Active        = !_grayscaleCheckButton       .Active);
+        _grayscaleMenuAction      = actionGroup.AddAction("colorMapGrayscale", _grayscaleCheckButton       .Active, () => _grayscaleCheckButton       .Active = !_grayscaleCheckButton       .Active);
         this.InsertActionGroup("winPix", actionGroup);
 
         actionGroup.AddAction("grayScaleLightness"           , () => _grayscaleModeDropDown.Selected = 0);
