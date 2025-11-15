@@ -20,6 +20,7 @@ public static class TextExtensions
         /// <remarks>
         /// See <see cref="Cairo.TextExtensions.TextExtents(CairoContext, string?, out TextExtents)"/>.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">when <paramref name="text"/> is <c>null</c></exception>
         public double GetTextWidth(string text)
         {
             ArgumentNullException.ThrowIfNull(text);
@@ -63,8 +64,11 @@ public static class TextExtensions
         /// when <c>true</c> moves cairos current point to the calculated position
         /// </param>
         /// <returns>the point to which <see cref="PathExtensions.MoveTo(CairoContext, PointD)"/></returns>
+        /// <exception cref="ArgumentNullException">when <paramref name="text"/> is <c>null</c></exception>
         public PointD TextAlignCenter(string text, double baseWidth, double baseHeight, out TextExtents textExtents, bool moveCurrentPoint = false)
         {
+            ArgumentNullException.ThrowIfNull(text);
+
             // Based on https://www.cairographics.org/samples/text_align_center/
 
             cr.TextExtents(text, out textExtents);
