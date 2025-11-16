@@ -216,6 +216,8 @@ public static class ColorMapAnalysisExtensions
 
                 static void SetGridLineStyle(CairoContext cr)
                 {
+                    // Hairline will render as 1pt in SVG and also too wide in PNG, so the
+                    // resulting image won't look good. Thus the linewidth is set this way.
                     cr.LineWidth = 0.25;
                     cr.Color     = KnownColors.Gray;
 

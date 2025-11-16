@@ -105,7 +105,6 @@ static void PrintDisplayInformation()
         tree.AddNode(table);
 
         AnsiConsole.Write(tree);
-
         Console.WriteLine();
     }
 }

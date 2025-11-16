@@ -38,30 +38,21 @@ static IEnumerable<ColorMap> GetColorMaps()
 //-----------------------------------------------------------------------------
 static void PlotLightnessOfColorMap(ColorMap colorMap)
 {
-    RecordingSurface recordingSurface = colorMap.PlotLightnessCharacteristics();
+    using RecordingSurface recordingSurface = colorMap.PlotLightnessCharacteristics();
+    Rectangle inkExtents                    = recordingSurface.GetInkExtents();
+    using ImageSurface finalSurface         = new(Format.Argb32, 2 * (int)inkExtents.Width, 2 * (int)inkExtents.Height);
+    using CairoContext cr                   = new(finalSurface);
 
-    try
-    {
-        Rectangle inkExtents = recordingSurface.GetInkExtents();
+    cr.Scale(2, 2);
+    cr.Antialias = Antialias.Best;
 
-        using ImageSurface finalSurface = new(Format.Argb32, 2 * (int)inkExtents.Width, 2 * (int)inkExtents.Height);
-        using CairoContext cr           = new(finalSurface);
+    // White background
+    cr.Color = KnownColors.White;
+    cr.Paint();
 
-        cr.Scale(2, 2);
-        cr.Antialias = Antialias.Best;
+    // Need to set at (-x, -y)
+    cr.SetSourceSurface(recordingSurface, -inkExtents.X, -inkExtents.Y);
+    cr.Paint();
 
-        // White background
-        cr.Color = KnownColors.White;
-        cr.Paint();
-
-        // Need to set at (-x, -y)
-        cr.SetSourceSurface(recordingSurface, -inkExtents.X, -inkExtents.Y);
-        cr.Paint();
-
-        finalSurface.WriteToPng($"{colorMap.Name}_lightness.png");
-    }
-    finally
-    {
-        recordingSurface.Dispose();
-    }
+    finalSurface.WriteToPng($"{colorMap.Name}_lightness.png");
 }
