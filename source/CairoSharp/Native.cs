@@ -14,7 +14,8 @@ internal static class Native
     // The logic in this loader will be used in the extensions project too.
     public record LibNames(string LinuxLibName, string WindowsLibName, string MacOSLibName)
     {
-        public string? LinuxStubName { get; init; }
+        public string? LinuxStubName     { get; init; }
+        public string? WindowsAltLibName { get; init; }
     }
 
     // E.g. with the stub we have:
@@ -81,9 +82,20 @@ internal static class Native
 
     private static nint GetLibHandleWin(LibNames libNames)
     {
+        nint handle;
+
         // When consuming project is built with an RFID set, then the SDK
         // flattens the native libraries.
-        if (NativeLibrary.TryLoad(libNames.WindowsLibName, out nint handle))
+
+        if (libNames.WindowsAltLibName is not null)
+        {
+            if (NativeLibrary.TryLoad(libNames.WindowsAltLibName, out handle))
+            {
+                return handle;
+            }
+        }
+
+        if (NativeLibrary.TryLoad(libNames.WindowsLibName, out handle))
         {
             return handle;
         }

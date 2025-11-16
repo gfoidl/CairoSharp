@@ -87,7 +87,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// Create a new surface that is as compatible as possible with an existing surface. For example the new
     /// surface will have the same device scale, fallback resolution and font options as this one.
     /// Generally, the new surface will also use the same backend as this one, unless that is not possible
-    /// for some reason. The type of the returned surface may be examined with <see cref="Surface.SurfaceType"/>.
+    /// for some reason. The type of the returned surface may be examined with <see cref="SurfaceType"/>.
     /// </summary>
     /// <param name="content">the content for the new surface</param>
     /// <param name="widthInDeviceSpaceUnits">width of the new surface, (in device-space units)</param>
@@ -245,7 +245,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// Retrieves the default font rendering options for the surface. This allows display surfaces to
     /// report the correct subpixel order for rendering on them, print surfaces to disable hinting
     /// of metrics and so forth. The result can then be used with
-    /// <see cref="ScaledFont(Fonts.FontFace, ref Matrix, ref Matrix, Fonts.FontOptions)"/>.
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// </summary>
     /// <param name="options">
     /// a <see cref="FontOptions"/> object into which to store the retrieved options. All existing values are overwritten

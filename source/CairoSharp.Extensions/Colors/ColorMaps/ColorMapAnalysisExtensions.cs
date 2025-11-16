@@ -13,6 +13,8 @@ namespace Cairo.Extensions.Colors.ColorMaps;
 /// </summary>
 public static class ColorMapAnalysisExtensions
 {
+    private const string DefaultFontFamily = "Helvetica";
+
     extension(ColorMap colorMap)
     {
         /// <summary>
@@ -20,6 +22,7 @@ public static class ColorMapAnalysisExtensions
         /// </summary>
         /// <param name="chartWidthInPoints">the width of the chart area, defaults to 256</param>
         /// <param name="chartHeightInPoints">the height of the chart area, defaults to 256</param>
+        /// <param name="fontFace">the <see cref="FontFace"/> to use</param>
         /// <returns>
         /// A <see cref="RecordingSurface"/> containing the plot, which can be replayed on other <see cref="Surface"/>s
         /// </returns>
@@ -48,19 +51,19 @@ public static class ColorMapAnalysisExtensions
         /// As example for such a plot see <a href="https://github.com/gfoidl/CairoSharp/blob/main/images/colors/colormaps/gallery/lightness/Turbo_lightness.png">L* plot for Turbo</a>.
         /// </para>
         /// </remarks>
-        public RecordingSurface PlotLightnessCharacteristics(int chartWidthInPoints = 256, int chartHeightInPoints = 256)
+        public RecordingSurface PlotLightnessCharacteristics(int chartWidthInPoints = 256, int chartHeightInPoints = 256, FontFace? fontFace = null)
         {
             string name              = colorMap.Name;
             RecordingSurface surface = new(Content.ColorAlpha);
             using CairoContext cr    = new(surface);
 
-            SetAxisTitleFont(cr);
+            SetAxisTitleFont(cr, fontFace);
             const string YAxisTitle = "Lightness";
             // Will be printed 90° rotated
             PointD yAxisTitlePoint = cr.TextAlignCenter(YAxisTitle, chartHeightInPoints, chartWidthInPoints, out TextExtents yAxisTitleExtents);
             double yAxisTitleWidth = yAxisTitleExtents.Height * 1.5;
 
-            SetAxisTickFont(cr);
+            SetAxisTickFont(cr, fontFace);
             cr.TextExtents("100", out TextExtents yAxisTickExtents);    // just the longest value
             double yAxisTickWidth = yAxisTickExtents.Width * 1.2;
 
@@ -69,7 +72,7 @@ public static class ColorMapAnalysisExtensions
 
             cr.Translate(yAxisTitleWidth + yAxisTickWidth, 0);
 
-            DrawTitle(out TextExtents titleExtents);
+            DrawTitle(out TextExtents titleExtents, fontFace);
 
             cr.Translate(0, titleExtents.Height * 1.5);
 
@@ -78,7 +81,7 @@ public static class ColorMapAnalysisExtensions
             cr.Rectangle(0, 0, chartWidthInPoints, chartHeightInPoints);
             cr.Stroke();
 
-            DrawAxisWithLabels();
+            DrawAxisWithLabels(fontFace);
 
             // Move coordinate system to bottom left
             cr.Translate(0, chartHeightInPoints);
@@ -92,21 +95,45 @@ public static class ColorMapAnalysisExtensions
 
             return surface;
             //-----------------------------------------------------------------
-            static void SetAxisTitleFont(CairoContext cr)
+            static void SetAxisTitleFont(CairoContext cr, FontFace? fontFace)
             {
-                cr.SelectFontFace("Sans", weight: FontWeight.Bold);
+                if (fontFace is null)
+                {
+                    cr.SelectFontFace(DefaultFontFamily, weight: FontWeight.Bold);
+                }
+                else
+                {
+                    cr.FontFace = fontFace;
+                }
+
                 cr.SetFontSize(12);
             }
             //-----------------------------------------------------------------
-            static void SetAxisTickFont(CairoContext cr)
+            static void SetAxisTickFont(CairoContext cr, FontFace? fontFace)
             {
-                cr.SelectFontFace("Sans");
+                if (fontFace is null)
+                {
+                    cr.SelectFontFace(DefaultFontFamily);
+                }
+                else
+                {
+                    cr.FontFace = fontFace;
+                }
+
                 cr.SetFontSize(10);
             }
             //-----------------------------------------------------------------
-            void DrawTitle(out TextExtents titleExtents)
+            void DrawTitle(out TextExtents titleExtents, FontFace? fontFace)
             {
-                cr.SelectFontFace("Sans", weight: FontWeight.Bold);
+                if (fontFace is null)
+                {
+                    cr.SelectFontFace(DefaultFontFamily, weight: FontWeight.Bold);
+                }
+                else
+                {
+                    cr.FontFace = fontFace;
+                }
+
                 cr.SetFontSize(14);
 
                 string title      = $"L* plot for {name}";
@@ -115,9 +142,9 @@ public static class ColorMapAnalysisExtensions
                 cr.ShowText(title);
             }
             //-----------------------------------------------------------------
-            void DrawAxisWithLabels()
+            void DrawAxisWithLabels(FontFace? fontFace)
             {
-                SetAxisTitleFont(cr);
+                SetAxisTitleFont(cr, fontFace);
 
                 // x axis title
                 using (cr.Save())
@@ -137,7 +164,7 @@ public static class ColorMapAnalysisExtensions
                     cr.ShowText(YAxisTitle);
                 }
 
-                SetAxisTickFont(cr);
+                SetAxisTickFont(cr, fontFace);
 
                 // x ticks
                 using (cr.Save())

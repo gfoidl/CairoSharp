@@ -7,10 +7,6 @@ using Cairo.Extensions.Fonts.FreeType;
 using Cairo.Fonts.FreeType;
 using static Cairo.Extensions.Fonts.FreeType.FreeTypeNative;
 
-#if NET9_0_OR_GREATER
-using System.Threading;
-#endif
-
 namespace Cairo.Fonts.FreeType;
 
 /// <summary>

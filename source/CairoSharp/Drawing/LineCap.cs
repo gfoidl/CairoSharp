@@ -6,7 +6,7 @@ namespace Cairo.Drawing;
 /// Specifies how to render the endpoints of the path when stroking.
 /// </summary>
 /// <remarks>
-/// The default line cap style is <see cref="LineCap.Butt"/>.
+/// The default line cap style is <see cref="Butt"/>.
 /// </remarks>
 public enum LineCap
 {

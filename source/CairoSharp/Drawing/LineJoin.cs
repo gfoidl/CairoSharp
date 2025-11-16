@@ -6,7 +6,7 @@ namespace Cairo.Drawing;
 /// Specifies how to render the junction of two lines when stroking.
 /// </summary>
 /// <remarks>
-/// The default line join style is <see cref="LineJoin.Miter"/>.
+/// The default line join style is <see cref="Miter"/>.
 /// </remarks>
 public enum LineJoin
 {

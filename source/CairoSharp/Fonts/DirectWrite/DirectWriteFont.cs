@@ -12,6 +12,9 @@ namespace Cairo.Fonts.DirectWrite;
 /// </remarks>
 public sealed unsafe class DirectWriteFont : FontFace
 {
+    internal DirectWriteFont(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(fontFace, isOwnedByCairo, needsDestroy) { }
+
     /// <summary>
     /// Creates a new font for the DWrite font backend based on a DWrite font face.
     /// </summary>

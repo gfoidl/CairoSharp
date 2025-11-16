@@ -11,6 +11,9 @@ namespace Cairo.Fonts;
 /// </summary>
 public sealed unsafe class ToyFontFace : FontFace
 {
+    internal ToyFontFace(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(fontFace, isOwnedByCairo, needsDestroy) { }
+
     /// <summary>
     /// Creates a font face from a triplet of family, slant, and weight. These font faces are used in implementation
     /// of the <see cref="CairoContext"/> "toy" font API.

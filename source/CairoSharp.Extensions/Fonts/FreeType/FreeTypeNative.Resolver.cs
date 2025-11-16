@@ -10,7 +10,10 @@ static partial class FreeTypeNative
     private static readonly Native.LibNames s_freeTypeLibNames = new(
         "libfreetype.so.6",         // Linux
         "freetype-6.dll",           // Windows
-        "libfreetype.6.dylib");     // MacOS
+        "libfreetype.6.dylib")      // MacOS
+    {
+        WindowsAltLibName = "libfreetype-6.dll"
+    };
 
     private static nint s_libHandle;
 

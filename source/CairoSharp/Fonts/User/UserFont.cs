@@ -24,6 +24,9 @@ namespace Cairo.Fonts.User;
 /// </remarks>
 public sealed unsafe class UserFont : FontFace
 {
+    internal UserFont(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(fontFace, isOwnedByCairo, needsDestroy) { }
+
     /// <summary>
     /// <see cref="Init"/> is the type of delegate which is called when a scaled-font needs to be created
     /// for a user font-face.

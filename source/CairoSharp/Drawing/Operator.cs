@@ -6,7 +6,7 @@ namespace Cairo.Drawing;
 /// <see cref="Operator"/> is used to set the compositing operator for all cairo drawing operations.
 /// </summary>
 /// <remarks>
-/// The default operator is <see cref="Operator.Over"/>.
+/// The default operator is <see cref="Over"/>.
 /// <para>
 /// The operators marked as unbounded modify their destination even outside of the mask layer
 /// (that is, their effect is not bound by the mask layer). However, their effect can still be

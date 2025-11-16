@@ -1,9 +1,15 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
+using Cairo.Fonts.DirectWrite;
+using Cairo.Fonts.FreeType;
+using Cairo.Fonts.Quartz;
 using Cairo.Fonts.Scaled;
+using Cairo.Fonts.User;
+using Cairo.Fonts.Win32;
 using static Cairo.Drawing.Text.TextNative;
 
 namespace Cairo;
@@ -153,6 +159,7 @@ public static unsafe class TextExtensions
         /// When <c>null</c> is set, the default font is restored.
         /// </para>
         /// </summary>
+        [AllowNull]
         public FontFace FontFace
         {
             get
@@ -164,11 +171,48 @@ public static unsafe class TextExtensions
             }
             set
             {
-                ArgumentNullException.ThrowIfNull(value);
-
                 cr.CheckDisposed();
-                cairo_set_font_face(cr.Handle, value.Handle);
+
+                if (value is not null)
+                {
+                    cairo_set_font_face(cr.Handle, value.Handle);
+                }
+                else
+                {
+                    cairo_set_font_face(cr.Handle, null);
+                }
             }
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="FontFace"/> for a <see cref="CairoContext"/> with the actual
+        /// type of the font face.
+        /// </summary>
+        /// <returns>
+        /// The current font face. This object is owned by cairo.
+        /// </returns>
+        /// <remarks>
+        /// The <see cref="get_FontFace(CairoContext)"/> property returns the type
+        /// <see cref="FontFace"/>, whilst this method looks up the actual type via <see cref="FontFace.FontType"/>,
+        /// and returns an object with the type set according the <see cref="FontType"/>.
+        /// </remarks>
+        public FontFace GetTypedFontFace()
+        {
+            cr.CheckDisposed();
+
+            cairo_font_face_t* fontFace = cairo_get_font_face(cr.Handle);
+            FontType fontType           = FontFaceNative.cairo_font_face_get_type(fontFace);
+
+            return fontType switch
+            {
+                FontType.Toy      => new ToyFontFace    (fontFace, isOwnedByCairo: true),
+                FontType.FreeType => new FreeTypeFont   (fontFace, isOwnedByCairo: true),
+                FontType.Win32    => new Win32GdiFont   (fontFace, isOwnedByCairo: true),
+                FontType.Quartz   => new QuartzFont     (fontFace, isOwnedByCairo: true),
+                FontType.User     => new UserFont       (fontFace, isOwnedByCairo: true),
+                FontType.Dwrite   => new DirectWriteFont(fontFace, isOwnedByCairo: true),
+                _                 => new FontFace       (fontFace, isOwnedByCairo: true)
+            };
         }
 
         /// <summary>
@@ -176,6 +220,7 @@ public static unsafe class TextExtensions
         /// those of the <see cref="ScaledFont"/>. Except for some translation, the current CTM of the <see cref="CairoContext"/>
         /// should be the same as that of the <see cref="ScaledFont"/>, which can be accessed using cairo_scaled_font_get_ctm().
         /// </summary>
+        [AllowNull]
         public ScaledFont ScaledFont
         {
             get
@@ -187,10 +232,16 @@ public static unsafe class TextExtensions
             }
             set
             {
-                ArgumentNullException.ThrowIfNull(value);
-
                 cr.CheckDisposed();
-                cairo_set_scaled_font(cr.Handle, (cairo_scaled_font_t*)value.Handle);
+
+                if (value is not null)
+                {
+                    cairo_set_scaled_font(cr.Handle, (cairo_scaled_font_t*)value.Handle);
+                }
+                else
+                {
+                    cairo_set_scaled_font(cr.Handle, null);
+                }
             }
         }
 

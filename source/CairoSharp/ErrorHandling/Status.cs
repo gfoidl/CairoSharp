@@ -9,7 +9,7 @@ namespace Cairo;
 /// <see cref="CairoContext.Status"/>.
 /// </summary>
 /// <remarks>
-/// New entries may be added in future versions. Use <see cref="Error.GetString(Cairo.Status)"/>
+/// New entries may be added in future versions. Use <see cref="Error.GetString(Status)"/>
 /// to get a human-readable representation of an error message.
 /// </remarks>
 public enum Status

@@ -135,7 +135,7 @@ public unsafe class Device : CairoObject<cairo_device_t>
     /// </summary>
     /// <returns>
     /// <see cref="Status.Success"/> on success or an error code if the device is in an error state and could
-    /// not be acquired. After a successful call to <see cref="Acquire"/>, a matching call to <see cref="Device.Release"/>
+    /// not be acquired. After a successful call to <see cref="Acquire"/>, a matching call to <see cref="Release"/>
     /// is required.
     /// </returns>
     /// <remarks>
