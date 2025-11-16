@@ -12,13 +12,13 @@
     <PropertyGroup>
         <UIFromResource>true</UIFromResource>
         <!--<UseLibAdwaita>true</UseLibAdwaita>-->
+        <!--<UseFreeTypeFont>true</UseFreeTypeFont>-->
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(UIFromResource)' == 'true'">
-        <DefineConstants>$(DefineConstants);UI_FROM_RESOURCE</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(UseLibAdwaita)' == 'true'">
-        <DefineConstants>$(DefineConstants);USE_LIB_ADWAITA</DefineConstants>
+    <PropertyGroup>
+        <DefineConstants Condition="'$(UIFromResource)' == 'true'">$(DefineConstants);UI_FROM_RESOURCE</DefineConstants>
+        <DefineConstants Condition="'$(UseLibAdwaita)' == 'true'">$(DefineConstants);USE_LIB_ADWAITA</DefineConstants>
+        <DefineConstants Condition="'$(UseFreeTypeFont)' == 'true'">$(DefineConstants);USE_FREE_TYPE_FONT</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -52,5 +52,9 @@
         <Exec Command="gresource list gtk4demo.gresource" />
         <Message Importance="high" Text="----------------- gresource -----------------" />
     </Target>
+
+    <ItemGroup Condition="'$(UseFreeTypeFont)' == 'true'">
+        <EmbeddedResource Include="..\..\FreeTypeDemo\fonts\SanRemo.ttf" Link="fonts\SanRemo.ttf" />
+    </ItemGroup>
 
 </Project>

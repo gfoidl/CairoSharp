@@ -4,7 +4,10 @@ extern alias CairoSharp;
 
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
+using Cairo.Extensions.Fonts.FreeType;
+using Cairo.Fonts.FreeType;
 using CairoSharp::Cairo;
+using CairoSharp::Cairo.Fonts.FreeType;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
 using Gtk4.Extensions;
@@ -15,6 +18,10 @@ public sealed class LightnessPlotWindow : Window
 {
     private readonly DrawingArea _drawingArea;
     private ColorMap?            _colorMap;
+
+#if USE_FREE_TYPE_FONT
+    private readonly FreeTypeFont _freeTypeFont;
+#endif
 
     public LightnessPlotWindow(Window? parent = null)
     {
@@ -46,7 +53,20 @@ public sealed class LightnessPlotWindow : Window
                 Console.WriteLine($"Hint to align to parent success = {success}");
             };
         }
+
+#if USE_FREE_TYPE_FONT
+        using Stream fontStream = typeof(LightnessPlotWindow).Assembly.GetManifestResourceStream("Gtk4Demo.fonts.SanRemo.ttf")!;
+        _freeTypeFont           = FreeTypeFont.LoadFromStream(fontStream);
+#endif
     }
+
+#if USE_FREE_TYPE_FONT
+    public override void Dispose()
+    {
+        _freeTypeFont.Dispose();
+        base.Dispose();
+    }
+#endif
 
     public void SetColorMapAndPresent(ColorMap colorMap)
     {
@@ -62,8 +82,13 @@ public sealed class LightnessPlotWindow : Window
             return;
         }
 
+#if !USE_FREE_TYPE_FONT
         using RecordingSurface recordingSurface = _colorMap.PlotLightnessCharacteristics();
-        Rectangle inkExtents                    = recordingSurface.GetInkExtents();
+#else
+        using RecordingSurface recordingSurface = _colorMap.PlotLightnessCharacteristics(fontFace: _freeTypeFont);
+#endif
+
+        Rectangle inkExtents = recordingSurface.GetInkExtents();
 
         double xScale = width  / inkExtents.Width;
         double yScale = height / inkExtents.Height;
