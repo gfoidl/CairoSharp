@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
@@ -153,6 +154,7 @@ public static unsafe class TextExtensions
         /// When <c>null</c> is set, the default font is restored.
         /// </para>
         /// </summary>
+        [AllowNull]
         public FontFace FontFace
         {
             get
@@ -164,10 +166,16 @@ public static unsafe class TextExtensions
             }
             set
             {
-                ArgumentNullException.ThrowIfNull(value);
-
                 cr.CheckDisposed();
-                cairo_set_font_face(cr.Handle, value.Handle);
+
+                if (value is not null)
+                {
+                    cairo_set_font_face(cr.Handle, value.Handle);
+                }
+                else
+                {
+                    cairo_set_font_face(cr.Handle, null);
+                }
             }
         }
 
@@ -176,6 +184,7 @@ public static unsafe class TextExtensions
         /// those of the <see cref="ScaledFont"/>. Except for some translation, the current CTM of the <see cref="CairoContext"/>
         /// should be the same as that of the <see cref="ScaledFont"/>, which can be accessed using cairo_scaled_font_get_ctm().
         /// </summary>
+        [AllowNull]
         public ScaledFont ScaledFont
         {
             get
@@ -187,10 +196,16 @@ public static unsafe class TextExtensions
             }
             set
             {
-                ArgumentNullException.ThrowIfNull(value);
-
                 cr.CheckDisposed();
-                cairo_set_scaled_font(cr.Handle, (cairo_scaled_font_t*)value.Handle);
+
+                if (value is not null)
+                {
+                    cairo_set_scaled_font(cr.Handle, (cairo_scaled_font_t*)value.Handle);
+                }
+                else
+                {
+                    cairo_set_scaled_font(cr.Handle, null);
+                }
             }
         }
 
