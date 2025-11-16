@@ -56,7 +56,7 @@ public sealed unsafe class RecordingSurface : Surface
     /// but this one records unbounded operations.
     /// </summary>
     /// <param name="content">the content of the recording surface</param>
-    public RecordingSurface(Content content) : base(cairo_recording_surface_create(content, null)) { }
+    public RecordingSurface(Content content = Content.ColorAlpha) : base(cairo_recording_surface_create(content, null)) { }
 
     /// <summary>
     /// Measures the extents of the operations stored within the recording-surface. This

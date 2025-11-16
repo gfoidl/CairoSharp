@@ -22,7 +22,7 @@ internal abstract class ColorMapGenerator(string name, string? comment = null)
         Directory.CreateDirectory(Path.GetDirectoryName(outputFileName)!);
 
         using StreamWriter sw = File.CreateText(outputFileName);
-        this.WriteHeader(sw, colors.Count);
+        this.WriteHeader(sw, _name, colors.Count);
 
         WriteData(sw, colors);
         this.WriteFooter(sw);
@@ -32,7 +32,7 @@ internal abstract class ColorMapGenerator(string name, string? comment = null)
     //-------------------------------------------------------------------------
     protected abstract IEnumerable<(double Red, double Green, double Blue)> GetColors();
     //-------------------------------------------------------------------------
-    private void WriteHeader(StreamWriter sw, int entries)
+    private void WriteHeader(StreamWriter sw, string name, int entries)
     {
         string summary = _comment ?? $"Color map {_name}";
 
@@ -51,6 +51,7 @@ internal abstract class ColorMapGenerator(string name, string? comment = null)
             [GeneratedCode("CreateKnownColors", "{{GetToolVersion()}}")]
             public sealed class {{_name}}ColorMap : ColorMap
             {
+                public override string Name                  => "{{name}}";
                 protected override int Entries               => {{entries}};
                 protected override double ScaleFactor        => {{entries - 1}};    // Entries - 1 (perf optimization)
                 protected override ReadOnlySpan<double> Data =>

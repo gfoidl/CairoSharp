@@ -33,6 +33,9 @@ namespace Cairo.Extensions.Colors;
 [StructLayout(LayoutKind.Sequential, Size = 4 * sizeof(double))]    // speed over size here
 public readonly record struct CieLabColor(double L, double A, double B)
 {
+    internal Vector256<double> AsVector256                           => Unsafe.BitCast<CieLabColor, Vector256<double>>(this);
+    internal static CieLabColor FromVector256(Vector256<double> vec) => Unsafe.BitCast<Vector256<double>, CieLabColor>(vec);
+
     /// <summary>
     /// Validates that the color components are in bounds.
     /// </summary>
@@ -70,8 +73,8 @@ public readonly record struct CieLabColor(double L, double A, double B)
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentException">a color component is outside the valid bounds</exception>
-    /// <seealso cref="ColorExtensions.ToCieLab(Color)"/>
-    public Color ToRGB() => CieLabHelper.ToRGB(this);
+    /// <seealso cref="CieExtensions.ToCieLab(Color)"/>
+    public Color ToRGB() => CieHelper.ToRGB(this);
 
     /// <summary>
     /// Calculates the quadratic perceptual distance of the colors in the CIE-L*a*b*
@@ -96,10 +99,8 @@ public readonly record struct CieLabColor(double L, double A, double B)
             return dL2 + da2 + db2;
         }
 
-        Vector256<double> thisVec  = Unsafe.BitCast<CieLabColor, Vector256<double>>(this);
-        Vector256<double> otherVec = Unsafe.BitCast<CieLabColor, Vector256<double>>(other);
-        Vector256<double> diff     = thisVec - otherVec;
-        Vector256<double> diff2    = diff * diff;
+        Vector256<double> diff  = this.AsVector256 - other.AsVector256;
+        Vector256<double> diff2 = diff * diff;
 
         return diff2[0] + diff2[1] + diff2[2];
     }

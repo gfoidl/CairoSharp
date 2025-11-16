@@ -6,7 +6,7 @@ using static Cairo.Drawing.Text.TextNative;
 namespace Cairo.Fonts;
 
 /// <summary>
-/// The <see cref="ToyFontFace"/> class can be used instead of <see cref="TextExtensions.set_FontFace(Cairo.CairoContext, Cairo.Fonts.FontFace)"/>
+/// The <see cref="ToyFontFace"/> class can be used instead of <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/>
 /// to create a toy font independently of a context.
 /// </summary>
 public sealed unsafe class ToyFontFace : FontFace

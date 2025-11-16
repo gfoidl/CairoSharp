@@ -18,11 +18,15 @@ static partial class Native
     {
         NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), static (libraryName, assembly, searchPath) =>
         {
+#pragma warning disable CA1416 // Validate platform compatibility
             return libraryName switch
             {
-                LibGtkName => ResolveGtk(),
-                _          => throw new InvalidOperationException($"No resolver for library {libraryName} available")
+                LibGtkName          => ResolveGtk(),
+                LinuxX11.LibX11Name => default,
+                Windows.User32Dll   => default,
+                _                   => throw new InvalidOperationException($"No resolver for library {libraryName} available")
             };
+#pragma warning restore CA1416 // Validate platform compatibility
         });
     }
 

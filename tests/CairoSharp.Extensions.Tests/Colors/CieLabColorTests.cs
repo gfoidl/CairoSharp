@@ -5,6 +5,7 @@ using Cairo.Extensions.Colors;
 
 namespace CairoSharp.Extensions.Tests.Colors;
 
+// https://www.easyrgb.com/en/convert.php#inputFORM
 // https://colordesigner.io/convert/rgbtolab
 
 [TestFixture]
@@ -66,9 +67,9 @@ public class CieLabColorTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(cieLab.L, Is.EqualTo(53.24).Within(1e-2));
-            Assert.That(cieLab.A, Is.EqualTo(80.09).Within(1e-2));
-            Assert.That(cieLab.B, Is.EqualTo(67.20).Within(1e-2));
+            Assert.That(cieLab.L, Is.EqualTo(53.241).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo(80.092).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo(67.203).Within(1e-2));
         }
 
         Color actual = cieLab.ToRGB();
@@ -78,7 +79,7 @@ public class CieLabColorTests
             Assert.That(actual.Red  , Is.EqualTo(1).Within(1e-2));
             Assert.That(actual.Green, Is.Zero      .Within(1e-2));
             Assert.That(actual.Blue , Is.Zero      .Within(1e-2));
-            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-5));
         }
     }
 
@@ -90,9 +91,9 @@ public class CieLabColorTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(cieLab.L, Is.EqualTo( 87.73).Within(1e-2));
-            Assert.That(cieLab.A, Is.EqualTo(-86.18).Within(1e-2));
-            Assert.That(cieLab.B, Is.EqualTo( 83.18).Within(1e-2));
+            Assert.That(cieLab.L, Is.EqualTo( 87.735).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo(-86.183).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo( 83.179).Within(1e-2));
         }
 
         Color actual = cieLab.ToRGB();
@@ -102,7 +103,7 @@ public class CieLabColorTests
             Assert.That(actual.Red  , Is.Zero      .Within(1e-2));
             Assert.That(actual.Green, Is.EqualTo(1).Within(1e-2));
             Assert.That(actual.Blue , Is.Zero      .Within(1e-2));
-            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-5));
         }
     }
 
@@ -114,9 +115,9 @@ public class CieLabColorTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(cieLab.L, Is.EqualTo(  32.30).Within(1e-2));
-            Assert.That(cieLab.A, Is.EqualTo(  79.19).Within(1e-2));
-            Assert.That(cieLab.B, Is.EqualTo(-107.86).Within(1e-2));
+            Assert.That(cieLab.L, Is.EqualTo(  32.297).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo(  79.188).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo(-107.860).Within(1e-2));
         }
 
         Color actual = cieLab.ToRGB();
@@ -126,7 +127,79 @@ public class CieLabColorTests
             Assert.That(actual.Red  , Is.Zero      .Within(1e-2));
             Assert.That(actual.Green, Is.Zero      .Within(1e-2));
             Assert.That(actual.Blue , Is.EqualTo(1).Within(1e-2));
-            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-5));
+        }
+    }
+
+    [Test]
+    public void RGB_yellow_color_to_CieLab___OK()
+    {
+        Color rgb          = new(1, 1, 0);
+        CieLabColor cieLab = rgb.ToCieLab();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(cieLab.L, Is.EqualTo( 97.139).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo(-21.554).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo( 94.478).Within(1e-2));
+        }
+
+        Color actual = cieLab.ToRGB();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actual.Red  , Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Green, Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Blue , Is.Zero      .Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-5));
+        }
+    }
+
+    [Test]
+    public void RGB_cyan_color_to_CieLab___OK()
+    {
+        Color rgb          = new(0, 1, 1);
+        CieLabColor cieLab = rgb.ToCieLab();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(cieLab.L, Is.EqualTo( 91.113).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo(-48.088).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo(-14.131).Within(1e-2));
+        }
+
+        Color actual = cieLab.ToRGB();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actual.Red  , Is.Zero      .Within(1e-2));
+            Assert.That(actual.Green, Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Blue , Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-5));
+        }
+    }
+
+    [Test]
+    public void RGB_magenta_color_to_CieLab___OK()
+    {
+        Color rgb          = new(1, 0, 1);
+        CieLabColor cieLab = rgb.ToCieLab();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(cieLab.L, Is.EqualTo( 60.324).Within(1e-2));
+            Assert.That(cieLab.A, Is.EqualTo( 98.234).Within(1e-2));
+            Assert.That(cieLab.B, Is.EqualTo(-60.825).Within(1e-2));
+        }
+
+        Color actual = cieLab.ToRGB();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actual.Red  , Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Green, Is.Zero      .Within(1e-2));
+            Assert.That(actual.Blue , Is.EqualTo(1).Within(1e-2));
+            Assert.That(actual.Alpha, Is.EqualTo(1).Within(1e-5));
         }
     }
 
@@ -175,6 +248,6 @@ public class CieLabColorTests
         double actual = c0.ColorDistance(c1);
 
         // https://colormine.org/delta-e-calculator
-        Assert.That(actual, Is.EqualTo(8.0567).Within(1e-2));
+        Assert.That(actual, Is.EqualTo(8.0567).Within(1e-3));
     }
 }

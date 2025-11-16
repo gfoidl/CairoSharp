@@ -28,6 +28,10 @@ namespace Cairo.Fonts;
 /// distance to advance in the Y direction after drawing these glyphs. Will typically be zero
 /// except for vertical text layout as found in East-Asian languages.
 /// </param>
+/// <remarks>
+/// A visualization of the extent's parameters is given in <a href="https://freetype.org/freetype2/docs/glyphs/glyph-metrics-3.svg">this image</a>
+/// from <a href="https://freetype.org/freetype2/docs/glyphs/glyphs-3.html">Glyph Metrics</a>.
+/// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public readonly record struct TextExtents(
     double XBearing,

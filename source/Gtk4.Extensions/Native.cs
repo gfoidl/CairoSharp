@@ -6,15 +6,17 @@ global using unsafe GClosureNotify         = delegate*<void*, void*, void>;
 
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 global using unsafe gpointer = void*;
+global using        gboolean = int;
 #pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace Gtk4.Extensions;
 
 internal struct GtkDrawingArea;
+internal struct GdkSurface;
+internal struct GdkDisplay;
 
 internal static unsafe partial class Native
 {
