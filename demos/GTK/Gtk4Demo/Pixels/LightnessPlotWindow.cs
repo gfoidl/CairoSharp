@@ -4,13 +4,15 @@ extern alias CairoSharp;
 
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
-using Cairo.Extensions.Fonts.FreeType;
-using Cairo.Fonts.FreeType;
 using CairoSharp::Cairo;
-using CairoSharp::Cairo.Fonts.FreeType;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
 using Gtk4.Extensions;
+
+#if USE_FREE_TYPE_FONT
+using CairoSharp::Cairo.Fonts.FreeType;
+using Cairo.Fonts.FreeType;
+#endif
 
 namespace Gtk4Demo.Pixels;
 
