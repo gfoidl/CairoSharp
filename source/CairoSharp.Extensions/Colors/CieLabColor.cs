@@ -73,7 +73,7 @@ public readonly record struct CieLabColor(double L, double A, double B)
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentException">a color component is outside the valid bounds</exception>
-    /// <seealso cref="ColorExtensions.ToCieLab(Color)"/>
+    /// <seealso cref="CieExtensions.ToCieLab(Color)"/>
     public Color ToRGB() => CieHelper.ToRGB(this);
 
     /// <summary>

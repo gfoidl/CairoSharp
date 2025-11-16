@@ -22,6 +22,6 @@ public readonly record struct CieXYZColor(double X, double Y, double Z)
     /// Returns the sRGB (<see cref="Color"/>) for this color.
     /// </summary>
     /// <returns>The sRGB color</returns>
-    /// <seealso cref="ColorExtensions.ToCieXYZ(Color)"/>
+    /// <seealso cref="CieExtensions.ToCieXYZ(Color)"/>
     public Color ToRGB() => CieHelper.ToRGB(this);
 }

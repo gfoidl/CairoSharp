@@ -46,7 +46,7 @@ public readonly record struct HsvColor(double Hue, double Saturation, double Val
     /// RGB (<see cref="Color"/>) for this color.
     /// </returns>
     /// <exception cref="ArgumentException">a color component is outside the valid bounds</exception>
-    /// <seealso cref="ColorExtensions.ToHSV(Color)"/>
+    /// <seealso cref="HsvColorExtensions.ToHSV(Color)"/>
     public Color ToRGB()
     {
         this.Validate();

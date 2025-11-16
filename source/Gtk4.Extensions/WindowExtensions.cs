@@ -25,7 +25,7 @@ public static unsafe class WindowExtensions
     {
         /// <summary>
         /// Tries to dock the window to a <paramref name="parent"/> on the side given by
-        /// <paramref name="dockPosition"/>.
+        /// <paramref name="alignPosition"/>.
         /// </summary>
         /// <param name="parent">The parent window</param>
         /// <param name="alignPosition">The side on which to align in relation to the parent</param>
