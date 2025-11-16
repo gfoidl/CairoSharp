@@ -49,12 +49,12 @@ public record DisplayInformation(string DisplayName)
 }
 
 public record MonitorInformation(
-    string?            Manufacturer,
-    string?            Description,
-    string?            Model,
-    int                RefreshRate,
-    int                WidthInMillimeters,
-    int                HeightInMillimeterrs,
-    double             Scale,
-    int                ScaleFactor,
-    Gdk.SubpixelLayout SubpixelLayout);
+    string?        Manufacturer,
+    string?        Description,
+    string?        Model,
+    int            RefreshRate,
+    int            WidthInMillimeters,
+    int            HeightInMillimeterrs,
+    double         Scale,
+    int            ScaleFactor,
+    SubpixelLayout SubpixelLayout);

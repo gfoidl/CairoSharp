@@ -30,7 +30,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// <param name="loadFlags">
     /// flags to pass to <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_glyph">FT_Load_Glyph</a>
     /// when loading glyphs from the font. These flags are OR'ed together with the flags derived from the
-    /// <see cref="FontOptions"/> to <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>,
+    /// <see cref="FontOptions"/> to <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>,
     /// so only a few values such as FT_LOAD_VERTICAL_LAYOUT, and FT_LOAD_FORCE_AUTOHINT are useful.
     /// You should not pass any of the flags affecting the load target, such as FT_LOAD_TARGET_LIGHT.
     /// <para>
@@ -40,8 +40,8 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// </param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
-    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
+    /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the FreeType backend and can be used with functions such as <see cref="LockFace"/>.
     /// Note that Cairo may keep a reference to the FT_Face alive in a font-cache and the exact lifetime
     /// of the reference depends highly upon the exact usage pattern and is subject to external factors.
@@ -64,11 +64,11 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// </param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
-    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the FreeType backend and can be used with methods such as <see cref="LockFace"/>.
     /// <para>
-    /// Font rendering options are represented both here and when you call <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
+    /// Font rendering options are represented both here and when you call <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// Font options that have a representation in a FcPattern must be passed in here; to modify FcPattern
     /// appropriately to reflect the options in a <see cref="FontOptions"/>, call <see cref="SubstituteOptions"/>.
     /// </para>
@@ -111,12 +111,12 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// and applies OpenType font variations if applicable.
     /// </summary>
     /// <returns>
-    /// The FT_Face object for font, scaled appropriately, or <c>null</c> if <see cref="Scaled.ScaledFont"/>
-    /// is in an error state (see <see cref="Scaled.ScaledFont.Status"/>) or there is insufficient memory.
+    /// The FT_Face object for font, scaled appropriately, or <c>null</c> if <see cref="ScaledFont"/>
+    /// is in an error state (see <see cref="ScaledFont.Status"/>) or there is insufficient memory.
     /// </returns>
     /// <remarks>
     /// You must release the face with <see cref="UnlockFace"/> when you are done using it.
-    /// Since the FT_Face object can be shared between multiple <see cref="Scaled.ScaledFont"/> objects, you
+    /// Since the FT_Face object can be shared between multiple <see cref="ScaledFont"/> objects, you
     /// must not lock any other font objects until you unlock this one. A count is kept of the number
     /// of times <see cref="LockFace"/> is called. <see cref="UnlockFace"/> must be called the same number of times.
     /// <para>

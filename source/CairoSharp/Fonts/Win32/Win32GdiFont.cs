@@ -27,8 +27,8 @@ public sealed unsafe class Win32GdiFont : FontFace
     /// </param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
-    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
+    /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the Win32 backend and can be used with functions such as <see cref="SelectFont"/>.
     /// </remarks>
     public static Win32GdiFont CreateForLogFont(IntPtr logfont)
@@ -43,8 +43,8 @@ public sealed unsafe class Win32GdiFont : FontFace
     /// <param name="hFont">An HFONT structure specifying the font to use.</param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
-    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
+    /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the Win32 backend and can be used with functions such as <see cref="SelectFont"/>.
     /// </remarks>
     public static Win32GdiFont CreateForHFont(IntPtr hFont)
@@ -66,8 +66,8 @@ public sealed unsafe class Win32GdiFont : FontFace
     /// </param>
     /// <remarks>
     /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
-    /// <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
-    /// The <see cref="Scaled.ScaledFont"/> returned from <see cref="Scaled.ScaledFont.ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
+    /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the Win32 backend and can be used with functions such as <see cref="SelectFont"/>.
     /// </remarks>
     public static Win32GdiFont CreateForLogFontHFont(IntPtr logfont, IntPtr hFont)
@@ -123,7 +123,7 @@ public sealed unsafe class Win32GdiFont : FontFace
     }
 
     /// <summary>
-    /// Gets the transformation mapping the logical space used by <see cref="Scaled.ScaledFont"/> to device space.
+    /// Gets the transformation mapping the logical space used by <see cref="ScaledFont"/> to device space.
     /// </summary>
     /// <param name="logicalToDevice">matrix to return</param>
     public void GetLogicalToDevice(out Matrix logicalToDevice)
@@ -133,7 +133,7 @@ public sealed unsafe class Win32GdiFont : FontFace
     }
 
     /// <summary>
-    /// Gets the transformation mapping device space to the logical space used by <see cref="Scaled.ScaledFont"/>.
+    /// Gets the transformation mapping device space to the logical space used by <see cref="ScaledFont"/>.
     /// </summary>
     /// <param name="deviceToLogical">matrix to return</param>
     public void GetDeviceToLogical(out Matrix deviceToLogical)

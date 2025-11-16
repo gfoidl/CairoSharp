@@ -10,7 +10,7 @@ namespace Cairo.Drawing;
 /// (Note that filling is not actually implemented in this way. This is just a description of the rule that is applied.)
 /// </summary>
 /// <remarks>
-/// The default fill rule is <see cref="FillRule.Winding"/>.
+/// The default fill rule is <see cref="Winding"/>.
 /// <para>
 /// New entries may be added in future versions.
 /// </para>
