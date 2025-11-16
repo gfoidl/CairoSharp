@@ -11,6 +11,7 @@ namespace Cairo.Extensions.Colors.ColorMaps;
 /// </summary>
 public abstract class ColorMap
 {
+    public abstract string Name                  { get; }
     protected abstract int Entries               { get; }
     protected abstract double ScaleFactor        { get; }   // Entries - 1, just pre-computed and converted to double
     protected abstract ReadOnlySpan<double> Data { get; }

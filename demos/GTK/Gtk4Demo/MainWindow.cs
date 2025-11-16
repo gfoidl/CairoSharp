@@ -15,6 +15,7 @@ using CairoSharp::Cairo.Surfaces.Images;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
 using Gtk4.Extensions;
+using Gtk4Demo.Pixels;
 using static Gtk4.Extensions.Gtk4Constants;
 using Path = CairoSharp::Cairo.Drawing.Path.Path;
 
@@ -115,12 +116,12 @@ public sealed class MainWindow : ApplicationWindow
         app.AddAction("funcPeaks"  , PixelGraphics);
         app.AddAction("funcMexican", PixelGraphics);
 
-        void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!, _builder);
+        void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!, _builder, this);
 
         app.AddAction("showAbout", () =>
         {
             MyAboutDialog aboutDialog = new();
-            aboutDialog.Show();
+            aboutDialog.Present();
         });
     }
 

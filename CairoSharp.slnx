@@ -16,7 +16,7 @@
   <Folder Name="/demos/GTK/">
     <Project Path="demos/Gtk/Gtk3Demo/Gtk3Demo.csproj" />
     <Project Path="demos/Gtk/Gtk4Animation/Gtk4Animation.csproj" />
-    <Project Path="demos/Gtk/Gtk4AnimationOptimized/Gtk4AnimationOptimized.csproj" Id="0d1d15f6-af83-428e-a491-4c44dff076f8" />
+    <Project Path="demos/Gtk/Gtk4AnimationOptimized/Gtk4AnimationOptimized.csproj" />
     <Project Path="demos/Gtk/Gtk4AnimationWithBuilder/Gtk4AnimationWithBuilder.csproj" />
     <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" />
     <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" />
@@ -59,6 +59,7 @@
     <Project Path="tests/CairoSharp.Tests/CairoSharp.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
+    <Project Path="tools/ColorMapLightnessPlotter/ColorMapLightnessPlotter.csproj" />
     <Project Path="tools/CreateColorMaps/CreateColorMaps.csproj" />
     <Project Path="tools/CreateKnownColors/CreateKnownColors.csproj" />
   </Folder>

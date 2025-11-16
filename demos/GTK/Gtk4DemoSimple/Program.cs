@@ -21,7 +21,7 @@ app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
     Application app = (Application)gioApp;
     Window window   = app.ActiveWindow ?? new MainWindow(app);
 
-    window.Show();
+    window.Present();
 };
 
 return app.RunWithSynchronizationContext(args);

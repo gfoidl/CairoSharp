@@ -11,4 +11,7 @@ public struct RectangleInt
     public int Y;
     public int Width;
     public int Height;
+
+    public static implicit operator Rectangle(RectangleInt rectangleInt)
+        => new Rectangle(rectangleInt.X, rectangleInt.Y, rectangleInt.Width, rectangleInt.Height);
 }

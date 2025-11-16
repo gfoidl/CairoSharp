@@ -30,6 +30,10 @@
         <PackageReference Include="GirCore.Adw-1" Version="0.7.0-preview.3" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Spectre.Console" Version="0.54.0" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(UIFromResource)' != 'true'">
         <EmbeddedResource Include="builder\windows.ui" LogicalName="windows.4.ui" />
     </ItemGroup>
@@ -37,7 +41,7 @@
     <ItemGroup>
         <Content Include="gtk4demo.gresource" CopyToOutputDirectory="PreserveNewest" Visible="false" />
         <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="icon.ico" Link="icon.ico" />
+        <Content Include="icon.ico" />
         <Content Include="*.desktop" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 

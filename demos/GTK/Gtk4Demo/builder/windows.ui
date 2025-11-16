@@ -237,17 +237,40 @@
           <object class="GtkSeparator"/>
         </child>
         <child>
-          <object class="GtkExpander" id="_colorMapInfoExpander">
-            <property name="label">Info about color map</property>
+          <object class="GtkBox" id="_colorMapInfoBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
             <property name="visible">False</property>
             <child>
-              <object class="GtkTextView" id="_colorMapInfoTextView">
-                <property name="cursor-visible">False</property>
-                <property name="editable">False</property>
-                <property name="pixels-above-lines">2</property>
-                <property name="pixels-below-lines">2</property>
-                <property name="wrap-mode">word</property>
+              <object class="GtkExpander">
+                <property name="label">Info about color map</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">10</property>
+                    <child>
+                      <object class="GtkTextView" id="_colorMapInfoTextView">
+                        <property name="cursor-visible">False</property>
+                        <property name="editable">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="pixels-above-lines">2</property>
+                        <property name="pixels-below-lines">2</property>
+                        <property name="wrap-mode">word</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="_showLightnessPlotButton">
+                        <property name="halign">end</property>
+                        <property name="icon-name">stock-eye-symbolic</property>
+                        <property name="tooltip-text">Show lightness characteristic plot for color map</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
+            </child>
+            <child>
+              <object class="GtkSeparator"/>
             </child>
           </object>
         </child>

@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using Gtk;
+using Gtk4.Extensions;
 using Gtk4Animation;
 
 if (OperatingSystem.IsWindows())
@@ -27,11 +28,22 @@ app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
     Application app = (Application)gioApp;
     Window window   = app.ActiveWindow ?? new AnimationWindow(app);
 
-    window.Show();
+    window.Present();
 };
 
 #if USE_CSS
 using CssProvider cssProvider = CssProvider.New();
+
+#if CSS_THROW_ON_PARSING_ERROR
+cssProvider.OnParsingError += static (CssProvider cssProvider, CssProvider.ParsingErrorSignalArgs args) =>
+{
+    throw new Exception($"""
+                Section: {args.Section.ToString()}
+                Error:   {args.Error.Message}
+                """);
+};
+#endif
+
 cssProvider.LoadFromString("""
     .main-box {
         margin: 12px;
@@ -40,7 +52,7 @@ cssProvider.LoadFromString("""
 
 Gdk.Display? display = Gdk.Display.GetDefault();
 Debug.Assert(display is not null);
-StyleContext.AddProviderForDisplay(display, cssProvider, 0);
+StyleContext.AddProviderForDisplay(display, cssProvider, Gtk4Constants.StyleProviderPriorityUser - 1);
 #endif
 
 return app.RunWithSynchronizationContext(args);

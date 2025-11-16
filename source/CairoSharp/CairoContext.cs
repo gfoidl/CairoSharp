@@ -132,13 +132,13 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// <para>
     /// So instead of writing code like
     /// <code>
-    /// context.Save();
+    /// cr.Save();
     /// // ...
-    /// context.Restore();
+    /// cr.Restore();
     /// </code>
     /// one can write
     /// <code>
-    /// using (this.Save())
+    /// using (cr.Save())
     /// {
     ///     // ...
     /// }
