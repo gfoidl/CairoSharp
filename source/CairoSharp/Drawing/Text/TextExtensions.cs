@@ -4,7 +4,12 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
+using Cairo.Fonts.DirectWrite;
+using Cairo.Fonts.FreeType;
+using Cairo.Fonts.Quartz;
 using Cairo.Fonts.Scaled;
+using Cairo.Fonts.User;
+using Cairo.Fonts.Win32;
 using static Cairo.Drawing.Text.TextNative;
 
 namespace Cairo;
@@ -177,6 +182,37 @@ public static unsafe class TextExtensions
                     cairo_set_font_face(cr.Handle, null);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="FontFace"/> for a <see cref="CairoContext"/> with the actual
+        /// type of the font face.
+        /// </summary>
+        /// <returns>
+        /// The current font face. This object is owned by cairo.
+        /// </returns>
+        /// <remarks>
+        /// The <see cref="get_FontFace(CairoContext)"/> property returns the type
+        /// <see cref="FontFace"/>, whilst this method looks up the actual type via <see cref="FontFace.FontType"/>,
+        /// and returns an object with the type set according the <see cref="FontType"/>.
+        /// </remarks>
+        public FontFace GetTypedFontFace()
+        {
+            cr.CheckDisposed();
+
+            cairo_font_face_t* fontFace = cairo_get_font_face(cr.Handle);
+            FontType fontType           = FontFaceNative.cairo_font_face_get_type(fontFace);
+
+            return fontType switch
+            {
+                FontType.Toy      => new ToyFontFace    (fontFace, isOwnedByCairo: true),
+                FontType.FreeType => new FreeTypeFont   (fontFace, isOwnedByCairo: true),
+                FontType.Win32    => new Win32GdiFont   (fontFace, isOwnedByCairo: true),
+                FontType.Quartz   => new QuartzFont     (fontFace, isOwnedByCairo: true),
+                FontType.User     => new UserFont       (fontFace, isOwnedByCairo: true),
+                FontType.Dwrite   => new DirectWriteFont(fontFace, isOwnedByCairo: true),
+                _                 => new FontFace       (fontFace, isOwnedByCairo: true)
+            };
         }
 
         /// <summary>

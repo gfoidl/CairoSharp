@@ -2,12 +2,17 @@
 
 //#define USE_TEXT_PATH
 
+using System.Diagnostics;
 using System.Reflection;
 using Cairo;
+using Cairo.Fonts;
 using Cairo.Fonts.FreeType;
 using Cairo.Surfaces.PDF;
 using Cairo.Surfaces.SVG;
 using Cairo.Surfaces.Tee;
+
+if (Directory.Exists("output")) Directory.Delete("output", true);
+Directory.CreateDirectory("output");
 
 Console.WriteLine($"FreeType version: {FreeTypeFont.FreeTypeLibVersion()}");
 Console.WriteLine();
@@ -61,8 +66,8 @@ static void Core(FreeTypeFont freeTypeFont, string fileName, string fontName)
 {
     fileName = GetFileName(fileName, fontName);
 
-    using SvgSurface svg = new($"{fileName}.svg", 400, 200);
-    using PdfSurface pdf = new($"{fileName}.pdf", 400, 200);
+    using SvgSurface svg = new($"output/{fileName}.svg", 400, 200);
+    using PdfSurface pdf = new($"output/{fileName}.pdf", 400, 200);
     using TeeSurface tee = new(svg);
     tee.Add(pdf);
     using CairoContext cr = new(tee);
@@ -76,8 +81,12 @@ static void Core(FreeTypeFont freeTypeFont, string fileName, string fontName)
     cr.Rectangle(0, 0, 400, 200);
     cr.Stroke();
 
+    PrintFontInfo(cr);
+
     cr.FontFace = freeTypeFont;
     cr.SetFontSize(28);
+
+    PrintFontInfo(cr);
 
     cr.MoveTo(10, 100);
 
@@ -90,7 +99,27 @@ static void Core(FreeTypeFont freeTypeFont, string fileName, string fontName)
     cr.ShowTextGlyphs(Text);
 #endif
 
-    tee.WriteToPng($"{fileName}.png");
+    tee.WriteToPng($"output/{fileName}.png");
+
+    Console.WriteLine();
+}
+
+static void PrintFontInfo(CairoContext cr)
+{
+    FontFace fontFace = cr.GetTypedFontFace();
+    FontType fontType = fontFace.FontType;
+
+    if (fontType == FontType.Toy)
+    {
+        ToyFontFace? toyFontFace = fontFace as ToyFontFace;
+        Debug.Assert(toyFontFace is not null);
+
+        Console.WriteLine($"FontType = {fontType}\tFontFamily = {toyFontFace.Family}");
+    }
+    else
+    {
+        Console.WriteLine($"FontType = {fontType}");
+    }
 }
 
 static string GetFileName(string fileName, string fontName)
@@ -106,6 +135,8 @@ static void PrintSurfaceInformation(SvgSurface svgSurface, PdfSurface pdfSurface
             SVG: {svgSurface.HasShowTextGlyphs}
             PDF: {pdfSurface.HasShowTextGlyphs}
         """);
+
+    Console.WriteLine();
 }
 
 internal static class InfoState

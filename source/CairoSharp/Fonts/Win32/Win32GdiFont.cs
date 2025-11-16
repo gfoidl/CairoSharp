@@ -16,7 +16,8 @@ namespace Cairo.Fonts.Win32;
 /// </remarks>
 public sealed unsafe class Win32GdiFont : FontFace
 {
-    private Win32GdiFont(cairo_font_face_t* handle) : base(handle) { }
+    internal Win32GdiFont(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(fontFace, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new font for the Win32 font backend based on a LOGFONT.

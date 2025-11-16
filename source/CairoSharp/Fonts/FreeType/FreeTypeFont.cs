@@ -15,6 +15,9 @@ namespace Cairo.Fonts.FreeType;
 /// </remarks>
 public sealed unsafe class FreeTypeFont : FontFace
 {
+    internal FreeTypeFont(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(fontFace, isOwnedByCairo, needsDestroy) { }
+
 #pragma warning disable CS1584 // XML comment has syntactically incorrect cref attribute
 #pragma warning disable CS1658 // Warning is overriding an error
     /// <summary>

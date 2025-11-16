@@ -12,7 +12,8 @@ namespace Cairo.Fonts.Quartz;
 /// </remarks>
 public sealed unsafe class QuartzFont : FontFace
 {
-    private QuartzFont(cairo_font_face_t* fontFace) : base(fontFace) { }
+    internal QuartzFont(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
+        : base(fontFace, isOwnedByCairo, needsDestroy) { }
 
     /// <summary>
     /// Creates a new font for the Quartz font backend based on a CGFontRef.
