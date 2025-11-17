@@ -2,7 +2,6 @@
 
 extern alias CairoSharp;
 
-using System.Diagnostics;
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
 using Cairo.Fonts.FreeType;
@@ -12,7 +11,6 @@ using CairoSharp::Cairo.Fonts.FreeType;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
 using Gtk4.Extensions;
-using static Gtk4.Extensions.Gtk4Constants;
 
 namespace Gtk4Demo.Pixels;
 
@@ -21,6 +19,7 @@ public sealed class LightnessPlotWindow : Window
     private readonly DrawingArea _drawingArea;
     private ColorMap?            _colorMap;
     private FontFace?            _fontFace;
+    private Pango.FontFace?      _pangoFontFace;
 
     public LightnessPlotWindow(Window? parent = null)
     {
@@ -54,7 +53,7 @@ public sealed class LightnessPlotWindow : Window
             };
         }
 
-        this.DrawingAreaAddContextMenu();
+        this.AddContextMenuForFontChooser();
         this.OnUnrealize += (s, e) => this.OnUnrealizeHandler();
 
 #if USE_FREE_TYPE_FONT
@@ -63,63 +62,30 @@ public sealed class LightnessPlotWindow : Window
 #endif
     }
 
-    private void DrawingAreaAddContextMenu()
+    private void AddContextMenuForFontChooser()
     {
-        Popover popover = Popover.New();
-        popover.SetParent(_drawingArea);
-
-        GestureClick clickGesture = GestureClick.New();
-        clickGesture.Button       = GdkButtonSecondary;
-        clickGesture.OnPressed   += (GestureClick gesture, GestureClick.PressedSignalArgs signalArgs) =>
-        {
-            Debug.Assert(gesture.GetCurrentButton() == GdkButtonSecondary);
-
-            popover.SetPointingTo(new Gdk.Rectangle()
+        _drawingArea.AddContextMenuForFontChooser(
+            (fontFace, pangoFontFace) =>
             {
-                X      = (int)signalArgs.X,
-                Y      = (int)signalArgs.Y,
-                Width  = 1,
-                Height = 1
-            });
+                _fontFace      = fontFace;
+                _pangoFontFace = pangoFontFace;
 
-            popover.Popup();
-        };
-
-        _drawingArea.AddController(clickGesture);
-
-        Button fontFaceChooserButton = Button.NewWithLabel("Choose font");
-        fontFaceChooserButton.AddCssClass("popover-font-chooser");
-        popover.SetChild(fontFaceChooserButton);
-
-        fontFaceChooserButton.OnClicked += async (s, e) =>
-        {
-            try
-            {
-                using FontDialog fontDialog = FontDialog.New();
-                Pango.FontFace? fontFace    = await fontDialog.ChooseFaceAsync(this, null);
-
-                if (fontFace is not null)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine($"""
-                        face name:   {fontFace.GetFaceName()}
-                        font family: {fontFace.GetFamily().Name} (is monospace: {fontFace.GetFamily().IsMonospace}, is variable: {fontFace.GetFamily().IsVariable})
+                Console.WriteLine();
+                Console.WriteLine($"""
+                        font family: {pangoFontFace.GetFamily().Name} (is monospace: {pangoFontFace.GetFamily().IsMonospace}, is variable: {pangoFontFace.GetFamily().IsVariable})
+                        face name:   {pangoFontFace.GetFaceName()}
                         """);
-                }
-            }
-            catch (GLib.GException ex) when (ex.Message == "Dismissed by user")
-            {
-                // ignore
-            }
-        };
+            },
+            () => _pangoFontFace,
+            queueDraw     : true,
+            parent        : this,
+            buttonCssClass: "popover-font-chooser");
     }
 
-    private void OnUnrealizeHandler() => _fontFace?.Dispose();
-
-    public override void Dispose()
+    private void OnUnrealizeHandler()
     {
-        this.OnUnrealizeHandler();
-        base.Dispose();
+        _fontFace?     .Dispose();
+        _pangoFontFace?.Dispose();
     }
 
     public void SetColorMapAndPresent(ColorMap colorMap)
