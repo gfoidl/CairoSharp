@@ -12,7 +12,7 @@
     <PropertyGroup>
         <UIFromResource>true</UIFromResource>
         <!--<UseLibAdwaita>true</UseLibAdwaita>-->
-        <!--<UseFreeTypeFont>true</UseFreeTypeFont>-->
+        <UseFreeTypeFont>true</UseFreeTypeFont>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -54,7 +54,7 @@
     </Target>
 
     <ItemGroup Condition="'$(UseFreeTypeFont)' == 'true'">
-        <EmbeddedResource Include="..\..\FreeTypeDemo\fonts\SanRemo.ttf" Link="fonts\SanRemo.ttf" />
+        <EmbeddedResource Include="..\..\FreeTypeDemo\fonts\SplineSans-Variable.ttf" Link="fonts\SplineSans.ttf" />
     </ItemGroup>
 
 </Project>
