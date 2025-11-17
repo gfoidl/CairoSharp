@@ -138,14 +138,14 @@ public sealed partial class PixelWindow : Window
     {
         GestureClick clickGesture = GestureClick.New();
         clickGesture.Button       = GdkButtonSecondary;
-        clickGesture.OnPressed   += (GestureClick gesture, GestureClick.PressedSignalArgs eventArgs) =>
+        clickGesture.OnPressed   += (GestureClick gesture, GestureClick.PressedSignalArgs signalArgs) =>
         {
             Debug.Assert(gesture.GetCurrentButton() == GdkButtonSecondary);
 
             _drawingAreaPixelsPopoverMenu.SetPointingTo(new Gdk.Rectangle()
             {
-                X      = (int)eventArgs.X,
-                Y      = (int)eventArgs.Y,
+                X      = (int)signalArgs.X,
+                Y      = (int)signalArgs.Y,
                 Width  = 1,
                 Height = 1
             });

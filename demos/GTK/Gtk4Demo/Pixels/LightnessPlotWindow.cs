@@ -4,15 +4,13 @@ extern alias CairoSharp;
 
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
+using Cairo.Fonts.FreeType;
 using CairoSharp::Cairo;
+using CairoSharp::Cairo.Fonts;
+using CairoSharp::Cairo.Fonts.FreeType;
 using CairoSharp::Cairo.Surfaces.Recording;
 using Gtk;
 using Gtk4.Extensions;
-
-#if USE_FREE_TYPE_FONT
-using CairoSharp::Cairo.Fonts.FreeType;
-using Cairo.Fonts.FreeType;
-#endif
 
 namespace Gtk4Demo.Pixels;
 
@@ -20,20 +18,19 @@ public sealed class LightnessPlotWindow : Window
 {
     private readonly DrawingArea _drawingArea;
     private ColorMap?            _colorMap;
-
-#if USE_FREE_TYPE_FONT
-    private readonly FreeTypeFont _freeTypeFont;
-#endif
+    private FontFace?            _fontFace;
+    private Pango.FontFace?      _pangoFontFace;
 
     public LightnessPlotWindow(Window? parent = null)
     {
         this.Title       = "Lightness characteristics";
         this.HideOnClose = true;
+        //this.AddCssClass("lightness");
 
         DrawingArea drawingArea   = DrawingArea.New();
-        drawingArea.WidthRequest  = 400;
+        drawingArea.WidthRequest  = 400;        // min width and height (can't be smaller, but can be larger)
         drawingArea.HeightRequest = 400;
-        drawingArea.AddCssClass("lightness-drawing-area");
+        drawingArea.AddCssClass("drawing-area-lightness");
 
         drawingArea.SetDrawFunc(this.Draw);
         drawingArea.OnResize += static (drawingArea, args) => drawingArea.QueueDraw();
@@ -56,19 +53,40 @@ public sealed class LightnessPlotWindow : Window
             };
         }
 
+        this.AddContextMenuForFontChooser();
+        this.OnUnrealize += (s, e) => this.OnUnrealizeHandler();
+
 #if USE_FREE_TYPE_FONT
-        using Stream fontStream = typeof(LightnessPlotWindow).Assembly.GetManifestResourceStream("Gtk4Demo.fonts.SanRemo.ttf")!;
-        _freeTypeFont           = FreeTypeFont.LoadFromStream(fontStream);
+        using Stream fontStream = typeof(LightnessPlotWindow).Assembly.GetManifestResourceStream("Gtk4Demo.fonts.SplineSans.ttf")!;
+        _fontFace               = FreeTypeFont.LoadFromStream(fontStream);
 #endif
     }
 
-#if USE_FREE_TYPE_FONT
-    public override void Dispose()
+    private void AddContextMenuForFontChooser()
     {
-        _freeTypeFont.Dispose();
-        base.Dispose();
+        _drawingArea.AddContextMenuForFontChooser(
+            (fontFace, pangoFontFace) =>
+            {
+                _fontFace      = fontFace;
+                _pangoFontFace = pangoFontFace;
+
+                Console.WriteLine();
+                Console.WriteLine($"""
+                        font family: {pangoFontFace.GetFamily().Name} (is monospace: {pangoFontFace.GetFamily().IsMonospace}, is variable: {pangoFontFace.GetFamily().IsVariable})
+                        face name:   {pangoFontFace.GetFaceName()}
+                        """);
+            },
+            () => _pangoFontFace,
+            queueDraw     : true,
+            parent        : this,
+            buttonCssClass: "popover-font-chooser");
     }
-#endif
+
+    private void OnUnrealizeHandler()
+    {
+        _fontFace?     .Dispose();
+        _pangoFontFace?.Dispose();
+    }
 
     public void SetColorMapAndPresent(ColorMap colorMap)
     {
@@ -84,13 +102,8 @@ public sealed class LightnessPlotWindow : Window
             return;
         }
 
-#if !USE_FREE_TYPE_FONT
-        using RecordingSurface recordingSurface = _colorMap.PlotLightnessCharacteristics();
-#else
-        using RecordingSurface recordingSurface = _colorMap.PlotLightnessCharacteristics(fontFace: _freeTypeFont);
-#endif
-
-        Rectangle inkExtents = recordingSurface.GetInkExtents();
+        using RecordingSurface recordingSurface = _colorMap.PlotLightnessCharacteristics(fontFace: _fontFace);
+        Rectangle inkExtents                    = recordingSurface.GetInkExtents();
 
         double xScale = width  / inkExtents.Width;
         double yScale = height / inkExtents.Height;

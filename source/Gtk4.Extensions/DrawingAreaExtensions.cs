@@ -4,15 +4,17 @@
 // Most likely because some signal in GirCore is managed.
 //#define USE_NATIVE_DIRECT
 
+using System.Diagnostics;
+using Cairo;
+using Gtk;
+using FontFace    = Cairo.Fonts.FontFace;
+using ToyFontFace = Cairo.Fonts.ToyFontFace;
+
 #if USE_NATIVE_DIRECT
 using System.Runtime.InteropServices;
 #else
 using GtkCairo = Cairo.Context;
 #endif
-
-using Gtk;
-using Cairo;
-using System.Diagnostics;
 
 namespace Gtk4.Extensions;
 
@@ -151,6 +153,71 @@ public static class DrawingAreaExtensions
             }
 
             return false;
+        }
+
+        public void AddContextMenuForFontChooser(
+            Action<FontFace, Pango.FontFace> fontSelected,
+            Func<Pango.FontFace?>? initialFontFace = null,
+            Window? parent                         = null,
+            bool queueDraw                         = true,
+            string  labelText                      = "Choose font",
+            string? buttonCssClass                 = null)
+        {
+            Popover popover = Popover.New();
+            popover.SetParent(drawingArea);
+
+            GestureClick clickGesture = GestureClick.New();
+            clickGesture.Button       = Gtk4Constants.GdkButtonSecondary;
+            clickGesture.OnPressed   += (GestureClick gesture, GestureClick.PressedSignalArgs signalArgs) =>
+            {
+                Debug.Assert(gesture.GetCurrentButton() == Gtk4Constants.GdkButtonSecondary);
+
+                popover.SetPointingTo(new Gdk.Rectangle()
+                {
+                    X      = (int)signalArgs.X,
+                    Y      = (int)signalArgs.Y,
+                    Width  = 1,
+                    Height = 1
+                });
+
+                popover.Popup();
+            };
+
+            drawingArea.AddController(clickGesture);
+
+            Button button = Button.NewWithLabel(labelText);
+            popover.SetChild(button);
+
+            if (buttonCssClass is not null)
+            {
+                button.AddCssClass(buttonCssClass);
+            }
+
+            button.OnClicked += async (s, e) =>
+            {
+                using FontDialog fontDialog = FontDialog.New();
+
+                try
+                {
+                    Pango.FontFace? fontFace = await fontDialog.ChooseFaceAsync(parent, initialFontFace?.Invoke());
+
+                    if (fontFace?.GetFamily().Name is string familyName)
+                    {
+                        ToyFontFace cairoFontFace = new(familyName);
+
+                        fontSelected(cairoFontFace, fontFace);
+
+                        if (queueDraw)
+                        {
+                            drawingArea.QueueDraw();
+                        }
+                    }
+                }
+                catch (GLib.GException ex) when (ex.Message == "Dismissed by user")
+                {
+                    // ignore
+                }
+            };
         }
     }
 

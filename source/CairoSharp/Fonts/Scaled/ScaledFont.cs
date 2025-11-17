@@ -7,11 +7,11 @@ using static Cairo.Fonts.Scaled.ScaledFontNative;
 namespace Cairo.Fonts.Scaled;
 
 /// <summary>
-/// cairo_scaled_font_t — Font face at particular size and options
+/// <see cref="ScaledFont"/> — Font face at particular size and options
 /// </summary>
 /// <remarks>
-/// cairo_scaled_font_t represents a realization of a font face at a particular size
-/// and transformation and a certain set of font options.
+/// <see cref="ScaledFont"/> represents a realization of a <see cref="Fonts.FontFace"/> at a
+/// particular size and transformation and a certain set of <see cref="FontOptions"/>.
 /// </remarks>
 public sealed unsafe class ScaledFont : FontFace
 {
