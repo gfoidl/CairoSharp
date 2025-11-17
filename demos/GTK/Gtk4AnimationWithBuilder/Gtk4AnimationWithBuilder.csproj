@@ -7,10 +7,6 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <!--<DefineConstants>$(DefineConstants);USE_CSS</DefineConstants>-->
-    </PropertyGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\..\..\source\Gtk4.Extensions\Gtk4.Extensions.csproj" />
     </ItemGroup>

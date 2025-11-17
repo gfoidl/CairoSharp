@@ -26,11 +26,12 @@ public sealed class LightnessPlotWindow : Window
     {
         this.Title       = "Lightness characteristics";
         this.HideOnClose = true;
+        //this.AddCssClass("lightness");
 
         DrawingArea drawingArea   = DrawingArea.New();
         drawingArea.WidthRequest  = 400;        // min width and height (can't be smaller, but can be larger)
         drawingArea.HeightRequest = 400;
-        drawingArea.AddCssClass("lightness-drawing-area");
+        drawingArea.AddCssClass("drawing-area-lightness");
 
         drawingArea.SetDrawFunc(this.Draw);
         drawingArea.OnResize += static (drawingArea, args) => drawingArea.QueueDraw();
@@ -87,6 +88,7 @@ public sealed class LightnessPlotWindow : Window
         _drawingArea.AddController(clickGesture);
 
         Button fontFaceChooserButton = Button.NewWithLabel("Choose font");
+        fontFaceChooserButton.AddCssClass("popover-font-chooser");
         popover.SetChild(fontFaceChooserButton);
 
         fontFaceChooserButton.OnClicked += async (s, e) =>

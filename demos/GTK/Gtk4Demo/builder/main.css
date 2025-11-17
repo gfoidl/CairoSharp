@@ -1,3 +1,12 @@
-.lightness-drawing-area {
+window.lightness {
+    background-color: transparent;
+}
+
+.drawing-area-lightness {
     margin: 10px;
+    background-color: transparent;
+}
+
+button.popover-font-chooser {
+    margin: 5px;
 }

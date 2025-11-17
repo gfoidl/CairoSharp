@@ -45,7 +45,7 @@ cssProvider.OnParsingError += static (CssProvider cssProvider, CssProvider.Parsi
 #endif
 
 cssProvider.LoadFromString("""
-    .main-box {
+    box.main {
         margin: 12px;
     }
     """);

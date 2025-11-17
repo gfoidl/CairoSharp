@@ -94,7 +94,7 @@ public sealed class AnimationWindow : ApplicationWindow
         this.Child = mainBox;
 
 #if USE_CSS
-        mainBox.AddCssClass("main-box");
+        mainBox.AddCssClass("main");
 #else
         mainBox.MarginStart  = 12;
         mainBox.MarginTop    = 12;
