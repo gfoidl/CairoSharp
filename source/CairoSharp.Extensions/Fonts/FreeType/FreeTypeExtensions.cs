@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Cairo.Extensions.Fonts.FreeType;
 using Cairo.Fonts.FreeType;
@@ -74,6 +75,7 @@ public static unsafe class FreeTypeExtensions
 
         return ftFont;
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void DestroyFunc(void* userData)
         {
             Debug.WriteLine("FreeTypeExtensions.DestroyFunc called");

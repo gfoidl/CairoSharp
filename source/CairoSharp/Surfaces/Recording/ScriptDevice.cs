@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Cairo.Surfaces.Recording.ScriptSurfaceNative;
 
@@ -49,6 +50,7 @@ public sealed unsafe class ScriptDevice : Device
 
         return (new IntPtr(device), streamHandle);
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static Status WriteFunc(void* state, byte* data, uint length)
         {
             GCHandle gcHandle = GCHandle.FromIntPtr((nint)state);

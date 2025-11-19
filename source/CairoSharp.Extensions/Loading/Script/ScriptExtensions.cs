@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Cairo.Surfaces;
 using Cairo.Surfaces.Images;
@@ -111,6 +112,7 @@ public static unsafe class ScriptExtensions
         }
     }
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static cairo_surface_t* CreatePdfSurface(void* closure, Content content, double width, double height, CLong uid)
     {
         cairo_surface_t* surface = PdfSurfaceNative.cairo_pdf_surface_create_for_stream(null, null, width, height);
@@ -122,6 +124,7 @@ public static unsafe class ScriptExtensions
         return surface;
     }
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static cairo_surface_t* CreatePostScriptSurface(void* closure, Content content, double width, double height, CLong uid)
     {
         cairo_surface_t* surface = PostScriptSurfaceNative.cairo_ps_surface_create_for_stream(null, null, width, height);
@@ -133,6 +136,7 @@ public static unsafe class ScriptExtensions
         return surface;
     }
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static cairo_surface_t* CreateSvgSurface(void* closure, Content content, double width, double height, CLong uid)
     {
         cairo_surface_t* surface = SvgSurfaceNative.cairo_svg_surface_create_for_stream(null, null, width, height);
@@ -144,6 +148,7 @@ public static unsafe class ScriptExtensions
         return surface;
     }
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static cairo_surface_t* CreateImageSurface(void* closure, Content content, double width, double height, CLong uid)
     {
         cairo_surface_t* surface = ImageSurfaceNative.cairo_image_surface_create(Format.Argb32, (int)width, (int)height);

@@ -1,9 +1,9 @@
 // (c) gfoidl, all rights reserved
 
-global using unsafe cairo_user_scaled_font_init_func_t             = delegate*<Cairo.Fonts.Scaled.cairo_scaled_font_t*, Cairo.cairo_t*, ref Cairo.Fonts.FontExtents, Cairo.Status>;
-global using unsafe cairo_user_scaled_font_render_glyph_func_t     = delegate*<Cairo.Fonts.Scaled.cairo_scaled_font_t*, System.Runtime.InteropServices.CULong, Cairo.cairo_t*, ref Cairo.Fonts.TextExtents, Cairo.Status>;
-global using unsafe cairo_user_scaled_font_text_to_glyphs_func_t   = delegate*<Cairo.Fonts.Scaled.cairo_scaled_font_t*, byte*, int, Cairo.Drawing.Text.Glyph**, ref int, Cairo.Drawing.Text.TextCluster**, ref int, out Cairo.Drawing.Text.ClusterFlags, Cairo.Status>;
-global using unsafe cairo_user_scaled_font_unicode_to_glyph_func_t = delegate*<Cairo.Fonts.Scaled.cairo_scaled_font_t*, System.Runtime.InteropServices.CULong, out System.Runtime.InteropServices.CULong, Cairo.Status>;
+global using unsafe cairo_user_scaled_font_init_func_t             = delegate* unmanaged[Cdecl]<Cairo.Fonts.Scaled.cairo_scaled_font_t*, Cairo.cairo_t*, Cairo.Fonts.FontExtents*, Cairo.Status>;
+global using unsafe cairo_user_scaled_font_render_glyph_func_t     = delegate* unmanaged[Cdecl]<Cairo.Fonts.Scaled.cairo_scaled_font_t*, System.Runtime.InteropServices.CULong, Cairo.cairo_t*, Cairo.Fonts.TextExtents*, Cairo.Status>;
+global using unsafe cairo_user_scaled_font_text_to_glyphs_func_t   = delegate* unmanaged[Cdecl]<Cairo.Fonts.Scaled.cairo_scaled_font_t*, byte*, int, Cairo.Drawing.Text.Glyph**, int*, Cairo.Drawing.Text.TextCluster**, int*, Cairo.Drawing.Text.ClusterFlags*, Cairo.Status>;
+global using unsafe cairo_user_scaled_font_unicode_to_glyph_func_t = delegate* unmanaged[Cdecl]<Cairo.Fonts.Scaled.cairo_scaled_font_t*, System.Runtime.InteropServices.CULong, System.Runtime.InteropServices.CULong*, Cairo.Status>;
 
 using System.Runtime.InteropServices;
 using Cairo.Drawing.Patterns;

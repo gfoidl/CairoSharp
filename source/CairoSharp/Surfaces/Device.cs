@@ -1,6 +1,8 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using static Cairo.Surfaces.DeviceNative;
 
@@ -241,6 +243,7 @@ public unsafe class Device : CairoObject<cairo_device_t>
 
         return sb.ToString();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static Status WriteFunc(void* state, byte* data, uint length)
         {
             string log = new((sbyte*)data, 0, (int)length);

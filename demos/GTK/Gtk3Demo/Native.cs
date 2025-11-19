@@ -43,19 +43,22 @@ internal static unsafe partial class Native
         }
     }
 
+    public const int True  = 1;
+    public const int False = 0;
+
     [LibraryImport(LibGObjectName)]
     internal static partial void g_object_unref(void* @object);
 
     [LibraryImport(LibGObjectName, StringMarshalling = StringMarshalling.Utf8)]
     private static partial void g_signal_connect_data(void* instance, string detailed_signal, void* c_handler, void* data, void* destroy_data, int connect_flags);
 
-    internal static void g_signal_connect(void* instance, string detailed_signal, delegate*<void*, void*, void> c_handler, void* data)
+    internal static void g_signal_connect(void* instance, string detailed_signal, delegate* unmanaged[Cdecl]<void*, void*, void> c_handler, void* data)
         => g_signal_connect_data(instance, detailed_signal, c_handler, data, null, 0);
 
-    internal static void g_signal_connect(void* instance, string detailed_signal, delegate*<void> c_handler, void* data)
+    internal static void g_signal_connect(void* instance, string detailed_signal, delegate* unmanaged[Cdecl]<void> c_handler, void* data)
         => g_signal_connect_data(instance, detailed_signal, c_handler, data, null, 0);
 
-    internal static void g_signal_connect(void* instance, string detailed_signal, delegate*<GtkWidget*, cairo_t*, void*, bool> c_handler, void* data)
+    internal static void g_signal_connect(void* instance, string detailed_signal, delegate* unmanaged[Cdecl]<GtkWidget*, cairo_t*, void*, int> c_handler, void* data)
         => g_signal_connect_data(instance, detailed_signal, c_handler, data, null, 0);
 
     [LibraryImport(LibGioName, StringMarshalling = StringMarshalling.Utf8)]

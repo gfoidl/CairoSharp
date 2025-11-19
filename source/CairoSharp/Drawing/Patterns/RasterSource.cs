@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Cairo.Surfaces;
 using static Cairo.Drawing.Patterns.RasterSourceNative;
@@ -273,7 +274,8 @@ public sealed unsafe class RasterSource : Pattern
 
         cairo_raster_source_pattern_set_acquire(this.Handle, &AcquireCore, &ReleaseCore);
 
-        static cairo_surface_t* AcquireCore(cairo_pattern_t* pattern, void* callbackData, cairo_surface_t* target, ref RectangleInt extents)
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static cairo_surface_t* AcquireCore(cairo_pattern_t* pattern, void* callbackData, cairo_surface_t* target, RectangleInt* extents)
         {
             GCHandle gcHandle = GCHandle.FromIntPtr(new IntPtr(callbackData));
             State state       = (State)gcHandle.Target!;
@@ -284,10 +286,11 @@ public sealed unsafe class RasterSource : Pattern
             Pattern? patternObj = Pattern.Lookup(pattern, isOwnedByCairo: true, needsDestroy: false);
             Surface? surfaceObj = Surface.Lookup(target , isOwnedByCairo: true, needsDestroy: false);
 
-            Surface result = state.Acquire(patternObj, state.UserData, surfaceObj, ref extents);
+            Surface result = state.Acquire(patternObj, state.UserData, surfaceObj, ref Unsafe.AsRef<RectangleInt>(extents));
             return result.Handle;
         }
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void ReleaseCore(cairo_pattern_t* pattern, void* callbackData, cairo_surface_t* surface)
         {
             SurfaceNative.cairo_surface_destroy(surface);

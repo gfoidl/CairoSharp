@@ -1,8 +1,8 @@
 // (c) gfoidl, all rights reserved
 
-global using unsafe GtkDrawingAreaDrawFunc = delegate*<Gtk4.Extensions.GtkDrawingArea*, Cairo.cairo_t*, int, int, void*, void>;
-global using unsafe GDestroyNotify         = delegate*<void*, void>;
-global using unsafe GClosureNotify         = delegate*<void*, void*, void>;
+global using unsafe GtkDrawingAreaDrawFunc = delegate* unmanaged[Cdecl]<Gtk4.Extensions.GtkDrawingArea*, Cairo.cairo_t*, int, int, void*, void>;
+global using unsafe GDestroyNotify         = delegate* unmanaged[Cdecl]<void*, void>;
+global using unsafe GClosureNotify         = delegate* unmanaged[Cdecl]<void*, void*, void>;
 
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 global using unsafe gpointer = void*;
@@ -11,6 +11,7 @@ global using        gboolean = int;
 
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Gtk4.Extensions;
 
@@ -26,6 +27,7 @@ internal static unsafe partial class Native
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void gtk_drawing_area_set_draw_func(GtkDrawingArea* self, GtkDrawingAreaDrawFunc draw_func, gpointer user_data, GDestroyNotify destroy);
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     public static void Destroy(gpointer userData)
     {
         if (userData is null)
@@ -52,6 +54,7 @@ internal static unsafe partial class Native
 
     public delegate string PropertyAccessor(IntPtr obj);
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     public static void ClosureDestroy(void* data, void* closure)
     {
         GCHandle gcHandle = GCHandle.FromIntPtr(new IntPtr(data));

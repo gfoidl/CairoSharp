@@ -76,33 +76,8 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// <remarks>For a strong typed variant see <see cref="Create"/>.</remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
-    public PdfSurface(Callback<object> callback, object? state, double widthInPoints, double heightInPoints)
+    public PdfSurface(Callback callback, object? state, double widthInPoints, double heightInPoints)
         : base(CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream)) { }
-
-    /// <summary>
-    /// Creates a PDF surface of the specified size in points to be written incrementally via the
-    /// <paramref name="callback"/>.
-    /// </summary>
-    /// <param name="callback">The callback to be invoked with the PDF content to be written</param>
-    /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
-    /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <remarks>
-    /// This is the same as <see cref="PdfSurface(Callback{object}, object?, double, double)"/> just with strong
-    /// typed <paramref name="callback"/> and <paramref name="state"/>.
-    /// </remarks>
-    /// <exception cref="CairoException">when construction fails</exception>
-    /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
-    public static PdfSurface Create<T>(Callback<T> callback, T? state, double widthInPoints, double heightInPoints)
-        where T : class
-    {
-        State tmp = CreateForDelegate(state, callback, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream);
-
-        return new PdfSurface(tmp.Surface, isOwnedByCairo: false)
-        {
-            _stateHandle = tmp.StateHandle
-        };
-    }
 
     /// <summary>
     /// Restricts the generated PDF file to version. See <see cref="PdfVersionExtensions.GetSupportedVersions"/>

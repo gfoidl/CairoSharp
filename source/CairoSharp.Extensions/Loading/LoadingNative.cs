@@ -1,6 +1,6 @@
 // (c) gfoidl, all rights reserved
 
-global using unsafe GDestroyNotify = delegate*<void*, void>;
+global using unsafe GDestroyNotify = delegate* unmanaged[Cdecl]<void*, void>;
 global using RsvgRectangle         = Cairo.Rectangle;
 
 using System.Reflection;

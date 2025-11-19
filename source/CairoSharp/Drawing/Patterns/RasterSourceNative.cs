@@ -1,10 +1,10 @@
 // (c) gfoidl, all rights reserved
 
-global using unsafe cairo_raster_source_acquire_func_t  = delegate*<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Surfaces.cairo_surface_t*, ref Cairo.RectangleInt, Cairo.Surfaces.cairo_surface_t*>;
-global using unsafe cairo_raster_source_release_func_t  = delegate*<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Surfaces.cairo_surface_t*, void>;
-global using unsafe cairo_raster_source_snapshot_func_t = delegate*<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Status>;
-global using unsafe cairo_raster_source_copy_func_t     = delegate*<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Drawing.Patterns.cairo_pattern_t*, Cairo.Status>;
-global using unsafe cairo_raster_source_finish_func_t   = delegate*<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, void>;
+global using unsafe cairo_raster_source_acquire_func_t  = delegate* unmanaged[Cdecl]<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Surfaces.cairo_surface_t*, Cairo.RectangleInt*, Cairo.Surfaces.cairo_surface_t*>;
+global using unsafe cairo_raster_source_release_func_t  = delegate* unmanaged[Cdecl]<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Surfaces.cairo_surface_t*, void>;
+global using unsafe cairo_raster_source_snapshot_func_t = delegate* unmanaged[Cdecl]<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Status>;
+global using unsafe cairo_raster_source_copy_func_t     = delegate* unmanaged[Cdecl]<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, Cairo.Drawing.Patterns.cairo_pattern_t*, Cairo.Status>;
+global using unsafe cairo_raster_source_finish_func_t   = delegate* unmanaged[Cdecl]<Cairo.Drawing.Patterns.cairo_pattern_t*, void*, void>;
 
 using System.Runtime.InteropServices;
 using Cairo.Surfaces;

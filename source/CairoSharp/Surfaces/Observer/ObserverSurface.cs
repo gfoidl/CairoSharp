@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Cairo.Surfaces.Observer.ObserverSurfaceNative;
@@ -80,6 +81,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         status.ThrowIfNotSuccess();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Callback(void* observer, void* target, void* state)
         {
             Debug.Assert(observer == state);
@@ -103,6 +105,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         status.ThrowIfNotSuccess();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Callback(void* observer, void* target, void* state)
         {
             Debug.Assert(observer == state);
@@ -126,6 +129,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         status.ThrowIfNotSuccess();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Callback(void* observer, void* target, void* state)
         {
             Debug.Assert(observer == state);
@@ -149,6 +153,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         status.ThrowIfNotSuccess();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Callback(void* observer, void* target, void* state)
         {
             Debug.Assert(observer == state);
@@ -172,6 +177,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         status.ThrowIfNotSuccess();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Callback(void* observer, void* target, void* state)
         {
             Debug.Assert(observer == state);
@@ -195,6 +201,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         status.ThrowIfNotSuccess();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Callback(void* observer, void* target, void* state)
         {
             Debug.Assert(observer == state);
@@ -218,6 +225,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         status.ThrowIfNotSuccess();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Callback(void* observer, void* target, void* state)
         {
             Debug.Assert(observer == state);
@@ -269,6 +277,7 @@ public sealed unsafe class ObserverSurface : Surface
 
         return sb.ToString();
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static Status WriteFunc(void* state, byte* data, uint length)
         {
             string log = new((sbyte*)data, 0, (int)length);

@@ -1,6 +1,6 @@
 // (c) gfoidl, all rights reserved
 
-global using unsafe cairo_surface_observer_callback_t = delegate*<void*, void*, void*, void>;
+global using unsafe cairo_surface_observer_callback_t = delegate* unmanaged[Cdecl]<void*, void*, void*, void>;
 
 using System.Runtime.InteropServices;
 
