@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="native.props" />
+
     <PropertyGroup>
         <!-- Strong naming warning for referenced package -->
         <NoWarn>$(NoWarn);CS8002</NoWarn>

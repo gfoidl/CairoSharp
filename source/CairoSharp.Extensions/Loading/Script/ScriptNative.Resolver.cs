@@ -10,7 +10,10 @@ static partial class ScriptNative
     private static readonly Native.LibNames s_libNames = new(
         "libcairo-script-interpreter.so.2",
         "cairo-script-interpreter-2.dll",
-        "libcairo-script-interpreter.2.dylib");
+        "libcairo-script-interpreter.2.dylib")
+    {
+        WindowsAltLibName = "libcairo-script-interpreter-2.dll"
+    };
 
     private static nint s_libHandle;
 

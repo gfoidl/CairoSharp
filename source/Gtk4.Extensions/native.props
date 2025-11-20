@@ -1,0 +1,65 @@
+<Project>
+
+    <ItemGroup Label="Native GTK 4 DLLs for Windows">
+        <GtkWinLib Include="libbrotlicommon" />
+        <GtkWinLib Include="libbrotlidec" />
+        <GtkWinLib Include="libbz2-1" />
+        <GtkWinLib Include="libcairo-2" />
+        <GtkWinLib Include="libcairo-gobject-2" />
+        <GtkWinLib Include="libcairo-script-interpreter-2" />
+        <GtkWinLib Include="libdatrie-1" />
+        <GtkWinLib Include="libdeflate" />
+        <GtkWinLib Include="libepoxy-0" />
+        <GtkWinLib Include="libexpat-1" />
+        <GtkWinLib Include="libffi-8" />
+        <GtkWinLib Include="libfontconfig-1" />
+        <GtkWinLib Include="libfreetype-6" />
+        <GtkWinLib Include="libfribidi-0" />
+        <GtkWinLib Include="libgcc_s_seh-1" />
+        <GtkWinLib Include="libgdk_pixbuf-2.0-0" />
+        <GtkWinLib Include="libgio-2.0-0" />
+        <GtkWinLib Include="libglib-2.0-0" />
+        <GtkWinLib Include="libgmodule-2.0-0" />
+        <GtkWinLib Include="libgobject-2.0-0" />
+        <GtkWinLib Include="libgraphene-1.0-0" />
+        <GtkWinLib Include="libgraphite2" />
+        <GtkWinLib Include="libgtk-4-1" />
+        <GtkWinLib Include="libharfbuzz-0" />
+        <GtkWinLib Include="libharfbuzz-gobject-0" />
+        <GtkWinLib Include="libharfbuzz-subset-0" />
+        <GtkWinLib Include="libiconv-2" />
+        <GtkWinLib Include="libintl-8" />
+        <GtkWinLib Include="libjbig-0" />
+        <GtkWinLib Include="libjpeg-8" />
+        <GtkWinLib Include="libLerc" />
+        <GtkWinLib Include="liblzma-5" />
+        <GtkWinLib Include="liblzo2-2" />
+        <GtkWinLib Include="libpango-1.0-0" />
+        <GtkWinLib Include="libpangocairo-1.0-0" />
+        <GtkWinLib Include="libpangoft2-1.0-0" />
+        <GtkWinLib Include="libpangowin32-1.0-0" />
+        <GtkWinLib Include="libpcre2-8-0" />
+        <GtkWinLib Include="libpixman-1-0" />
+        <GtkWinLib Include="libpng16-16" />
+        <GtkWinLib Include="libsharpyuv-0" />
+        <GtkWinLib Include="libstdc++-6" />
+        <GtkWinLib Include="libthai-0" />
+        <GtkWinLib Include="libtiff-6" />
+        <GtkWinLib Include="libwebp-7" />
+        <GtkWinLib Include="libwinpthread-1" />
+        <GtkWinLib Include="libzstd" />
+        <GtkWinLib Include="zlib1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <GtkWinLib_x64 Include="@(GtkWinLib -> 'C:\Program Files\msys64\ucrt64\bin\%(Identity).dll')" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="@(GtkWinLib_x64)"
+                 Link="runtimes\win-x64\native\%(FileName).dll"
+                 CopyToOutputDirectory="PreserveNewest"
+                 PackagePath="runtimes\win-x64\native" />
+    </ItemGroup>
+
+</Project>
