@@ -1,0 +1,8 @@
+<Project>
+
+    <PropertyGroup>
+        <GtkWinNativeDir>C:\Program Files\msys64\ucrt64\bin</GtkWinNativeDir>
+        <GtkWinCopyNativeLibs>false</GtkWinCopyNativeLibs>
+    </PropertyGroup>
+
+</Project>

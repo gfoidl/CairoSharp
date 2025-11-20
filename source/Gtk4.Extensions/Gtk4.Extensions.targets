@@ -51,15 +51,19 @@
         <GtkWinLib Include="zlib1" />
     </ItemGroup>
 
-    <ItemGroup>
-        <GtkWinLib_x64 Include="@(GtkWinLib -> 'C:\Program Files\msys64\ucrt64\bin\%(Identity).dll')" />
+    <ItemGroup Label="Native DBus binaries">
+        <DBusWin Include="gdbus.exe" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="@(GtkWinLib_x64)"
-                 Link="runtimes\win-x64\native\%(FileName).dll"
+        <GtkWinNative_x64 Include="@(GtkWinLib -> '$(GtkWinNativeDir)\%(Identity).dll')" />
+        <GtkWinNative_x64 Include="@(DBusWin -> '$(GtkWinNativeDir)\%(Identity)')" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(GtkWinCopyNativeLibs)' == 'true'">
+        <Content Include="@(GtkWinNative_x64)"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x64\native" />
+                 Visible="false" />
     </ItemGroup>
 
 </Project>
