@@ -80,7 +80,6 @@ public sealed unsafe class SvgSurface : StreamSurface
     /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
-    /// <remarks>For a strong typed variant see <see cref="Create"/>.</remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
     public SvgSurface(Callback callback, object? state, double widthInPoints, double heightInPoints)

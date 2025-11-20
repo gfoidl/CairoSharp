@@ -20,6 +20,21 @@ using GtkCairo = Cairo.Context;
 
 namespace Gtk4.Extensions;
 
+/// <summary>
+/// Whenever <see cref="DrawingArea"/> needs to redraw, this delegate will be called.
+/// </summary>
+/// <param name="drawingArea">The <see cref="DrawingArea"/> to redraw.</param>
+/// <param name="cr">The <see cref="CairoContext"/> to draw to.</param>
+/// <param name="width">
+/// The actual width of the contents. This value will be at least as wide as <see cref="DrawingArea.ContentWidth"/>.
+/// </param>
+/// <param name="height">
+/// The actual height of the contents. This value will be at least as wide as <see cref="DrawingArea.ContentHeight"/>.
+/// </param>
+/// <remarks>
+/// This delegate should exclusively redraw the contents of the drawing area and must not call
+/// any widget functions that cause changes.
+/// </remarks>
 public delegate void DrawingAreaDrawFunc(DrawingArea drawingArea, CairoContext cr, int width, int height);
 
 /// <summary>
