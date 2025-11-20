@@ -1,6 +1,8 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Cairo.Surfaces.Images.PngSupportNative;
 
 namespace Cairo.Surfaces.Images;
@@ -15,6 +17,7 @@ internal static unsafe class PngHelper
 
         return cairo_image_surface_create_from_png_stream(readFunc, &readState);
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static Status ReadFunc(void* closure, byte* bufferData, uint bufferLength)
         {
             Debug.WriteLine($"closure: 0x{(nint)closure:x2}\tbuffer: 0x{(nint)bufferData:x2}\tlen: {bufferLength}");

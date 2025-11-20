@@ -3,6 +3,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Cairo.Fonts;
@@ -516,6 +517,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
         }
 
         // Let the GC do its work.
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void EmptyDestroyFunction(void* state) { }
     }
 
@@ -690,6 +692,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
 
         return status;
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static Status WriteFunc(void* state, byte* data, uint dataLength)
         {
             Stream stream           = *(Stream*)state;

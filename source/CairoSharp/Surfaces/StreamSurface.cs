@@ -2,8 +2,9 @@
 
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using unsafe NativeFactory = delegate*<delegate*<void*, byte*, uint, Cairo.Status>, void*, double, double, Cairo.Surfaces.cairo_surface_t*>;
+using unsafe NativeFactory = delegate*<delegate* unmanaged[Cdecl]<void*, byte*, uint, Cairo.Status>, void*, double, double, Cairo.Surfaces.cairo_surface_t*>;
 
 namespace Cairo.Surfaces;
 
@@ -51,6 +52,7 @@ public abstract unsafe class StreamSurface : Surface
 
         return new State(handle, streamHandle);
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static Status WriteFunc(void* state, byte* data, uint length)
         {
             GCHandle gcHandle = GCHandle.FromIntPtr((nint)state);
@@ -74,24 +76,24 @@ public abstract unsafe class StreamSurface : Surface
         }
     }
 
-    protected static State CreateForDelegate<T>(T? obj, Callback<T> callback, double width, double height, NativeFactory factory)
-        where T : class
+    protected static State CreateForDelegate(object? obj, Callback callback, double width, double height, NativeFactory factory)
     {
-        CallbackState<T> callbackState = new(obj, callback);
-        GCHandle stateHandle           = GCHandle.Alloc(callbackState, GCHandleType.Normal);
-        void* state                    = GCHandle.ToIntPtr(stateHandle).ToPointer();
-        cairo_write_func_t writeFunc   = &WriteFunc;
+        CallbackState callbackState  = new(obj, callback);
+        GCHandle stateHandle         = GCHandle.Alloc(callbackState, GCHandleType.Normal);
+        void* state                  = GCHandle.ToIntPtr(stateHandle).ToPointer();
+        cairo_write_func_t writeFunc = &WriteFunc;
 
         cairo_surface_t* handle = factory(writeFunc, state, width, height);
 
         return new State(handle, stateHandle);
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static Status WriteFunc(void* state, byte* data, uint length)
         {
             GCHandle gcHandle = GCHandle.FromIntPtr((nint)state);
             Debug.Assert(gcHandle.IsAllocated);
 
-            CallbackState<T>? callbackState = gcHandle.Target as CallbackState<T>;
+            CallbackState? callbackState = gcHandle.Target as CallbackState;
             Debug.Assert(callbackState is not null);
 
             ReadOnlySpan<byte> span = new(data, (int)length);
@@ -112,11 +114,10 @@ public abstract unsafe class StreamSurface : Surface
     /// <summary>
     /// The callback to be invoked with the content to be written.
     /// </summary>
-    /// <typeparam name="T">type of <paramref name="state"/></typeparam>
     /// <param name="state">state to be passed into the callback, as given in the constructor</param>
     /// <param name="data">the data to be written</param>
-    public delegate void Callback<T>(T? state, ReadOnlySpan<byte> data);
-    private record CallbackState<T>(T? State, Callback<T> Callback);
+    public delegate void Callback(object? state, ReadOnlySpan<byte> data);
+    private record CallbackState(object? State, Callback Callback);
 
     protected readonly struct State(cairo_surface_t* surface, GCHandle stateHandle)
     {

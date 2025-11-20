@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Cairo.Drawing.Patterns;
 using Cairo.Drawing.Text;
@@ -231,6 +232,7 @@ public sealed unsafe class UserFont : FontFace
 
         cairo_font_face_set_user_data(this.Handle, ref s_stateKey, GCHandle.ToIntPtr(_stateHandle).ToPointer(), &Destroy);
 
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Destroy(void* data)
         {
             // nop
@@ -330,7 +332,8 @@ public sealed unsafe class UserFont : FontFace
         return (State)gcHandle.Target!;
     }
 
-    private static Status InitCore(cairo_scaled_font_t* scaledFont, cairo_t* cr, ref FontExtents fontExtents)
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static Status InitCore(cairo_scaled_font_t* scaledFont, cairo_t* cr, FontExtents* fontExtents)
     {
         State state = GetState(scaledFont);
 
@@ -340,10 +343,11 @@ public sealed unsafe class UserFont : FontFace
         ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
         CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
-        return state.Init(sf, context, ref fontExtents);
+        return state.Init(sf, context, ref Unsafe.AsRef<FontExtents>(fontExtents));
     }
 
-    private static Status RenderGlyphCore(cairo_scaled_font_t* scaledFont, CULong glyph, cairo_t* cr, ref TextExtents textExtents)
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static Status RenderGlyphCore(cairo_scaled_font_t* scaledFont, CULong glyph, cairo_t* cr, TextExtents* textExtents)
     {
         State state = GetState(scaledFont);
 
@@ -351,10 +355,11 @@ public sealed unsafe class UserFont : FontFace
         ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
         CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
-        return state.RenderGlyph(sf, (int)glyph.Value, context, ref textExtents);
+        return state.RenderGlyph(sf, (int)glyph.Value, context, ref Unsafe.AsRef<TextExtents>(textExtents));
     }
 
-    private static Status RenderColorGlyphCore(cairo_scaled_font_t* scaledFont, CULong glyph, cairo_t* cr, ref TextExtents textExtents)
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static Status RenderColorGlyphCore(cairo_scaled_font_t* scaledFont, CULong glyph, cairo_t* cr, TextExtents* textExtents)
     {
         State state = GetState(scaledFont);
 
@@ -367,18 +372,19 @@ public sealed unsafe class UserFont : FontFace
         ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
         CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
-        return state.RenderColorGlyph(sf, (int)glyph.Value, context, ref textExtents);
+        return state.RenderColorGlyph(sf, (int)glyph.Value, context, ref Unsafe.AsRef<TextExtents>(textExtents));
     }
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static Status TextToGlyphsCore(
         cairo_scaled_font_t* scaledFont,
         byte*                utf8,
         int                  utf8Len,
         Glyph**              glyphs,
-        ref int              numGlyphs,
+        int*                 numGlyphs,
         TextCluster**        clusters,
-        ref int              numClusters,
-        out                  ClusterFlags clusterFlags)
+        int*                 numClusters,
+        ClusterFlags*        clusterFlags)
     {
         State state = GetState(scaledFont);
 
@@ -394,27 +400,28 @@ public sealed unsafe class UserFont : FontFace
         string text            = new((sbyte*)utf8, 0, utf8Len);
         bool useClusterMapping = clusters is not null;
 
-        Status status = state.TextToGlyphs(sf, text, out GlyphArray glyphArray, out TextClusterArray? clusterArray, out clusterFlags, useClusterMapping);
+        Status status = state.TextToGlyphs(sf, text, out GlyphArray glyphArray, out TextClusterArray? clusterArray, out ClusterFlags clusterFlagsTmp, useClusterMapping);
+        *clusterFlags = clusterFlagsTmp;
 
         try
         {
             ReadOnlySpan<Glyph> glyphSpan = glyphArray.Span;
-            if (numGlyphs < glyphSpan.Length)
+            if (*numGlyphs < glyphSpan.Length)
             {
                 *glyphs = cairo_glyph_allocate(glyphSpan.Length);
             }
-            numGlyphs = glyphSpan.Length;
-            glyphSpan.CopyTo(new Span<Glyph>(*glyphs, numGlyphs));
+            *numGlyphs = glyphSpan.Length;
+            glyphSpan.CopyTo(new Span<Glyph>(*glyphs, *numGlyphs));
 
             if (useClusterMapping && clusterArray is not null)
             {
                 ReadOnlySpan<TextCluster> clusterSpan = clusterArray.Span;
-                if (numClusters < clusterSpan.Length)
+                if (*numClusters < clusterSpan.Length)
                 {
                     *clusters = cairo_text_cluster_allocate(clusterSpan.Length);
                 }
-                numClusters = clusterSpan.Length;
-                clusterSpan.CopyTo(new Span<TextCluster>(*clusters, numClusters));
+                *numClusters = clusterSpan.Length;
+                clusterSpan.CopyTo(new Span<TextCluster>(*clusters, *numClusters));
             }
 
             return status;
@@ -426,7 +433,8 @@ public sealed unsafe class UserFont : FontFace
         }
     }
 
-    private static Status UnicodeToGlyphCore(cairo_scaled_font_t* scaledFont, CULong unicode, out CULong glyphIndex)
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static Status UnicodeToGlyphCore(cairo_scaled_font_t* scaledFont, CULong unicode, CULong* glyphIndex)
     {
         State state = GetState(scaledFont);
 
@@ -441,7 +449,7 @@ public sealed unsafe class UserFont : FontFace
 
         Status status = state.UnicodeToGlyph(sf, (int)unicode.Value, out int gi);
 
-        glyphIndex = new CULong((uint)gi);
+        *glyphIndex = new CULong((uint)gi);
         return status;
     }
 

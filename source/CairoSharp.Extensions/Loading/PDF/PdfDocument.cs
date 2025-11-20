@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Cairo.Extensions.Loading.LoadingNative;
 
@@ -56,6 +57,7 @@ public sealed unsafe class PdfDocument : Document
         this.FinishConstruction(error);
 
         // Let the GC do it's thing.
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void DummyDestroyNotify(void* _) { }
     }
 

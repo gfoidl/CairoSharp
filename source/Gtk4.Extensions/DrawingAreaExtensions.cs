@@ -2,13 +2,15 @@
 
 // This won't work due to "Fatal error. Invalid Program: attempted to call a UnmanagedCallersOnly method from managed code."
 // Most likely because some signal in GirCore is managed.
-//#define USE_NATIVE_DIRECT
+#define USE_NATIVE_DIRECT
 
 using System.Diagnostics;
 using Cairo;
 using Gtk;
 using FontFace    = Cairo.Fonts.FontFace;
 using ToyFontFace = Cairo.Fonts.ToyFontFace;
+using System.Runtime.CompilerServices;
+
 
 #if USE_NATIVE_DIRECT
 using System.Runtime.InteropServices;
@@ -18,6 +20,21 @@ using GtkCairo = Cairo.Context;
 
 namespace Gtk4.Extensions;
 
+/// <summary>
+/// Whenever <see cref="DrawingArea"/> needs to redraw, this delegate will be called.
+/// </summary>
+/// <param name="drawingArea">The <see cref="DrawingArea"/> to redraw.</param>
+/// <param name="cr">The <see cref="CairoContext"/> to draw to.</param>
+/// <param name="width">
+/// The actual width of the contents. This value will be at least as wide as <see cref="DrawingArea.ContentWidth"/>.
+/// </param>
+/// <param name="height">
+/// The actual height of the contents. This value will be at least as wide as <see cref="DrawingArea.ContentHeight"/>.
+/// </param>
+/// <remarks>
+/// This delegate should exclusively redraw the contents of the drawing area and must not call
+/// any widget functions that cause changes.
+/// </remarks>
 public delegate void DrawingAreaDrawFunc(DrawingArea drawingArea, CairoContext cr, int width, int height);
 
 /// <summary>
@@ -57,6 +74,19 @@ public static class DrawingAreaExtensions
             GtkDrawingArea* self = (GtkDrawingArea*)drawingArea.Handle.DangerousGetHandle().ToPointer();
 
             Native.gtk_drawing_area_set_draw_func(self, &DrawFunc, GCHandle.ToIntPtr(gcHandle).ToPointer(), &Native.Destroy);
+
+            [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+            static void DrawFunc(GtkDrawingArea* drawingArea, cairo_t* cr, int width, int height, gpointer userData)
+            {
+                GCHandle gcHandle = GCHandle.FromIntPtr(new IntPtr(userData));
+                Debug.Assert(gcHandle.IsAllocated);
+
+                using CairoContext context   = new(cr, isOwnedByCairo: false, needsDestroy: false);
+                DrawingArea da               = new(new Gtk.Internal.DrawingAreaHandle(new IntPtr(drawingArea), ownsHandle: false));
+                DrawingAreaDrawFunc drawFunc = (gcHandle.Target as DrawingAreaDrawFunc)!;
+
+                drawFunc(da, context, width, height);
+            }
 #else
             drawingArea.SetDrawFunc((DrawingArea drawingArea, GtkCairo gtkCairo, int width, int height) =>
             {
@@ -220,18 +250,4 @@ public static class DrawingAreaExtensions
             };
         }
     }
-
-#if USE_NATIVE_DIRECT
-    private static unsafe void DrawFunc(GtkDrawingArea* drawingArea, cairo_t* cr, int width, int height, gpointer userData)
-    {
-        GCHandle gcHandle = GCHandle.FromIntPtr(new IntPtr(userData));
-        Debug.Assert(gcHandle.IsAllocated);
-
-        using CairoContext context   = new(cr, isOwnedByCairo: false, needsDestroy: false);
-        DrawingArea da               = new(new Gtk.Internal.DrawingAreaHandle(new IntPtr(drawingArea), ownsHandle: false));
-        DrawingAreaDrawFunc drawFunc = (gcHandle.Target as DrawingAreaDrawFunc)!;
-
-        drawFunc(da, context, width, height);
-    }
-#endif
 }

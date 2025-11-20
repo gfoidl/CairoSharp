@@ -1,6 +1,8 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Cairo;
 using Cairo.Drawing.Patterns;
 using Cairo.Extensions;
@@ -27,6 +29,7 @@ unsafe
     return status;
 }
 
+[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 static unsafe void Activate(void* type, void* userData)
 {
     GtkApplication* app = (GtkApplication*)type;
@@ -51,12 +54,14 @@ static unsafe void Activate(void* type, void* userData)
     gtk_widget_show_all(window);
 }
 
+[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 static unsafe void CloseWindow()
 {
     // Clean up
 }
 
-static unsafe bool Draw(GtkWidget* widget, cairo_t* crNative, void* data)
+[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+static unsafe int Draw(GtkWidget* widget, cairo_t* crNative, void* data)
 {
     Debug.WriteLine("GTK draw is called");
 
@@ -98,5 +103,5 @@ static unsafe bool Draw(GtkWidget* widget, cairo_t* crNative, void* data)
         cr.Stroke();
     }
 
-    return false;
+    return Native.False;
 }

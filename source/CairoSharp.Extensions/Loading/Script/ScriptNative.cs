@@ -1,11 +1,11 @@
 // (c) gfoidl, all rights reserved
 
-global using unsafe csi_destroy_func_t        = delegate*<void*, void*, void>;
-global using unsafe csi_surface_create_func_t = delegate*<void*, Cairo.Surfaces.Content, double, double, System.Runtime.InteropServices.CLong, Cairo.Surfaces.cairo_surface_t*>;
-global using unsafe csi_context_create_func_t = delegate*<void*, Cairo.Surfaces.cairo_surface_t*, Cairo.cairo_t*>;
-global using unsafe csi_show_page_func_t      = delegate*<void*, Cairo.cairo_t*, void>;
-global using unsafe csi_copy_page_func_t      = delegate*<void*, Cairo.cairo_t*, void>;
-global using unsafe csi_create_source_image_t = delegate*<void*, Cairo.Surfaces.Format, int, int, System.Runtime.InteropServices.CLong, Cairo.Surfaces.cairo_surface_t*>;
+global using unsafe csi_destroy_func_t        = delegate* unmanaged[Cdecl]<void*, void*, void>;
+global using unsafe csi_surface_create_func_t = delegate* unmanaged[Cdecl]<void*, Cairo.Surfaces.Content, double, double, System.Runtime.InteropServices.CLong, Cairo.Surfaces.cairo_surface_t*>;
+global using unsafe csi_context_create_func_t = delegate* unmanaged[Cdecl]<void*, Cairo.Surfaces.cairo_surface_t*, Cairo.cairo_t*>;
+global using unsafe csi_show_page_func_t      = delegate* unmanaged[Cdecl]<void*, Cairo.cairo_t*, void>;
+global using unsafe csi_copy_page_func_t      = delegate* unmanaged[Cdecl]<void*, Cairo.cairo_t*, void>;
+global using unsafe csi_create_source_image_t = delegate* unmanaged[Cdecl]<void*, Cairo.Surfaces.Format, int, int, System.Runtime.InteropServices.CLong, Cairo.Surfaces.cairo_surface_t*>;
 
 using System.Runtime.InteropServices;
 

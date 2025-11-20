@@ -622,7 +622,7 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     {
         this.CheckDisposed();
 
-        fixed (double* dashesNativ = dashes)
+        fixed (double* dashesNativ  = dashes)
         fixed (double* offsetNative = &offset)
         {
             cairo_get_dash(this.Handle, dashesNativ, offsetNative);

@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Cairo.Extensions.Loading.LoadingNative;
 
 namespace Cairo.Extensions.Loading.SVG;
@@ -68,6 +70,7 @@ public sealed unsafe class SvgDocument : Document
         this.FinishConstruction(dpi, error);
 
         // Let the GC do it's thing.
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void DummyDestroyNotify(void* _) { }
     }
 
