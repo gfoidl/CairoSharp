@@ -1,8 +1,8 @@
 <Project>
 
     <PropertyGroup>
-        <VersionMajor Condition="'$(VersionMajor)' == ''">0</VersionMajor>
-        <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
+        <VersionMajor Condition="'$(VersionMajor)' == ''">2</VersionMajor>
+        <VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
         <VersionPatch Condition="'$(VersionPatch)' == ''">0</VersionPatch>
         <BuildNumber Condition="'$(BuildNumber)' == ''">1</BuildNumber>
         <VersionSuffix Condition="'$(Configuration)' == 'Debug' and '$(VersionSuffix)' == ''">dev</VersionSuffix>

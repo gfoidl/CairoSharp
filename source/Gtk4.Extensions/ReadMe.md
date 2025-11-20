@@ -1,6 +1,6 @@
 # Gtk4.Extensions
 
-[![NuGet](https://img.shields.io/nuget/v/gfoidl.CairoSharp.Extensions.Gtk4.svg?style=flat-square)](https://www.nuget.org/packages/CairoSharp.Extensions.Gtk4/)
+[![NuGet](https://img.shields.io/nuget/v/gfoidl.Gtk4.Extensions.svg?style=flat-square)](https://www.nuget.org/packages/gfoidl.Gtk4.Extensions/)
 
 ## General
 

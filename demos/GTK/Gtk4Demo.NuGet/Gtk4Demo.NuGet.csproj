@@ -37,12 +37,12 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <PackageReference Include="gfoidl.CairoSharp" Version="0.1.0-dev" Aliases="CairoSharp" />
-        <PackageReference Include="gfoidl.Gtk4.Extensions" Version="0.1.0-dev" />
+        <PackageReference Include="gfoidl.CairoSharp" Version="2.0.0-dev" Aliases="CairoSharp" />
+        <PackageReference Include="gfoidl.Gtk4.Extensions" Version="2.0.0-dev" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)' != 'Debug'">
-        <PackageReference Include="gfoidl.CairoSharp" Version="0.1.0" Aliases="CairoSharp" />
-        <PackageReference Include="gfoidl.Gtk4.Extensions" Version="0.1.0" />
+        <PackageReference Include="gfoidl.CairoSharp" Version="2.0.0" Aliases="CairoSharp" />
+        <PackageReference Include="gfoidl.Gtk4.Extensions" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(UseLibAdwaita)' == 'true'">
