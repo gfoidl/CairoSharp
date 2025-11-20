@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- WinExe in order to hide the console window. -->
+        <OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
+        <OutputType Condition="'$(Configuration)' != 'Debug'">WinExe</OutputType>
+
+        <!--<RuntimeIdentifier>win-x64</RuntimeIdentifier>-->
+
+        <RootNamespace>Gtk4Demo</RootNamespace>
+
+        <!-- https://discourse.gnome.org/t/set-window-icon-gtk4/10183/6 -->
+        <ApplicationIcon>..\Gtk4Demo\icon.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <UIFromResource>true</UIFromResource>
+        <!--<UseLibAdwaita>true</UseLibAdwaita>-->
+        <UseFreeTypeFont>true</UseFreeTypeFont>
+
+        <GtkWinCopyNativeLibs>true</GtkWinCopyNativeLibs>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DefineConstants Condition="'$(UIFromResource)' == 'true'">$(DefineConstants);UI_FROM_RESOURCE</DefineConstants>
+        <DefineConstants Condition="'$(UseLibAdwaita)' == 'true'">$(DefineConstants);USE_LIB_ADWAITA</DefineConstants>
+        <DefineConstants Condition="'$(UseFreeTypeFont)' == 'true'">$(DefineConstants);USE_FREE_TYPE_FONT</DefineConstants>
+        <DefineConstants Condition="'$(GtkWinCopyNativeLibs)' == 'true'">$(DefineConstants);SKIP_SET_PATH_ENV</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Gtk4Demo\*.cs" Link="%(FileName).cs" />
+        <Compile Include="..\Gtk4Demo\Pixels\*.cs" LinkBase="Pixels" />
+
+        <Content Include="..\Gtk4Demo\builder\*" LinkBase="builder" />
+        <Content Include="..\Gtk4Demo\images\**" LinkBase="images" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <PackageReference Include="gfoidl.CairoSharp" Version="0.1.0-dev" Aliases="CairoSharp" />
+        <PackageReference Include="gfoidl.Gtk4.Extensions" Version="0.1.0-dev" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+        <PackageReference Include="gfoidl.CairoSharp" Version="0.1.0" Aliases="CairoSharp" />
+        <PackageReference Include="gfoidl.Gtk4.Extensions" Version="0.1.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(UseLibAdwaita)' == 'true'">
+        <PackageReference Include="GirCore.Adw-1" Version="0.7.0-preview.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Spectre.Console" Version="0.54.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(UIFromResource)' != 'true'">
+        <EmbeddedResource Include="builder\windows.ui" LogicalName="windows.4.ui" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\Gtk4Demo\gtk4demo.gresource" Link="gtk4demo.gresource" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+        <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\Gtk4Demo\icon.ico" Link="icon.ico" />
+        <Content Include="..\Gtk4Demo\*.desktop" Link="%(FileName).desktop" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(UseFreeTypeFont)' == 'true'">
+        <EmbeddedResource Include="..\..\FreeTypeDemo\fonts\SplineSans-Variable.ttf" Link="fonts\SplineSans.ttf" />
+    </ItemGroup>
+
+</Project>

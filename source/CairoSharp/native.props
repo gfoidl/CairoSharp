@@ -31,7 +31,7 @@
                  Include="..\..\artifacts\native\win-x64\cairo\out\bin\cairo-2.dll"
                  Link="runtimes\win-x64\native\libcairo-2.dll"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x64\native" />
+                 PackagePath="runtimes\win-x64\native\libcairo-2.dll" />
         
         <Content Include="@(CairoWinLib_x64)"
                  Link="runtimes\win-x64\native\%(FileName).dll"
@@ -42,7 +42,7 @@
                  Include="..\..\artifacts\native\win-x86\cairo\out\bin\cairo-2.dll"
                  Link="runtimes\win-x86\native\libcairo-2.dll"
                  CopyToOutputDirectory="PreserveNewest"
-                 PackagePath="runtimes\win-x86\native" />
+                 PackagePath="runtimes\win-x86\native\libcairo-2.dll" />
         
         <Content Include="@(CairoWinLib_x86)"
                  Link="runtimes\win-x86\native\%(FileName).dll"

@@ -22,15 +22,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="ReadMe.md">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
+        <None Include="ReadMe.md" Pack="true" PackagePath="\" />
+        <None Include="gtk-logo.png" Label="gtk-logo.png" Visible="false" Pack="true" PackagePath="\" />
 
-        <None Include="gtk-logo.png" Label="gtk-logo.png" Visible="false">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
+        <None Include="Gtk4.Extensions.props" Pack="true" PackagePath="build\gfoidl.Gtk4.Extensions.props" />
+        <None Include="Gtk4.Extensions.targets" Pack="true" PackagePath="build\gfoidl.Gtk4.Extensions.targets" />
     </ItemGroup>
 
     <ItemGroup>

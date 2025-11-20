@@ -24,15 +24,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="ReadMe.md">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
-
-        <None Include="..\..\icon.png" Label="icon.png" Visible="false">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
+        <None Include="ReadMe.md" Pack="true" PackagePath="\" />
+        <None Include="..\..\icon.png" Label="icon.png" Visible="false" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>

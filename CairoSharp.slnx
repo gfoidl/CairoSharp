@@ -18,6 +18,7 @@
     <Project Path="demos/Gtk/Gtk4Animation/Gtk4Animation.csproj" />
     <Project Path="demos/Gtk/Gtk4AnimationOptimized/Gtk4AnimationOptimized.csproj" />
     <Project Path="demos/Gtk/Gtk4AnimationWithBuilder/Gtk4AnimationWithBuilder.csproj" />
+    <Project Path="demos/GTK/Gtk4Demo.NuGet/Gtk4Demo.NuGet.csproj" />
     <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" />
     <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" />
   </Folder>
