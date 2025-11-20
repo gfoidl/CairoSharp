@@ -1,5 +1,6 @@
 <Project>
 
+    <!-- Can be found via Resource Monitor, Process Monitor and similar tools. -->
     <ItemGroup Label="Native GTK 4 DLLs for Windows">
         <GtkWinLib Include="libbrotlicommon" />
         <GtkWinLib Include="libbrotlidec" />
