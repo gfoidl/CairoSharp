@@ -2,7 +2,6 @@
 
 using Cairo.Fonts.Scaled;
 using static Cairo.Fonts.FreeType.FreeTypeFontNative;
-using unsafe FT_Face = void*;
 
 namespace Cairo.Fonts.FreeType;
 
@@ -18,6 +17,8 @@ public sealed unsafe class FreeTypeFont : FontFace
     internal FreeTypeFont(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
         : base(fontFace, isOwnedByCairo, needsDestroy) { }
 
+    internal FreeTypeFont(FT_Face face, int loadFlags) : base(cairo_ft_font_face_create_for_ft_face(face, loadFlags)) { }
+
 #pragma warning disable CS1584 // XML comment has syntactically incorrect cref attribute
 #pragma warning disable CS1658 // Warning is overriding an error
     /// <summary>
@@ -28,7 +29,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// A FreeType face object, already opened. This must be kept around until the face's ref_count
     /// drops to zero and it is freed. Since the face may be referenced internally to Cairo, the best
     /// way to determine when it is safe to free the face is to pass a cairo_destroy_func_t to
-    /// <see cref="FontFace.SetUserData(ref UserDataKey, void*, delegate*{void*, void})"/>
+    /// <see cref="FontFace.SetUserData(ref UserDataKey, void*, delegate* unmanaged[Cdecl]{void*, void})"/>
     /// </param>
     /// <param name="loadFlags">
     /// flags to pass to <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_glyph">FT_Load_Glyph</a>
@@ -54,7 +55,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// for an example on how one might correctly couple the lifetime of the FreeType face object to the <see cref="FontFace"/>.
     /// </para>
     /// </remarks>
-    public FreeTypeFont(IntPtr face, int loadFlags) : base(cairo_ft_font_face_create_for_ft_face(face.ToPointer(), loadFlags)) { }
+    public FreeTypeFont(IntPtr face, int loadFlags) : this((FT_Face)face.ToPointer(), loadFlags) { }
 #pragma warning restore CS1658 // Warning is overriding an error
 #pragma warning restore CS1584 // XML comment has syntactically incorrect cref attribute
 
