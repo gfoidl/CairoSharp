@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.Utilities;
 
@@ -15,5 +16,6 @@ internal static unsafe partial class UtilitiesNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_version_string();
+    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    internal static partial string? cairo_version_string();
 }

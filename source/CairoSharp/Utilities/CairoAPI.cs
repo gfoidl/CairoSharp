@@ -21,7 +21,7 @@ public static class CairoAPI
     /// <summary>
     /// Returns the version of the cairo library as a human-readable string of the form "X.Y.Z".
     /// </summary>
-    public static unsafe string VersionString => field ??= new string(UtilitiesNative.cairo_version_string());
+    public static unsafe string VersionString => field ??= UtilitiesNative.cairo_version_string()!;
 
     /// <summary>
     /// CAIRO_VERSION_ENCODE
@@ -32,7 +32,7 @@ public static class CairoAPI
     /// Verifies at runtime that the cairo library meets the required version. When <c>true</c> this method
     /// is nop. Otherwise will throw a <see cref="NotSupportedException"/>.
     /// </summary>
-    internal static void CheckSupportedVersion(int majorRequired, int minorRequired, int patchRequired)
+    public static void CheckSupportedVersion(int majorRequired, int minorRequired, int patchRequired)
     {
         // Note: this could be done via conditional compilation constants too, but that would erase
         // APIs that aren't supported at compile time.

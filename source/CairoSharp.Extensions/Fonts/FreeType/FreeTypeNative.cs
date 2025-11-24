@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.Extensions.Fonts.FreeType;
 
@@ -13,7 +14,8 @@ internal static unsafe partial class FreeTypeNative
     // so can't be freed at that time.
     [LibraryImport(LibFreeType)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* FT_Error_String(FTError error_code);
+    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    internal static partial string? FT_Error_String(FTError error_code);
 
     [LibraryImport(LibFreeType)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

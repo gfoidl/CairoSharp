@@ -150,8 +150,7 @@ public sealed unsafe class PdfDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = poppler_document_get_author(_document);
-            return GetString(tmp);
+            return poppler_document_get_author(_document);
         }
     }
 
@@ -165,8 +164,7 @@ public sealed unsafe class PdfDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = poppler_document_get_creator(_document);
-            return GetString(tmp);
+            return poppler_document_get_creator(_document);
         }
     }
 
@@ -179,8 +177,7 @@ public sealed unsafe class PdfDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = poppler_document_get_metadata(_document);
-            return GetString(tmp);
+            return poppler_document_get_metadata(_document);
         }
     }
 
@@ -219,8 +216,7 @@ public sealed unsafe class PdfDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = poppler_document_get_pdf_version_string(_document);
-            return GetString(tmp);
+            return poppler_document_get_pdf_version_string(_document);
         }
     }
 
@@ -234,8 +230,7 @@ public sealed unsafe class PdfDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = poppler_document_get_producer(_document);
-            return GetString(tmp);
+            return poppler_document_get_producer(_document);
         }
     }
 
@@ -248,8 +243,7 @@ public sealed unsafe class PdfDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = poppler_document_get_subject(_document);
-            return GetString(tmp);
+            return poppler_document_get_subject(_document);
         }
     }
 
@@ -262,20 +256,7 @@ public sealed unsafe class PdfDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = poppler_document_get_title(_document);
-            return GetString(tmp);
-        }
-    }
-
-    private static string? GetString(sbyte* utf8)
-    {
-        try
-        {
-            return utf8 is not null ? new string(utf8) : null;
-        }
-        finally
-        {
-            g_free(utf8);
+            return poppler_document_get_title(_document);
         }
     }
 }

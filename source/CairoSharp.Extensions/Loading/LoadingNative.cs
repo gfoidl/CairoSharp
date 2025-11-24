@@ -5,6 +5,7 @@ global using RsvgRectangle         = Cairo.Rectangle;
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using Cairo.Extensions.Loading.PDF;
 using Cairo.Extensions.Loading.SVG;
 
@@ -45,11 +46,7 @@ public static unsafe partial class LoadingNative
         return null;
     }
 
-    public static string? GetPopplerVersion()
-    {
-        sbyte* version = poppler_get_version();
-        return version is not null ? new string(version) : null;
-    }
+    public static string? GetPopplerVersion() => poppler_get_version();
 
     public static int PopplerVersion
     {
@@ -151,7 +148,8 @@ public static unsafe partial class LoadingNative
 
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* rsvg_handle_get_base_uri(RsvgHandle* handle);
+    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    internal static partial string? rsvg_handle_get_base_uri(RsvgHandle* handle);
 
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -165,7 +163,8 @@ public static unsafe partial class LoadingNative
     // Poppler
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_get_version();
+    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    internal static partial string? poppler_get_version();
 
     [LibraryImport(LibPopplerName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -197,15 +196,18 @@ public static unsafe partial class LoadingNative
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_document_get_author(PopplerDocument* document);
+    [return: MarshalUsing(typeof(GCharMarshaller))]
+    internal static partial string? poppler_document_get_author(PopplerDocument* document);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_document_get_creator(PopplerDocument* document);
+    [return: MarshalUsing(typeof(GCharMarshaller))]
+    internal static partial string? poppler_document_get_creator(PopplerDocument* document);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_document_get_metadata(PopplerDocument* document);
+    [return: MarshalUsing(typeof(GCharMarshaller))]
+    internal static partial string? poppler_document_get_metadata(PopplerDocument* document);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -217,19 +219,23 @@ public static unsafe partial class LoadingNative
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_document_get_pdf_version_string(PopplerDocument* document);
+    [return: MarshalUsing(typeof(GCharMarshaller))]
+    internal static partial string? poppler_document_get_pdf_version_string(PopplerDocument* document);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_document_get_producer(PopplerDocument* document);
+    [return: MarshalUsing(typeof(GCharMarshaller))]
+    internal static partial string? poppler_document_get_producer(PopplerDocument* document);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_document_get_subject(PopplerDocument* document);
+    [return: MarshalUsing(typeof(GCharMarshaller))]
+    internal static partial string? poppler_document_get_subject(PopplerDocument* document);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* poppler_document_get_title(PopplerDocument* document);
+    [return: MarshalUsing(typeof(GCharMarshaller))]
+    internal static partial string? poppler_document_get_title(PopplerDocument* document);
 
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

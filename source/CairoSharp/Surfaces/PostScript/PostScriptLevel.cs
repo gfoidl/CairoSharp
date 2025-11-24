@@ -30,11 +30,7 @@ public static unsafe class PostScriptLevelExtensions
         /// id isn't valid. See <see cref="GetSupportedLevels"/> for a way to get the list of valid level ids.
         /// </summary>
         /// <returns>the string associated to given level.</returns>
-        public string? GetString()
-        {
-            sbyte* tmp = cairo_ps_level_to_string(level);
-            return tmp is not null ? new string(tmp) : null;
-        }
+        public string? GetString() => cairo_ps_level_to_string(level);
     }
 
     extension(PostScriptSurface)

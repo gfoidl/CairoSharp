@@ -31,11 +31,7 @@ public static unsafe class SvgVersionExtensions
         /// of valid version ids.
         /// </summary>
         /// <returns>the string associated to given version.</returns>
-        public string? GetString()
-        {
-            sbyte* tmp = cairo_svg_version_to_string(version);
-            return tmp is not null ? new string(tmp) : null;
-        }
+        public string? GetString() => cairo_svg_version_to_string(version);
     }
 
     extension(SvgSurface)

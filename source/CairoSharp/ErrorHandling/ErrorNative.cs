@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.ErrorHandling;
 
@@ -13,7 +14,8 @@ internal static unsafe partial class ErrorNative
     // so can't be freed at that time.
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_status_to_string(Status status);
+    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    internal static partial string? cairo_status_to_string(Status status);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

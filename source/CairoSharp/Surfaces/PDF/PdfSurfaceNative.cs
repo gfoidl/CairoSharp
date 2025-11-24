@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.Surfaces.PDF;
 
@@ -26,7 +27,8 @@ internal static unsafe partial class PdfSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_pdf_version_to_string(PdfVersion version);
+    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    internal static partial string? cairo_pdf_version_to_string(PdfVersion version);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

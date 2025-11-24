@@ -224,8 +224,7 @@ public sealed unsafe class FontOptions : CairoObject<cairo_font_options_t>, IEqu
         {
             this.CheckDisposed();
 
-            sbyte* raw = cairo_font_options_get_variations(this.Handle);
-            return raw is not null ? new string(raw) : null;
+            return cairo_font_options_get_variations(this.Handle);
         }
         set
         {

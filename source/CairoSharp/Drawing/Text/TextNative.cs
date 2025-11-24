@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using Cairo.Fonts;
 using Cairo.Fonts.Scaled;
 
@@ -80,7 +81,8 @@ internal static unsafe partial class TextNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_toy_font_face_get_family(cairo_font_face_t* font_face);
+    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    internal static partial string? cairo_toy_font_face_get_family(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
