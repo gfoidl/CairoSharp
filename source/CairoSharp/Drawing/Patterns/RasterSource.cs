@@ -283,8 +283,8 @@ public sealed unsafe class RasterSource : Pattern
             Debug.Assert(state.Acquire is not null);
 
             // Here just wrapper objects, w/o memory management, thus no Dispose needed.
-            Pattern? patternObj = Pattern.Lookup(pattern, isOwnedByCairo: true, needsDestroy: false);
-            Surface? surfaceObj = Surface.Lookup(target , isOwnedByCairo: true, needsDestroy: false);
+            using Pattern? patternObj = Pattern.Lookup(pattern, isOwnedByCairo: true, needsDestroy: false);
+            using Surface? surfaceObj = Surface.Lookup(target , isOwnedByCairo: true, needsDestroy: false);
 
             Surface result = state.Acquire(patternObj, state.UserData, surfaceObj, ref Unsafe.AsRef<RectangleInt>(extents));
             return result.Handle;

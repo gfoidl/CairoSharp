@@ -339,9 +339,10 @@ public sealed unsafe class UserFont : FontFace
 
         Debug.Assert(state.Init is not null);
 
-        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
-        ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
-        CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
+        // Here just wrapper objects, w/o memory management, Dispose is needed to remove the
+        // objects from the finalizer queue.
+        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        using CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
         return state.Init(sf, context, ref Unsafe.AsRef<FontExtents>(fontExtents));
     }
@@ -351,9 +352,10 @@ public sealed unsafe class UserFont : FontFace
     {
         State state = GetState(scaledFont);
 
-        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
-        ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
-        CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
+        // Here just wrapper objects, w/o memory management, Dispose is needed to remove the
+        // objects from the finalizer queue.
+        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        using CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
         return state.RenderGlyph(sf, (int)glyph.Value, context, ref Unsafe.AsRef<TextExtents>(textExtents));
     }
@@ -368,9 +370,10 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
-        ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
-        CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
+        // Here just wrapper objects, w/o memory management, Dispose is needed to remove the
+        // objects from the finalizer queue.
+        using ScaledFont sf        = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        using CairoContext context = new(cr        , isOwnedByCairo: true, needsDestroy: false);
 
         return state.RenderColorGlyph(sf, (int)glyph.Value, context, ref Unsafe.AsRef<TextExtents>(textExtents));
     }
@@ -394,8 +397,9 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
-        ScaledFont sf = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        // Here just wrapper objects, w/o memory management, Dispose is needed to remove the
+        // objects from the finalizer queue.
+        using ScaledFont sf = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
 
         string text            = new((sbyte*)utf8, 0, utf8Len);
         bool useClusterMapping = clusters is not null;
@@ -444,8 +448,9 @@ public sealed unsafe class UserFont : FontFace
             return Status.UserFontNotImplemented;
         }
 
-        // Here just wrapper objects, w/o memory management, thus no Dispose needed.
-        ScaledFont sf = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
+        // Here just wrapper objects, w/o memory management, Dispose is needed to remove the
+        // objects from the finalizer queue.
+        using ScaledFont sf = new(scaledFont, isOwnedByCairo: true, needsDestroy: false);
 
         Status status = state.UnicodeToGlyph(sf, (int)unicode.Value, out int gi);
 
