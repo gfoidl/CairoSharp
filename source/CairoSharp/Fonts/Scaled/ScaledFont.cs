@@ -90,11 +90,12 @@ public sealed unsafe class ScaledFont : FontFace
     /// Gets the extents for a string of text. The extents describe a user-space rectangle
     /// that encloses the "inked" portion of the text drawn at the origin (0,0) (as it would
     /// be drawn by <see cref="TextExtensions.ShowText(CairoContext, string?)"/> if the cairo graphics state were
-    /// set to the same <see cref="FontFace"/>, font_matrix, ctm, and font_options as scaled_font).
-    /// Additionally, the x_advance and y_advance values indicate the amount by which the current
-    /// point would be advanced by <see cref="TextExtensions.ShowText(CairoContext, string?)"/>.
+    /// set to the same font_face, font_matrix, ctm, and font_options as scaled_font).
+    /// Additionally, the <see cref="TextExtents.XAdvance"/> and <see cref="TextExtents.YAdvance"/> values
+    /// indicate the amount by which the current point would be advanced by
+    /// <see cref="TextExtensions.ShowText(CairoContext, string?)"/>.
     /// </summary>
-    /// <param name="text">a NUL-terminated string of text, encoded in UTF-8</param>
+    /// <param name="text">a string of text</param>
     /// <param name="textExtents">a <see cref="Fonts.TextExtents"/> which to store the retrieved extents.</param>
     /// <remarks>
     /// Note that whitespace characters do not directly contribute to the size of the rectangle
@@ -106,6 +107,29 @@ public sealed unsafe class ScaledFont : FontFace
     {
         this.CheckDisposed();
         cairo_scaled_font_text_extents(this.ScaledFontHandle, text, out textExtents);
+    }
+
+    /// <summary>
+    /// Gets the extents for a string of text. The extents describe a user-space rectangle
+    /// that encloses the "inked" portion of the text drawn at the origin (0,0) (as it would
+    /// be drawn by <see cref="TextExtensions.ShowText(CairoContext, ReadOnlySpan{byte})"/> if the
+    /// cairo graphics state were set to the same font_face, font_matrix, ctm, and font_options as scaled_font).
+    /// Additionally, the <see cref="TextExtents.XAdvance"/> and <see cref="TextExtents.YAdvance"/> values
+    /// indicate the amount by which the current point would be advanced by
+    /// <see cref="TextExtensions.ShowText(CairoContext, ReadOnlySpan{byte})"/>.
+    /// </summary>
+    /// <param name="utf8">a NUL-terminated string of text, encoded in UTF-8</param>
+    /// <param name="textExtents">a <see cref="Fonts.TextExtents"/> which to store the retrieved extents.</param>
+    /// <remarks>
+    /// Note that whitespace characters do not directly contribute to the size of the rectangle
+    /// (extents.width and extents.height). They do contribute indirectly by changing the position
+    /// of non-whitespace characters. In particular, trailing whitespace characters are likely to not
+    /// affect the size of the rectangle, though they will affect the x_advance and y_advance values.
+    /// </remarks>
+    public void TextExtents(ReadOnlySpan<byte> utf8, out TextExtents textExtents)
+    {
+        this.CheckDisposed();
+        cairo_scaled_font_text_extents(this.ScaledFontHandle, utf8, out textExtents);
     }
 
     /// <summary>
@@ -144,10 +168,10 @@ public sealed unsafe class ScaledFont : FontFace
     /// <remarks>
     /// For details of how <paramref name="clusters"/>, and <paramref name="clusterFlags"/> map input UTF-8 text
     /// to the output glyphs see
-    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, ReadOnlySpan{Glyph}, ReadOnlySpan{TextCluster}, ClusterFlags)"/>.
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, GlyphArray, TextClusterArray, ClusterFlags)"/>.
     /// <para>
     /// The output values can be readily passed to
-    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, ReadOnlySpan{Glyph}, ReadOnlySpan{TextCluster}, ClusterFlags)"/>,
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, GlyphArray, TextClusterArray, ClusterFlags)"/>,
     /// <see cref="TextExtensions.ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>, or related methods, assuming that the exact
     /// same <see cref="ScaledFont"/> is used for the operation.
     /// </para>
@@ -161,18 +185,23 @@ public sealed unsafe class ScaledFont : FontFace
 
         if (useClusterMapping)
         {
-            Status status = cairo_scaled_font_text_to_glyphs(
-                this.ScaledFontHandle,
-                x, y,
-                text, -1,
-                out Glyph* glyphs, out int numGlyphs,
-                out TextCluster* clustersNative, out int numClusters,
-                out clusterFlags);
+            fixed (ClusterFlags* clusterFlagsPinned = &clusterFlags)
+            {
+                TextCluster* clustersNative;
+                int numClusters;
 
-            status.ThrowIfNotSuccess();
+                Status status = cairo_scaled_font_text_to_glyphs(
+                    this.ScaledFontHandle,
+                    x, y,
+                    text, -1,
+                    out Glyph* glyphs, out int numGlyphs,
+                    &clustersNative, &numClusters, clusterFlagsPinned);
 
-            clusters = new TextClusterArray(clustersNative, numClusters);
-            return new GlyphArray(glyphs, numGlyphs);
+                status.ThrowIfNotSuccess();
+
+                clusters = new TextClusterArray(clustersNative, numClusters);
+                return new GlyphArray(glyphs, numGlyphs);
+            }
         }
         else
         {
@@ -206,16 +235,116 @@ public sealed unsafe class ScaledFont : FontFace
     /// <remarks>
     /// For details of how <paramref name="clusters"/>, and <paramref name="clusterFlags"/> map input UTF-8 text
     /// to the output glyphs see
-    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, ReadOnlySpan{Glyph}, ReadOnlySpan{TextCluster}, ClusterFlags)"/>.
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, GlyphArray, TextClusterArray, ClusterFlags)"/>.
     /// <para>
     /// The output values can be readily passed to
-    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, ReadOnlySpan{Glyph}, ReadOnlySpan{TextCluster}, ClusterFlags)"/>,
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, string, GlyphArray, TextClusterArray, ClusterFlags)"/>,
     /// <see cref="TextExtensions.ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>, or related methods, assuming that the exact
     /// same <see cref="ScaledFont"/> is used for the operation.
     /// </para>
     /// </remarks>
+    /// <example>
+    /// See <a href="https://www.codeproject.com/articles/Programming-Cairo-Text-Output-Beyond-the-toy-text">sample.</a>
+    /// </example>
     public GlyphArray TextToGlyphs(PointD point, string text, out TextClusterArray? clusters, out ClusterFlags clusterFlags, bool useClusterMapping = true)
         => this.TextToGlyphs(point.X, point.Y, text, out clusters, out clusterFlags, useClusterMapping);
+
+    /// <summary>
+    /// Converts UTF-8 text to an array of glyphs, optionally with cluster mapping, that can be used to
+    /// render later using <see cref="ScaledFont"/>.
+    /// </summary>
+    /// <param name="x">X position to place first glyph</param>
+    /// <param name="y">Y position to place first glyph</param>
+    /// <param name="utf8">a string of text encoded in UTF-8</param>
+    /// <param name="clusters">pointer to array of cluster mapping information to fill</param>
+    /// <param name="clusterFlags">
+    /// pointer to location to store cluster flags corresponding to the output <paramref name="clusters"/>
+    /// </param>
+    /// <param name="useClusterMapping">whether cluster mapping should be used or not</param>
+    /// <returns>array of glyphs</returns>
+    /// <remarks>
+    /// For details of how <paramref name="clusters"/>, and <paramref name="clusterFlags"/> map input UTF-8 text
+    /// to the output glyphs see
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, ReadOnlySpan{byte}, GlyphArray, TextClusterArray, ClusterFlags)"/>.
+    /// <para>
+    /// The output values can be readily passed to
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, ReadOnlySpan{byte}, GlyphArray, TextClusterArray, ClusterFlags)"/>,
+    /// <see cref="TextExtensions.ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>, or related methods, assuming that the exact
+    /// same <see cref="ScaledFont"/> is used for the operation.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// See <a href="https://www.codeproject.com/articles/Programming-Cairo-Text-Output-Beyond-the-toy-text">sample.</a>
+    /// </example>
+    public GlyphArray TextToGlyphs(double x, double y, ReadOnlySpan<byte> utf8, out TextClusterArray? clusters, out ClusterFlags clusterFlags, bool useClusterMapping = true)
+    {
+        this.CheckDisposed();
+
+        if (useClusterMapping)
+        {
+            fixed (ClusterFlags* clusterFlagsPinned = &clusterFlags)
+            {
+                TextCluster* clustersNative;
+                int numClusters;
+
+                Status status = cairo_scaled_font_text_to_glyphs(
+                    this.ScaledFontHandle,
+                    x, y,
+                    utf8, utf8.Length,
+                    out Glyph* glyphs, out int numGlyphs,
+                    &clustersNative, &numClusters, clusterFlagsPinned);
+
+                status.ThrowIfNotSuccess();
+
+                clusters = new TextClusterArray(clustersNative, numClusters);
+                return new GlyphArray(glyphs, numGlyphs);
+            }
+        }
+        else
+        {
+            Status status = cairo_scaled_font_text_to_glyphs(
+                this.ScaledFontHandle,
+                x, y,
+                utf8, utf8.Length,
+                out Glyph* glyphs, out int numGlyphs,
+                null, null, null);
+
+            status.ThrowIfNotSuccess();
+
+            clusters     = null;
+            clusterFlags = default;
+            return new GlyphArray(glyphs, numGlyphs);
+        }
+    }
+
+    /// <summary>
+    /// Converts UTF-8 text to an array of glyphs, optionally with cluster mapping, that can be used to
+    /// render later using <see cref="ScaledFont"/>.
+    /// </summary>
+    /// <param name="point">position to place first glyph</param>
+    /// <param name="utf8">a string of text encoded in UTF-8</param>
+    /// <param name="clusters">pointer to array of cluster mapping information to fill</param>
+    /// <param name="clusterFlags">
+    /// pointer to location to store cluster flags corresponding to the output <paramref name="clusters"/>
+    /// </param>
+    /// <param name="useClusterMapping">whether cluster mapping should be used or not</param>
+    /// <returns>array of glyphs</returns>
+    /// <remarks>
+    /// For details of how <paramref name="clusters"/>, and <paramref name="clusterFlags"/> map input UTF-8 text
+    /// to the output glyphs see
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, ReadOnlySpan{byte}, GlyphArray, TextClusterArray, ClusterFlags)"/>.
+    /// <para>
+    /// The output values can be readily passed to
+    /// <see cref="TextExtensions.ShowTextGlyphs(CairoContext, ReadOnlySpan{byte}, GlyphArray, TextClusterArray, ClusterFlags)"/>,
+    /// <see cref="TextExtensions.ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>, or related methods, assuming that the exact
+    /// same <see cref="ScaledFont"/> is used for the operation.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// See <a href="https://www.codeproject.com/articles/Programming-Cairo-Text-Output-Beyond-the-toy-text">sample.</a>
+    /// </example>
+    public GlyphArray TextToGlyphs(PointD point, ReadOnlySpan<byte> utf8, out TextClusterArray? clusters, out ClusterFlags clusterFlags, bool useClusterMapping = true)
+        => this.TextToGlyphs(point.X, point.Y, utf8, out clusters, out clusterFlags, useClusterMapping);
 
     /// <summary>
     /// Gets the font face that this scaled font uses. This might be the font face passed to

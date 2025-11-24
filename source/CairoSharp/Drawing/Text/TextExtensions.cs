@@ -246,7 +246,7 @@ public static unsafe class TextExtensions
         }
 
         /// <summary>
-        /// A drawing operator that generates the shape from a string of UTF-8 characters,
+        /// A drawing operator that generates the shape from a string of characters,
         /// rendered according to the current font_face, font_size (font_matrix), and font_options.
         /// </summary>
         /// <param name="text">string to render or <c>null</c></param>
@@ -271,12 +271,48 @@ public static unsafe class TextExtensions
         {
             cr.CheckDisposed();
 
-            if (text is null)
+            if (string.IsNullOrEmpty(text))
             {
                 return;
             }
 
             cairo_show_text(cr.Handle, text);
+        }
+
+        /// <summary>
+        /// A drawing operator that generates the shape from a string of UTF-8 characters,
+        /// rendered according to the current font_face, font_size (font_matrix), and font_options.
+        /// </summary>
+        /// <param name="utf8">
+        /// a NUL-terminated string of text encoded in UTF-8, or <see cref="ReadOnlySpan{T}.Empty"/>
+        /// </param>
+        /// <remarks>
+        /// This method first computes a set of glyphs for the string of text. The first glyph is
+        /// placed so that its origin is at the current point. The origin of each subsequent glyph
+        /// is offset from that of the previous glyph by the advance values of the previous glyph.
+        /// <para>
+        /// After this call the current point is moved to the origin of where the next glyph would be placed
+        /// in this same progression. That is, the current point will be at the origin of the final glyph offset
+        /// by its advance values. This allows for easy display of a single logical string with multiple
+        /// calls to <see cref="ShowText(CairoContext, ReadOnlySpan{byte})"/>.
+        /// </para>
+        /// <para>
+        /// Note: The <see cref="ShowText(CairoContext, ReadOnlySpan{byte})"/> method call is part of what the cairo
+        /// designers call the "toy" text API. It is convenient for short demos and simple programs, but it is
+        /// not expected to be adequate for serious text-using applications. See <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>
+        /// for the "real" text display API in cairo.
+        /// </para>
+        /// </remarks>
+        public void ShowText(ReadOnlySpan<byte> utf8)
+        {
+            cr.CheckDisposed();
+
+            if (utf8.IsEmpty)
+            {
+                return;
+            }
+
+            cairo_show_text(cr.Handle, utf8);
         }
 
         /// <summary>
@@ -317,7 +353,7 @@ public static unsafe class TextExtensions
         /// should collectively cover utf8 and glyphs in entirety.
         /// <para>
         /// The first cluster always covers bytes from the beginning of utf8. If <paramref name="clusterFlags"/> do not have
-        /// the <see cref="ClusterFlags.Backward"/>set, the first cluster also covers the beginning of glyphs, otherwise it
+        /// the <see cref="ClusterFlags.Backward"/> set, the first cluster also covers the beginning of glyphs, otherwise it
         /// covers the end of the glyphs array and following clusters move backward.
         /// </para>
         /// <para>
@@ -331,11 +367,58 @@ public static unsafe class TextExtensions
         {
             cr.CheckDisposed();
 
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
             fixed (Glyph* glyphNative             = glyphs)
             fixed (TextCluster* textClusterNative = clusters)
             {
                 // -1 as the marshalled string is null-terminated
                 cairo_show_text_glyphs(cr.Handle, text, -1, glyphNative, glyphs.Length, textClusterNative, clusters.Length, clusterFlags);
+            }
+        }
+
+        /// <summary>
+        /// This operation has rendering effects similar to <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>
+        /// but, if the target surface supports it, uses the provided text and cluster mapping to embed the text for
+        /// the glyphs shown in the output. If the target does not support the extended attributes, this function acts
+        /// like the basic <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/> as if it had been passed glyphs.
+        /// </summary>
+        /// <param name="utf8">a string of text encoded in UTF-8</param>
+        /// <param name="glyphs">array of glyphs to show</param>
+        /// <param name="clusters">array of cluster mapping information</param>
+        /// <param name="clusterFlags">cluster mapping flags</param>
+        /// <remarks>
+        /// The mapping between utf8 and glyphs is provided by an array of clusters. Each cluster covers a number of
+        /// text bytes and glyphs, and neighboring clusters cover neighboring areas of utf8 and glyphs. The clusters
+        /// should collectively cover utf8 and glyphs in entirety.
+        /// <para>
+        /// The first cluster always covers bytes from the beginning of utf8. If <paramref name="clusterFlags"/> do not have
+        /// the <see cref="ClusterFlags.Backward"/> set, the first cluster also covers the beginning of glyphs, otherwise it
+        /// covers the end of the glyphs array and following clusters move backward.
+        /// </para>
+        /// <para>
+        /// See <see cref="TextCluster"/> for constraints on valid clusters.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// See <a href="https://www.codeproject.com/articles/Programming-Cairo-Text-Output-Beyond-the-toy-text">sample.</a>
+        /// </example>
+        public void ShowTextGlyphs(ReadOnlySpan<byte> utf8, ReadOnlySpan<Glyph> glyphs, ReadOnlySpan<TextCluster> clusters, ClusterFlags clusterFlags = ClusterFlags.None)
+        {
+            cr.CheckDisposed();
+
+            if (utf8.IsEmpty)
+            {
+                return;
+            }
+
+            fixed (Glyph* glyphNative             = glyphs)
+            fixed (TextCluster* textClusterNative = clusters)
+            {
+                cairo_show_text_glyphs(cr.Handle, utf8, utf8.Length, glyphNative, glyphs.Length, textClusterNative, clusters.Length, clusterFlags);
             }
         }
 
@@ -367,6 +450,35 @@ public static unsafe class TextExtensions
         /// </example>
         public void ShowTextGlyphs(string text, GlyphArray glyphs, TextClusterArray clusters, ClusterFlags clusterFlags = ClusterFlags.None)
             => cr.ShowTextGlyphs(text, glyphs.Span, clusters.Span, clusterFlags);
+
+        /// <summary>
+        /// This operation has rendering effects similar to <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>
+        /// but, if the target surface supports it, uses the provided text and cluster mapping to embed the text for
+        /// the glyphs shown in the output. If the target does not support the extended attributes, this method acts
+        /// like the basic <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/> as if it had been passed glyphs.
+        /// </summary>
+        /// <param name="utf8">a string of text encoded in UTF-8</param>
+        /// <param name="glyphs">array of glyphs to show</param>
+        /// <param name="clusters">array of cluster mapping information</param>
+        /// <param name="clusterFlags">cluster mapping flags</param>
+        /// <remarks>
+        /// The mapping between utf8 and glyphs is provided by an array of clusters. Each cluster covers a number of
+        /// text bytes and glyphs, and neighboring clusters cover neighboring areas of utf8 and glyphs. The clusters
+        /// should collectively cover utf8 and glyphs in entirety.
+        /// <para>
+        /// The first cluster always covers bytes from the beginning of utf8. If <paramref name="clusterFlags"/> do not have
+        /// the <see cref="ClusterFlags.Backward"/> set, the first cluster also covers the beginning of glyphs, otherwise it
+        /// covers the end of the glyphs array and following clusters move backward.
+        /// </para>
+        /// <para>
+        /// See <see cref="TextCluster"/> for constraints on valid clusters.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// See <a href="https://www.codeproject.com/articles/Programming-Cairo-Text-Output-Beyond-the-toy-text">sample.</a>
+        /// </example>
+        public void ShowTextGlyphs(ReadOnlySpan<byte> utf8, GlyphArray glyphs, TextClusterArray clusters, ClusterFlags clusterFlags = ClusterFlags.None)
+            => cr.ShowTextGlyphs(utf8, glyphs.Span, clusters.Span, clusterFlags);
 
         /// <summary>
         /// This operation has rendering effects similar to <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>
@@ -414,6 +526,51 @@ public static unsafe class TextExtensions
         }
 
         /// <summary>
+        /// This operation has rendering effects similar to <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/>
+        /// but, if the target surface supports it, uses the provided text and cluster mapping to embed the text for
+        /// the glyphs shown in the output. If the target does not support the extended attributes, this method acts
+        /// like the basic <see cref="ShowGlyphs(CairoContext, ReadOnlySpan{Glyph})"/> as if it had been passed glyphs.
+        /// </summary>
+        /// <param name="utf8">a string of text encoded in UTF-8</param>
+        /// <param name="useClusterMapping">whether cluster mapping should be used or not</param>
+        /// <remarks>
+        /// This is convenience method that performs
+        /// <see cref="ScaledFont.TextToGlyphs(double, double, ReadOnlySpan{byte}, out TextClusterArray?, out ClusterFlags, bool)"/>
+        /// and
+        /// <see cref="ShowTextGlyphs(CairoContext, ReadOnlySpan{byte}, GlyphArray, TextClusterArray, ClusterFlags)"/>
+        /// combined.
+        /// </remarks>
+        public void ShowTextGlyphs(ReadOnlySpan<byte> utf8, bool useClusterMapping = true)
+        {
+            cr.CheckDisposed();
+
+            // https://www.cairographics.org/manual/cairo-cairo-scaled-font-t.html#cairo-scaled-font-text-to-glyphs
+
+            using ScaledFont scaledFont = cr.ScaledFont;
+            PointD currentPoint         = cr.CurrentPoint;
+            GlyphArray glyphs           = scaledFont.TextToGlyphs(currentPoint, utf8, out TextClusterArray? clusters, out ClusterFlags clusterFlags, useClusterMapping);
+
+            Debug.Assert(useClusterMapping && clusters is not null);
+
+            try
+            {
+                if (useClusterMapping)
+                {
+                    cr.ShowTextGlyphs(utf8, glyphs, clusters, clusterFlags);
+                }
+                else
+                {
+                    cr.ShowGlyphs(glyphs);
+                }
+            }
+            finally
+            {
+                glyphs   .Dispose();
+                clusters?.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Gets the font extents for the currently selected font.
         /// </summary>
         /// <param name="extents">a <see cref="Fonts.FontExtents"/> object into which the results will be stored.</param>
@@ -442,6 +599,29 @@ public static unsafe class TextExtensions
         {
             cr.CheckDisposed();
             cairo_text_extents(cr.Handle, text, out extents);
+        }
+
+        /// <summary>
+        /// Gets the extents for a string of text. The extents describe a user-space rectangle that encloses the
+        /// "inked" portion of the text, (as it would be drawn by <see cref="ShowText(CairoContext, ReadOnlySpan{byte})"/>).
+        /// Additionally, the <see cref="TextExtents.XAdvance"/> and <see cref="TextExtents.YAdvance"/> values
+        /// indicate the amount by which the current point would be advanced by <see cref="ShowText(CairoContext, ReadOnlySpan{byte})"/>.
+        /// </summary>
+        /// <param name="utf8">
+        /// a NUL-terminated string of text encoded in UTF-8, or NULL, or <see cref="ReadOnlySpan{T}.Empty"/>
+        /// </param>
+        /// <param name="extents">a <see cref="Fonts.TextExtents"/> object into which the results will be stored</param>
+        /// <remarks>
+        /// Note that whitespace characters do not directly contribute to the size of the rectangle
+        /// (<see cref="TextExtents.Width"/> and <see cref="TextExtents.Height"/>).
+        /// They do contribute indirectly by changing the position of non-whitespace characters. In particular, trailing
+        /// whitespace characters are likely to not affect the size of the rectangle, though they will affect
+        /// the <see cref="TextExtents.XAdvance"/> and <see cref="TextExtents.YAdvance"/> values.
+        /// </remarks>
+        public void TextExtents(ReadOnlySpan<byte> utf8, out TextExtents extents)
+        {
+            cr.CheckDisposed();
+            cairo_text_extents(cr.Handle, utf8, out extents);
         }
 
         /// <summary>

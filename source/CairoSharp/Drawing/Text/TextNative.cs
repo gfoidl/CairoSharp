@@ -53,7 +53,11 @@ internal static unsafe partial class TextNative
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_show_text(cairo_t* cr, string utf8);
+    internal static partial void cairo_show_text(cairo_t* cr, string text);
+
+    [LibraryImport(Native.LibCairo)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void cairo_show_text(cairo_t* cr, [MarshalUsing(typeof(Utf8SpanMarshaller))] ReadOnlySpan<byte> utf8);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -61,7 +65,11 @@ internal static unsafe partial class TextNative
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_show_text_glyphs(cairo_t* cr, string utf8, int utf8_len, Glyph* glyphs, int num_glyphs, TextCluster* clusters, int num_clusters, ClusterFlags cluster_flags);
+    internal static partial void cairo_show_text_glyphs(cairo_t* cr, string text, int utf8_len, Glyph* glyphs, int num_glyphs, TextCluster* clusters, int num_clusters, ClusterFlags cluster_flags);
+
+    [LibraryImport(Native.LibCairo)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void cairo_show_text_glyphs(cairo_t* cr, ReadOnlySpan<byte> utf8, int utf8_len, Glyph* glyphs, int num_glyphs, TextCluster* clusters, int num_clusters, ClusterFlags cluster_flags);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -69,7 +77,11 @@ internal static unsafe partial class TextNative
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_text_extents(cairo_t* cr, string? utf8, out TextExtents extents);
+    internal static partial void cairo_text_extents(cairo_t* cr, string? text, out TextExtents extents);
+
+    [LibraryImport(Native.LibCairo)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void cairo_text_extents(cairo_t* cr, [MarshalUsing(typeof(Utf8SpanMarshaller))] ReadOnlySpan<byte> utf8, out TextExtents extents);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

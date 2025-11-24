@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using Cairo.Drawing.Text;
 
 namespace Cairo.Fonts.Scaled;
@@ -33,7 +34,11 @@ internal static unsafe partial class ScaledFontNative
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_scaled_font_text_extents(cairo_scaled_font_t* scaled_font, string utf8, out TextExtents extents);
+    internal static partial void cairo_scaled_font_text_extents(cairo_scaled_font_t* scaled_font, string text, out TextExtents extents);
+
+    [LibraryImport(Native.LibCairo)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void cairo_scaled_font_text_extents(cairo_scaled_font_t* scaled_font, [MarshalUsing(typeof(Utf8SpanMarshaller))] ReadOnlySpan<byte> utf8, out TextExtents extents);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
@@ -41,11 +46,11 @@ internal static unsafe partial class ScaledFontNative
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Status cairo_scaled_font_text_to_glyphs(cairo_scaled_font_t* scaled_font, double x, double y, string utf8, int utf8_len, out Glyph* glyphs, out int num_glyphs, out TextCluster* clusters, out int num_clusters, out ClusterFlags flags);
+    internal static partial Status cairo_scaled_font_text_to_glyphs(cairo_scaled_font_t* scaled_font, double x, double y, string text, int text_len, out Glyph* glyphs, out int num_glyphs, TextCluster** clusters, int* num_clusters, ClusterFlags* flags);
 
-    [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Status cairo_scaled_font_text_to_glyphs(cairo_scaled_font_t* scaled_font, double x, double y, string utf8, int utf8_len, out Glyph* glyphs, out int num_glyphs, TextCluster** clusters, int* num_clusters, ClusterFlags* flags);
+    internal static partial Status cairo_scaled_font_text_to_glyphs(cairo_scaled_font_t* scaled_font, double x, double y, ReadOnlySpan<byte> utf8, int utf8_len, out Glyph* glyphs, out int num_glyphs, TextCluster** clusters, int* num_clusters, ClusterFlags* flags);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
