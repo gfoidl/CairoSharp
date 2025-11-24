@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Cairo.Drawing.Text;
 using Cairo.Fonts;
 using Cairo.Surfaces;
@@ -11,6 +12,7 @@ namespace Cairo.Extensions.Colors.ColorMaps;
 /// <summary>
 /// Extension methods for color map analysis.
 /// </summary>
+[SkipLocalsInit]
 public static class ColorMapAnalysisExtensions
 {
     private const string DefaultFontFamily = "Helvetica";
@@ -165,6 +167,7 @@ public static class ColorMapAnalysisExtensions
                 }
 
                 SetAxisTickFont(cr, fontFace);
+                Span<byte> buffer = stackalloc byte[32];
 
                 // x ticks
                 using (cr.Save())
@@ -180,7 +183,9 @@ public static class ColorMapAnalysisExtensions
                             cr.Translate(i * scale, 0);
 
                             double xTick = i * 0.01;
-                            string label = xTick.ToString("G1");
+                            xTick.TryFormat(buffer, out int written, "G1");
+                            ReadOnlySpan<byte> label = buffer[..written];
+
                             cr.TextExtents(label, out TextExtents labelExtents);
                             cr.MoveTo(-labelExtents.Width / 2, 0);
                             cr.ShowText(label);
@@ -218,7 +223,9 @@ public static class ColorMapAnalysisExtensions
                         {
                             cr.Translate(0, -i * scale);
 
-                            string label = i.ToString();
+                            i.TryFormat(buffer, out int written);
+                            ReadOnlySpan<byte> label = buffer[..written];
+
                             cr.TextExtents(label, out TextExtents labelExtents);
                             cr.MoveTo(-labelExtents.Width, -labelExtents.Height / 2 - labelExtents.YBearing);
                             cr.ShowText(label);

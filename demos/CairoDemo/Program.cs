@@ -1,6 +1,8 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text;
 using Cairo;
 using Cairo.Drawing;
 using Cairo.Drawing.Patterns;
@@ -177,6 +179,13 @@ static void Primitives()
             0.5 - te.Width / 2 - te.XBearing + 10,
             0.5 - te.Height / 2 - te.YBearing + 60);
         c.ShowText("a");
+
+        c.Color = new Color(0, 0, 1);
+        c.TextExtents("b"u8, out te);
+        c.MoveTo(
+            0.5 - te.Width / 2 - te.XBearing + 10,
+            0.5 - te.Height / 2 - te.YBearing + 70);
+        c.ShowText("b"u8);
     }
 
     using (Surface surface = new ImageSurface(Format.Argb32, 200, 320))
@@ -792,6 +801,19 @@ static void PdfFeatures()
         context.StrokePreserve();
         context.Color = new Color(0, 0, 1);
         context.Fill();
+
+        // Hyperlink
+        using (context.TagBegin(CairoTagConstants.CairoTagLink, "uri='https://github.com/gfoidl/CairoSharp'"))
+        {
+            context.Color = Color.Default;
+            context.MoveTo(300, 50);
+
+            Span<byte> buffer = stackalloc byte[128];
+            Random.Shared.NextBytes(buffer);    // just to poison it
+            int written       = Encoding.UTF8.GetBytes("This is a link to the source repository of CairoSharp", buffer);
+            buffer            = buffer[..written];
+            context.ShowText(buffer);
+        }
 
         surface.SetPageLabel("my page 2");
     }

@@ -107,6 +107,7 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("drawLineCap"         , this.DrawLineCap);
         this.AddAction("drawLineJoin"        , this.DrawLineJoin);
         this.AddAction("drawText"            , this.DrawText);
+        this.AddAction("drawTextUtf8"        , this.DrawTextUtf8);
         this.AddAction("drawTextCenter"      , this.DrawTextCenter);
         this.AddAction("drawTextExtents"     , this.DrawTextExtents);
         this.AddAction("drawGlyphs"          , this.DrawGlyphs);
@@ -700,6 +701,38 @@ public sealed class MainWindow : ApplicationWindow
 
             cr.MoveTo(70.0, 165.0);
             cr.TextPath("void");
+            cr.SetSourceRgb(0.5, 0.5, 1);
+            cr.FillPreserve();
+            cr.SetSourceRgb(0, 0, 0);
+            cr.LineWidth = 2.56;
+            cr.Stroke();
+
+            // draw helping lines
+            cr.SetSourceRgba(1, 0.2, 0.2, 0.6);
+
+            cr.Arc(10.0, 135.0, 5.12, 0, 2 * Math.PI);
+            cr.ClosePath();
+
+            cr.Arc(70.0, 165.0, 5.12, 0, 2 * Math.PI);
+            cr.Fill();
+        };
+
+        _drawingArea.QueueDraw();
+    }
+
+    private void DrawTextUtf8()
+    {
+        _lastSelectedDemo = "text_utf8";
+        _onDrawAction     = static cr =>
+        {
+            cr.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
+            cr.SetFontSize(90d);
+
+            cr.MoveTo(10.0, 135.0);
+            cr.ShowText("Hello"u8);
+
+            cr.MoveTo(70.0, 165.0);
+            cr.TextPath("void"u8);
             cr.SetSourceRgb(0.5, 0.5, 1);
             cr.FillPreserve();
             cr.SetSourceRgb(0, 0, 0);
