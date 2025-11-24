@@ -61,7 +61,7 @@ public static class TextExtensions
         /// <remarks>
         /// See <see cref="Cairo.TextExtensions.TextExtents(CairoContext, string?, out TextExtents)"/>.
         /// </remarks>
-        /// <exception cref="ArgumentNullException">when <paramref name="text"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentNullException">when <paramref name="utf8"/> is <c>empty</c></exception>
         public double GetTextWidth(ReadOnlySpan<byte> utf8)
         {
             if (utf8.IsEmpty)
@@ -112,7 +112,7 @@ public static class TextExtensions
         /// when <c>true</c> moves cairos current point to the calculated position
         /// </param>
         /// <returns>the point to which <see cref="PathExtensions.MoveTo(CairoContext, PointD)"/></returns>
-        /// <exception cref="ArgumentNullException">when <paramref name="text"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentNullException">when <paramref name="utf8"/> is <c>empty</c></exception>
         public PointD TextAlignCenter(ReadOnlySpan<byte> utf8, double baseWidth, double baseHeight, out TextExtents textExtents, bool moveCurrentPoint = false)
         {
             if (utf8.IsEmpty)
