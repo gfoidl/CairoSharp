@@ -26,7 +26,7 @@ internal unsafe struct cairo_script_interpreter_hooks_t
     public csi_create_source_image_t create_source_image;
 }
 
-internal unsafe partial class ScriptNative
+internal static unsafe partial class ScriptNative
 {
     public const string LibCairoScriptInterpreter = "cairo-script-interpreter";
 

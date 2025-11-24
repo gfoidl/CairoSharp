@@ -41,7 +41,7 @@ Time passed by and the zwcloud-wrapper got outdated and not maintained anymore (
 
 _cairo_ got some updates in the meantime, so I started from scratch with a new wrapper for .NET. So this project here isn't a fork of some other wrapper, it's a new project with just some examples / demos taken over. The actual wrapper-code is completely new and based on modern .NET features.
 
-As _cairo_ and all other wrappers are licensed under the GNU LGPL, so does this project too. But this doesn't mean that using this project in your work brings copyleft-virality with it.
+As _cairo_ and most other wrappers are licensed under the GNU LGPL, so does this project too. But this doesn't mean that using this project in your work brings copyleft-virality with it.
 
 The license says
 > a larger work using the licensed work through interfaces provided by the licensed work may be distributed under different terms and without source code for the larger work
@@ -63,7 +63,7 @@ Thus your work is "decoupled" via an interface from the licensed work refered to
 
 ## _cairo_ features implemented
 
-All features, functions, etc. as of _cairo_ version 1.18.5 are implemented. Further there member in the .NET wrapper are documented (xml doc comments), so Intellisense works.
+All features, functions, etc. as of _cairo_ version 1.18.5 are implemented. Further the members in the .NET wrapper are documented (xml doc comments), so Intellisense works.
 
 ## Supported platforms
 
@@ -75,7 +75,7 @@ This project only supports .NET 8 onwards. For older .NET targets please use htt
 | Windows x64 / x86 | :heavy_check_mark:               | not needed                                                                    |
 | Mac OS            | :x:                              | :heavy_check_mark: (see [downloads](https://www.cairographics.org/download/)) |
 
-* for Windows x64 / x86 the _cairo_ DLL is bundled with the NuGet package, not further installation is needed
+* for Windows x64 / x86 the _cairo_ DLL is bundled with the NuGet package, no further installation is needed
 
 I don't have Mac OS, thus there are no stubs available, and I can't tell whether it will work or not.
 
@@ -94,7 +94,7 @@ There is an accompanying project calls [CairoSharp.Extensions](source/CairoSharp
 
 So instead of polishing an old wrapper, I chose to start a fresh one. For the name I chose _CairoSharp_, because I'm so used to it, and I dislike names like NCairo, CairoDotNet, and so on.
 
-The NuGet is named `gfoidl.CairoSharp` to have a distincition (and at the moment it's the only one for a .NET 8 and newer target).
+The NuGet is named `gfoidl.CairoSharp` to have a distincition (and at the moment it's the only one for a .NET 8 and newer targets).
 
 ## Building
 

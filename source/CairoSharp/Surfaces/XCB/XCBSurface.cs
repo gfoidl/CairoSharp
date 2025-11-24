@@ -44,8 +44,8 @@ public sealed unsafe class XCBSurface : Surface
     /// Creates an XCB surface that draws to the given bitmap. This will be drawn to as a <see cref="Format.A1"/> object.
     /// </summary>
     /// <param name="connection">an XCB connection</param>
-    /// <param name="bitmap">an XCB drawable (a Pixmap with depth 1)</param>
     /// <param name="screen">the XCB screen associated with bitmap </param>
+    /// <param name="bitmap">an XCB drawable (a Pixmap with depth 1)</param>
     /// <param name="width">the current width of bitmap </param>
     /// <param name="height">the current height of bitmap </param>
     /// <returns>

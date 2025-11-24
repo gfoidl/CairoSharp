@@ -17,7 +17,7 @@ public enum RsvgHandleFlags
     /// Disable safety limits in the XML parser. Libxml2 has
     /// <a href="https://gitlab.gnome.org/GNOME/libxml2/blob/master/include/libxml/parserInternals.h">several limits</a>
     /// designed to keep malicious XML content from consuming too much memory while parsing. For security
-    /// reasons, this should only be used for trusted input! 
+    /// reasons, this should only be used for trusted input!
     /// </summary>
     Unlimited = 1,
 

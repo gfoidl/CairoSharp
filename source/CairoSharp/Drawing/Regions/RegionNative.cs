@@ -48,11 +48,15 @@ internal static unsafe partial class RegionNative
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void cairo_region_get_rectangle(cairo_region_t* region, int nth, out RectangleInt rectangle);
 
-    [DllImport(Native.LibCairo, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern bool cairo_region_is_empty(cairo_region_t* region);
+    [LibraryImport(Native.LibCairo)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [return: MarshalAs(UnmanagedType.U4)]
+    internal static partial bool cairo_region_is_empty(cairo_region_t* region);
 
-    [DllImport(Native.LibCairo, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern bool cairo_region_contains_point(cairo_region_t* region, int x, int y);
+    [LibraryImport(Native.LibCairo)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [return: MarshalAs(UnmanagedType.U4)]
+    internal static partial bool cairo_region_contains_point(cairo_region_t* region, int x, int y);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

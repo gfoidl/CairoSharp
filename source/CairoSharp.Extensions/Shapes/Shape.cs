@@ -75,7 +75,7 @@ public abstract class Shape(CairoContext cr) : IDisposable
     /// </param>
     public void Draw(double centerX, double centerY, Color color, bool stroke = true)
     {
-        cr.Color = color;
+        _cr.Color = color;
         this.Draw(centerX, centerY, stroke);
     }
 

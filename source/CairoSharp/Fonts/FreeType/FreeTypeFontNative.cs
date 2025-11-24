@@ -1,13 +1,15 @@
 // (c) gfoidl, all rights reserved
 
+global using unsafe FT_Face = Cairo.Fonts.FreeType.FT_FaceRec_*;
+
 using System.Runtime.InteropServices;
 using Cairo.Fonts.Scaled;
-using unsafe FT_Face = void*;
 
 namespace Cairo.Fonts.FreeType;
 
 // https://www.cairographics.org/manual/cairo-FreeType-Fonts.html
 
+internal struct FT_FaceRec_;
 internal struct FcPattern;
 
 internal static unsafe partial class FreeTypeFontNative

@@ -152,9 +152,6 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// <param name="y">the y-origin of the sub-surface from the top-left of the target surface (in device-space units)</param>
     /// <param name="width">width of the sub-surface (in device-space units)</param>
     /// <param name="height">height of the sub-surface (in device-space units)</param>
-    /// <param name="throwOnConstructionError">
-    /// when <c>true</c> (the default) an exception is thrown when the surface could not be created.
-    /// </param>
     /// <returns>
     /// a pointer to the newly allocated surface. The caller owns the surface and should call
     /// <see cref="CairoObject.Dispose()"/> when done with it.
@@ -163,10 +160,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// in an error state or any other error occurs.
     /// </para>
     /// </returns>
-    /// <exception cref="CairoException">
-    /// when construction fails and <paramref name="throwOnConstructionError"/> is set to <c>true</c>
-    /// </exception>
-    public Surface CreateForRectangle(double x, double y, double width, double height, bool throwOnConstructionError = true)
+    public Surface CreateForRectangle(double x, double y, double width, double height)
     {
         this.CheckDisposed();
 

@@ -47,7 +47,7 @@ public static unsafe class FreeTypeExtensions
         }
     }
 
-    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags, byte[]? pinnedFontData = null)
+    private static FreeTypeFont CreateFreeTypeFontCore(FT_Face face, int loadFlags, byte* fontData = null)
     {
         // Problem: cairo doesn't know to call FT_Done_Face when its font_face object is
         // destroyed, so we have to do that for it, by attaching a cleanup callback to
@@ -62,15 +62,16 @@ public static unsafe class FreeTypeExtensions
         // https://www.cairographics.org/manual/cairo-FreeType-Fonts.html#cairo-ft-font-face-create-for-ft-face
         // https://www.cairographics.org/cookbook/freetypepython/
 
-        FreeTypeFont ftFont = new((nint)face, loadFlags);
+        FreeTypeFont ftFont = new(face, loadFlags);
 
         void* userData = ftFont.GetUserData(ref s_destroyFuncKey);
         if (userData is null)
         {
-            FontState fontState = new((nint)face, pinnedFontData);
-            GCHandle gcHandle   = GCHandle.Alloc(fontState, GCHandleType.Normal);
+            FontState* fontState = (FontState*)NativeMemory.Alloc((uint)sizeof(FontState));
+            fontState->Face      = face;
+            fontState->FontData  = fontData;
 
-            ftFont.SetUserData(ref s_destroyFuncKey, GCHandle.ToIntPtr(gcHandle).ToPointer(), &DestroyFunc);
+            ftFont.SetUserData(ref s_destroyFuncKey, fontState, &DestroyFunc);
         }
 
         return ftFont;
@@ -80,25 +81,29 @@ public static unsafe class FreeTypeExtensions
         {
             Debug.WriteLine("FreeTypeExtensions.DestroyFunc called");
 
-            GCHandle gcHandle = GCHandle.FromIntPtr((nint)userData);
-            Debug.Assert(gcHandle.IsAllocated);
-
-            FontState fontState = (FontState)gcHandle.Target!;
-
+            FontState* fontState = (FontState*)userData;
             try
             {
-                FT_Face face   = (FT_Face)fontState.Face;
-                FTError status = FT_Done_Face(face);
+                FTError status = FT_Done_Face(fontState->Face);
                 status.ThrowIfNotSuccess();
             }
             finally
             {
-                gcHandle.Free();
+                if (fontState->FontData is not null)
+                {
+                    NativeMemory.Free(fontState->FontData);
+                }
+
+                NativeMemory.Free(fontState);
             }
         }
     }
 
-    private record FontState(nint Face, byte[]? PinnedFontData);
+    private struct FontState
+    {
+        public FT_Face Face;
+        public byte*   FontData;
+    }
 
     extension(FreeTypeFont)
     {
@@ -202,10 +207,11 @@ public static unsafe class FreeTypeExtensions
             }
 
             // FreeType won't make a copy of the font data, so we must take care of this.
-            byte[] pinnedArray = GC.AllocateUninitializedArray<byte>(fontData.Length, pinned: true);
-            fontData.CopyTo(pinnedArray);
+            byte* fontDataNative    = (byte*)NativeMemory.Alloc((uint)fontData.Length);
+            Span<byte> fontDataSpan = new(fontDataNative, fontData.Length);
+            fontData.CopyTo(fontDataSpan);
 
-            return LoadFromData(pinnedArray, faceIndex, loadFlags);
+            return LoadFromData(fontDataNative, fontData.Length, faceIndex, loadFlags);
         }
 
         /// <summary>
@@ -250,25 +256,20 @@ public static unsafe class FreeTypeExtensions
             }
 
             // FreeType won't make a copy of the font data, so we must take care of this.
-            byte[] fontData = GC.AllocateUninitializedArray<byte>((int)font.Length, pinned: true);
-            font.ReadExactly(fontData);
+            byte* fontDataNative     = (byte*)NativeMemory.Alloc((nuint)font.Length);
+            Span<byte> fontDataSpan  = new(fontDataNative, (int)font.Length);
+            font.ReadExactly(fontDataSpan);
 
-            return LoadFromData(fontData, faceIndex, loadFlags);
+            return LoadFromData(fontDataNative, (int)font.Length, faceIndex, loadFlags);
         }
 
-        private static FreeTypeFont LoadFromData(byte[] pinnedFontData, int faceIndex, int loadFlags)
+        private static FreeTypeFont LoadFromData(byte* fontData, int fontDataLength, int faceIndex, int loadFlags)
         {
-            Debug.Assert(GC.GetGeneration(pinnedFontData) == GC.MaxGeneration);
-
             FT_Library library = EnsureFreeTypeInitialized();
+            FTError status     = FT_New_Memory_Face(library, fontData, new FT_Long(fontDataLength), new FT_Long(faceIndex), out FT_Face face);
 
-            fixed (byte* ptr = &MemoryMarshal.GetArrayDataReference(pinnedFontData))
-            {
-                FTError status = FT_New_Memory_Face(library, ptr, new FT_Long(pinnedFontData.Length), new FT_Long(faceIndex), out FT_Face face);
-
-                status.ThrowIfNotSuccess();
-                return CreateFreeTypeFontCore(face, loadFlags, pinnedFontData);
-            }
+            status.ThrowIfNotSuccess();
+            return CreateFreeTypeFontCore(face, loadFlags, fontData);
         }
     }
 }
