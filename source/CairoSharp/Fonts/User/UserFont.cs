@@ -185,8 +185,8 @@ public sealed unsafe class UserFont : FontFace
     /// </summary>
     /// <param name="init">init callback</param>
     /// <param name="renderGlyph">callback for rendering a glyph</param>
-    /// <param name="textToGlyphs">callback for text to glyphs</param>
     /// <param name="renderColorGlyph">callback for text to colored glyph</param>
+    /// <param name="textToGlyphs">callback for text to glyphs</param>
     /// <param name="unicodeToGlyph">callback for unicode to glyph</param>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="renderGlyph"/> is <c>null</c>

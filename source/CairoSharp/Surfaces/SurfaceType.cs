@@ -162,7 +162,7 @@ public enum SurfaceType
     Skia,
 
     /// <summary>
-    /// The surface is a subsurface created with <see cref="Surface.CreateForRectangle(double, double, double, double, bool)"/>, since 1.10
+    /// The surface is a subsurface created with <see cref="Surface.CreateForRectangle(double, double, double, double)"/>, since 1.10
     /// </summary>
     SubSurface,
 

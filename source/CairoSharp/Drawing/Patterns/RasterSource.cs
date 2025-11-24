@@ -247,7 +247,7 @@ public sealed unsafe class RasterSource : Pattern
 
         if (_state is null)
         {
-            throw new InvalidOperationException($"""
+            throw new InvalidOperationException("""
                 When the overloads with the managed delegates are used, then this type has
                 to be constructed with the ctor that takes the managed delegate.
                 """);

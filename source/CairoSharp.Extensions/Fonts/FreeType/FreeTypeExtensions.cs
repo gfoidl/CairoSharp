@@ -99,7 +99,6 @@ public static unsafe class FreeTypeExtensions
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
     private struct FontState
     {
         public FT_Face Face;

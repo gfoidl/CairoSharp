@@ -155,7 +155,7 @@ public sealed unsafe class Region : CairoObject<cairo_region_t>, IEquatable<Regi
     public bool ContainsPoint(Point point) => this.ContainsPoint(point.X, point.Y);
 
     /// <summary>
-    /// Checks whether rectangle is inside, outside or partially contained in region 
+    /// Checks whether rectangle is inside, outside or partially contained in region
     /// </summary>
     /// <param name="rectangle">a cairo <see cref="RectangleInt"/></param>
     /// <returns>

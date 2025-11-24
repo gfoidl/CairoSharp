@@ -40,7 +40,7 @@ public static class ColorMapAnalysisExtensions
         /// // White background
         /// cr.Color = KnownColors.White;
         /// cr.Paint();
-        /// 
+        ///
         /// // Need to set at (-x, -y)
         /// cr.SetSourceSurface(recordingSurface, -inkExtents.X, -inkExtents.Y);
         /// cr.Paint();

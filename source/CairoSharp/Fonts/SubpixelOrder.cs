@@ -9,7 +9,7 @@ namespace Cairo.Fonts;
 public enum SubpixelOrder
 {
     /// <summary>
-    /// Use the default subpixel order for for the target device, since 1.0
+    /// Use the default subpixel order for the target device, since 1.0
     /// </summary>
     Default,
 
