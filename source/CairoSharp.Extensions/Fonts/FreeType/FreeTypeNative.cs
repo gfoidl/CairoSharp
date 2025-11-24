@@ -14,7 +14,7 @@ internal static unsafe partial class FreeTypeNative
     // so can't be freed at that time.
     [LibraryImport(LibFreeType)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? FT_Error_String(FTError error_code);
 
     [LibraryImport(LibFreeType)]

@@ -93,7 +93,7 @@ internal static unsafe partial class TextNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_toy_font_face_get_family(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]

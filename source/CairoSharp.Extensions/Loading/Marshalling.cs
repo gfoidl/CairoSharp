@@ -15,8 +15,5 @@ internal static unsafe class GCharMarshaller
             : new string(utf8);
     }
     //-------------------------------------------------------------------------
-    public static void Free(sbyte* utf8)
-    {
-        g_free(utf8);
-    }
+    public static void Free(sbyte* utf8) => g_free(utf8);
 }

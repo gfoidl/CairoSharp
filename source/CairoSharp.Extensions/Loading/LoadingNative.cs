@@ -148,7 +148,7 @@ public static unsafe partial class LoadingNative
 
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? rsvg_handle_get_base_uri(RsvgHandle* handle);
 
     [LibraryImport(LibRSvgName)]
@@ -163,7 +163,7 @@ public static unsafe partial class LoadingNative
     // Poppler
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? poppler_get_version();
 
     [LibraryImport(LibPopplerName, StringMarshalling = StringMarshalling.Utf8)]

@@ -72,7 +72,7 @@ internal static unsafe partial class FontOptionsNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_font_options_get_variations(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]

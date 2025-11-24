@@ -35,6 +35,6 @@ internal static unsafe partial class SvgSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_svg_version_to_string(SvgVersion version);
 }

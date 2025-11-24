@@ -27,7 +27,7 @@ internal static unsafe partial class PostScriptSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_ps_level_to_string(PostScriptLevel level);
 
     [LibraryImport(Native.LibCairo)]

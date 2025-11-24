@@ -27,7 +27,7 @@ internal static unsafe partial class PdfSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    [return: MarshalUsing(typeof(StaticNativeStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_pdf_version_to_string(PdfVersion version);
 
     [LibraryImport(Native.LibCairo)]

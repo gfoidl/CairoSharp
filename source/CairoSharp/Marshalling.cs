@@ -6,8 +6,8 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo;
 
-[CustomMarshaller(typeof(string), MarshalMode.Default, typeof(StaticNativeStringMarshaller))]
-internal static unsafe class StaticNativeStringMarshaller
+[CustomMarshaller(typeof(string), MarshalMode.Default, typeof(NativeConstCharMarshaller))]
+internal static unsafe class NativeConstCharMarshaller
 {
     public static string? ConvertToManaged(sbyte* utf8)
     {
