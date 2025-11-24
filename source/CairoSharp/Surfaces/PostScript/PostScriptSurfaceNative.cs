@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.Surfaces.PostScript;
 
@@ -26,7 +27,8 @@ internal static unsafe partial class PostScriptSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_ps_level_to_string(PostScriptLevel level);
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
+    internal static partial string? cairo_ps_level_to_string(PostScriptLevel level);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

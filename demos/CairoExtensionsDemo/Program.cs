@@ -275,7 +275,7 @@ static void PaintAfter()
                 cr.SetSourceRgb(0, 0, 0);
                 cr.SelectFontFace("Georgia");   // or "Rockwell", or "Arial", or ...
                 cr.SetFontSize(16);
-                string text = "Hexagon with coordinate-axis";
+                ReadOnlySpan<byte> text = "Hexagon with coordinate-axis"u8;
 
                 // Determine the width of the text
                 double textWidth = cr.GetTextWidth(text);

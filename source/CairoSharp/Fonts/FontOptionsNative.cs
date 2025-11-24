@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.Fonts;
 
@@ -71,7 +72,8 @@ internal static unsafe partial class FontOptionsNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_font_options_get_variations(cairo_font_options_t* options);
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
+    internal static partial string? cairo_font_options_get_variations(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

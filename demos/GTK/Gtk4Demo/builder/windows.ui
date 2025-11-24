@@ -105,6 +105,10 @@
         <attribute name="label">text</attribute>
       </item>
       <item>
+        <attribute name="action">win.drawTextUtf8</attribute>
+        <attribute name="label">text (utf-8)</attribute>
+      </item>
+      <item>
         <attribute name="action">win.drawTextCenter</attribute>
         <attribute name="label">text align center</attribute>
       </item>

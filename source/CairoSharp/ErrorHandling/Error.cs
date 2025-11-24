@@ -17,8 +17,10 @@ public static unsafe class Error
         /// </returns>
         public string GetString()
         {
-            sbyte* raw = cairo_status_to_string(status);
-            return new string(raw);
+            string? tmp = cairo_status_to_string(status);
+
+            Debug.Assert(tmp is not null);
+            return tmp;
         }
 
         /// <summary>

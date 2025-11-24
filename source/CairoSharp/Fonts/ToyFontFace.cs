@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using Cairo.Drawing.Text;
 using static Cairo.Drawing.Text.TextNative;
 
@@ -41,12 +42,9 @@ public sealed unsafe class ToyFontFace : FontFace
         {
             this.CheckDisposed();
 
-            if (field is null)
-            {
-                sbyte* family = cairo_toy_font_face_get_family(this.Handle);
-                field         = new string(family);
-            }
+            field ??= cairo_toy_font_face_get_family(this.Handle);
 
+            Debug.Assert(field is not null);
             return field;
         }
     }

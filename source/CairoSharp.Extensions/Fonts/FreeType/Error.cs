@@ -15,12 +15,7 @@ public static unsafe class Error
         /// <returns>
         /// a string representation of the status
         /// </returns>
-        public string? GetString()
-        {
-            sbyte* raw = FT_Error_String(errorCode);
-
-            return raw is not null ? new string(raw) : null;
-        }
+        public string? GetString() => FT_Error_String(errorCode);
 
         /// <summary>
         /// Throws a <see cref="FreeTypeException"/> when the status is not <see cref="FTError.FT_Err_Ok"/>.

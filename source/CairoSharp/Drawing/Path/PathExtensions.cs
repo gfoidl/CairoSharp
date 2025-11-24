@@ -468,7 +468,7 @@ public static unsafe class PathExtensions
         /// Adds closed paths for text to the current path. The generated path if filled, achieves
         /// an effect similar to that of cairo_show_text().
         /// </summary>
-        /// <param name="text">a NUL-terminated string of text encoded in UTF-8, or NULL</param>
+        /// <param name="text">a string of text, or NULL</param>
         /// <remarks>
         /// Text conversion and positioning is done similar to cairo_show_text().
         /// <para>
@@ -493,6 +493,39 @@ public static unsafe class PathExtensions
 
             cr.CheckDisposed();
             cairo_text_path(cr.Handle, text);
+        }
+
+        /// <summary>
+        /// Adds closed paths for text to the current path. The generated path if filled, achieves
+        /// an effect similar to that of cairo_show_text().
+        /// </summary>
+        /// <param name="utf8">
+        /// a NUL-terminated string of text encoded in UTF-8, or <see cref="ReadOnlySpan{T}.Empty"/>
+        /// </param>
+        /// <remarks>
+        /// Text conversion and positioning is done similar to cairo_show_text().
+        /// <para>
+        /// Like cairo_show_text(), after this call the current point is moved to the origin of where the
+        /// next glyph would be placed in this same progression. That is, the current point will be at the
+        /// origin of the final glyph offset by its advance values. This allows for chaining multiple calls
+        /// to cairo_text_path() without having to set current point in between.
+        /// </para>
+        /// <para>
+        /// Note: The cairo_text_path() function call is part of what the cairo designers call the
+        /// "toy" text API. It is convenient for short demos and simple programs, but it is not expected to
+        /// be adequate for serious text-using applications. See <see cref="GlyphPath(CairoContext, ReadOnlySpan{Glyph})"/>
+        /// for the "real" text path API in cairo.
+        /// </para>
+        /// </remarks>
+        public void TextPath(ReadOnlySpan<byte> utf8)
+        {
+            if (utf8.IsEmpty)
+            {
+                return;
+            }
+
+            cr.CheckDisposed();
+            cairo_text_path(cr.Handle, utf8);
         }
 
         /// <summary>

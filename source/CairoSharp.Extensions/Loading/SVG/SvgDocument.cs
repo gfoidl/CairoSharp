@@ -116,8 +116,7 @@ public sealed unsafe class SvgDocument : Document
         {
             this.CheckNotDisposed();
 
-            sbyte* tmp = rsvg_handle_get_base_uri(_handle);
-            return tmp is not null ? new string(tmp) : null;
+            return rsvg_handle_get_base_uri(_handle);
         }
     }
 

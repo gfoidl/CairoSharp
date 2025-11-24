@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using Cairo.Drawing.Text;
 
 namespace Cairo.Drawing.Path;
@@ -76,7 +77,11 @@ internal static unsafe partial class PathNative
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_text_path(cairo_t* cr, string utf8);
+    internal static partial void cairo_text_path(cairo_t* cr, string text);
+
+    [LibraryImport(Native.LibCairo)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void cairo_text_path(cairo_t* cr, [MarshalUsing(typeof(Utf8SpanMarshaller))] ReadOnlySpan<byte> utf8);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

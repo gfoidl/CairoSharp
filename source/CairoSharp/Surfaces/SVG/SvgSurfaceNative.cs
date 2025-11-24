@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.Surfaces.SVG;
 
@@ -34,5 +35,6 @@ internal static unsafe partial class SvgSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial sbyte* cairo_svg_version_to_string(SvgVersion version);
+    [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
+    internal static partial string? cairo_svg_version_to_string(SvgVersion version);
 }
