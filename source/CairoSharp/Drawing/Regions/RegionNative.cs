@@ -26,6 +26,7 @@ internal static unsafe partial class RegionNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial cairo_region_t* cairo_region_reference(cairo_region_t* region);
 
     [LibraryImport(Native.LibCairo)]
@@ -34,6 +35,7 @@ internal static unsafe partial class RegionNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial Status cairo_region_status(cairo_region_t* region);
 
     [LibraryImport(Native.LibCairo)]

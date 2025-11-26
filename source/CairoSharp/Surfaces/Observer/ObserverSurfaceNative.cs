@@ -44,6 +44,7 @@ internal static unsafe partial class ObserverSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial double cairo_surface_observer_elapsed(cairo_surface_t* abstract_surface);
 
     [LibraryImport(Native.LibCairo)]

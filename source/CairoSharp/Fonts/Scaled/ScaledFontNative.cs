@@ -18,6 +18,7 @@ internal static unsafe partial class ScaledFontNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial cairo_scaled_font_t* cairo_scaled_font_reference(cairo_scaled_font_t* scaled_font);
 
     [LibraryImport(Native.LibCairo)]
@@ -26,6 +27,7 @@ internal static unsafe partial class ScaledFontNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial Status cairo_scaled_font_status(cairo_scaled_font_t* scaled_font);
 
     [LibraryImport(Native.LibCairo)]

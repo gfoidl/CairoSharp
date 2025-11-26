@@ -24,7 +24,7 @@ internal static unsafe partial class Native
     public const string LibGtkName = "GTK";
 
     [LibraryImport(LibGtkName)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
     internal static partial void gtk_drawing_area_set_draw_func(GtkDrawingArea* self, GtkDrawingAreaDrawFunc draw_func, gpointer user_data, GDestroyNotify destroy);
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -42,7 +42,7 @@ internal static unsafe partial class Native
     }
 
     [LibraryImport(LibGtkName)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(CallConvCdecl) })]
     internal static partial IntPtr gtk_cclosure_expression_new(
         nuint            value_type,
         void*            marshal,

@@ -31,6 +31,7 @@ internal static unsafe partial class Win32SurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial HDC cairo_win32_surface_get_dc(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]

@@ -83,7 +83,7 @@ public sealed unsafe class ImageSurface : Surface
     public ImageSurface(string pngFile) : base(cairo_image_surface_create_from_png(pngFile)) { }
 
     /// <summary>
-    /// Creates  a new <see cref="ImageSurface"/> initialized with the contents of the PNG data or a "nil" surface
+    /// Creates a new <see cref="ImageSurface"/> initialized with the contents of the PNG data or a "nil" surface
     /// if the data read is not a valid PNG image or memory could not be allocated for the operation.
     /// A nil surface can be checked for with <see cref="Surface.Status"/> which may return one of the
     /// following values: <see cref="Status.NoMemory"/>, <see cref="Status.ReadError"/>, <see cref="Status.PngError"/>

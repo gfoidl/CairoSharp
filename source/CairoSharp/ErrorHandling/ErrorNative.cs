@@ -14,6 +14,7 @@ internal static unsafe partial class ErrorNative
     // so can't be freed at that time.
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_status_to_string(Status status);
 
