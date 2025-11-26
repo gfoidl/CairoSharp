@@ -28,47 +28,58 @@ internal static unsafe partial class PathNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalAs(UnmanagedType.U1)]
     internal static partial bool cairo_has_current_point(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_get_current_point(cairo_t* cr, out double x, out double y);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_new_path(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_new_sub_path(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_close_path(cairo_t* cr);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_arc(cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_arc_negative(cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_curve_to(cairo_t* cr, double x1, double y1, double x2, double y2, double x3, double y3);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_line_to(cairo_t* cr, double x, double y);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_move_to(cairo_t* cr, double x, double y);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_rectangle(cairo_t* cr, double x, double y, double width, double height);
 
     [LibraryImport(Native.LibCairo)]
@@ -85,17 +96,21 @@ internal static unsafe partial class PathNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_rel_curve_to(cairo_t* cr, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_rel_line_to(cairo_t* cr, double dx, double dy);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_rel_move_to(cairo_t* cr, double dx, double dy);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_path_extents(cairo_t* cr, out double x1, out double y1, out double x2, out double y2);
 }

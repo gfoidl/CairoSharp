@@ -10,6 +10,7 @@ internal static unsafe partial class FontFaceNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial cairo_font_face_t* cairo_font_face_reference(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]
@@ -18,6 +19,7 @@ internal static unsafe partial class FontFaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial Status cairo_font_face_status(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]
@@ -26,6 +28,7 @@ internal static unsafe partial class FontFaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial uint cairo_font_face_get_reference_count(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]

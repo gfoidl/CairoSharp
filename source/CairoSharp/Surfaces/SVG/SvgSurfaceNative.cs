@@ -19,22 +19,27 @@ internal static unsafe partial class SvgSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial SvgUnit cairo_svg_surface_get_document_unit(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_svg_surface_set_document_unit(cairo_surface_t* surface, SvgUnit unit);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_svg_surface_restrict_to_version(cairo_surface_t* surface, SvgVersion version);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_svg_get_versions(out SvgVersion* versions, out int num_versions);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_svg_version_to_string(SvgVersion version);
 }

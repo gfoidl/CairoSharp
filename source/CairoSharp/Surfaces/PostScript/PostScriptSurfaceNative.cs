@@ -19,28 +19,34 @@ internal static unsafe partial class PostScriptSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_ps_surface_restrict_to_level(cairo_surface_t* surface, PostScriptLevel level);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_ps_get_levels(out PostScriptLevel* levels, out int num_levels);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_ps_level_to_string(PostScriptLevel level);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_ps_surface_set_eps(cairo_surface_t* surface, [MarshalAs(UnmanagedType.U4)] bool eps);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool cairo_ps_surface_get_eps(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_ps_surface_set_size(cairo_surface_t* surface, double width_in_points, double height_in_points);
 
     [LibraryImport(Native.LibCairo)]

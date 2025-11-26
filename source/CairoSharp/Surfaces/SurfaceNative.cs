@@ -23,6 +23,7 @@ internal static unsafe partial class SurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial cairo_surface_t* cairo_surface_reference(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
@@ -31,6 +32,7 @@ internal static unsafe partial class SurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial Status cairo_surface_status(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
@@ -51,6 +53,7 @@ internal static unsafe partial class SurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial Content cairo_surface_get_content(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
@@ -63,34 +66,42 @@ internal static unsafe partial class SurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_surface_set_device_offset(cairo_surface_t* surface, double x_offset, double y_offset);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_surface_get_device_offset(cairo_surface_t* surface, out double x_offset, out double y_offset);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_surface_get_device_scale(cairo_surface_t* surface, out double x_scale, out double y_scale);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_surface_set_device_scale(cairo_surface_t* surface, double x_scale, double y_scale);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_surface_set_fallback_resolution(cairo_surface_t* surface, double x_pixels_per_inch, double y_pixels_per_inch);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_surface_get_fallback_resolution(cairo_surface_t* surface, out double x_pixels_per_inch, out double y_pixels_per_inch);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial SurfaceType cairo_surface_get_type(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial uint cairo_surface_get_reference_count(cairo_surface_t* surface);
 
     [LibraryImport(Native.LibCairo)]
@@ -111,6 +122,7 @@ internal static unsafe partial class SurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool cairo_surface_has_show_text_glyphs(cairo_surface_t* surface);
 
@@ -124,6 +136,7 @@ internal static unsafe partial class SurfaceNative
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool cairo_surface_supports_mime_type(cairo_surface_t* surface, string mime_type);
 

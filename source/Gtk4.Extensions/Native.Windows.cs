@@ -14,11 +14,13 @@ internal static unsafe partial class Native
 
         [LibraryImport(LibGtkName)]
         [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [SuppressGCTransition]
         [return: MarshalAs(UnmanagedType.I4)]
         internal static partial bool gdk_win32_surface_is_win32(GdkSurface* surface);
 
         [LibraryImport(LibGtkName)]
         [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [SuppressGCTransition]
         internal static partial nint gdk_win32_surface_get_handle(GdkSurface* surface);
 
         [LibraryImport(User32Dll)]

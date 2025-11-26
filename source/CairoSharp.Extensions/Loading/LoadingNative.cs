@@ -127,6 +127,7 @@ public static unsafe partial class LoadingNative
 
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void rsvg_handle_set_dpi(RsvgHandle* handle, double dpi);
 
     [LibraryImport(LibRSvgName)]
@@ -148,21 +149,25 @@ public static unsafe partial class LoadingNative
 
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? rsvg_handle_get_base_uri(RsvgHandle* handle);
 
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool rsvg_handle_get_intrinsic_size_in_pixels(RsvgHandle* handle, out double out_width, out double out_height);
 
     [LibraryImport(LibRSvgName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void rsvg_handle_get_intrinsic_dimensions(RsvgHandle* handle, out uint out_has_width, out SvgLength out_width, out uint out_has_height, out SvgLength out_height, out uint out_has_viewbox, RsvgRectangle* out_viewbox);
     //-------------------------------------------------------------------------
     // Poppler
     [LibraryImport(LibPopplerName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? poppler_get_version();
 

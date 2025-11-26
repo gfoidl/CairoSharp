@@ -19,19 +19,23 @@ internal static unsafe partial class PdfSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_pdf_surface_restrict_to_version(cairo_surface_t* surface, PdfVersion version);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_pdf_get_versions(out PdfVersion* versions, out int num_versions);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_pdf_version_to_string(PdfVersion version);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_pdf_surface_set_size(cairo_surface_t* surface, double width_in_points, double height_in_points);
 
     [LibraryImport(Native.LibCairo, StringMarshalling = StringMarshalling.Utf8)]

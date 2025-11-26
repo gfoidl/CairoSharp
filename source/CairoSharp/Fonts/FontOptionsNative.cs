@@ -23,6 +23,7 @@ internal static unsafe partial class FontOptionsNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial Status cairo_font_options_status(cairo_font_options_t* options);
 
     [LibraryImport(Native.LibCairo)]

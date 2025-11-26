@@ -6,7 +6,7 @@ using Cairo.Utilities;
 namespace Cairo;
 
 /// <summary>
-/// Generic  base object for cairo.
+/// Generic base object for cairo.
 /// </summary>
 public abstract unsafe class CairoObject<T> : CairoObject, IEquatable<CairoObject<T>>
     where T : unmanaged

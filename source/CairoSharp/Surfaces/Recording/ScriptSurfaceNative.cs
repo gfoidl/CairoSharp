@@ -22,10 +22,12 @@ internal static unsafe partial class ScriptSurfaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial ScriptMode cairo_script_get_mode(cairo_device_t* script);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial void cairo_script_set_mode(cairo_device_t* script, ScriptMode mode);
 
     [LibraryImport(Native.LibCairo)]

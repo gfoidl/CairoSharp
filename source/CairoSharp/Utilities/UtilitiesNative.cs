@@ -12,10 +12,12 @@ internal static unsafe partial class UtilitiesNative
 {
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     internal static partial int cairo_version();
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [SuppressGCTransition]
     [return: MarshalUsing(typeof(NativeConstCharMarshaller))]
     internal static partial string? cairo_version_string();
 }
