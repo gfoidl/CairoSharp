@@ -18,7 +18,7 @@ namespace Gtk4FunctionPlotDemo;
 
 public sealed class MainWindow : ApplicationWindow
 {
-    internal const int Size       = 400;
+    internal const int Size       = 600;
     internal const double SizeInv = 1d / (Size - 1);
 
     private static readonly double[][]   s_funcData;
