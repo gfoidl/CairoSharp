@@ -21,6 +21,7 @@
     <Project Path="demos/GTK/Gtk4Demo.NuGet/Gtk4Demo.NuGet.csproj" />
     <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" />
     <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" />
+    <Project Path="demos/GTK/Gtk4FunctionPlotDemo/Gtk4FunctionPlotDemo.csproj" />
   </Folder>
   <Folder Name="/demos/Windows/">
     <Project Path="demos/Windows/WinFormsAnimation/WinFormsAnimation.csproj" />

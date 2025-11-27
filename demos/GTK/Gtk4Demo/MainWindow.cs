@@ -956,20 +956,20 @@ public sealed class MainWindow : ApplicationWindow
                     cr.RelLineTo(_drawingArea.ContentWidth, 0);
                     cr.Stroke();
 #else
-                    cr.MoveTo(_mouseX, _mouseY);
-                    cr.RelLineTo(_drawingArea.ContentWidth, 0);
-                    cr.Stroke();
+                    cr.Translate(_mouseX, _mouseY);
 
-                    cr.MoveTo(_mouseX, _mouseY);
-                    cr.RelLineTo(-_drawingArea.ContentWidth, 0);
-                    cr.Stroke();
+                    cr.MoveTo(0, 0);
+                    cr.LineTo(_drawingArea.ContentWidth, 0);
 
-                    cr.MoveTo(_mouseX, _mouseY);
-                    cr.RelLineTo(0, _drawingArea.ContentHeight);
-                    cr.Stroke();
+                    cr.MoveTo(0, 0);
+                    cr.LineTo(-_drawingArea.ContentWidth, 0);
 
-                    cr.MoveTo(_mouseX, _mouseY);
-                    cr.RelLineTo(0, -_drawingArea.ContentHeight);
+                    cr.MoveTo(0, 0);
+                    cr.LineTo(0, _drawingArea.ContentHeight);
+
+                    cr.MoveTo(0, 0);
+                    cr.LineTo(0, -_drawingArea.ContentHeight);
+
                     cr.Stroke();
 #endif
                 }
