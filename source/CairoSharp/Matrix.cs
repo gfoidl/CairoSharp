@@ -283,9 +283,17 @@ public unsafe struct Matrix
     public override readonly string ToString()
     {
         return $"""
-            xx = {Xx:0.000} yx = {Yx:0.000}
-            xy = {Xy:0.000} yy = {Yy:0.000}
-            x0 = {X0:0.000} y0 = {Y0:0.000}
+            xx = {Xx,6:##0.00} yx = {Yx,6:##0.00}
+            xy = {Xy,6:##0.00} yy = {Yy,6:##0.00}
+            x0 = {X0,6:##0.00} y0 = {Y0,6:##0.00}
             """;
     }
+
+    /// <summary>
+    /// To help for debugging.
+    /// </summary>
+    /// <remarks>
+    /// Returns the same string as <see cref="ToString"/>.
+    /// </remarks>
+    public readonly string StringView => this.ToString();
 }

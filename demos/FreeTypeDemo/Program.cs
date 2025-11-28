@@ -63,7 +63,7 @@ static FreeTypeFont LoadFreeTypeFontFromResourceStream(string fontName)
 static void PrintSurfaceInformation()
 {
     using SvgSurface svgSurface = new(100, 100);
-    using PdfSurface pdfSurface = new(100,100);
+    using PdfSurface pdfSurface = new(100, 100);
 
     Console.WriteLine($"""
         HasShowTextGlyphs:
@@ -205,7 +205,7 @@ static void FontOptionsDemo()
         cr.Rectangle(0, 0, width, height);
         cr.Stroke();
 
-        // Due the font synthesizing / font options can't use the recording surface
+        // Due to font synthesizing / font options can't use the recording surface
         // as source surface, instead we need to draw it again manually.
         // I don't know if this is by design or a bug in cairo.
         Core(cr);
