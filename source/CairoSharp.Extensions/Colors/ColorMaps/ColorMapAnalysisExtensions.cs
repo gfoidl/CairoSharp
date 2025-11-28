@@ -2,7 +2,7 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Cairo.Drawing.Text;
+using Cairo.Extensions.Fonts;
 using Cairo.Fonts;
 using Cairo.Surfaces;
 using Cairo.Surfaces.Recording;
@@ -15,8 +15,6 @@ namespace Cairo.Extensions.Colors.ColorMaps;
 [SkipLocalsInit]
 public static class ColorMapAnalysisExtensions
 {
-    private const string DefaultFontFamily = "Helvetica";
-
     extension(ColorMap colorMap)
     {
         /// <summary>
@@ -101,7 +99,7 @@ public static class ColorMapAnalysisExtensions
             {
                 if (fontFace is null)
                 {
-                    cr.SelectFontFace(DefaultFontFamily, weight: FontWeight.Bold);
+                    cr.FontFace = DefaultFonts.SansSerifBold;
                 }
                 else
                 {
@@ -115,7 +113,7 @@ public static class ColorMapAnalysisExtensions
             {
                 if (fontFace is null)
                 {
-                    cr.SelectFontFace(DefaultFontFamily);
+                    cr.FontFace = DefaultFonts.MonoSpace;
                 }
                 else
                 {
@@ -129,7 +127,7 @@ public static class ColorMapAnalysisExtensions
             {
                 if (fontFace is null)
                 {
-                    cr.SelectFontFace(DefaultFontFamily, weight: FontWeight.Bold);
+                    cr.FontFace = DefaultFonts.SansSerifBold;
                 }
                 else
                 {
