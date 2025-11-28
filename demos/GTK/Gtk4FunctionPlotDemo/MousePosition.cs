@@ -2,7 +2,7 @@
 
 namespace Gtk4FunctionPlotDemo;
 
-internal struct DevicePosition
+internal struct MousePosition
 {
     public double X;
     public double Y;

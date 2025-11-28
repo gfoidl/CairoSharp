@@ -44,7 +44,7 @@ internal static class Plotter
         surface.MarkDirty();
     }
     //-------------------------------------------------------------------------
-    public static void DrawCrosshairs(CairoContext cr, DevicePosition devicePosition, int width, int height)
+    public static void DrawCrosshairs(CairoContext cr, MousePosition mousePosition, int width, int height)
     {
         using (cr.Save())
         {
@@ -52,7 +52,7 @@ internal static class Plotter
             cr.LineWidth = 1;
             cr.SetDash(10, 5, 2, 5);    // 10 long, 5 off, 2 long, 5 off and repeat
 
-            cr.Translate(devicePosition.X, devicePosition.Y);
+            cr.Translate(mousePosition.X, mousePosition.Y);
 
             cr.MoveTo(0, 0);
             cr.LineTo(width, 0);
@@ -71,16 +71,16 @@ internal static class Plotter
     }
     //-------------------------------------------------------------------------
     public static void DrawCurrentValue(
-        CairoContext   cr,
-        int            width,
-        int            height,
-        DevicePosition devicePosition,
-        double         funcX,
-        double         funcY,
-        double         funcZ)
+        CairoContext  cr,
+        int           width,
+        int           height,
+        MousePosition mousePosition,
+        double        funcX,
+        double        funcY,
+        double        funcZ)
     {
 #if DEBUG
-        Console.WriteLine($"mouse at ({devicePosition.X:N3}, {devicePosition.Y:N3})\tf({funcX:N3}, {funcY:N3}) = {funcZ:N3}");
+        Console.WriteLine($"mouse at ({mousePosition.X:N3}, {mousePosition.Y:N3})\tf({funcX:N3}, {funcY:N3}) = {funcZ:N3}");
 #endif
         //cr.SelectFontFace("@cairo:monospace", weight: FontWeight.Bold);
         cr.FontFace = DefaultFonts.MonoSpace;
@@ -97,16 +97,16 @@ internal static class Plotter
 
         using (cr.Save())
         {
-            cr.Translate(devicePosition.X, devicePosition.Y);
+            cr.Translate(mousePosition.X, mousePosition.Y);
 
             double annotationWidth  = textExtents.Width;
             double annotationHeight = textExtents.Height * 2;   // 2 lines
 
-            double tx = devicePosition.X + Offset + annotationWidth < width
+            double tx = mousePosition.X + Offset + annotationWidth < width
                 ? Offset
                 : -(Offset + annotationWidth);
 
-            double ty = devicePosition.Y + Offset + annotationHeight < height
+            double ty = mousePosition.Y + Offset + annotationHeight < height
                 ? Offset
                 : -(Offset + annotationHeight);
 

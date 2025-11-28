@@ -96,14 +96,14 @@ internal static class Calculator
         return res;
     }
     //-------------------------------------------------------------------------
-    public static bool TryGetCoordinatesAndFuncValue(double[][] funcData, DevicePosition devicePosition, out double x, out double y, out double z)
+    public static bool TryGetCoordinatesAndFuncValue(double[][] funcData, MousePosition mousePosition, out double x, out double y, out double z)
     {
         Unsafe.SkipInit(out x);
         Unsafe.SkipInit(out y);
         Unsafe.SkipInit(out z);
 
-        int mouseX = double.ConvertToIntegerNative<int>(devicePosition.X);
-        int mouseY = double.ConvertToIntegerNative<int>(devicePosition.Y);
+        int mouseX = double.ConvertToIntegerNative<int>(mousePosition.X);
+        int mouseY = double.ConvertToIntegerNative<int>(mousePosition.Y);
 
         // Note: data.Length is a "never negative integer"
         if ((uint)mouseY >= funcData.Length) return false;
@@ -117,7 +117,7 @@ internal static class Calculator
         // Scale x, y to [-3, 3]
         if (Vector128.IsHardwareAccelerated)
         {
-            Vector128<double> vec = Unsafe.BitCast<DevicePosition, Vector128<double>>(devicePosition);
+            Vector128<double> vec = Unsafe.BitCast<MousePosition, Vector128<double>>(mousePosition);
             vec *= Vector128.Create(SizeInv);
             vec  = Vector128.FusedMultiplyAdd(vec, Vector128.Create(6d), Vector128.Create(-3d));
 
@@ -126,8 +126,8 @@ internal static class Calculator
         }
         else
         {
-            x = devicePosition.X * SizeInv;
-            y = devicePosition.Y * SizeInv;
+            x = mousePosition.X * SizeInv;
+            y = mousePosition.Y * SizeInv;
 
             x = 6 * x - 3;
             y = 6 * y - 3;

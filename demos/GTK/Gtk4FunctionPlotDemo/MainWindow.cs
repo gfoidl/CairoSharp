@@ -27,9 +27,9 @@ public sealed class MainWindow : ApplicationWindow
     private static readonly double     s_funcMin;
     private static readonly double     s_funcMax;
 
-    private ImageSurface?  _functionImageSurface;
-    private DevicePosition _mousePosition;
-    private bool           _mouseIsInDrawingArea;
+    private ImageSurface? _functionImageSurface;
+    private MousePosition _mousePosition;
+    private bool          _mouseIsInDrawingArea;
     //-------------------------------------------------------------------------
     public MainWindow(Application app)
     {
