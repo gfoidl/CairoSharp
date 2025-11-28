@@ -37,4 +37,8 @@
         <Using Remove="System.IO" />
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="Fonts\fonts\*.?tf" LogicalName="fonts.%(FileName)%(Extension)" />
+    </ItemGroup>
+
 </Project>

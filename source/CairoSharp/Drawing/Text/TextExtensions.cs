@@ -587,7 +587,7 @@ public static unsafe class TextExtensions
         /// indicate the amount by which the current point would be advanced by <see cref="ShowText(CairoContext, string?)"/>.
         /// </summary>
         /// <param name="text">a string, or <c>null</c></param>
-        /// <param name="extents">a <see cref="Fonts.TextExtents"/> object into which the results will be stored</param>
+        /// <param name="extents">a <see cref="Fonts.TextExtents"/> struct into which the results will be stored</param>
         /// <remarks>
         /// Note that whitespace characters do not directly contribute to the size of the rectangle
         /// (<see cref="TextExtents.Width"/> and <see cref="TextExtents.Height"/>).
@@ -610,7 +610,7 @@ public static unsafe class TextExtensions
         /// <param name="utf8">
         /// a NUL-terminated string of text encoded in UTF-8, or NULL, or <see cref="ReadOnlySpan{T}.Empty"/>
         /// </param>
-        /// <param name="extents">a <see cref="Fonts.TextExtents"/> object into which the results will be stored</param>
+        /// <param name="extents">a <see cref="Fonts.TextExtents"/> struct into which the results will be stored</param>
         /// <remarks>
         /// Note that whitespace characters do not directly contribute to the size of the rectangle
         /// (<see cref="TextExtents.Width"/> and <see cref="TextExtents.Height"/>).

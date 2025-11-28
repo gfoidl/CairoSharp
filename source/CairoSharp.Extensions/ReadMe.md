@@ -29,6 +29,15 @@ Loading of FreeType fonts either from
 * byte array
 * stream
 
+### Default Fonts
+
+| Type        | Font        |
+|-------------|-------------|
+| `SansSerif` | Helvetica   |
+| `MonoSpace` | Inconsolata |
+
+Both fonts are also available as bold variant.
+
 ## Loading
 
 PDF, and SVG can be parsed and the drawing loading into a cairo context, for further use.

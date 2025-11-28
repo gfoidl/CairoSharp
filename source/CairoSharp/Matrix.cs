@@ -3,7 +3,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
-using Cairo.Utilities;
 
 namespace Cairo;
 
@@ -214,49 +213,41 @@ public unsafe struct Matrix
     /// <param name="y">Y position. An in/out parameter</param>
     public void TransformPoint(ref double x, ref double y) => MatrixNative.cairo_matrix_transform_point(ref this, ref x, ref y);
 
-    public override readonly string ToString()
-    {
-        return $"""
-            {Xx:0:##0.0#} {Yx:0:##0.0#}
-            {Xy:0:##0.0#} {Yy:0:##0.0#}
-            {X0:0:##0.0#} {Y0:0:##0.0#}
-            """;
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(Matrix lhs, Matrix rhs)
     {
         if (Vector256.IsHardwareAccelerated)
         {
-            ref double left = ref Unsafe.As<Matrix, double>(ref lhs);
+            ref double left  = ref Unsafe.As<Matrix, double>(ref lhs);
             ref double right = ref Unsafe.As<Matrix, double>(ref rhs);
 
-            Vector256<double> vl0 = Vector256.LoadUnsafe(ref left, 0);
-            Vector256<double> vr0 = Vector256.LoadUnsafe(ref right, 0);
+            Vector256<double> vecL0 = Vector256.LoadUnsafe(ref left , 0);
+            Vector256<double> vecR0 = Vector256.LoadUnsafe(ref right, 0);
 
-            Vector256<double> vl1 = Vector256.LoadUnsafe(ref left, 2);
-            Vector256<double> vr1 = Vector256.LoadUnsafe(ref right, 2);
+            Vector256<double> vecL1 = Vector256.LoadUnsafe(ref left,  2);
+            Vector256<double> vecR1 = Vector256.LoadUnsafe(ref right, 2);
 
-            return vl0 == vr0
-                && vl1 == vr1;
+            return vecL0 == vecR0
+                && vecL1 == vecR1;
         }
 
         if (Vector128.IsHardwareAccelerated)
         {
-            ref double left = ref Unsafe.As<Matrix, double>(ref lhs);
+            ref double left  = ref Unsafe.As<Matrix, double>(ref lhs);
             ref double right = ref Unsafe.As<Matrix, double>(ref rhs);
 
-            Vector128<double> vl0 = Vector128.LoadUnsafe(ref left, 0);
-            Vector128<double> vr0 = Vector128.LoadUnsafe(ref right, 0);
+            Vector128<double> vecL0 = Vector128.LoadUnsafe(ref left , 0);
+            Vector128<double> vecR0 = Vector128.LoadUnsafe(ref right, 0);
 
-            Vector128<double> vl1 = Vector128.LoadUnsafe(ref left, 2);
-            Vector128<double> vr1 = Vector128.LoadUnsafe(ref right, 2);
+            Vector128<double> vecL1 = Vector128.LoadUnsafe(ref left , 2);
+            Vector128<double> vecR1 = Vector128.LoadUnsafe(ref right, 2);
 
-            Vector128<double> vl2 = Vector128.LoadUnsafe(ref left, 4);
-            Vector128<double> vr2 = Vector128.LoadUnsafe(ref right, 4);
+            Vector128<double> vecL2 = Vector128.LoadUnsafe(ref left , 4);
+            Vector128<double> vecR2 = Vector128.LoadUnsafe(ref right, 4);
 
-            return vl0 == vr0
-                && vl1 == vr1
-                && vl2 == vr2;
+            return vecL0 == vecR0
+                && vecL1 == vecR1
+                && vecL2 == vecR2;
         }
 
         return lhs.Xx == rhs.Xx
@@ -288,4 +279,21 @@ public unsafe struct Matrix
 
         return hc.ToHashCode();
     }
+
+    public override readonly string ToString()
+    {
+        return $"""
+            xx = {Xx,6:##0.00} yx = {Yx,6:##0.00}
+            xy = {Xy,6:##0.00} yy = {Yy,6:##0.00}
+            x0 = {X0,6:##0.00} y0 = {Y0,6:##0.00}
+            """;
+    }
+
+    /// <summary>
+    /// To help for debugging.
+    /// </summary>
+    /// <remarks>
+    /// Returns the same string as <see cref="ToString"/>.
+    /// </remarks>
+    public readonly string StringView => this.ToString();
 }

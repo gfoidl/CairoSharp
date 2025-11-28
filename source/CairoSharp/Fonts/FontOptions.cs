@@ -210,12 +210,17 @@ public sealed unsafe class FontOptions : CairoObject<cairo_font_options_t>, IEqu
     /// <para>
     /// Examples:<br />
     /// wght=200,wdth=140.5<br />
-    /// wght 200 , wdth 140.5
+    /// wght 200, wdth 140.5
     /// </para>
     /// <para>
     /// The returned string belongs to the options and must not be modified. It is valid until
     /// either the font options object is destroyed or the font variations in this
     /// object is modified with the setter.
+    /// </para>
+    /// <para>
+    /// Note: the OpenType (or compatible) font-file must include variations, see
+    /// <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/otvaroverview">OpenType Font Variations Overview</a> for
+    /// further details.
     /// </para>
     /// </remarks>
     public string? Variations
