@@ -179,31 +179,11 @@ static void FontOptionsDemo()
     const double PaddingX = 10;
     const double PaddingY = FontSize / 2;
 
+    // Just to get the bounding box in a lazy way...
     using RecordingSurface recordingSurface = new();
     using (CairoContext cr                  = new(recordingSurface))
     {
-        cr.SetFontSize(FontSize);
-
-        cr.Translate(PaddingX, PaddingY);
-        double curY = 0;
-
-        using FreeTypeFont freeTypeFont = LoadFreeTypeFontFromFile("SplineSans-Regular.otf");
-
-        cr.FontFace = freeTypeFont;
-        string text = "SplineSans regular, no options set";
-        cr.TextExtents(text, out TextExtents textExtents);
-        cr.MoveTo(0, curY + textExtents.Height);
-        curY += textExtents.Height + PaddingY;
-        cr.ShowTextGlyphs(text);
-
-        using (freeTypeFont.SetSynthesize(Synthesize.Bold | Synthesize.Oblique))
-        {
-            text = "SplineSans regular, synthesized bold";
-            cr.TextExtents(text, out textExtents);
-            cr.MoveTo(0, curY + textExtents.Height);
-            curY += textExtents.Height + PaddingY;
-            cr.ShowTextGlyphs(text);
-        }
+        Core(cr);
     }
 
     Rectangle surfaceExtents = recordingSurface.GetInkExtents();
@@ -225,9 +205,95 @@ static void FontOptionsDemo()
         cr.Rectangle(0, 0, width, height);
         cr.Stroke();
 
-        cr.SetSourceSurface(recordingSurface, 0, 0);
-        cr.Paint();
+        // Due the font synthesizing / font options can't use the recording surface
+        // as source surface, instead we need to draw it again manually.
+        // I don't know if this is by design or a bug in cairo.
+        Core(cr);
     }
 
     tee.WriteToPng($"output/{FileName}.png");
+    //---------------------------------------------------------------------
+    static void Core(CairoContext cr)
+    {
+        cr.SetFontSize(FontSize);
+
+        cr.Translate(PaddingX, PaddingY);
+        double curY = 0;
+
+        using (FreeTypeFont freeTypeFont = LoadFreeTypeFontFromFile("SplineSans-Regular.otf"))
+        {
+            cr.FontFace = freeTypeFont;
+
+            ReadOnlySpan<byte> text = "SplineSans regular, no options set"u8;
+            cr.TextExtents(text, out TextExtents textExtents);
+            cr.MoveTo(0, curY + textExtents.Height);
+            cr.ShowTextGlyphs(text);
+
+            curY += textExtents.Height + PaddingY;
+        }
+
+        using (FreeTypeFont freeTypeFont = LoadFreeTypeFontFromFile("SplineSans-Regular.otf"))
+        using (freeTypeFont.SetSynthesize(Synthesize.Bold | Synthesize.Oblique))
+        {
+            cr.FontFace = freeTypeFont;
+
+            ReadOnlySpan<byte> text = "SplineSans regular, synthesized bold | oblique"u8;
+            cr.TextExtents(text, out TextExtents textExtents);
+            cr.MoveTo(0, curY + textExtents.Height);
+            cr.ShowTextGlyphs(text);
+
+            curY += textExtents.Height + PaddingY;
+        }
+
+        FontOptions defaultFontOptions = cr.FontOptions.Copy();
+        cr.FontFace                    = DefaultFonts.SansSerif;
+
+        using (FontOptions fontOptions = cr.FontOptions.Copy())
+        {
+            fontOptions.Antialias = Antialias.Best;     // for pixel graphics only
+            fontOptions.HintStyle = HintStyle.Full;
+
+            cr.FontOptions = fontOptions;
+
+            ReadOnlySpan<byte> text = "Helvetica, anti-alias best, hint-style full"u8;
+            cr.TextExtents(text, out TextExtents textExtents);
+            cr.MoveTo(0, curY + textExtents.Height);
+            cr.ShowTextGlyphs(text);
+
+            curY += textExtents.Height + PaddingY;
+        }
+
+        cr.FontOptions = defaultFontOptions;
+
+        using (FreeTypeFont freeTypeFont = LoadFreeTypeFontFromFile("Fraunces-VariableFont_SOFT,WONK,opsz,wght.ttf"))
+        {
+            cr.FontFace = freeTypeFont;
+
+            ReadOnlySpan<byte> text = "Fraunces variable font, default"u8;
+            cr.TextExtents(text, out TextExtents textExtents);
+            cr.MoveTo(0, curY + textExtents.Height);
+            cr.ShowTextGlyphs(text);
+
+            curY += textExtents.Height + PaddingY;
+        }
+
+        foreach (int fontWeight in (ReadOnlySpan<int>)[100, 200, 400, 600, 800, 1000])
+        {
+            using FreeTypeFont freeTypeFont = LoadFreeTypeFontFromFile("Fraunces-VariableFont_SOFT,WONK,opsz,wght.ttf");
+            using FontOptions fontOptions   = new();
+
+            // Settings on the font options must be set completely before assigning them to cr!
+            fontOptions.Variations = $"wght={fontWeight}";
+
+            cr.FontFace    = freeTypeFont;
+            cr.FontOptions = fontOptions;
+
+            string text = $"Fraunces variable font, wght={fontWeight}";
+            cr.TextExtents(text, out TextExtents textExtents);
+            cr.MoveTo(0, curY + textExtents.Height);
+            cr.ShowTextGlyphs(text);
+
+            curY += textExtents.Height + PaddingY;
+        }
+    }
 }
