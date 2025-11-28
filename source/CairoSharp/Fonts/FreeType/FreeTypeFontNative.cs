@@ -36,13 +36,16 @@ internal static unsafe partial class FreeTypeFontNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial uint cairo_ft_font_face_get_synthesize(cairo_font_face_t* font_face);
+    [SuppressGCTransition]
+    internal static partial Synthesize cairo_ft_font_face_get_synthesize(cairo_font_face_t* font_face);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_ft_font_face_set_synthesize(cairo_font_face_t* font_face, uint synth_flags);
+    [SuppressGCTransition]
+    internal static partial void cairo_ft_font_face_set_synthesize(cairo_font_face_t* font_face, Synthesize synth_flags);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void cairo_ft_font_face_unset_synthesize(cairo_font_face_t* font_face, uint synth_flags);
+    [SuppressGCTransition]
+    internal static partial void cairo_ft_font_face_unset_synthesize(cairo_font_face_t* font_face, Synthesize synth_flags);
 }

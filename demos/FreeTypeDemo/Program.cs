@@ -33,6 +33,8 @@ Core("ft_font_via_file"  , fontNames, LoadFreeTypeFontFromFile);
 Core("ft_font_via_data"  , fontNames, LoadFreeTypeFontFromResourceStreamViaLocalArray);
 Core("ft_font_via_stream", fontNames, LoadFreeTypeFontFromResourceStream);
 
+FontOptionsDemo();
+
 // This is not really needed, but here just to showcase
 // BUT: when called it MUST be outside the scopes of the surfaces, because for
 // rendering they need FreeType, so it must not be destroyed before.
@@ -169,4 +171,63 @@ static void PrintFontInfo(CairoContext cr)
     {
         Console.WriteLine($"FontType = {fontType}");
     }
+}
+//-----------------------------------------------------------------------------
+static void FontOptionsDemo()
+{
+    const double FontSize = 36;
+    const double PaddingX = 10;
+    const double PaddingY = FontSize / 2;
+
+    using RecordingSurface recordingSurface = new();
+    using (CairoContext cr                  = new(recordingSurface))
+    {
+        cr.SetFontSize(FontSize);
+
+        cr.Translate(PaddingX, PaddingY);
+        double curY = 0;
+
+        using FreeTypeFont freeTypeFont = LoadFreeTypeFontFromFile("SplineSans-Regular.otf");
+
+        cr.FontFace = freeTypeFont;
+        string text = "SplineSans regular, no options set";
+        cr.TextExtents(text, out TextExtents textExtents);
+        cr.MoveTo(0, curY + textExtents.Height);
+        curY += textExtents.Height + PaddingY;
+        cr.ShowTextGlyphs(text);
+
+        using (freeTypeFont.SetSynthesize(Synthesize.Bold | Synthesize.Oblique))
+        {
+            text = "SplineSans regular, synthesized bold";
+            cr.TextExtents(text, out textExtents);
+            cr.MoveTo(0, curY + textExtents.Height);
+            curY += textExtents.Height + PaddingY;
+            cr.ShowTextGlyphs(text);
+        }
+    }
+
+    Rectangle surfaceExtents = recordingSurface.GetInkExtents();
+    double width             = surfaceExtents.Width  + 2 * PaddingX;
+    double height            = surfaceExtents.Height + 2 * PaddingY;
+
+    const string FileName = "font-options";
+    using SvgSurface svg  = new($"output/{FileName}.svg", width, height);
+    using PdfSurface pdf  = new($"output/{FileName}.pdf", width, height);
+    using TeeSurface tee  = new(svg);
+    tee.Add(pdf);
+
+    using (CairoContext cr = new(tee))
+    {
+        cr.Color = KnownColors.White;
+        cr.Paint();
+
+        cr.Color = Color.Default;
+        cr.Rectangle(0, 0, width, height);
+        cr.Stroke();
+
+        cr.SetSourceSurface(recordingSurface, 0, 0);
+        cr.Paint();
+    }
+
+    tee.WriteToPng($"output/{FileName}.png");
 }

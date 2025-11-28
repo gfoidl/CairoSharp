@@ -153,10 +153,10 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// See <see cref="Synthesize"/>.
     /// </summary>
     /// <returns>the current set of synthesis options.</returns>
-    public int GetSynthesize()
+    public Synthesize GetSynthesize()
     {
         this.CheckDisposed();
-        return (int)cairo_ft_font_face_get_synthesize(this.Handle);
+        return cairo_ft_font_face_get_synthesize(this.Handle);
     }
 
     /// <summary>
@@ -164,20 +164,58 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// useful if you lack those glyphs from a true bold or oblique font.
     /// </summary>
     /// <param name="synthFlags">the set of synthesis options to enable</param>
-    /// <seealso cref="Synthesize"/>
-    public void SetSynthesize(int synthFlags)
+    /// <returns>
+    /// A <see cref="SynthesizeScope"/>, which when <see cref="SynthesizeScope.Dispose"/>d calls
+    /// <see cref="UnsetSynthesize(Synthesize)"/>.
+    /// <para>
+    /// So instead of writing code like
+    /// <code>
+    /// ftFont.SetSynthesize(Synthesize.Bold);
+    /// // ...
+    /// ftFont.UnsetSynthesize(Synthesize.Bold);
+    /// </code>
+    /// one can write
+    /// <code>
+    /// using (ftFont.SetSynthesize(Synthesize.Bold))
+    /// {
+    ///     // ...
+    /// }
+    /// </code>
+    /// </para>
+    /// </returns>
+    public SynthesizeScope SetSynthesize(Synthesize synthFlags)
     {
         this.CheckDisposed();
-        cairo_ft_font_face_set_synthesize(this.Handle, (uint)synthFlags);
+
+        if (synthFlags != Synthesize.None)
+        {
+            cairo_ft_font_face_set_synthesize(this.Handle, synthFlags);
+
+            return new SynthesizeScope(this, synthFlags);
+        }
+        else
+        {
+            // Synthesize.None -> unset the current flags
+            Synthesize currentSynthFlags = cairo_ft_font_face_get_synthesize(this.Handle);
+            cairo_ft_font_face_unset_synthesize(this.Handle, currentSynthFlags);
+
+            return default;
+        }
     }
 
     /// <summary>
-    /// See <see cref="SetSynthesize(int)"/>.
+    /// See <see cref="SetSynthesize(Synthesize)"/>.
     /// </summary>
     /// <param name="synthFlags">the set of synthesis options to disable</param>
-    public void UnsetSynthesize(int synthFlags)
+    public void UnsetSynthesize(Synthesize synthFlags)
     {
         this.CheckDisposed();
-        cairo_ft_font_face_unset_synthesize(this.Handle, (uint)synthFlags);
+
+        if (synthFlags == Synthesize.None)
+        {
+            return;
+        }
+
+        cairo_ft_font_face_unset_synthesize(this.Handle, synthFlags);
     }
 }
