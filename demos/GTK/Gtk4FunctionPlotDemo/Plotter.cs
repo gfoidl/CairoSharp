@@ -7,7 +7,6 @@ using Cairo.Extensions.Colors.ColorMaps;
 using Cairo.Extensions.Fonts;
 using Cairo.Extensions.Pixels;
 using CairoSharp::Cairo;
-using CairoSharp::Cairo.Drawing.Text;
 using CairoSharp::Cairo.Fonts;
 using CairoSharp::Cairo.Surfaces;
 using CairoSharp::Cairo.Surfaces.Images;

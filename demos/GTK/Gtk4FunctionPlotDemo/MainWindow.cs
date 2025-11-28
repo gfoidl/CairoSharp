@@ -25,7 +25,7 @@ public sealed class MainWindow : ApplicationWindow
     private static readonly ImageSurface s_functionImageSurface;
 
     private DevicePosition _mousePosition;
-    private bool          _mouseIsInDrawingArea;
+    private bool           _mouseIsInDrawingArea;
     //-------------------------------------------------------------------------
     static MainWindow()
     {
@@ -87,7 +87,7 @@ public sealed class MainWindow : ApplicationWindow
     //-------------------------------------------------------------------------
     private void Draw(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
-        Debug.Assert(width == Size);
+        Debug.Assert(width  == Size);
         Debug.Assert(height == Size);
 
         using (cr.Save())

@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics.CodeAnalysis;
 using Cairo.Surfaces;
 using Cairo.Surfaces.Images;
 
@@ -19,7 +20,13 @@ public readonly ref struct PixelAccessor : IDisposable
     {
         if (surface.Format != Format.Argb32)
         {
-            throw new NotSupportedException($"Only Format.Argb32 is supported, actual format is {surface.Format}");
+            Throw(surface);
+
+            [DoesNotReturn]
+            static void Throw(ImageSurface surface)
+            {
+                throw new NotSupportedException($"Only Format.Argb32 is supported, actual format is {surface.Format}");
+            }
         }
 
         if (setSurfaceState)

@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 
 namespace Cairo.Extensions.Pixels;
@@ -9,47 +10,62 @@ internal static class PixelHelper
 {
     // In Format.Argb32 pre-multiplied alpha is used.
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color GetColor(ReadOnlySpan<byte> data, int idx)
     {
-        data   = data.Slice(idx);
-        byte a = data[3];
-        byte r = data[2];
-        byte g = data[1];
-        byte b = data[0];
+        if (idx > data.Length - 4)
+        {
+            ThrowIndexOutOfRange(data.Length, idx);
+        }
+
+        ref byte ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(data), (uint)idx);
+
+        byte b = Unsafe.Add(ref ptr, 0);
+        byte g = Unsafe.Add(ref ptr, 1);
+        byte r = Unsafe.Add(ref ptr, 2);
+        byte a = Unsafe.Add(ref ptr, 3);
 
         const double OneBy255 = 1d / 255;
 
-        double red, green, blue, alpha;
-
         if (a == 0xFF)
         {
-            alpha = 1d;
-            red   = r * OneBy255;
-            green = g * OneBy255;
-            blue  = b * OneBy255;
+            double alpha = 1d;
+            double red   = r * OneBy255;
+            double green = g * OneBy255;
+            double blue  = b * OneBy255;
+
+            return new Color(red, green, blue, alpha);
         }
         else
         {
-            alpha         = a * OneBy255;
+            return GetForAlpha(a, r, g, b);
+        }
+        //---------------------------------------------------------------------
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static Color GetForAlpha(byte a, byte r, byte g, byte b)
+        {
+            double alpha  = a * OneBy255;
             double oneByA = 1d / a;
 
-            red   = r * oneByA;
-            green = g * oneByA;
-            blue  = b * oneByA;
+            double red   = r * oneByA;
+            double green = g * oneByA;
+            double blue  = b * oneByA;
 
+            return new Color(red, green, blue, alpha);
         }
-
-        return new Color(red, green, blue, alpha);
     }
     //-------------------------------------------------------------------------
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetColor(Span<byte> data, int idx, Color color)
     {
-        byte r, g, b, a;
+        if (idx > data.Length - 4)
+        {
+            ThrowIndexOutOfRange(data.Length, idx);
+        }
 
         if (color.Alpha == 1d)
         {
-            a = 0xFF;
+            byte r, g, b, a;
 
             if (!Vector256.IsHardwareAccelerated)
             {
@@ -64,9 +80,19 @@ internal static class PixelHelper
                 g = ToByte(vec[1]);
                 b = ToByte(vec[2]);
             }
+
+            a = 0xFF;
+            Write(data, idx, a, r, g, b);
         }
         else
         {
+            SetColorForAlpha(data, idx, color);
+        }
+        //---------------------------------------------------------------------
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void SetColorForAlpha(Span<byte> data, int idx, Color color)
+        {
+            byte r, g, b, a;
             double premult = color.Alpha * 255d;
 
             if (!Vector256.IsHardwareAccelerated)
@@ -84,13 +110,8 @@ internal static class PixelHelper
             }
 
             a = ToByte(premult);
+            Write(data, idx, a, r, g, b);
         }
-
-        data    = data.Slice(idx);
-        data[3] = a;
-        data[2] = r;
-        data[1] = g;
-        data[0] = b;
         //---------------------------------------------------------------------
         static byte ToByte(double x)
         {
@@ -100,5 +121,22 @@ internal static class PixelHelper
             return (byte)x;
 #endif
         }
+        //---------------------------------------------------------------------
+        static void Write(Span<byte> data, int idx, byte a, byte r, byte g, byte b)
+        {
+            ref byte ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(data), (uint)idx);
+
+            Unsafe.Add(ref ptr, 0) = b;
+            Unsafe.Add(ref ptr, 1) = g;
+            Unsafe.Add(ref ptr, 2) = r;
+            Unsafe.Add(ref ptr, 3) = a;
+        }
+    }
+    //-------------------------------------------------------------------------
+    private static void ThrowIndexOutOfRange(int length, int idx)
+    {
+        throw new ArgumentOutOfRangeException(
+            nameof(idx),
+            $"Index {idx} is out of range for span of length {length} in order to read or write a ARGB color in bytes");
     }
 }
