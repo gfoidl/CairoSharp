@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+//#define SHOW_BOX_MARKERS
+
 extern alias CairoSharp;
 
 using Cairo.Extensions.Colors;
@@ -73,44 +75,84 @@ internal static class Plotter
         }
     }
     //-------------------------------------------------------------------------
-    public static void DrawCurrentValue(CairoContext cr, int width, int height, DevicePosition devicePosition, double funcX, double funcY, double funcZ)
+    public static void DrawCurrentValue(
+        CairoContext   cr,
+        int            width,
+        int            height,
+        DevicePosition devicePosition,
+        double         funcX,
+        double         funcY,
+        double         funcZ)
     {
 #if DEBUG
         Console.WriteLine($"mouse at ({devicePosition.X:N3}, {devicePosition.Y:N3})\tf({funcX:N3}, {funcY:N3}) = {funcZ:N3}");
 #endif
-
         //cr.SelectFontFace("@cairo:monospace", weight: FontWeight.Bold);
         cr.FontFace = DefaultFonts.MonoSpace;
         cr.SetFontSize(16);
 
-        string text0 = $"(x, y)  = ({funcX:N2}, {funcY:N2})";
-        string text1 = $"f(x, y) = {funcZ:N2}";
+        string textForExtents = $"_(x, y) = ({funcX:N2}, {funcY:N2})";  // _ as space doesn't count in TextExtents
+        string text0          = textForExtents.Replace('_', ' ');
+        string text1          = $"f(x, y) = {funcZ:N2}";
 
-        cr.TextExtents(text0, out TextExtents textExtents);
+        cr.TextExtents(textForExtents, out TextExtents textExtents);
 
-        const double Padding = 5;
+        const double Padding =  5;
         const double Offset  = 20;
 
         using (cr.Save())
         {
             cr.Translate(devicePosition.X, devicePosition.Y);
-            cr.Translate(Offset, Offset);
+
+            double annotationWidth  = textExtents.Width;
+            double annotationHeight = textExtents.Height * 2;   // 2 lines
+
+            double tx = devicePosition.X + Offset + annotationWidth < width
+                ? Offset
+                : -(Offset + annotationWidth);
+
+            double ty = devicePosition.Y + Offset + annotationHeight < height
+                ? Offset
+                : -(Offset + annotationHeight);
+
+            cr.Translate(tx, ty);
+
+            double boxWidth  = annotationWidth + 2 * Padding;
+            double boxHeight = annotationHeight + 2 * Padding;
 
             cr.MoveTo(-Padding, -Padding);
-            cr.RelLineTo( textExtents.Width + 2 * Padding, 0);
-            cr.RelLineTo(                               0, 2 * textExtents.Height + 2 * Padding);
-            cr.RelLineTo(-textExtents.Width - 2 * Padding, 0);
+            cr.RelLineTo( boxWidth, 0);
+            cr.RelLineTo(        0, boxHeight);
+            cr.RelLineTo(-boxWidth, 0);
             cr.ClosePath();
 
-            cr.Color = Color.Default;
-            cr.Fill();
-
             cr.Color = KnownColors.White;
+            cr.FillPreserve();
+            cr.Color = Color.Default;
+            cr.Stroke();
 
             cr.MoveTo(0, 1 * textExtents.Height);
             cr.ShowText(text0);
             cr.MoveTo(0, 2 * textExtents.Height);
             cr.ShowText(text1);
+
+#if SHOW_BOX_MARKERS
+            cr.Color = KnownColors.Red;
+            cr.Arc(0, 0, Padding, 0, Math.Tau);
+            cr.Fill();
+
+            cr.Color = KnownColors.Blue;
+            cr.Arc(textExtents.Width, 0, Padding, 0, Math.Tau);
+            cr.Fill();
+
+            cr.Color = KnownColors.Green;
+            cr.Arc(0, 2 * textExtents.Height, Padding, 0, Math.Tau);
+            cr.Fill();
+
+            cr.Color = KnownColors.Yellow;
+            cr.Arc(textExtents.Width, 2 * textExtents.Height, Padding, 0, Math.Tau);
+            cr.Fill();
+#endif
         }
     }
 }
