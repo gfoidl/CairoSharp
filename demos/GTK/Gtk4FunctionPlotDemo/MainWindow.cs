@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+//#define USE_NEW_IMAGE_SURFACE_FOR_DATA
+
 extern alias CairoSharp;
 
 using System.Diagnostics;
@@ -21,17 +23,13 @@ public sealed class MainWindow : ApplicationWindow
     internal const int Size       = 600;
     internal const double SizeInv = 1d / (Size - 1);
 
-    private static readonly double[][]   s_funcData;
-    private static readonly ImageSurface s_functionImageSurface;
+    private static readonly double[][] s_funcData = Calculator.CalculateData<PeaksFunction>(out s_funcMin, out s_funcMax);
+    private static readonly double     s_funcMin;
+    private static readonly double     s_funcMax;
 
+    private ImageSurface?  _functionImageSurface;
     private DevicePosition _mousePosition;
     private bool           _mouseIsInDrawingArea;
-    //-------------------------------------------------------------------------
-    static MainWindow()
-    {
-        s_funcData             = Calculator.CalculateData<PeaksFunction>(out double funcMin, out double funcMax);
-        s_functionImageSurface = Plotter.CreateFunctionSurface<TurboColorMap>(s_funcData, funcMin, funcMax);
-    }
     //-------------------------------------------------------------------------
     public MainWindow(Application app)
     {
@@ -97,7 +95,17 @@ public sealed class MainWindow : ApplicationWindow
             cr.Stroke();
         }
 
-        cr.SetSourceSurface(s_functionImageSurface, 0, 0);
+        if (_functionImageSurface is null)
+        {
+#if USE_NEW_IMAGE_SURFACE_FOR_DATA
+            _functionImageSurface = new ImageSurface(Format.Argb32, Size, Size);
+#else
+            _functionImageSurface = cr.Target.CreateSimilarImage(Format.Argb32, Size, Size);
+#endif
+            Plotter.CreateFunctionSurface<TurboColorMap>(_functionImageSurface, s_funcData, s_funcMin, s_funcMax);
+        }
+
+        cr.SetSourceSurface(_functionImageSurface, 0, 0);
         cr.Paint();
 
         if (_mouseIsInDrawingArea)

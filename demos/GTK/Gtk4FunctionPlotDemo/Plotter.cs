@@ -18,12 +18,9 @@ namespace Gtk4FunctionPlotDemo;
 
 internal static class Plotter
 {
-    private const int Size = MainWindow.Size;
-    //-------------------------------------------------------------------------
-    public static ImageSurface CreateFunctionSurface<TColorMap>(double[][] funcData, double funcMin, double funcMax)
+    public static void CreateFunctionSurface<TColorMap>(ImageSurface surface, double[][] funcData, double funcMin, double funcMax)
         where TColorMap : ColorMap, new()
     {
-        ImageSurface surface = new(Format.Argb32, Size, Size);
         ColorMap colorMap    = new TColorMap();
         double invScale      = 1d / (funcMax - funcMin);
 
@@ -45,8 +42,6 @@ internal static class Plotter
         });
 
         surface.MarkDirty();
-
-        return surface;
     }
     //-------------------------------------------------------------------------
     public static void DrawCrosshairs(CairoContext cr, DevicePosition devicePosition, int width, int height)
