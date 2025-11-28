@@ -113,7 +113,7 @@ public static class ColorMapAnalysisExtensions
             {
                 if (fontFace is null)
                 {
-                    cr.FontFace = DefaultFonts.MonoSpace;
+                    cr.FontFace = DefaultFonts.SansSerif;
                 }
                 else
                 {

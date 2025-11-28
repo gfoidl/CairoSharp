@@ -4,6 +4,7 @@ extern alias CairoSharp;
 
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
+using Cairo.Extensions.Fonts;
 using Cairo.Extensions.Pixels;
 using CairoSharp::Cairo;
 using CairoSharp::Cairo.Drawing.Text;
@@ -79,7 +80,8 @@ internal static class Plotter
         Console.WriteLine($"mouse at ({devicePosition.X:N3}, {devicePosition.Y:N3})\tf({funcX:N3}, {funcY:N3}) = {funcZ:N3}");
 #endif
 
-        cr.SelectFontFace("@cairo:monospace", weight: FontWeight.Bold);
+        //cr.SelectFontFace("@cairo:monospace", weight: FontWeight.Bold);
+        cr.FontFace = DefaultFonts.MonoSpace;
         cr.SetFontSize(16);
 
         string text0 = $"(x, y)  = ({funcX:N2}, {funcY:N2})";
