@@ -24,8 +24,8 @@ internal static class Plotter
     public static void CreateFunctionSurface<TColorMap>(ImageSurface surface, double[][] funcData, double funcMin, double funcMax)
         where TColorMap : ColorMap, new()
     {
-        ColorMap colorMap    = new TColorMap();
-        double invScale      = 1d / (funcMax - funcMin);
+        ColorMap colorMap = new TColorMap();
+        double invScale   = 1d / (funcMax - funcMin);
 
         surface.Flush();
 
@@ -133,7 +133,7 @@ internal static class Plotter
 
             cr.Translate(tx, ty);
 
-            double boxWidth  = annotationWidth + 2 * Padding;
+            double boxWidth  = annotationWidth  + 2 * Padding;
             double boxHeight = annotationHeight + 2 * Padding;
 
             cr.MoveTo(-Padding, -Padding);
@@ -163,7 +163,7 @@ internal static class Plotter
             cr.MoveTo(0, 2 * textExtents.Height);
             cr.ShowText(text1);
 
-#if SHOW_BOX_MARKERS
+#if SHOW_BOX_MARKERS || DEBUG
             cr.Color = KnownColors.Red;
             cr.Arc(0, 0, Padding, 0, Math.Tau);
             cr.Fill();

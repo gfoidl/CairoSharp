@@ -613,7 +613,7 @@ public sealed partial class PixelWindow : Window
             }
         }
 #endif
-            }
+    }
 
     // Implementation is naive regarding easy readability.
     // In real production code parts could be collapsed and vectorized.

@@ -88,13 +88,6 @@ public sealed class MainWindow : ApplicationWindow
         Debug.Assert(width  == Size);
         Debug.Assert(height == Size);
 
-        using (cr.Save())
-        {
-            cr.Rectangle(0, 0, width, height);
-            cr.LineWidth = 1d;
-            cr.Stroke();
-        }
-
         if (_functionImageSurface is null)
         {
 #if USE_NEW_IMAGE_SURFACE_FOR_DATA
@@ -107,6 +100,14 @@ public sealed class MainWindow : ApplicationWindow
 
         cr.SetSourceSurface(_functionImageSurface, 0, 0);
         cr.Paint();
+
+        using (cr.Save())
+        {
+            cr.Rectangle(0, 0, width, height);
+            cr.Color = Color.Default;
+            cr.LineWidth = 1d;
+            cr.Stroke();
+        }
 
         if (_mouseIsInDrawingArea)
         {

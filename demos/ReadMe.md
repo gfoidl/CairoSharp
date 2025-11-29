@@ -48,6 +48,10 @@ Shows how to display an animation, drawed via _cairo_ in GTK 4. For each iterati
 
 A Windows version is in [WinFormsAnimation](#winformsanimation).
 
+#### Gtk4FunctionPlotDemo
+
+Plotting of pixel data (peaks function) and displaying current $(x, y, z)$ values on mouse move.
+
 ### Windows demos
 
 #### WinFormsDemo
