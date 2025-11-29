@@ -46,10 +46,15 @@ public sealed class MainWindow : ApplicationWindow
         drawingArea.ContentWidth  = Size;
         drawingArea.ContentHeight = Size;
 
-        drawingArea.MarginStart   = 10;
-        drawingArea.MarginTop     = 10;
-        drawingArea.MarginEnd     = 10;
-        drawingArea.MarginBottom  = 10;
+        drawingArea.MarginStart  = 10;
+        drawingArea.MarginTop    = 10;
+        drawingArea.MarginEnd    = 10;
+        drawingArea.MarginBottom = 10;
+
+        // Hide the mouse pointer / cursor, as we have a cross-hair.
+        // Cf. https://docs.gtk.org/gtk4/method.Widget.set_cursor_from_name.html
+        // and https://docs.gtk.org/gdk4/ctor.Cursor.new_from_name.html
+        drawingArea.SetCursorFromName("none");
 
         drawingArea.SetDrawFunc(this.Draw);
 
