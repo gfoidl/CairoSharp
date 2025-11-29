@@ -1,7 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 #define USE_BYTE_SPANS_FOR_TEXT
-//#define SHOW_BOX_MARKERS
+#define SHOW_BOX_MARKERS
 
 extern alias CairoSharp;
 
@@ -12,6 +12,7 @@ using Cairo.Extensions.Colors.ColorMaps;
 using Cairo.Extensions.Fonts;
 using Cairo.Extensions.Pixels;
 using CairoSharp::Cairo;
+using CairoSharp::Cairo.Drawing;
 using CairoSharp::Cairo.Fonts;
 using CairoSharp::Cairo.Surfaces;
 using CairoSharp::Cairo.Surfaces.Images;
@@ -92,7 +93,8 @@ internal static class Plotter
         MousePosition mousePosition,
         double        funcX,
         double        funcY,
-        double        funcZ)
+        double        funcZ,
+        bool          darkColorScheme)
     {
 #if DEBUG
         Console.WriteLine($"mouse at ({mousePosition.X:N3}, {mousePosition.Y:N3})\tf({funcX:N3}, {funcY:N3}) = {funcZ:N3}");
@@ -136,7 +138,7 @@ internal static class Plotter
 
             cr.Translate(tx, ty);
 
-            DrawBoundingBox(cr, annotationWidth, annotationHeight, tx, ty);
+            DrawBoundingBox(cr, annotationWidth, annotationHeight, tx, ty, darkColorScheme);
 
 #if !USE_BYTE_SPANS_FOR_TEXT
             string text0 = textForExtents.Replace('_', ' ');
@@ -149,28 +151,11 @@ internal static class Plotter
             text1                         = text1[..written];
 #endif
 
+            cr.Color = !darkColorScheme ? Color.Default : KnownColors.White;
             cr.MoveTo(0, yBearing);
             cr.ShowText(text0);
             cr.MoveTo(0, yBearing + fontExtents.Height);
             cr.ShowText(text1);
-
-#if SHOW_BOX_MARKERS || DEBUG
-            cr.Color = KnownColors.Red;
-            cr.Arc(0, 0, AnnotationPadding, 0, Math.Tau);
-            cr.Fill();
-
-            cr.Color = KnownColors.Blue;
-            cr.Arc(annotationWidth, 0, AnnotationPadding, 0, Math.Tau);
-            cr.Fill();
-
-            cr.Color = KnownColors.Green;
-            cr.Arc(0, annotationHeight, AnnotationPadding, 0, Math.Tau);
-            cr.Fill();
-
-            cr.Color = KnownColors.Yellow;
-            cr.Arc(annotationWidth, annotationHeight, AnnotationPadding, 0, Math.Tau);
-            cr.Fill();
-#endif
         }
     }
     //-------------------------------------------------------------------------
@@ -179,16 +164,17 @@ internal static class Plotter
         double       annotationWidth,
         double       annotationHeight,
         double       tx,
-        double       ty)
+        double       ty,
+        bool         darkColorScheme)
     {
         double boxWidth  = annotationWidth  + 2 * AnnotationPadding;
         double boxHeight = annotationHeight + 2 * AnnotationPadding;
 
-        const double ArrowWidth = 2 * AnnotationPadding;
+        const double ArrowWidth = 3 * AnnotationPadding;
 
-        // Complex bounding box here only shown for left and top location
-        if (tx < 0 && ty > 0)
+        if (tx < 0 && ty > 0)       // left, below
         {
+            // Manually drawing the path which is filled and stroked
             using (cr.Save())
             {
                 cr.Translate(-tx, -ty);     // mouse position
@@ -201,19 +187,83 @@ internal static class Plotter
                 cr.ClosePath();
             }
         }
+        else if (tx > 0 && ty > 0)  // right, below
+        {
+            // Using cairo's compositing operators.
+            // We need an "isolated" drawing environment for this, thus use PushGroup.
+            cr.PushGroup();
+            {
+                cr.Rectangle(-AnnotationPadding, -AnnotationPadding, boxWidth, boxHeight);
+                Draw(cr, darkColorScheme);
+
+                cr.PushGroup();                 // for the arrow
+                {
+                    cr.MoveTo(-tx, -ty);        // mouse position
+                    cr.LineTo(-AnnotationPadding, -AnnotationPadding + ArrowWidth);
+                    cr.LineTo(-AnnotationPadding + ArrowWidth, -AnnotationPadding);
+                    cr.ClosePath();
+                    Draw(cr, darkColorScheme);
+                }
+                cr.PopGroupToSource();
+
+                // Cf. https://www.cairographics.org/operators/
+                cr.Operator = !darkColorScheme ? Operator.Add : Operator.Multiply;
+                cr.Paint();
+            }
+            cr.PopGroupToSource();
+            cr.Paint();
+
+            goto Exit;
+        }
         else
         {
-            cr.MoveTo(-AnnotationPadding, -AnnotationPadding);
-            cr.RelLineTo(boxWidth, 0);
-            cr.RelLineTo(0, boxHeight);
-            cr.RelLineTo(-boxWidth, 0);
-            cr.ClosePath();
+            cr.Rectangle(-AnnotationPadding, -AnnotationPadding, boxWidth, boxHeight);
         }
 
-        cr.Color = KnownColors.White;
-        cr.FillPreserve();
+        Draw(cr, darkColorScheme);
 
-        cr.Color = Color.Default;
-        cr.Stroke();
+        static void Draw(CairoContext cr, bool darkColorScheme)
+        {
+            Color background, foreground;
+
+            if (!darkColorScheme)
+            {
+                background = KnownColors.White;
+                foreground = Color.Default;
+            }
+            else
+            {
+                background = Color.Default;
+                foreground = KnownColors.White;
+            }
+
+            cr.Color = background;
+            cr.FillPreserve();
+
+            cr.Color = foreground;
+            cr.Stroke();
+        }
+
+    Exit:
+#if SHOW_BOX_MARKERS
+        const double BoxMarkerRadius = 5;
+
+        cr.Color = KnownColors.Red;
+        cr.Arc(0, 0, BoxMarkerRadius, 0, Math.Tau);
+        cr.Fill();
+
+        cr.Color = KnownColors.Blue;
+        cr.Arc(annotationWidth, 0, BoxMarkerRadius, 0, Math.Tau);
+        cr.Fill();
+
+        cr.Color = KnownColors.Green;
+        cr.Arc(0, annotationHeight, BoxMarkerRadius, 0, Math.Tau);
+        cr.Fill();
+
+        cr.Color = KnownColors.Yellow;
+        cr.Arc(annotationWidth, annotationHeight, BoxMarkerRadius, 0, Math.Tau);
+        cr.Fill();
+#endif
+        return;     // just to make the compiler happy when SHOW_BOX_MARKERS isn't defined
     }
 }

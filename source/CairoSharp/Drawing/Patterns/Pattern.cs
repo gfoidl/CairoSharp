@@ -91,8 +91,8 @@ public unsafe class Pattern : CairoObject<cairo_pattern_t>
     /// In these cases, it is convenient to use <see cref="CairoContext.GetSource"/> to get access to the pattern
     /// that cairo creates implicitly. For example:
     /// <code>
-    /// context.SetSourceSurface(image, x, y);
-    /// context.GetSource().Filter(Filter.Nearest);
+    /// cr.SetSourceSurface(image, x, y);
+    /// cr.GetSource().Filter(Filter.Nearest);
     /// </code>
     /// </remarks>
     public Filter Filter

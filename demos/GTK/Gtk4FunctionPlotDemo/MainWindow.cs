@@ -27,6 +27,8 @@ public sealed class MainWindow : ApplicationWindow
     private static readonly double     s_funcMin;
     private static readonly double     s_funcMax;
 
+    private readonly CheckButton _annotationDarkSchemeCheckButton;
+
     private ImageSurface? _functionImageSurface;
     private MousePosition _mousePosition;
     private bool          _mouseIsInDrawingArea;
@@ -37,7 +39,20 @@ public sealed class MainWindow : ApplicationWindow
         this.Title       = "Peaks function plot";
         this.Resizable   = false;
 
-        this.Child = this.CreateDrawingArea();
+        Box box    = Box.New(Orientation.Vertical, spacing: 10);
+        this.Child = box;
+
+        box.MarginStart  = 10;
+        box.MarginTop    = 10;
+        box.MarginEnd    = 10;
+        box.MarginBottom = 10;
+
+        _annotationDarkSchemeCheckButton        = CheckButton.NewWithLabel("annotation dark scheme");
+        _annotationDarkSchemeCheckButton.Halign = Align.Start;
+        box.Append(_annotationDarkSchemeCheckButton);
+
+        box.Append(Separator.New(Orientation.Horizontal));
+        box.Append(this.CreateDrawingArea());
     }
     //-------------------------------------------------------------------------
     private DrawingArea CreateDrawingArea()
@@ -45,11 +60,6 @@ public sealed class MainWindow : ApplicationWindow
         DrawingArea drawingArea   = DrawingArea.New();
         drawingArea.ContentWidth  = Size;
         drawingArea.ContentHeight = Size;
-
-        drawingArea.MarginStart  = 10;
-        drawingArea.MarginTop    = 10;
-        drawingArea.MarginEnd    = 10;
-        drawingArea.MarginBottom = 10;
 
         // Hide the mouse pointer / cursor, as we have a cross-hair.
         // Cf. https://docs.gtk.org/gtk4/method.Widget.set_cursor_from_name.html
@@ -120,7 +130,7 @@ public sealed class MainWindow : ApplicationWindow
 
             if (Calculator.TryGetCoordinatesAndFuncValue(s_funcData, _mousePosition, out double x, out double y, out double z))
             {
-                Plotter.DrawCurrentValue(cr, width, height, _mousePosition, x, y, z);
+                Plotter.DrawCurrentValue(cr, width, height, _mousePosition, x, y, z, _annotationDarkSchemeCheckButton.Active);
             }
         }
     }
