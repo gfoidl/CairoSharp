@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Extensions.Colors;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
@@ -23,32 +24,28 @@ internal static class PixelHelper
         // Endianess is handled by the read of the int for us
         int value = Unsafe.ReadUnaligned<int>(ref ptr);
 
+        // The machine code of this is a bit longer as compared to a (value >>= 8)-variant,
+        // but here is no register dependency on (value), thus the CPU can execute this in
+        // instruction level parallelism.
+        byte a = (byte)(value >> 24);
+        byte r = (byte)(value >> 16);
+        byte g = (byte)(value >>  8);
         byte b = (byte)value;
-        value >>= 8;
-        byte g = (byte)value;
-        value >>= 8;
-        byte r = (byte)value;
-        value >>= 8;
-        byte a = (byte)value;
-
-        const double OneBy255 = 1d / 255;
 
         if (a == 0xFF)
         {
-            double red   = r * OneBy255;
-            double green = g * OneBy255;
-            double blue  = b * OneBy255;
-
-            return new Color(red, green, blue, 1d);
+            return Color.FromRgbaBytes(r, g, b, 0xFF);
         }
         else
         {
-            return GetForAlpha(a, r, g, b);
+            return GetForPremultipliedAlpha(a, r, g, b);
         }
         //---------------------------------------------------------------------
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static Color GetForAlpha(byte a, byte r, byte g, byte b)
+        static Color GetForPremultipliedAlpha(byte a, byte r, byte g, byte b)
         {
+            const double OneBy255 = 1d / 255;
+
             double alpha  = a * OneBy255;
             double oneByA = 1d / a;
 
@@ -91,11 +88,11 @@ internal static class PixelHelper
         }
         else
         {
-            SetColorForAlpha(data, idx, color);
+            SetColorForPremultipliedAlpha(data, idx, color);
         }
         //---------------------------------------------------------------------
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void SetColorForAlpha(Span<byte> data, int idx, Color color)
+        static void SetColorForPremultipliedAlpha(Span<byte> data, int idx, Color color)
         {
             byte r, g, b, a;
             double premult = color.Alpha * 255d;
