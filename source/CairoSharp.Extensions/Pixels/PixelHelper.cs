@@ -20,21 +20,32 @@ internal static class PixelHelper
 
         ref byte ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(data), (uint)idx);
 
-        byte b = Unsafe.Add(ref ptr, 0);
-        byte g = Unsafe.Add(ref ptr, 1);
-        byte r = Unsafe.Add(ref ptr, 2);
-        byte a = Unsafe.Add(ref ptr, 3);
+        byte a, r, g, b;
+
+        if (BitConverter.IsLittleEndian)
+        {
+            b = Unsafe.Add(ref ptr, 0);
+            g = Unsafe.Add(ref ptr, 1);
+            r = Unsafe.Add(ref ptr, 2);
+            a = Unsafe.Add(ref ptr, 3);
+        }
+        else
+        {
+            a = Unsafe.Add(ref ptr, 0);
+            r = Unsafe.Add(ref ptr, 1);
+            g = Unsafe.Add(ref ptr, 2);
+            b = Unsafe.Add(ref ptr, 3);
+        }
 
         const double OneBy255 = 1d / 255;
 
         if (a == 0xFF)
         {
-            double alpha = 1d;
             double red   = r * OneBy255;
             double green = g * OneBy255;
             double blue  = b * OneBy255;
 
-            return new Color(red, green, blue, alpha);
+            return new Color(red, green, blue, 1d);
         }
         else
         {
@@ -122,14 +133,25 @@ internal static class PixelHelper
 #endif
         }
         //---------------------------------------------------------------------
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void Write(Span<byte> data, int idx, byte a, byte r, byte g, byte b)
         {
             ref byte ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(data), (uint)idx);
 
-            Unsafe.Add(ref ptr, 0) = b;
-            Unsafe.Add(ref ptr, 1) = g;
-            Unsafe.Add(ref ptr, 2) = r;
-            Unsafe.Add(ref ptr, 3) = a;
+            if (BitConverter.IsLittleEndian)
+            {
+                Unsafe.Add(ref ptr, 0) = b;
+                Unsafe.Add(ref ptr, 1) = g;
+                Unsafe.Add(ref ptr, 2) = r;
+                Unsafe.Add(ref ptr, 3) = a;
+            }
+            else
+            {
+                Unsafe.Add(ref ptr, 0) = a;
+                Unsafe.Add(ref ptr, 1) = r;
+                Unsafe.Add(ref ptr, 2) = g;
+                Unsafe.Add(ref ptr, 3) = b;
+            }
         }
     }
     //-------------------------------------------------------------------------

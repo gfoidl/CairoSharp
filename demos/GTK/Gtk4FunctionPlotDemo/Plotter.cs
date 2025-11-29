@@ -4,6 +4,7 @@
 
 extern alias CairoSharp;
 
+using System.Diagnostics;
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
 using Cairo.Extensions.Fonts;
@@ -37,7 +38,16 @@ internal static class Plotter
                 value       -= funcMin;
                 value       *= invScale;
 
-                pixelRowAccessor[x] = colorMap.GetColor(value);
+                Color color         = colorMap.GetColor(value);
+                pixelRowAccessor[x] = color;
+
+#if DEBUG
+                Color actual = pixelRowAccessor[x];
+                Debug.Assert(Math.Abs(actual.Red   - color.Red)   < 1e-2);
+                Debug.Assert(Math.Abs(actual.Green - color.Green) < 1e-2);
+                Debug.Assert(Math.Abs(actual.Blue  - color.Blue)  < 1e-2);
+                Debug.Assert(Math.Abs(actual.Alpha - color.Alpha) < 1e-2);
+#endif
             }
         });
 
