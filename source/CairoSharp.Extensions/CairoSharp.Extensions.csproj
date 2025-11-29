@@ -24,6 +24,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="CairoSharp.Extensions.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b92824db26ef87d6c74c58d964e829f9414739a3cad9bd6b7643680cf23b0f6a16c3896a1b12d67ef19efaac3a5665fc76a48876e612072ec9f380a8e07044cfc6a2dd0d73bf26cb7e0267a2a5e70c54e0d0f905d929d4f576bdf6b2556ef1ff6272ceabd24ec769164e6f0f939c2228ce9593c5e355562c3432c8cab808f6be" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="ReadMe.md" Pack="true" PackagePath="\" />
         <None Include="..\..\icon.png" Label="icon.png" Visible="false" Pack="true" PackagePath="\" />
     </ItemGroup>

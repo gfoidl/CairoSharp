@@ -11,10 +11,10 @@ namespace Cairo.Extensions.Pixels;
 /// </summary>
 public readonly ref struct PixelAccessor : IDisposable
 {
-    private readonly ImageSurface _surface;
-    private readonly Span<byte>   _data;
-    private readonly int          _stride;
-    private readonly bool         _setSurfaceState;
+    private readonly ImageSurface? _surface;
+    private readonly Span<byte>    _data;
+    private readonly int           _stride;
+    private readonly int           _width;
 
     internal PixelAccessor(ImageSurface surface, bool setSurfaceState = true)
     {
@@ -32,24 +32,18 @@ public readonly ref struct PixelAccessor : IDisposable
         if (setSurfaceState)
         {
             surface.Flush();
+            _surface = surface;
         }
 
-        _surface         = surface;
-        _data            = surface.Data;
-        _stride          = surface.Stride;
-        _setSurfaceState = setSurfaceState;
+        _data   = surface.Data;
+        _stride = surface.Stride;
+        _width  = surface.Width;
     }
 
     /// <summary>
     /// Calls <see cref="Surface.MarkDirty()"/>
     /// </summary>
-    public void Dispose()
-    {
-        if (_setSurfaceState)
-        {
-            _surface.MarkDirty();
-        }
-    }
+    public void Dispose() => _surface?.MarkDirty();
 
     /// <summary>
     /// Gets or sets the <see cref="Color"/> at (<paramref name="x"/>, <paramref name="y"/>).
@@ -76,7 +70,7 @@ public readonly ref struct PixelAccessor : IDisposable
     public Span<byte> GetRowBytes(int y)
     {
         int start = y * _stride;
-        int width = _surface.Width * 4;
+        int width = _width * 4;
 
         return _data.Slice(start, width);
     }

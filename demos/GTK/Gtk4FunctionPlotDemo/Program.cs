@@ -26,7 +26,7 @@ static void FixupEnvironment()
         // GTK 4 is installed via https://www.gtk.org/docs/installations/windows/#using-gtk-from-msys2-packages
         // For simplicity we just append the PATH so that Windows knows where to look for the DLLs.
         string path = Environment.GetEnvironmentVariable("PATH")!;
-        path = $@"C:\Program Files\msys64\ucrt64\bin;{path}";
+        path        = $@"C:\Program Files\msys64\ucrt64\bin;{path}";
         Environment.SetEnvironmentVariable("PATH", path);
     }
 }

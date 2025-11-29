@@ -1,9 +1,9 @@
 // (c) gfoidl, all rights reserved
 
-using Cairo.Extensions.Colors;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
+using Cairo.Extensions.Colors;
 
 namespace Cairo.Extensions.Pixels;
 
@@ -14,7 +14,7 @@ internal static class PixelHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color GetColor(ReadOnlySpan<byte> data, int idx)
     {
-        if (idx > data.Length - 4)
+        if (idx > data.Length - sizeof(int))
         {
             ThrowIndexOutOfRange(data.Length, idx);
         }
@@ -60,7 +60,7 @@ internal static class PixelHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetColor(Span<byte> data, int idx, Color color)
     {
-        if (idx > data.Length - 4)
+        if (idx > data.Length - sizeof(int))
         {
             ThrowIndexOutOfRange(data.Length, idx);
         }
@@ -78,9 +78,7 @@ internal static class PixelHelper
             else
             {
                 Vector256<double> vec = color.AsVector256 * Vector256.Create(255d);
-                r = ToByte(vec[0]);
-                g = ToByte(vec[1]);
-                b = ToByte(vec[2]);
+                VecToBytes(vec, out r, out g, out b);
             }
 
             a = 0xFF;
@@ -105,10 +103,8 @@ internal static class PixelHelper
             }
             else
             {
-                Vector256<double> vec = color.AsVector256 * Vector256.Create(color.Alpha * 255d);
-                r = ToByte(vec[0]);
-                g = ToByte(vec[1]);
-                b = ToByte(vec[2]);
+                Vector256<double> vec = color.AsVector256 * Vector256.Create(premult);
+                VecToBytes(vec, out r, out g, out b);
             }
 
             a = ToByte(premult);
@@ -122,6 +118,27 @@ internal static class PixelHelper
 #else
             return (byte)x;
 #endif
+        }
+        //---------------------------------------------------------------------
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void VecToBytes(Vector256<double> vec, out byte r, out byte g, out byte b)
+        {
+#if NET9_0_OR_GREATER
+            // Efficient HW-intrinsics are only available on AVX-512 onwards.
+            // See https://stackoverflow.com/a/41148578/347870
+            if (Vector512.IsHardwareAccelerated)
+            {
+                Vector256<ulong> tmp = Vector256.ConvertToUInt64Native(vec);
+                r = (byte)tmp[0];
+                g = (byte)tmp[1];
+                b = (byte)tmp[2];
+
+                return;
+            }
+#endif
+            r = ToByte(vec[0]);
+            g = ToByte(vec[1]);
+            b = ToByte(vec[2]);
         }
         //---------------------------------------------------------------------
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
