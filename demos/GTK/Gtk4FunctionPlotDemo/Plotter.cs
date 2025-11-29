@@ -1,10 +1,12 @@
 // (c) gfoidl, all rights reserved
 
 //#define SHOW_BOX_MARKERS
+#define USE_BYTE_SPANS_FOR_TEXT
 
 extern alias CairoSharp;
 
 using System.Diagnostics;
+using System.Text;
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Colors.ColorMaps;
 using Cairo.Extensions.Fonts;
@@ -96,9 +98,18 @@ internal static class Plotter
         cr.FontFace = DefaultFonts.MonoSpace;
         cr.SetFontSize(16);
 
-        string textForExtents = $"_(x, y) = ({funcX:N2}, {funcY:N2})";  // _ as space doesn't count in TextExtents
-        string text0          = textForExtents.Replace('_', ' ');
-        string text1          = $"f(x, y) = {funcZ:N2}";
+#if !USE_BYTE_SPANS_FOR_TEXT
+        string textForExtents = $"_(x, y) = ({funcX:N2}, {funcY:N2})";                  // _ as space doesn't count in TextExtents
+#else
+        Span<char> textBuffer     = stackalloc char[64];
+        Span<byte> textForExtents = stackalloc byte[128];
+        Span<byte> text0          = textForExtents;
+        Span<byte> text1          = textForExtents.Slice(64, 64);
+
+        textBuffer.TryWrite($"_(x, y) = ({funcX:N2}, {funcY:N2})", out int written);    // _ as space doesn't count in TextExtents
+        written                       = Encoding.UTF8.GetBytes(textBuffer.Slice(0, written), textForExtents);
+        textForExtents                = textForExtents.Slice(0, written);
+#endif
 
         cr.TextExtents(textForExtents, out TextExtents textExtents);
 
@@ -135,6 +146,17 @@ internal static class Plotter
             cr.FillPreserve();
             cr.Color = Color.Default;
             cr.Stroke();
+
+#if !USE_BYTE_SPANS_FOR_TEXT
+            string text0 = textForExtents.Replace('_', ' ');
+            string text1 = $"f(x, y) = {funcZ:N2}";
+#else
+            text0[0] = (byte)' ';
+
+            textBuffer.TryWrite($"f(x, y) = {funcZ:N2}", out written);
+            written                       = Encoding.UTF8.GetBytes(textBuffer.Slice(0, written), text1);
+            text1                         = text1.Slice(0, written);
+#endif
 
             cr.MoveTo(0, 1 * textExtents.Height);
             cr.ShowText(text0);
