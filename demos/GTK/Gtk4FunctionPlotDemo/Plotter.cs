@@ -107,10 +107,11 @@ internal static class Plotter
         Span<byte> text1          = textForExtents.Slice(64, 64);
 
         textBuffer.TryWrite($"_(x, y) = ({funcX:N2}, {funcY:N2})", out int written);    // _ as space doesn't count in TextExtents
-        written                       = Encoding.UTF8.GetBytes(textBuffer.Slice(0, written), textForExtents);
-        textForExtents                = textForExtents.Slice(0, written);
+        written                       = Encoding.UTF8.GetBytes(textBuffer[..written], textForExtents);
+        textForExtents                = textForExtents[..written];
 #endif
 
+        cr.FontExtents(out FontExtents fontExtents);
         cr.TextExtents(textForExtents, out TextExtents textExtents);
 
         const double Padding =  5;
@@ -120,14 +121,16 @@ internal static class Plotter
         {
             cr.Translate(mousePosition.X, mousePosition.Y);
 
+            // See ReadMe.md in project root for a figure for the values.
+            double yBearing         = Math.Abs(textExtents.YBearing);   // YBearing is negative, as defined by cairo's coordinate system
             double annotationWidth  = textExtents.Width;
-            double annotationHeight = textExtents.Height * 2;   // 2 lines
+            double annotationHeight = yBearing + fontExtents.Height + (textExtents.Height - yBearing);
 
-            double tx = mousePosition.X + Offset + annotationWidth < width
+            double tx = mousePosition.X + Offset + annotationWidth + Padding < width
                 ? Offset
                 : -(Offset + annotationWidth);
 
-            double ty = mousePosition.Y + Offset + annotationHeight < height
+            double ty = mousePosition.Y + Offset + annotationHeight + Padding < height
                 ? Offset
                 : -(Offset + annotationHeight);
 
@@ -154,13 +157,13 @@ internal static class Plotter
             text0[0] = (byte)' ';
 
             textBuffer.TryWrite($"f(x, y) = {funcZ:N2}", out written);
-            written                       = Encoding.UTF8.GetBytes(textBuffer.Slice(0, written), text1);
-            text1                         = text1.Slice(0, written);
+            written                       = Encoding.UTF8.GetBytes(textBuffer[..written], text1);
+            text1                         = text1[..written];
 #endif
 
-            cr.MoveTo(0, 1 * textExtents.Height);
+            cr.MoveTo(0, yBearing);
             cr.ShowText(text0);
-            cr.MoveTo(0, 2 * textExtents.Height);
+            cr.MoveTo(0, yBearing + fontExtents.Height);
             cr.ShowText(text1);
 
 #if SHOW_BOX_MARKERS || DEBUG
@@ -169,15 +172,15 @@ internal static class Plotter
             cr.Fill();
 
             cr.Color = KnownColors.Blue;
-            cr.Arc(textExtents.Width, 0, Padding, 0, Math.Tau);
+            cr.Arc(annotationWidth, 0, Padding, 0, Math.Tau);
             cr.Fill();
 
             cr.Color = KnownColors.Green;
-            cr.Arc(0, 2 * textExtents.Height, Padding, 0, Math.Tau);
+            cr.Arc(0, annotationHeight, Padding, 0, Math.Tau);
             cr.Fill();
 
             cr.Color = KnownColors.Yellow;
-            cr.Arc(textExtents.Width, 2 * textExtents.Height, Padding, 0, Math.Tau);
+            cr.Arc(annotationWidth, annotationHeight, Padding, 0, Math.Tau);
             cr.Fill();
 #endif
         }

@@ -22,9 +22,9 @@ namespace Cairo.Fonts;
 /// </param>
 /// <param name="Height">
 /// the recommended vertical distance between baselines when setting consecutive lines of text with
-/// the font. This is greater than ascent +descent by a quantity known as the line spacing or
+/// the font. This is greater than <c>ascent + descent</c> by a quantity known as the line spacing or
 /// external leading. When space is at a premium, most fonts can be set with only a distance of
-/// ascent +descent between lines.
+/// <c>ascent + descent</c> between lines.
 /// </param>
 /// <param name="MaxXAdvance">
 /// the maximum distance in the X direction that the origin is advanced for any glyph in the font.
@@ -40,6 +40,12 @@ namespace Cairo.Fonts;
 /// text will be drawn twice as big, but the reported text extents will not be doubled. They
 /// will change slightly due to hinting (so you can't assume that metrics are independent of
 /// the transformation matrix), but otherwise will remain unchanged.
+/// <para>
+/// FreeType has a description in
+/// <a href="https://freetype.org/freetype2/docs/glyphs/glyphs-3.html#section-2">Typographic metrics and bounding boxes</a>,
+/// a <a href="https://docs.unity3d.com/Packages/com.unity.tiny@0.16/manual/images/text-3.png">visualizaiton</a> and
+/// <a href="https://blog.krzyzanowskim.com/content/images/2020/07/glyph_metrics.png">another one</a>.
+/// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public readonly record struct FontExtents(
@@ -47,4 +53,10 @@ public readonly record struct FontExtents(
     double Descent,
     double Height,
     double MaxXAdvance,
-    double MaxYAdvance);
+    double MaxYAdvance)
+{
+    /// <summary>
+    /// The distance that must be placed between two lines of text.
+    /// </summary>
+    public double LineGap => this.Height - (this.Ascent + this.Descent);
+}
