@@ -1,7 +1,7 @@
 // (c) gfoidl, all rights reserved
 
-//#define SHOW_BOX_MARKERS
 #define USE_BYTE_SPANS_FOR_TEXT
+//#define SHOW_BOX_MARKERS
 
 extern alias CairoSharp;
 
@@ -21,6 +21,9 @@ namespace Gtk4FunctionPlotDemo;
 
 internal static class Plotter
 {
+    private const double AnnotationPadding =  5;
+    private const double AnnotationOffset  = 20;
+    //-------------------------------------------------------------------------
     public static void CreateFunctionSurface<TColorMap>(ImageSurface surface, double[][] funcData, double funcMin, double funcMax)
         where TColorMap : ColorMap, new()
     {
@@ -114,9 +117,6 @@ internal static class Plotter
         cr.FontExtents(out FontExtents fontExtents);
         cr.TextExtents(textForExtents, out TextExtents textExtents);
 
-        const double Padding =  5;
-        const double Offset  = 20;
-
         using (cr.Save())
         {
             cr.Translate(mousePosition.X, mousePosition.Y);
@@ -126,29 +126,17 @@ internal static class Plotter
             double annotationWidth  = textExtents.Width;
             double annotationHeight = yBearing + fontExtents.Height + (textExtents.Height - yBearing);
 
-            double tx = mousePosition.X + Offset + annotationWidth + Padding < width
-                ? Offset
-                : -(Offset + annotationWidth);
+            double tx = mousePosition.X + AnnotationOffset + annotationWidth + AnnotationPadding < width
+                ? AnnotationOffset
+                : -(AnnotationOffset + annotationWidth);
 
-            double ty = mousePosition.Y + Offset + annotationHeight + Padding < height
-                ? Offset
-                : -(Offset + annotationHeight);
+            double ty = mousePosition.Y + AnnotationOffset + annotationHeight + AnnotationPadding < height
+                ? AnnotationOffset
+                : -(AnnotationOffset + annotationHeight);
 
             cr.Translate(tx, ty);
 
-            double boxWidth  = annotationWidth  + 2 * Padding;
-            double boxHeight = annotationHeight + 2 * Padding;
-
-            cr.MoveTo(-Padding, -Padding);
-            cr.RelLineTo( boxWidth, 0);
-            cr.RelLineTo(        0, boxHeight);
-            cr.RelLineTo(-boxWidth, 0);
-            cr.ClosePath();
-
-            cr.Color = KnownColors.White;
-            cr.FillPreserve();
-            cr.Color = Color.Default;
-            cr.Stroke();
+            DrawBoundingBox(cr, annotationWidth, annotationHeight, tx, ty);
 
 #if !USE_BYTE_SPANS_FOR_TEXT
             string text0 = textForExtents.Replace('_', ' ');
@@ -168,21 +156,64 @@ internal static class Plotter
 
 #if SHOW_BOX_MARKERS || DEBUG
             cr.Color = KnownColors.Red;
-            cr.Arc(0, 0, Padding, 0, Math.Tau);
+            cr.Arc(0, 0, AnnotationPadding, 0, Math.Tau);
             cr.Fill();
 
             cr.Color = KnownColors.Blue;
-            cr.Arc(annotationWidth, 0, Padding, 0, Math.Tau);
+            cr.Arc(annotationWidth, 0, AnnotationPadding, 0, Math.Tau);
             cr.Fill();
 
             cr.Color = KnownColors.Green;
-            cr.Arc(0, annotationHeight, Padding, 0, Math.Tau);
+            cr.Arc(0, annotationHeight, AnnotationPadding, 0, Math.Tau);
             cr.Fill();
 
             cr.Color = KnownColors.Yellow;
-            cr.Arc(annotationWidth, annotationHeight, Padding, 0, Math.Tau);
+            cr.Arc(annotationWidth, annotationHeight, AnnotationPadding, 0, Math.Tau);
             cr.Fill();
 #endif
         }
+    }
+    //-------------------------------------------------------------------------
+    private static void DrawBoundingBox(
+        CairoContext cr,
+        double       annotationWidth,
+        double       annotationHeight,
+        double       tx,
+        double       ty)
+    {
+        double boxWidth  = annotationWidth  + 2 * AnnotationPadding;
+        double boxHeight = annotationHeight + 2 * AnnotationPadding;
+
+        const double ArrowWidth = 2 * AnnotationPadding;
+
+        // Complex bounding box here only shown for left and top location
+        if (tx < 0 && ty > 0)
+        {
+            using (cr.Save())
+            {
+                cr.Translate(-tx, -ty);     // mouse position
+                cr.MoveTo(0, 0);
+                cr.LineTo(-AnnotationOffset + AnnotationPadding - ArrowWidth, AnnotationOffset - AnnotationPadding);
+                cr.RelLineTo(-(boxWidth - ArrowWidth), 0);
+                cr.RelLineTo(0, boxHeight);
+                cr.RelLineTo(boxWidth, 0);
+                cr.RelLineTo(0, -(boxHeight - ArrowWidth));
+                cr.ClosePath();
+            }
+        }
+        else
+        {
+            cr.MoveTo(-AnnotationPadding, -AnnotationPadding);
+            cr.RelLineTo(boxWidth, 0);
+            cr.RelLineTo(0, boxHeight);
+            cr.RelLineTo(-boxWidth, 0);
+            cr.ClosePath();
+        }
+
+        cr.Color = KnownColors.White;
+        cr.FillPreserve();
+
+        cr.Color = Color.Default;
+        cr.Stroke();
     }
 }
