@@ -231,6 +231,12 @@ public sealed partial class PixelWindow : Window
                 DisplayEquation("peaks.svg");
                 return Task.Run(() => CalculateData<PeaksFunction>(width, height));
             }
+            case "funcPeaksOrig":
+            {
+                this.Title = "(orig.) Peaks function";
+                DisplayEquation("peaks-orig.svg");
+                return Task.Run(() => CalculateData<PeaksFunctionOriginal>(width, height));
+            }
             case "funcMexican":
             {
                 this.Title = "Mexican hat function";

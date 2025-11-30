@@ -136,6 +136,10 @@
         <attribute name="label">_Peaks function</attribute>
       </item>
       <item>
+        <attribute name="action">app.funcPeaksOrig</attribute>
+        <attribute name="label">Peaks function (_original)</attribute>
+      </item>
+      <item>
         <attribute name="action">app.funcMexican</attribute>
         <attribute name="label">_Mexican hat</attribute>
       </item>
