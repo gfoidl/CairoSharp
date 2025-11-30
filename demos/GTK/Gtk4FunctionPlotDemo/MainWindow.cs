@@ -49,17 +49,19 @@ public sealed class MainWindow : ApplicationWindow
         mainBox.MarginEnd    = 10;
         mainBox.MarginBottom = 10;
 
-        _annotationDarkSchemeCheckButton        = CheckButton.NewWithLabel("_annotation dark scheme (Ctrl + D)");
+        _annotationDarkSchemeCheckButton        = CheckButton.NewWithLabel("_annotation dark scheme");
         _annotationDarkSchemeCheckButton.Halign = Align.Start;
         _annotationDarkSchemeCheckButton.SetUseUnderline(true);
         _annotationDarkSchemeCheckButton.SetActionName("plot.dark");
+        _annotationDarkSchemeCheckButton.TooltipText = "Shortcut Ctrl+D";
 
-        _monospaceFontForAnnotationCheckButton         = CheckButton.NewWithLabel("_monospace font for annotation (Ctrl + F)");
+        // NewWithMnemonic is kind of a shortcut for NewWithLabel + SetUseUnderline(true)
+        _monospaceFontForAnnotationCheckButton = CheckButton.NewWithMnemonic("_monospace font for annotation");
         _monospaceFontForAnnotationCheckButton.Halign  = Align.End;
         _monospaceFontForAnnotationCheckButton.Hexpand = true;
         _monospaceFontForAnnotationCheckButton.Active  = true;
-        _monospaceFontForAnnotationCheckButton.SetUseUnderline(true);
         _monospaceFontForAnnotationCheckButton.SetActionName("plot.font");
+        _monospaceFontForAnnotationCheckButton.TooltipText = "Shortcut Ctrl+F";
 
         Box checkButtonBox = Box.New(Orientation.Horizontal, spacing: 0);
         checkButtonBox.Append(_annotationDarkSchemeCheckButton);
