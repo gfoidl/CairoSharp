@@ -94,13 +94,14 @@ internal static class Plotter
         double        funcX,
         double        funcY,
         double        funcZ,
-        bool          darkColorScheme)
+        bool          darkColorScheme,
+        bool          useMonospaceFont)
     {
 #if DEBUG
         Console.WriteLine($"mouse at ({mousePosition.X:N3}, {mousePosition.Y:N3})\tf({funcX:N3}, {funcY:N3}) = {funcZ:N3}");
 #endif
         //cr.SelectFontFace("@cairo:monospace", weight: FontWeight.Bold);
-        cr.FontFace = DefaultFonts.MonoSpace;
+        cr.FontFace = useMonospaceFont ? DefaultFonts.MonoSpace : DefaultFonts.SansSerif;
         cr.SetFontSize(16);
 
 #if !USE_BYTE_SPANS_FOR_TEXT
