@@ -148,10 +148,12 @@ static void Core(string fileName, string[] fontNames, Func<string, FreeTypeFont>
     //-------------------------------------------------------------------------
     static IEnumerable<(FontFace, string)> GetDefaultFonts()
     {
-        yield return (DefaultFonts.SansSerif    , "Helvetica");
-        yield return (DefaultFonts.SansSerifBold, "Helvetica (bold)");
-        yield return (DefaultFonts.MonoSpace    , "Inconsolata (monospace)");
-        yield return (DefaultFonts.MonoSpaceBold, "Inconsolata (monospace, bold)");
+        yield return (DefaultFonts.SansSerif          , "Helvetica");
+        yield return (DefaultFonts.SansSerifBold      , "Helvetica (bold)");
+        yield return (DefaultFonts.SansSerifBoldItalic, "Helvetica (bold, italic)");
+        yield return (DefaultFonts.MonoSpace          , "Source Code Pro (monospace)");
+        yield return (DefaultFonts.MonoSpaceBold      , "Source Code Pro (monospace, bold)");
+        yield return (DefaultFonts.MonoSpaceBoldItalic, "Source Code Pro (monospace, bold, italic)");
     }
 }
 //-----------------------------------------------------------------------------

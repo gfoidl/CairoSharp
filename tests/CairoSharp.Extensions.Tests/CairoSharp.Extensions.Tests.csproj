@@ -24,4 +24,9 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\..\demos\FreeTypeDemo\fonts\*.?tf" Link="Fonts\fonts\%(FileName)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="Fonts\font-options.svg" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

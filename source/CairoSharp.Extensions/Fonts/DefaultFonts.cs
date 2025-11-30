@@ -42,7 +42,7 @@ public static class DefaultFonts
     /// <returns>
     /// A <see cref="ToyFontFace"/> created for Helvetica.
     /// </returns>
-    public static FontFace SansSerifBoldItalics => field ??= new ToyFontFace("Helvetica", slant: Drawing.Text.FontSlant.Italic, weight: Drawing.Text.FontWeight.Bold);
+    public static FontFace SansSerifBoldItalic => field ??= new ToyFontFace("Helvetica", slant: Drawing.Text.FontSlant.Italic, weight: Drawing.Text.FontWeight.Bold);
 
     /// <summary>
     /// Source Code Pro
