@@ -27,6 +27,7 @@ public sealed class MainWindow : ApplicationWindow
     private static readonly double     s_funcMin;
     private static readonly double     s_funcMax;
 
+    private readonly DrawingArea _plotDrawingArea;
     private readonly CheckButton _annotationDarkSchemeCheckButton;
     private readonly CheckButton _monospaceFontForAnnotationCheckButton;
 
@@ -48,23 +49,60 @@ public sealed class MainWindow : ApplicationWindow
         mainBox.MarginEnd    = 10;
         mainBox.MarginBottom = 10;
 
-        _annotationDarkSchemeCheckButton        = CheckButton.NewWithLabel("_annotation dark scheme");
+        _annotationDarkSchemeCheckButton        = CheckButton.NewWithLabel("_annotation dark scheme (Ctrl + D)");
         _annotationDarkSchemeCheckButton.Halign = Align.Start;
         _annotationDarkSchemeCheckButton.SetUseUnderline(true);
+        _annotationDarkSchemeCheckButton.SetActionName("plot.dark");
 
-        _monospaceFontForAnnotationCheckButton         = CheckButton.NewWithLabel("_monospace font for annotation");
+        _monospaceFontForAnnotationCheckButton         = CheckButton.NewWithLabel("_monospace font for annotation (Ctrl + F)");
         _monospaceFontForAnnotationCheckButton.Halign  = Align.End;
         _monospaceFontForAnnotationCheckButton.Hexpand = true;
         _monospaceFontForAnnotationCheckButton.Active  = true;
         _monospaceFontForAnnotationCheckButton.SetUseUnderline(true);
+        _monospaceFontForAnnotationCheckButton.SetActionName("plot.font");
 
         Box checkButtonBox = Box.New(Orientation.Horizontal, spacing: 0);
         checkButtonBox.Append(_annotationDarkSchemeCheckButton);
         checkButtonBox.Append(_monospaceFontForAnnotationCheckButton);
 
+        _plotDrawingArea = this.CreateDrawingArea();
+
         mainBox.Append(checkButtonBox);
         mainBox.Append(Separator.New(Orientation.Horizontal));
-        mainBox.Append(this.CreateDrawingArea());
+        mainBox.Append(_plotDrawingArea);
+
+        this.AddActions();
+    }
+    //-------------------------------------------------------------------------
+    private void AddActions()
+    {
+        Gio.SimpleActionGroup actionGroup = Gio.SimpleActionGroup.New();
+        this.InsertActionGroup("plot", actionGroup);
+
+        AddAction("dark", _annotationDarkSchemeCheckButton);
+        AddAction("font", _monospaceFontForAnnotationCheckButton);
+
+        void AddAction(string name, CheckButton checkButton)
+        {
+            actionGroup.AddAction(name,
+                checkButton.Active,
+                () =>
+                {
+                    _plotDrawingArea.QueueDraw();
+                    return checkButton.Active = !checkButton.Active;
+                });
+        }
+
+        ShortcutController shortcutController = ShortcutController.New();
+        this.AddController(shortcutController);
+
+        shortcutController.AddShortcut(Shortcut.New(
+            ShortcutTrigger.ParseString("<Ctrl>d"),
+            ShortcutAction .ParseString("action(plot.dark)")));
+
+        shortcutController.AddShortcut(Shortcut.New(
+            ShortcutTrigger.ParseString("<Ctrl>f"),
+            ShortcutAction .ParseString("action(plot.font)")));
     }
     //-------------------------------------------------------------------------
     private DrawingArea CreateDrawingArea()
