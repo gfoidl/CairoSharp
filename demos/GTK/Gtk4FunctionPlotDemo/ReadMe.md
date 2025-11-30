@@ -8,6 +8,8 @@ $$
 z = f(x, y) = 3 (1 - x)^2 \cdot e^{-x^2} - (y+1)^2 - 10 \left( \frac{x}{5} - x^3 - y^5 \right) \cdot e^{-x^2 - y^2} - \frac{1}{3} \cdot e^{-(x+1)^2 - y^2}
 $$
 
+![](../Gtk4Demo/images/functions/peaks_function.png)
+
 is rendered as 2d-plot, and when hovering with the mouse over the plot area the current $(x, y)$ and the function value $z = f(x, y)$ is displayed in a tooltip-like annotation.
 
 ![](./images/screenshot.png)

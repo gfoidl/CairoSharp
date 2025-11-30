@@ -23,6 +23,7 @@
     <gresource prefix="/at/gfoidl/cairo/gtk4/demo">
         <!-- Instead of the alias it could also be a separate gresource element with the prefix -->
         <file preprocess="xml-stripblanks" alias="function/peaks.svg">images/functions/peaks_function.svg</file>
+        <file preprocess="xml-stripblanks" alias="function/peaks-orig.svg">images/functions/peaks_function_orig.svg</file>
         <file preprocess="xml-stripblanks" alias="function/mexican.svg">images/functions/mexican_hat_function.svg</file>
     </gresource>
 

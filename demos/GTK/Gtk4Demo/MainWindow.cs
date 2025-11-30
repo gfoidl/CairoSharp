@@ -114,8 +114,9 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("drawGlyphExtents"    , this.DrawGlyphExtents);
         this.AddAction("hitTest"             , this.DrawHitTest);
 
-        app.AddAction("funcPeaks"  , PixelGraphics);
-        app.AddAction("funcMexican", PixelGraphics);
+        app.AddAction("funcPeaks"    , PixelGraphics);
+        app.AddAction("funcPeaksOrig", PixelGraphics);
+        app.AddAction("funcMexican"  , PixelGraphics);
 
         void PixelGraphics(string? funcName) => PixelWindow.Show(funcName!, _builder, this);
 

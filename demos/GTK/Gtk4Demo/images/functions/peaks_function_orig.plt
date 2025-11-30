@@ -1,7 +1,7 @@
 reset
 #------------------------------------------------------------------------------
 set term pngcairo size 600,600 enhanced
-set output "peaks_function.png"
+set output "peaks_function_orig.png"
 #------------------------------------------------------------------------------
 set title "Peaks function in [-3,3]"
 
