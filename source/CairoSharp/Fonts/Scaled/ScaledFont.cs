@@ -75,15 +75,13 @@ public sealed unsafe class ScaledFont : FontFace
     /// <summary>
     /// Gets the metrics for a <see cref="ScaledFont"/>.
     /// </summary>
-    public FontExtents FontExtents
+    /// <param name="fontExtents">
+    /// a <see cref="FontExtents"/> struct into which the results will be stored.
+    /// </param>
+    public void GetFontExtents(out FontExtents fontExtents)
     {
-        get
-        {
-            this.CheckDisposed();
-
-            cairo_scaled_font_extents(this.ScaledFontHandle, out FontExtents fontExtents);
-            return fontExtents;
-        }
+        this.CheckDisposed();
+        cairo_scaled_font_extents(this.ScaledFontHandle, out fontExtents);
     }
 
     /// <summary>

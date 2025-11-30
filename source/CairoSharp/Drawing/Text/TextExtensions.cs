@@ -573,11 +573,13 @@ public static unsafe class TextExtensions
         /// <summary>
         /// Gets the font extents for the currently selected font.
         /// </summary>
-        /// <param name="extents">a <see cref="Fonts.FontExtents"/> object into which the results will be stored.</param>
-        public void FontExtents(out FontExtents extents)
+        /// <param name="fontExtents">
+        /// a <see cref="Fonts.FontExtents"/> struct into which the results will be stored.
+        /// </param>
+        public void FontExtents(out FontExtents fontExtents)
         {
             cr.CheckDisposed();
-            cairo_font_extents(cr.Handle, out extents);
+            cairo_font_extents(cr.Handle, out fontExtents);
         }
 
         /// <summary>

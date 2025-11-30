@@ -224,13 +224,13 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// As an example, here is how one might fill and stroke a path with translucence, but without
     /// any portion of the fill being visible under the stroke:
     /// <code>
-    /// context.PushGroup();
-    /// context.SetSource(fillPattern);
-    /// context.FillPreserve();
-    /// context.SetSource(strokePattern);
-    /// context.Stroke();
-    /// context.PopGroupToSource();
-    /// context.PaintWithAlpha(alpha);
+    /// cr.PushGroup();
+    /// cr.SetSource(fillPattern);
+    /// cr.FillPreserve();
+    /// cr.SetSource(strokePattern);
+    /// cr.Stroke();
+    /// cr.PopGroupToSource();
+    /// cr.PaintWithAlpha(alpha);
     /// </code>
     /// </para>
     /// </remarks>
@@ -298,15 +298,15 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     }
 
     /// <summary>
-    /// Terminates the redirection begun by a call to <see cref="PushGroup()"/>or
+    /// Terminates the redirection begun by a call to <see cref="PushGroup()"/> or
     /// <see cref="PushGroupWithContent(Content)"/> and installs the resulting pattern as
     /// the source pattern in the given cairo context.
     /// </summary>
     /// <remarks>
     /// The behavior of this method is equivalent to the sequence of operations:
     /// <code>
-    /// using Pattern pattern = context.PopGroup();
-    /// context.SetSource(pattern);
+    /// using Pattern pattern = cr.PopGroup();
+    /// cr.SetSource(pattern);
     /// </code>
     /// but is more convenient as there is no need for a variable to store the short-lived
     /// pointer to the pattern.

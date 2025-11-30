@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics.CodeAnalysis;
 using Cairo.Surfaces;
 using Cairo.Surfaces.Images;
 
@@ -10,28 +11,39 @@ namespace Cairo.Extensions.Pixels;
 /// </summary>
 public readonly ref struct PixelAccessor : IDisposable
 {
-    private readonly ImageSurface _surface;
-    private readonly Span<byte>   _data;
-    private readonly int          _stride;
+    private readonly ImageSurface? _surface;
+    private readonly Span<byte>    _data;
+    private readonly int           _stride;
+    private readonly int           _width;
 
-    internal PixelAccessor(ImageSurface surface)
+    internal PixelAccessor(ImageSurface surface, bool setSurfaceState = true)
     {
         if (surface.Format != Format.Argb32)
         {
-            throw new NotSupportedException($"Only Format.Argb32 is supported, actual format is {surface.Format}");
+            Throw(surface);
+
+            [DoesNotReturn]
+            static void Throw(ImageSurface surface)
+            {
+                throw new NotSupportedException($"Only Format.Argb32 is supported, actual format is {surface.Format}");
+            }
         }
 
-        surface.Flush();
+        if (setSurfaceState)
+        {
+            surface.Flush();
+            _surface = surface;
+        }
 
-        _surface = surface;
-        _data    = surface.Data;
-        _stride  = surface.Stride;
+        _data   = surface.Data;
+        _stride = surface.Stride;
+        _width  = surface.Width;
     }
 
     /// <summary>
     /// Calls <see cref="Surface.MarkDirty()"/>
     /// </summary>
-    public void Dispose() => _surface.MarkDirty();
+    public void Dispose() => _surface?.MarkDirty();
 
     /// <summary>
     /// Gets or sets the <see cref="Color"/> at (<paramref name="x"/>, <paramref name="y"/>).
@@ -58,7 +70,7 @@ public readonly ref struct PixelAccessor : IDisposable
     public Span<byte> GetRowBytes(int y)
     {
         int start = y * _stride;
-        int width = _surface.Width * 4;
+        int width = _width * 4;
 
         return _data.Slice(start, width);
     }
@@ -98,66 +110,4 @@ public readonly ref struct PixelRowAccessor
     }
 
     private static int GetIndex(int x) => x * 4;
-}
-
-internal static class PixelHelper
-{
-    // In Format.Argb32 pre-multiplied alpha is used.
-
-    public static Color GetColor(ReadOnlySpan<byte> data, int idx)
-    {
-        byte a = data[idx + 3];
-        byte r = data[idx + 2];
-        byte g = data[idx + 1];
-        byte b = data[idx + 0];
-
-        const double OneBy255 = 1d / 255;
-
-        double red, green, blue, alpha;
-
-        if (a == 0xFF)
-        {
-            alpha = 1d;
-            red   = r * OneBy255;
-            green = g * OneBy255;
-            blue  = b * OneBy255;
-        }
-        else
-        {
-            alpha             = a * OneBy255;
-            double oneByAlpha = 1d / alpha;
-
-            red   = r * OneBy255 * oneByAlpha;
-            green = g * OneBy255 * oneByAlpha;
-            blue  = b * OneBy255 * oneByAlpha;
-
-        }
-
-        return new Color(red, green, blue, alpha);
-    }
-
-    public static void SetColor(Span<byte> data, int idx, Color color)
-    {
-        byte r, g, b, a;
-
-        if (color.Alpha == 1d)
-        {
-            a = 0xFF;
-            r = (byte)(color.Red   * 255d);
-            g = (byte)(color.Green * 255d);
-            b = (byte)(color.Blue  * 255d);
-        }
-        else
-        {
-            a = (byte)(color.Alpha * 255d);
-            r = (byte)(color.Red   * color.Alpha * 255d);
-            g = (byte)(color.Green * color.Alpha * 255d);
-            b = (byte)(color.Blue  * color.Alpha * 255d);
-        }
-
-        data[idx + 3] = a;
-        data[idx + 2] = r;
-        data[idx + 1] = g;
-        data[idx + 0] = b;
-    }
 }

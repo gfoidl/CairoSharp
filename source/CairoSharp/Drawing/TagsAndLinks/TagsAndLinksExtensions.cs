@@ -34,13 +34,13 @@ public static unsafe class TagsAndLinksExtensions
         /// <para>
         /// So instead of writing code like
         /// <code>
-        /// context.TagBegin("foo");
+        /// cr.TagBegin("foo");
         /// // ...
-        /// context.TagEnd("foo");
+        /// cr.TagEnd("foo");
         /// </code>
         /// one can write
         /// <code>
-        /// using (context.TagBegin("foo"))
+        /// using (cr.TagBegin("foo"))
         /// {
         ///     // ...
         /// }

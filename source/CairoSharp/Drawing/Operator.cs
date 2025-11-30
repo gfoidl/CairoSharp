@@ -16,7 +16,8 @@ namespace Cairo.Drawing;
 /// To keep things simple, the operator descriptions here document the behavior for when both
 /// source and destination are either fully transparent or fully opaque. The actual implementation
 /// works for translucent layers too. For a more detailed explanation of the effects of each operator,
-/// including the mathematical definitions, see https://cairographics.org/operators/.
+/// including the mathematical definitions, see
+/// <a href="https://cairographics.org/operators/">cairo's compositing operators</a>.
 /// </para>
 /// </remarks>
 public enum Operator

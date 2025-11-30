@@ -1,11 +1,11 @@
 // (c) gfoidl, all rights reserved
 
 using Gtk;
-using Gtk4DemoSimple;
+using Gtk4FunctionPlotDemo;
 
 FixupEnvironment();
 
-using Application app = Application.New("at.gfoidl.cairo.gtk4.demo.simple", Gio.ApplicationFlags.FlagsNone);
+using Application app = Application.New("at.gfoidl.cairo.gtk4.function-plot-demo", Gio.ApplicationFlags.FlagsNone);
 app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
 {
     Application app = (Application)gioApp;

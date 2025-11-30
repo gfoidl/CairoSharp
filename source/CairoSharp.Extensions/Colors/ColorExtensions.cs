@@ -46,10 +46,9 @@ public static class ColorExtensions
                 return new(red * By255, green * By255, blue * By255, alpha * By255);
             }
 
-            Vector256<long> tmp        = Vector256.Create(red, green, blue, alpha);
-            Vector256<double> vec      = Vector256.ConvertToDouble(tmp);
-            Vector256<double> by255Vec = Vector256.Create(By255);
-            vec *= by255Vec;
+            Vector256<long> tmp   = Vector256.Create(red, green, blue, alpha);
+            Vector256<double> vec = Vector256.ConvertToDouble(tmp);
+            vec *= Vector256.Create(By255);
 
             return Color.FromVector256(vec);
         }

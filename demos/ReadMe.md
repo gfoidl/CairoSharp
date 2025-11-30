@@ -38,7 +38,7 @@ Shows how to draw with _cairo_ in GTK 3 in a simple way and without any external
 
 Shows the [cairo examples](https://www.cairographics.org/samples/) in GTK 4, plus some little extras added by me.
 
-For more information see [Gtk4Demo ReadMe](./Gtk/Gtk4Demo/ReadMe.md).
+For more information see [Gtk4Demo ReadMe](./GTK/Gtk4Demo/ReadMe.md).
 
 A Windows version is in [WinFormsDemo](#winformsdemo).
 
@@ -46,7 +46,19 @@ A Windows version is in [WinFormsDemo](#winformsdemo).
 
 Shows how to display an animation, drawed via _cairo_ in GTK 4. For each iteration an image can be stored to the output folder, and in the [ReadMe](./Gtk/Gtk4Animation/ReadMe.md) over there is a command on how to create a `mp4`-video out of the created image files.
 
+There are some variants of this demo:
+* [Gtk4AnimationWithBuilder](./GTK/Gtk4AnimationWithBuilder/ReadMe.md) shows how to use GTK 4's UI builder
+* [Gtk4AnimationOptimized](./GTK/Gtk4AnimationOptimized/ReadMe.md) uses optimizations for more efficient rendering
+
 A Windows version is in [WinFormsAnimation](#winformsanimation).
+
+#### Gtk4FunctionPlotDemo
+
+Plotting of pixel data (peaks function) and displaying current $z = f(x, y)$ values on mouse move.
+
+Also shows multi-line text layout for charts.
+
+See [ReadMe of project](./GTK/Gtk4FunctionPlotDemo/ReadMe.md) for more infos.
 
 ### Windows demos
 

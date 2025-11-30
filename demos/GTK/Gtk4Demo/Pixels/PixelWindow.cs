@@ -519,7 +519,7 @@ public sealed partial class PixelWindow : Window
 
     private async ValueTask DrawAsync(DrawingArea drawingArea, CairoContext cr, int width, int height)
     {
-        // They must not be equal.
+        // They may not be equal.
         width  = drawingArea.ContentWidth;
         height = drawingArea.ContentHeight;
 
@@ -600,7 +600,16 @@ public sealed partial class PixelWindow : Window
             for (int /* j */ x = 0; x < data_y.Length; ++x)
             {
                 double zForColor    = data_y[x];
-                pixelRowAccessor[x] = GetColor(zForColor);
+                Color color         = GetColor(zForColor);
+                pixelRowAccessor[x] = color;
+
+#if DEBUG
+                Color actual = pixelRowAccessor[x];
+                Debug.Assert(Math.Abs(actual.Red   - color.Red)   < 1e-2);
+                Debug.Assert(Math.Abs(actual.Green - color.Green) < 1e-2);
+                Debug.Assert(Math.Abs(actual.Blue  - color.Blue)  < 1e-2);
+                Debug.Assert(Math.Abs(actual.Alpha - color.Alpha) < 1e-2);
+#endif
             }
         }
 #endif
@@ -688,46 +697,6 @@ public sealed partial class PixelWindow : Window
                     data_i[j] = m * data_i[j] + o;
                 }
             }
-        }
-    }
-
-    private interface IFunction
-    {
-        static abstract double Calculate(double x, double y);
-    }
-
-    private struct PeaksFunction : IFunction
-    {
-        public static double Calculate(double x, double y)
-        {
-            //  z = f(x, y) = 3 (1 - x)^2 \cdot e^{-x^2 - (y+1)^2} - 10 \left( \frac{x}{5} - x^3 - y^5 \right) \cdot e^{-x^2 - y^2} - \frac{1}{3} \cdot e^{-(x+1)^2 - y^2}
-
-            double z =
-                3 * (1 - x) * (1 - x) *
-                Math.Exp(-x * x) -
-                (y + 1) * (y + 1) -
-                10 * (x / 5 - x * x * x - y * y * y * y * y) *
-                Math.Exp(-x * x - y * y) -
-                1 / 3 * Math.Exp(-(x + 1) * (x + 1) - y * y);
-
-            return z;
-        }
-    }
-
-    private struct MexicanHatFunction : IFunction
-    {
-        public static double Calculate(double x, double y)
-        {
-            // z = f(x, y) = \frac{1}{\pi \sigma^4} \left( 1 - \frac{x^2 + y^2}{\sigma^2} \right) \cdot e^{-\frac{x^2 + y^2}{2\sigma^2}}
-
-            const double Sigma = 0.75;
-
-            double z =
-                1d / (Math.PI * Sigma * Sigma * Sigma * Sigma) *
-                (1 - (x * x + y * y) / (Sigma * Sigma)) *
-                Math.Exp(-(x * x + y * y) / (2 * Sigma * Sigma));
-
-            return z;
         }
     }
 

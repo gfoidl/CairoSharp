@@ -253,11 +253,11 @@ public static unsafe class PathExtensions
         /// transformation matrix by different amounts in the X and Y directions. For example, to draw an
         /// ellipse in the box given by x , y , width , height:
         /// <code>
-        /// context.Save();
-        /// context.Translate(x + width / 2, y + height / 2);
-        /// context.Scale(width / 2, height / 2);
-        /// context.Arc(0, 0, 1, 0, 2 * Math.Pi);
-        /// context.Restore();
+        /// cr.Save();
+        /// cr.Translate(x + width / 2, y + height / 2);
+        /// cr.Scale(width / 2, height / 2);
+        /// cr.Arc(0, 0, 1, 0, 2 * Math.Pi);
+        /// cr.Restore();
         /// </code>
         /// Note: the line width is also affected by the CTM, so for uniform line width the scale must be undone
         /// before calling <see cref="CairoContext.Stroke"/> (see
@@ -415,11 +415,11 @@ public static unsafe class PathExtensions
         /// <remarks>
         /// This method is logically equivalent to:
         /// <code>
-        /// context.MoveTo(x, y);
-        /// context.RelLineTo(width, 0);
-        /// context.RelLineTo(0, height);
-        /// context.RelLineTo(-width, 0);
-        /// context.ClosePath();
+        /// cr.MoveTo(x, y);
+        /// cr.RelLineTo(width, 0);
+        /// cr.RelLineTo(0, height);
+        /// cr.RelLineTo(-width, 0);
+        /// cr.ClosePath();
         /// </code>
         /// </remarks>
         public void Rectangle(double x, double y, double width, double height)
