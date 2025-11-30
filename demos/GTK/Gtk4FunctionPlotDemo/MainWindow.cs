@@ -28,6 +28,7 @@ public sealed class MainWindow : ApplicationWindow
     private static readonly double     s_funcMax;
 
     private readonly CheckButton _annotationDarkSchemeCheckButton;
+    private readonly CheckButton _monospaceFontForAnnotationCheckButton;
 
     private ImageSurface? _functionImageSurface;
     private MousePosition _mousePosition;
@@ -39,20 +40,31 @@ public sealed class MainWindow : ApplicationWindow
         this.Title       = "Peaks function plot";
         this.Resizable   = false;
 
-        Box box    = Box.New(Orientation.Vertical, spacing: 10);
-        this.Child = box;
+        Box mainBox = Box.New(Orientation.Vertical, spacing: 10);
+        this.Child  = mainBox;
 
-        box.MarginStart  = 10;
-        box.MarginTop    = 10;
-        box.MarginEnd    = 10;
-        box.MarginBottom = 10;
+        mainBox.MarginStart  = 10;
+        mainBox.MarginTop    = 10;
+        mainBox.MarginEnd    = 10;
+        mainBox.MarginBottom = 10;
 
-        _annotationDarkSchemeCheckButton        = CheckButton.NewWithLabel("annotation dark scheme");
+        _annotationDarkSchemeCheckButton        = CheckButton.NewWithLabel("_annotation dark scheme");
         _annotationDarkSchemeCheckButton.Halign = Align.Start;
-        box.Append(_annotationDarkSchemeCheckButton);
+        _annotationDarkSchemeCheckButton.SetUseUnderline(true);
 
-        box.Append(Separator.New(Orientation.Horizontal));
-        box.Append(this.CreateDrawingArea());
+        _monospaceFontForAnnotationCheckButton         = CheckButton.NewWithLabel("_monospace font for annotation");
+        _monospaceFontForAnnotationCheckButton.Halign  = Align.End;
+        _monospaceFontForAnnotationCheckButton.Hexpand = true;
+        _monospaceFontForAnnotationCheckButton.Active  = true;
+        _monospaceFontForAnnotationCheckButton.SetUseUnderline(true);
+
+        Box checkButtonBox = Box.New(Orientation.Horizontal, spacing: 0);
+        checkButtonBox.Append(_annotationDarkSchemeCheckButton);
+        checkButtonBox.Append(_monospaceFontForAnnotationCheckButton);
+
+        mainBox.Append(checkButtonBox);
+        mainBox.Append(Separator.New(Orientation.Horizontal));
+        mainBox.Append(this.CreateDrawingArea());
     }
     //-------------------------------------------------------------------------
     private DrawingArea CreateDrawingArea()
@@ -130,7 +142,13 @@ public sealed class MainWindow : ApplicationWindow
 
             if (Calculator.TryGetCoordinatesAndFuncValue(s_funcData, _mousePosition, out double x, out double y, out double z))
             {
-                Plotter.DrawCurrentValue(cr, width, height, _mousePosition, x, y, z, _annotationDarkSchemeCheckButton.Active);
+                Plotter.DrawCurrentValue(
+                    cr,
+                    width, height,
+                    _mousePosition,
+                    x, y, z,
+                    _annotationDarkSchemeCheckButton.Active,
+                    _monospaceFontForAnnotationCheckButton.Active);
             }
         }
     }
