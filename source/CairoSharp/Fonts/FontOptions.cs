@@ -15,6 +15,12 @@ public struct cairo_font_options_t;
 /// The font options specify how fonts should be rendered. Most of the time the font options
 /// implied by a surface are just right and do not need any changes, but for pixel-based targets
 /// tweaking font options may result in superior output on a particular display.
+/// <para>
+/// New features may be added to a <see cref="FontOptions"/> in the future. For this reason,
+/// <see cref="Copy"/>, <see cref="Equals(FontOptions?)"/>, <see cref="Merge(FontOptions)"/>,
+/// and <see cref="GetHashCode"/> should be used to copy, check for equality, merge, or compute a hash
+/// value of <see cref="FontOptions"/> objects.
+/// </para>
 /// </remarks>
 public sealed unsafe class FontOptions : CairoObject<cairo_font_options_t>, IEquatable<FontOptions>
 {

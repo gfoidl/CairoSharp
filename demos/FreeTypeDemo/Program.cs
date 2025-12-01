@@ -247,15 +247,15 @@ static void FontOptionsDemo()
             curY += textExtents.Height + PaddingY;
         }
 
-        FontOptions defaultFontOptions = cr.FontOptions.Copy();
-        cr.FontFace                    = DefaultFonts.SansSerif;
+        using FontOptions defaultFontOptions = new();
+        cr.FontFace                          = DefaultFonts.SansSerif;
 
-        using (FontOptions fontOptions = cr.FontOptions.Copy())
+        using (FontOptions fontOptions = defaultFontOptions.Copy())
         {
             fontOptions.Antialias = Antialias.Best;     // for pixel graphics only
             fontOptions.HintStyle = HintStyle.Full;
 
-            cr.FontOptions = fontOptions;
+            cr.SetFontOptions(fontOptions);
 
             ReadOnlySpan<byte> text = "Helvetica, anti-alias best, hint-style full"u8;
             cr.TextExtents(text, out TextExtents textExtents);
@@ -265,7 +265,7 @@ static void FontOptionsDemo()
             curY += textExtents.Height + PaddingY;
         }
 
-        cr.FontOptions = defaultFontOptions;
+        cr.SetFontOptions(defaultFontOptions);
 
         using (FreeTypeFont freeTypeFont = LoadFreeTypeFontFromFile("Fraunces-VariableFont_SOFT,WONK,opsz,wght.ttf"))
         {
@@ -287,8 +287,8 @@ static void FontOptionsDemo()
             // Settings on the font options must be set completely before assigning them to cr!
             fontOptions.Variations = $"wght={fontWeight}";
 
-            cr.FontFace    = freeTypeFont;
-            cr.FontOptions = fontOptions;
+            cr.FontFace = freeTypeFont;
+            cr.SetFontOptions(fontOptions);
 
             string text = $"Fraunces variable font, wght={fontWeight}";
             cr.TextExtents(text, out TextExtents textExtents);
