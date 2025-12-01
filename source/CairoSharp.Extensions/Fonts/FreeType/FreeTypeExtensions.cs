@@ -79,8 +79,9 @@ public static unsafe class FreeTypeExtensions
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void DestroyFunc(void* userData)
         {
-            Debug.WriteLine("FreeTypeExtensions.DestroyFunc called");
-
+#if DEBUG
+            Console.WriteLine($"T-ID: {Environment.CurrentManagedThreadId}, FreeTypeExtensions.DestroyFunc called, userData = 0x{(nint)userData:x2}");
+#endif
             FontState* fontState = (FontState*)userData;
             try
             {
@@ -115,7 +116,7 @@ public static unsafe class FreeTypeExtensions
         /// Normally this isn't needed as the resources are freed up on app shutdown automatically.
         /// But this method can be used, when FreeType is no longer used in the app.
         /// <para>
-        /// If called, and then later FreeTyped is used again, a new FreeType library will be created.
+        /// If called, and then later FreeType is used again, a new FreeType library will be created.
         /// </para>
         /// </remarks>
         public static void DoneFreeType()
