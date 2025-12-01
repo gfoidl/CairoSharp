@@ -18,7 +18,10 @@ public static class DefaultFonts
     /// <returns>
     /// A <see cref="ToyFontFace"/> created for Helvetica.
     /// </returns>
-    public static FontFace SansSerif => field ??= new ToyFontFace("Helvetica");
+    public static FontFace SansSerif => s_sansSerif.Value;
+    private static readonly Lazy<FontFace> s_sansSerif = new(
+        () => new ToyFontFace("Helvetica"),
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
     /// Helvetica (bold)
@@ -26,7 +29,10 @@ public static class DefaultFonts
     /// <returns>
     /// A <see cref="ToyFontFace"/> created for Helvetica.
     /// </returns>
-    public static FontFace SansSerifBold => field ??= new ToyFontFace("Helvetica", weight: Drawing.Text.FontWeight.Bold);
+    public static FontFace SansSerifBold => s_sansSerifBold.Value;
+    private static readonly Lazy<FontFace> s_sansSerifBold = new(
+        () => new ToyFontFace("Helvetica", weight: Drawing.Text.FontWeight.Bold),
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
     /// Helvetica (italic)
@@ -34,7 +40,10 @@ public static class DefaultFonts
     /// <returns>
     /// A <see cref="ToyFontFace"/> created for Helvetica.
     /// </returns>
-    public static FontFace SansSerifItalic => field ??= new ToyFontFace("Helvetica", slant: Drawing.Text.FontSlant.Italic);
+    public static FontFace SansSerifItalic => s_sansSerifItalic.Value;
+    private static readonly Lazy<FontFace> s_sansSerifItalic = new(
+        () => new ToyFontFace("Helvetica", slant: Drawing.Text.FontSlant.Italic),
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
     /// Helvetica (bold italic)
@@ -42,7 +51,10 @@ public static class DefaultFonts
     /// <returns>
     /// A <see cref="ToyFontFace"/> created for Helvetica.
     /// </returns>
-    public static FontFace SansSerifBoldItalic => field ??= new ToyFontFace("Helvetica", slant: Drawing.Text.FontSlant.Italic, weight: Drawing.Text.FontWeight.Bold);
+    public static FontFace SansSerifBoldItalic => s_sansSerifBoldItalic.Value;
+    private static readonly Lazy<FontFace> s_sansSerifBoldItalic = new(
+        () => new ToyFontFace("Helvetica", slant: Drawing.Text.FontSlant.Italic, weight: Drawing.Text.FontWeight.Bold),
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
     /// Source Code Pro
@@ -54,19 +66,14 @@ public static class DefaultFonts
     /// Source Code Pro is licensed under
     /// <a href="https://openfontlicense.org/open-font-license-official-text/">SIL Open Font License</a>.
     /// </remarks>
-    public static FontFace MonoSpace
-    {
-        get
+    public static FontFace MonoSpace => s_monoSpace.Value;
+    private static readonly Lazy<FontFace> s_monoSpace = new(
+        () =>
         {
-            if (field is null)
-            {
-                using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-Regular.ttf")!;
-                field                   = FreeTypeFont.LoadFromStream(fontStream);
-            }
-
-            return field;
-        }
-    }
+            using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-Regular.ttf")!;
+            return FreeTypeFont.LoadFromStream(fontStream);
+        },
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
     /// Source Code Pro (bold)
@@ -78,19 +85,14 @@ public static class DefaultFonts
     /// Source Code Pro is licensed under
     /// <a href="https://openfontlicense.org/open-font-license-official-text/">SIL Open Font License</a>.
     /// </remarks>
-    public static FontFace MonoSpaceBold
-    {
-        get
+    public static FontFace MonoSpaceBold => s_monoSpaceBold.Value;
+    private static readonly Lazy<FontFace> s_monoSpaceBold = new(
+        () =>
         {
-            if (field is null)
-            {
-                using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-Bold.ttf")!;
-                field                   = FreeTypeFont.LoadFromStream(fontStream);
-            }
-
-            return field;
-        }
-    }
+            using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-Bold.ttf")!;
+            return FreeTypeFont.LoadFromStream(fontStream);
+        },
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
     /// Source Code Pro (italic)
@@ -102,19 +104,14 @@ public static class DefaultFonts
     /// Source Code Pro is licensed under
     /// <a href="https://openfontlicense.org/open-font-license-official-text/">SIL Open Font License</a>.
     /// </remarks>
-    public static FontFace MonoSpaceItalic
-    {
-        get
+    public static FontFace MonoSpaceItalic => s_monoSpaceItalic.Value;
+    private static readonly Lazy<FontFace> s_monoSpaceItalic = new(
+        () =>
         {
-            if (field is null)
-            {
-                using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-Italic.ttf")!;
-                field = FreeTypeFont.LoadFromStream(fontStream);
-            }
-
-            return field;
-        }
-    }
+            using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-Italic.ttf")!;
+            return FreeTypeFont.LoadFromStream(fontStream);
+        },
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
     /// Source Code Pro (bold italic)
@@ -126,17 +123,12 @@ public static class DefaultFonts
     /// Source Code Pro is licensed under
     /// <a href="https://openfontlicense.org/open-font-license-official-text/">SIL Open Font License</a>.
     /// </remarks>
-    public static FontFace MonoSpaceBoldItalic
-    {
-        get
+    public static FontFace MonoSpaceBoldItalic => s_monoSpaceBoldItalic.Value;
+    private static readonly Lazy<FontFace> s_monoSpaceBoldItalic = new(
+        () =>
         {
-            if (field is null)
-            {
-                using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-BoldItalic.ttf")!;
-                field = FreeTypeFont.LoadFromStream(fontStream);
-            }
-
-            return field;
-        }
-    }
+            using Stream fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("fonts.SourceCodePro-BoldItalic.ttf")!;
+            return FreeTypeFont.LoadFromStream(fontStream);
+        },
+        LazyThreadSafetyMode.ExecutionAndPublication);
 }
