@@ -110,11 +110,11 @@ public unsafe class FontFace : CairoObject<cairo_font_face_t>
     /// To remove user data from a font face, call this method with the key that was used to set
     /// it and <c>null</c> for <paramref name="userData"/>.
     /// </remarks>
-    internal void SetUserData(ref UserDataKey key, void* userData, cairo_destroy_func_t destroyFunction)
+    internal void SetUserData(UserDataKey* key, void* userData, cairo_destroy_func_t destroyFunction)
     {
         this.CheckDisposed();
 
-        Status status = cairo_font_face_set_user_data(this.Handle, ref key, userData, destroyFunction);
+        Status status = cairo_font_face_set_user_data(this.Handle, key, userData, destroyFunction);
         status.ThrowIfNotSuccess();
     }
 
@@ -126,9 +126,9 @@ public unsafe class FontFace : CairoObject<cairo_font_face_t>
     /// <remarks>
     /// If no user data has been attached with the given key this method returns <c>null</c>.
     /// </remarks>
-    internal void* GetUserData(ref UserDataKey key)
+    internal void* GetUserData(UserDataKey* key)
     {
         this.CheckDisposed();
-        return cairo_font_face_get_user_data(this.Handle, ref key);
+        return cairo_font_face_get_user_data(this.Handle, key);
     }
 }

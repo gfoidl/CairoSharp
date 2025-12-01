@@ -21,8 +21,9 @@ public static unsafe class FreeTypeExtensions
     private static readonly object s_freeTypSyncRoot = new();
 #endif
 
-    private static UserDataKey s_destroyFuncKey;
-    private static FT_Library  s_ftLibrary;
+    // Must be a fixed / pinned address.
+    private static readonly UserDataKey* s_destroyFuncKey = (UserDataKey*)NativeMemory.Alloc((nuint)sizeof(UserDataKey));
+    private static FT_Library            s_ftLibrary;
 
     private static FT_Library EnsureFreeTypeInitialized()
     {
@@ -64,14 +65,14 @@ public static unsafe class FreeTypeExtensions
 
         FreeTypeFont ftFont = new(face, loadFlags);
 
-        void* userData = ftFont.GetUserData(ref s_destroyFuncKey);
+        void* userData = ftFont.GetUserData(s_destroyFuncKey);
         if (userData is null)
         {
             FontState* fontState = (FontState*)NativeMemory.Alloc((uint)sizeof(FontState));
             fontState->Face      = face;
             fontState->FontData  = fontData;
 
-            ftFont.SetUserData(ref s_destroyFuncKey, fontState, &DestroyFunc);
+            ftFont.SetUserData(s_destroyFuncKey, fontState, &DestroyFunc);
         }
 
         return ftFont;

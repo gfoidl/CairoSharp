@@ -21,17 +21,60 @@ public unsafe class UserDataKeyTests
 
         UserDataKey userDataKey = new();
 
-        fontFace1.SetUserData(ref userDataKey, &data1, null);
-        fontFace2.SetUserData(ref userDataKey, &data2, null);
+        fontFace1.SetUserData(&userDataKey, &data1, null);
+        fontFace2.SetUserData(&userDataKey, &data2, null);
 
-        Data* data1Actual = (Data*)fontFace1.GetUserData(ref userDataKey);
-        Data* data2Actual = (Data*)fontFace2.GetUserData(ref userDataKey);
+        Data* data1Actual = (Data*)fontFace1.GetUserData(&userDataKey);
+        Data* data2Actual = (Data*)fontFace2.GetUserData(&userDataKey);
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(data1Actual->Value, Is.EqualTo(data1.Value));
             Assert.That(data2Actual->Value, Is.EqualTo(data2.Value));
         }
+    }
+    //-------------------------------------------------------------------------
+    [Test]
+    public void One_object_two_keys___OK()
+    {
+        using FontFace fontFace = new ToyFontFace("Arial");
+
+        Data data1 = new() { Value = 1 };
+        Data data2 = new() { Value = 2 };
+
+        UserDataKey userDataKey1 = new();
+        UserDataKey userDataKey2 = new();
+
+        fontFace.SetUserData(&userDataKey1, &data1, null);
+        fontFace.SetUserData(&userDataKey2, &data2, null);
+
+        Data* data1Actual = (Data*)fontFace.GetUserData(&userDataKey1);
+        Data* data2Actual = (Data*)fontFace.GetUserData(&userDataKey2);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(data1Actual->Value, Is.EqualTo(data1.Value));
+            Assert.That(data2Actual->Value, Is.EqualTo(data2.Value));
+        }
+    }
+    //-------------------------------------------------------------------------
+    [Test]
+    public void One_object_one_key_data_updated___OK()
+    {
+        using FontFace fontFace = new ToyFontFace("Arial");
+
+        Data data1 = new() { Value = 1 };
+        Data data2 = new() { Value = 2 };
+
+        UserDataKey userDataKey = new();
+
+        fontFace.SetUserData(&userDataKey, &data1, null);
+        Data* data1Actual = (Data*)fontFace.GetUserData(&userDataKey);
+        Assert.That(data1Actual->Value, Is.EqualTo(data1.Value));
+
+        fontFace.SetUserData(&userDataKey, &data2, null);
+        Data* data2Actual = (Data*)fontFace.GetUserData(&userDataKey);
+        Assert.That(data2Actual->Value, Is.EqualTo(data2.Value));
     }
     //-------------------------------------------------------------------------
     [Test]
@@ -46,11 +89,11 @@ public unsafe class UserDataKeyTests
         UserDataKey userDataKey1 = new();
         UserDataKey userDataKey2 = new();
 
-        fontFace1.SetUserData(ref userDataKey1, &data1, null);
-        fontFace2.SetUserData(ref userDataKey2, &data2, null);
+        fontFace1.SetUserData(&userDataKey1, &data1, null);
+        fontFace2.SetUserData(&userDataKey2, &data2, null);
 
-        Data* data1Actual = (Data*)fontFace1.GetUserData(ref userDataKey1);
-        Data* data2Actual = (Data*)fontFace2.GetUserData(ref userDataKey2);
+        Data* data1Actual = (Data*)fontFace1.GetUserData(&userDataKey1);
+        Data* data2Actual = (Data*)fontFace2.GetUserData(&userDataKey2);
 
         using (Assert.EnterMultipleScope())
         {
@@ -69,7 +112,7 @@ public unsafe class UserDataKeyTests
         int gen0    = GC.GetGeneration(testObject);
         void* addr0 = Unsafe.AsPointer(ref testObject.UserDataKey);
 
-        fontFace.SetUserData(ref testObject.UserDataKey, &data, null);
+        fontFace.SetUserData((UserDataKey*)Unsafe.AsPointer(ref testObject.UserDataKey), &data, null);
 
         GC.Collect();   // testObject Gen0 -> Gen1
         GC.Collect();   // testObject Gen1 -> Gen2
@@ -83,11 +126,18 @@ public unsafe class UserDataKeyTests
             GC gen: {gen1}, after:  0x{(nint)addr1:x2}
             """);
 
-        Data* actual = (Data*)fontFace.GetUserData(ref testObject.UserDataKey);
+        Data* actual = (Data*)fontFace.GetUserData((UserDataKey*)Unsafe.AsPointer(ref testObject.UserDataKey));
 
+        Assume.That(gen0, Is.Zero);
+        Assume.That(gen1, Is.EqualTo(2));
         Assume.That(addr0 != addr1);
 
         Assert.Throws<NullReferenceException>(() => _ = actual->Value);
+
+        // Note: it's hard to reproduce in tests here, but the same applies to
+        // static classes too, as they're relocated by the GC also.
+        // See https://sharplab.io/#v2:EYLgxg9gTgpgtADwGwBYA0AXEUCuA7AHwAEAmARgFgAoIgBgAIiyA6AJXwwEsBbGZgYQjcADpwA2MKAGVJAN05gYAZwDc1Ooxbs8XXswCSOyRGEyo8xaurV8SgIYAzGNQDe1eh8YoAVPTsATfygGAF56AFU8eydmAEElAAUITiMoAApYB3oAFWUMAHlgACsYMAwWcKVJABE7DDsAaRgATwBKNSp3TwBxfgEIMQkytPauj17+wdKMEY7PejGvXwCgsnowyOi+eKSUjEkMmCzcpQLi6YqqqFr6pra5z0WmAE40gBIAIi/F+djA2CUSnosDEEDAdU4EDwIB+nmAR2gMBA9FoCBcaTwe1aK2CIAQJAAvrCPI59lBkSi0RisTiyHjCcT6GAABZ2PAAcxg/mRLhxDAAhGFaUSqPNPF8PqMqCKAPQyuAKxVK5Uq1Vq9UazWq9QAZk0SEYJByeUKJTKlCoblFnmEUE4sjqMH1ESuN0aLXoSgA+jhXXV3c0Ok89UwDZkXTV/XcI9cox6QgA+YFHT0+v23FodWXyrW5vP5gsK6gAbSkGFwZQAMnZmhAcDNq7X6w0Uv5mDIAI44GA6Th2MStAC6us95ZwZRjbrurkWcpl9AAPEocNxuHYoM0E7O5fQ8BAMPRfVyVPROOy97BmNv5wuZcvV+vN8HTzoIngj/4s0A
+        // for a demonstration.
     }
     //-------------------------------------------------------------------------
     [Test]
@@ -102,7 +152,7 @@ public unsafe class UserDataKeyTests
         int gen0    = GC.GetGeneration(testObject);
         void* addr0 = Unsafe.AsPointer(ref testObject.UserDataKey);
 
-        fontFace.SetUserData(ref testObject.UserDataKey, &data, null);
+        fontFace.SetUserData((UserDataKey*)Unsafe.AsPointer(ref testObject.UserDataKey), &data, null);
 
         GC.Collect();   // testObject Gen0 -> Gen1
         GC.Collect();   // testObject Gen1 -> Gen2
@@ -116,7 +166,10 @@ public unsafe class UserDataKeyTests
             GC gen: {gen1}, after:  0x{(nint)addr1:x2}
             """);
 
-        Data* actual = (Data*)fontFace.GetUserData(ref testObject.UserDataKey);
+        Data* actual = (Data*)fontFace.GetUserData((UserDataKey*)Unsafe.AsPointer(ref testObject.UserDataKey));
+
+        Assume.That(gen0, Is.Zero);
+        Assume.That(gen1, Is.EqualTo(2));
 
         using (Assert.EnterMultipleScope())
         {

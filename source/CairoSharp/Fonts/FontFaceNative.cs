@@ -33,9 +33,9 @@ internal static unsafe partial class FontFaceNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Status cairo_font_face_set_user_data(cairo_font_face_t* font_face, ref UserDataKey key, void* user_data, cairo_destroy_func_t destroy);
+    internal static partial Status cairo_font_face_set_user_data(cairo_font_face_t* font_face, UserDataKey* key, void* user_data, cairo_destroy_func_t destroy);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_font_face_get_user_data(cairo_font_face_t* font_face, ref UserDataKey key);
+    internal static partial void* cairo_font_face_get_user_data(cairo_font_face_t* font_face, UserDataKey* key);
 }

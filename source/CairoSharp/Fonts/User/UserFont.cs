@@ -177,8 +177,9 @@ public sealed unsafe class UserFont : FontFace
     /// </remarks>
     public delegate Status UnicodeToGlyph(ScaledFont scaledFont, int unicode, out int glyphIndex);
 
-    private GCHandle _stateHandle;          // mutable struct
-    private static UserDataKey s_stateKey;  // mutable struct, don't make readonly
+    // Must be a fixed / pinned address.
+    private static readonly UserDataKey* s_stateKey = (UserDataKey*)NativeMemory.Alloc((nuint)sizeof(UserDataKey));
+    private GCHandle _stateHandle;      // mutable struct
 
     /// <summary>
     /// Creates a new user font-face.
@@ -230,7 +231,7 @@ public sealed unsafe class UserFont : FontFace
             cairo_user_font_face_set_unicode_to_glyph_func(this.Handle, &UnicodeToGlyphCore);
         }
 
-        cairo_font_face_set_user_data(this.Handle, ref s_stateKey, GCHandle.ToIntPtr(_stateHandle).ToPointer(), &Destroy);
+        cairo_font_face_set_user_data(this.Handle, s_stateKey, GCHandle.ToIntPtr(_stateHandle).ToPointer(), &Destroy);
 
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void Destroy(void* data)
@@ -324,7 +325,7 @@ public sealed unsafe class UserFont : FontFace
     private static State GetState(cairo_scaled_font_t* scaledFont)
     {
         cairo_font_face_t* fontFace    = cairo_scaled_font_get_font_face(scaledFont);
-        void* userData                 = cairo_font_face_get_user_data(fontFace, ref s_stateKey);
+        void* userData                 = cairo_font_face_get_user_data(fontFace, s_stateKey);
         GCHandle gcHandle              = GCHandle.FromIntPtr(new IntPtr(userData));
 
         Debug.Assert(gcHandle.IsAllocated);

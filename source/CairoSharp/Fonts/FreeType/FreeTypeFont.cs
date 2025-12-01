@@ -29,7 +29,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// A FreeType face object, already opened. This must be kept around until the face's ref_count
     /// drops to zero and it is freed. Since the face may be referenced internally to Cairo, the best
     /// way to determine when it is safe to free the face is to pass a cairo_destroy_func_t to
-    /// <see cref="FontFace.SetUserData(ref UserDataKey, void*, delegate* unmanaged[Cdecl]{void*, void})"/>
+    /// <see cref="FontFace.SetUserData(UserDataKey*, void*, delegate* unmanaged[Cdecl]{void*, void})"/>
     /// </param>
     /// <param name="loadFlags">
     /// flags to pass to <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_glyph">FT_Load_Glyph</a>
