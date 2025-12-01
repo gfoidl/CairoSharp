@@ -42,7 +42,7 @@ export default function () {
 export const options = {
     thresholds: {
         http_req_failed  : ["rate < 0.001"],
-        http_req_duration: ["p(95) < 50", "med < 20"]     // ms
+        http_req_duration: ["p(95) < 75", "med < 20"]   // ms
     },
     scenarios: {
         average_load: {

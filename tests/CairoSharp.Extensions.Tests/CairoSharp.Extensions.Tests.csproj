@@ -4,6 +4,7 @@
         <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
         <SignAssembly>True</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>

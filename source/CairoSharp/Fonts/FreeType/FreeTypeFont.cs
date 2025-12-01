@@ -125,19 +125,17 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// of times <see cref="LockFace"/> is called. <see cref="UnlockFace"/> must be called the same number of times.
     /// <para>
     /// You must be careful when using this method in a library or in a threaded application, because
-    /// freetype's design makes it unsafe to call freetype functions simultaneously from multiple threads,
+    /// FreeType's design makes it unsafe to call FreeType functions simultaneously from multiple threads,
     /// (even if using distinct FT_Face objects). Because of this, application code that acquires an
     /// FT_Face object with this call must add its own locking to protect any use of that object, (and
     /// which also must protect any other calls into cairo as almost any cairo function might result in a
-    /// call into the freetype library).
+    /// call into the FreeType library).
     /// </para>
     /// </remarks>
-    public IntPtr LockFace()
+    public FT_Face LockFace()
     {
         this.CheckDisposed();
-
-        FT_Face ftFace = cairo_ft_scaled_font_lock_face((cairo_scaled_font_t*)this.Handle);
-        return new IntPtr(ftFace);
+        return cairo_ft_scaled_font_lock_face((cairo_scaled_font_t*)this.Handle);
     }
 
     /// <summary>

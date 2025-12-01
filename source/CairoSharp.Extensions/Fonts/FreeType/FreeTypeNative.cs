@@ -33,11 +33,11 @@ internal static unsafe partial class FreeTypeNative
 
     [LibraryImport(LibFreeType, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial FTError FT_New_Face(FT_Library library, string filepathname, FT_Long face_index, out FT_Face aface);
+    internal static partial FTError FT_New_Face(FT_Library library, string filepathname, FT_Long face_index, FT_Face* aface);
 
     [LibraryImport(LibFreeType)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial FTError FT_New_Memory_Face(FT_Library library, byte* file_base, FT_Long file_size, FT_Long face_index, out FT_Face aface);
+    internal static partial FTError FT_New_Memory_Face(FT_Library library, byte* file_base, FT_Long file_size, FT_Long face_index, FT_Face* aface);
 
     [LibraryImport(LibFreeType)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

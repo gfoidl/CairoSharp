@@ -23,6 +23,20 @@ public class FreeTypeTests
     private static readonly string s_expectedSvgStringText        = Encoding.UTF8.GetString(s_expectedSvgDataText)       .Replace("\r\n", "\n");
     //-------------------------------------------------------------------------
     [Test]
+    public unsafe void Face_info___OK()
+    {
+        using FreeTypeFont sanRemoFont = LoadFreeTypeFontFromFile("SanRemo.ttf");
+        FT_FaceRec_* face              = sanRemoFont.LockFace();
+
+        using (Assert.EnterMultipleScope())
+        {
+            
+        }
+
+        sanRemoFont.UnlockFace();
+    }
+    //-------------------------------------------------------------------------
+    [Test]
     public void FontOptions_demo___OK()
     {
         byte[] actual = DrawFontOptions();

@@ -1,6 +1,5 @@
 // (c) gfoidl, all rights reserved
 
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -13,6 +12,13 @@ namespace Cairo.Fonts.FreeType;
 /// <summary>
 /// Extensions for <see cref="FreeTypeFont"/>.
 /// </summary>
+/// <remarks>
+/// An FT_Face object can only be safely used from one thread at a time. Similarly, creation and
+/// destruction of FT_Face with the same FT_Library object can only be done from one thread at a
+/// time. On the other hand, functions like FT_Load_Glyph and its siblings are thread-safe and do
+/// not need the lock to be held as long as the same FT_Face object is not used from multiple
+/// threads at the same time.
+/// </remarks>
 public static unsafe class FreeTypeExtensions
 {
 #if NET9_0_OR_GREATER
@@ -38,12 +44,13 @@ public static unsafe class FreeTypeExtensions
                     return s_ftLibrary;
                 }
 
-                FT_Library library;
-                FTError status = FT_Init_FreeType(&library);
+                fixed (FT_Library* ptr = &s_ftLibrary)
+                {
+                    FTError status = FT_Init_FreeType(ptr);
+                    status.ThrowIfNotSuccess();
+                }
 
-                status.ThrowIfNotSuccess();
-
-                return s_ftLibrary = library;
+                return s_ftLibrary;
             }
         }
     }
@@ -86,8 +93,11 @@ public static unsafe class FreeTypeExtensions
             FontState* fontState = (FontState*)userData;
             try
             {
-                FTError status = FT_Done_Face(fontState->Face);
-                status.ThrowIfNotSuccess();
+                lock (s_freeTypSyncRoot)
+                {
+                    FTError status = FT_Done_Face(fontState->Face);
+                    status.ThrowIfNotSuccess();
+                }
             }
             finally
             {
@@ -177,9 +187,14 @@ public static unsafe class FreeTypeExtensions
             ArgumentNullException.ThrowIfNull(fontFileName);
 
             FT_Library library = EnsureFreeTypeInitialized();
-            FTError status     = FT_New_Face(library, fontFileName, new FT_Long(faceIndex), out FT_Face face);
+            FT_Face face;
 
-            status.ThrowIfNotSuccess();
+            lock (s_freeTypSyncRoot)
+            {
+                FTError status = FT_New_Face(library, fontFileName, new FT_Long(faceIndex), &face);
+                status.ThrowIfNotSuccess();
+            }
+
             return CreateFreeTypeFontCore(face, loadFlags);
         }
 
@@ -264,14 +279,19 @@ public static unsafe class FreeTypeExtensions
 
             return LoadFromData(fontDataNative, (int)font.Length, faceIndex, loadFlags);
         }
+    }
 
-        private static FreeTypeFont LoadFromData(byte* fontData, int fontDataLength, int faceIndex, int loadFlags)
+    private static FreeTypeFont LoadFromData(byte* fontData, int fontDataLength, int faceIndex, int loadFlags)
+    {
+        FT_Library library = EnsureFreeTypeInitialized();
+        FT_Face face;
+
+        lock (s_freeTypSyncRoot)
         {
-            FT_Library library = EnsureFreeTypeInitialized();
-            FTError status     = FT_New_Memory_Face(library, fontData, new FT_Long(fontDataLength), new FT_Long(faceIndex), out FT_Face face);
-
+            FTError status = FT_New_Memory_Face(library, fontData, new FT_Long(fontDataLength), new FT_Long(faceIndex), &face);
             status.ThrowIfNotSuccess();
-            return CreateFreeTypeFontCore(face, loadFlags, fontData);
         }
+
+        return CreateFreeTypeFontCore(face, loadFlags, fontData);
     }
 }
