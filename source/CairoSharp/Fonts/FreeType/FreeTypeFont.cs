@@ -114,6 +114,11 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// Gets the FT_Face object from a FreeType backend font and scales it appropriately for the font
     /// and applies OpenType font variations if applicable.
     /// </summary>
+    /// <param name="scaledFont">
+    /// A <see cref="ScaledFont"/> from the FreeType font backend. Such an object can be created by calling
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/> on a FreeType backend font face
+    /// (see <see cref="FreeTypeFont(nint, int)"/>, <see cref="FreeTypeFont(nint)"/>).
+    /// </param>
     /// <returns>
     /// The FT_Face object for font, scaled appropriately, or <c>null</c> if <see cref="ScaledFont"/>
     /// is in an error state (see <see cref="ScaledFont.Status"/>) or there is insufficient memory.
@@ -132,19 +137,22 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// call into the FreeType library).
     /// </para>
     /// </remarks>
-    public FT_Face LockFace()
+    public static FT_Face LockFace(ScaledFont scaledFont)
     {
-        this.CheckDisposed();
-        return cairo_ft_scaled_font_lock_face((cairo_scaled_font_t*)this.Handle);
+        return cairo_ft_scaled_font_lock_face((cairo_scaled_font_t*)scaledFont.Handle);
     }
 
     /// <summary>
     /// Releases a face obtained with <see cref="LockFace"/>.
     /// </summary>
-    public void UnlockFace()
+    /// <param name="scaledFont">
+    /// A <see cref="ScaledFont"/> from the FreeType font backend. Such an object can be created by calling
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/> on a FreeType backend font face
+    /// (see <see cref="FreeTypeFont(nint, int)"/>, <see cref="FreeTypeFont(nint)"/>).
+    /// </param>
+    public static void UnlockFace(ScaledFont scaledFont)
     {
-        this.CheckDisposed();
-        cairo_ft_scaled_font_unlock_face((cairo_scaled_font_t*)this.Handle);
+        cairo_ft_scaled_font_unlock_face((cairo_scaled_font_t*)scaledFont.Handle);
     }
 
     /// <summary>

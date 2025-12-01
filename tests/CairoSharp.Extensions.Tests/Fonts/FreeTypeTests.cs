@@ -7,6 +7,7 @@ using Cairo.Extensions.Colors;
 using Cairo.Extensions.Fonts;
 using Cairo.Fonts;
 using Cairo.Fonts.FreeType;
+using Cairo.Fonts.Scaled;
 using Cairo.Surfaces.PDF;
 using Cairo.Surfaces.Recording;
 using Cairo.Surfaces.SVG;
@@ -23,17 +24,30 @@ public class FreeTypeTests
     private static readonly string s_expectedSvgStringText        = Encoding.UTF8.GetString(s_expectedSvgDataText)       .Replace("\r\n", "\n");
     //-------------------------------------------------------------------------
     [Test]
-    public unsafe void Face_info___OK()
+    public unsafe void Face_info_via_LockFace___OK()
     {
+        Matrix fontMatrix = default;
+        Matrix ctm        = default;
+        fontMatrix.InitIdentity();
+        ctm.InitIdentity();
+
         using FreeTypeFont sanRemoFont = LoadFreeTypeFontFromFile("SanRemo.ttf");
-        FT_FaceRec_* face              = sanRemoFont.LockFace();
+        using FontOptions fontOptions  = new();
+        using ScaledFont scaledFont    = new(sanRemoFont, ref fontMatrix, ref ctm, fontOptions);
+        FT_FaceRec_* face              = FreeTypeFont.LockFace(scaledFont);
 
         using (Assert.EnterMultipleScope())
         {
-            
+            int facesCount    = (int)(face->num_faces).Value;
+            string familyName = new(face->family_name);
+            string styleName  = new(face->style_name);
+
+            Assert.That(facesCount, Is.EqualTo(1));
+            Assert.That(familyName, Is.EqualTo("San Remo"));
+            Assert.That(styleName , Is.EqualTo("Regular"));
         }
 
-        sanRemoFont.UnlockFace();
+        FreeTypeFont.UnlockFace(scaledFont);
     }
     //-------------------------------------------------------------------------
     [Test]
