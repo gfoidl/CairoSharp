@@ -16,6 +16,8 @@ There are also some enhanced features, like setting tags, and links in a PDF, cr
 
 This demo has a simple minimal api endpoint, that uses _cairo_ to render a SVG and write it to the output without the need of temporary files. This is done by either using the streaming API or registering a callback at surface construction.
 
+See [project's ReadMe](./AspNetCoreDemo/ReadMe.md) for further info.
+
 ### CairoExtensionsDemo
 
 Shows some features that the _CairoSharp.Extensions_ package provides.

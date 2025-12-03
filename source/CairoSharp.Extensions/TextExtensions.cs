@@ -120,7 +120,7 @@ public static class TextExtensions
                 Throw();
 
                 [DoesNotReturn]
-                static void Throw()=> throw new ArgumentNullException(nameof(utf8));
+                static void Throw() => throw new ArgumentNullException(nameof(utf8));
             }
 
             // Based on https://www.cairographics.org/samples/text_align_center/

@@ -1318,11 +1318,11 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// To remove user data from a surface, call this method with the key that was used to set it
     /// and <c>null</c> for data.
     /// </remarks>
-    internal void SetUserData(ref UserDataKey key, void* userData, cairo_destroy_func_t destroyFunction)
+    internal void SetUserData(UserDataKey* key, void* userData, cairo_destroy_func_t destroyFunction)
     {
         this.CheckDisposed();
 
-        Status status = cairo_set_user_data(this.Handle, ref key, userData, destroyFunction);
+        Status status = cairo_set_user_data(this.Handle, key, userData, destroyFunction);
         status.ThrowIfNotSuccess();
     }
 
@@ -1332,10 +1332,10 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// </summary>
     /// <param name="key">the address of the <see cref="UserDataKey"/> the user data was attached to</param>
     /// <returns> the user data previously attached or <c>null</c>.</returns>
-    internal void* GetUserData(ref UserDataKey key)
+    internal void* GetUserData(UserDataKey* key)
     {
         this.CheckDisposed();
-        return cairo_get_user_data(this.Handle, ref key);
+        return cairo_get_user_data(this.Handle, key);
     }
 
     /// <summary>

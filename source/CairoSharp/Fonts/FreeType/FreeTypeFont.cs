@@ -14,13 +14,11 @@ namespace Cairo.Fonts.FreeType;
 /// </remarks>
 public sealed unsafe class FreeTypeFont : FontFace
 {
+    private readonly FT_Face _freeTypeFace;
+
     internal FreeTypeFont(cairo_font_face_t* fontFace, bool isOwnedByCairo = false, bool needsDestroy = true)
         : base(fontFace, isOwnedByCairo, needsDestroy) { }
 
-    internal FreeTypeFont(FT_Face face, int loadFlags) : base(cairo_ft_font_face_create_for_ft_face(face, loadFlags)) { }
-
-#pragma warning disable CS1584 // XML comment has syntactically incorrect cref attribute
-#pragma warning disable CS1658 // Warning is overriding an error
     /// <summary>
     /// Creates a new font face for the FreeType font backend from a pre-opened
     /// FreeType face.
@@ -29,7 +27,44 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// A FreeType face object, already opened. This must be kept around until the face's ref_count
     /// drops to zero and it is freed. Since the face may be referenced internally to Cairo, the best
     /// way to determine when it is safe to free the face is to pass a cairo_destroy_func_t to
-    /// <see cref="FontFace.SetUserData(ref UserDataKey, void*, delegate* unmanaged[Cdecl]{void*, void})"/>
+    /// cairo_font_face_set_user_data()
+    /// </param>
+    /// <param name="loadFlags">
+    /// flags to pass to <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_glyph">FT_Load_Glyph</a>
+    /// when loading glyphs from the font. These flags are OR'ed together with the flags derived from the
+    /// <see cref="FontOptions"/> to <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>,
+    /// so only a few values such as FT_LOAD_VERTICAL_LAYOUT, and FT_LOAD_FORCE_AUTOHINT are useful.
+    /// You should not pass any of the flags affecting the load target, such as FT_LOAD_TARGET_LIGHT.
+    /// <para>
+    /// See <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_xxx">FT_LOAD_XXX</a>
+    /// for values.
+    /// </para>
+    /// </param>
+    /// <remarks>
+    /// This font can then be used with <see cref="TextExtensions.set_FontFace(CairoContext, FontFace)"/> or
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
+    /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
+    /// is also for the FreeType backend and can be used with functions such as <see cref="LockFace"/>.
+    /// Note that Cairo may keep a reference to the FT_Face alive in a font-cache and the exact lifetime
+    /// of the reference depends highly upon the exact usage pattern and is subject to external factors.
+    /// You must not call FT_Done_Face() before the last reference to the <see cref="FontFace"/> has been dropped.
+    /// <para>
+    /// See <a href="https://www.cairographics.org/manual/cairo-FreeType-Fonts.html#cairo-ft-font-face-create-for-ft-face">cairo docs</a>
+    /// for an example on how one might correctly couple the lifetime of the FreeType face object to the <see cref="FontFace"/>.
+    /// </para>
+    /// </remarks>
+    public FreeTypeFont(FT_Face face, int loadFlags) : base(cairo_ft_font_face_create_for_ft_face(face, loadFlags))
+        => _freeTypeFace = face;
+
+    /// <summary>
+    /// Creates a new font face for the FreeType font backend from a pre-opened
+    /// FreeType face.
+    /// </summary>
+    /// <param name="face">
+    /// A FreeType face object, already opened. This must be kept around until the face's ref_count
+    /// drops to zero and it is freed. Since the face may be referenced internally to Cairo, the best
+    /// way to determine when it is safe to free the face is to pass a cairo_destroy_func_t to
+    /// cairo_font_face_set_user_data()
     /// </param>
     /// <param name="loadFlags">
     /// flags to pass to <a href="https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_glyph">FT_Load_Glyph</a>
@@ -56,8 +91,6 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// </para>
     /// </remarks>
     public FreeTypeFont(IntPtr face, int loadFlags) : this((FT_Face)face.ToPointer(), loadFlags) { }
-#pragma warning restore CS1658 // Warning is overriding an error
-#pragma warning restore CS1584 // XML comment has syntactically incorrect cref attribute
 
     /// <summary>
     /// Creates a new font face for the FreeType font backend based on a fontconfig pattern.
@@ -114,6 +147,11 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// Gets the FT_Face object from a FreeType backend font and scales it appropriately for the font
     /// and applies OpenType font variations if applicable.
     /// </summary>
+    /// <param name="scaledFont">
+    /// A <see cref="ScaledFont"/> from the FreeType font backend. Such an object can be created by calling
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/> on a FreeType backend font face
+    /// (see <see cref="FreeTypeFont(nint, int)"/>, <see cref="FreeTypeFont(nint)"/>).
+    /// </param>
     /// <returns>
     /// The FT_Face object for font, scaled appropriately, or <c>null</c> if <see cref="ScaledFont"/>
     /// is in an error state (see <see cref="ScaledFont.Status"/>) or there is insufficient memory.
@@ -125,28 +163,45 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// of times <see cref="LockFace"/> is called. <see cref="UnlockFace"/> must be called the same number of times.
     /// <para>
     /// You must be careful when using this method in a library or in a threaded application, because
-    /// freetype's design makes it unsafe to call freetype functions simultaneously from multiple threads,
+    /// FreeType's design makes it unsafe to call FreeType functions simultaneously from multiple threads,
     /// (even if using distinct FT_Face objects). Because of this, application code that acquires an
     /// FT_Face object with this call must add its own locking to protect any use of that object, (and
     /// which also must protect any other calls into cairo as almost any cairo function might result in a
-    /// call into the freetype library).
+    /// call into the FreeType library).
     /// </para>
     /// </remarks>
-    public IntPtr LockFace()
+    /// <exception cref="InvalidOperationException">
+    /// <see cref="ScaledFont.FontType"/> is not <see cref="FontType.FreeType"/>
+    /// </exception>
+    public static FT_Face LockFace(ScaledFont scaledFont)
     {
-        this.CheckDisposed();
+        if (scaledFont.FontType != FontType.FreeType)
+        {
+            throw new InvalidOperationException($"LockFace can only be called on FreeType fonts. Actual font type = {scaledFont.FontType}");
+        }
 
-        FT_Face ftFace = cairo_ft_scaled_font_lock_face((cairo_scaled_font_t*)this.Handle);
-        return new IntPtr(ftFace);
+        return cairo_ft_scaled_font_lock_face((cairo_scaled_font_t*)scaledFont.Handle);
     }
 
     /// <summary>
     /// Releases a face obtained with <see cref="LockFace"/>.
     /// </summary>
-    public void UnlockFace()
+    /// <param name="scaledFont">
+    /// A <see cref="ScaledFont"/> from the FreeType font backend. Such an object can be created by calling
+    /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/> on a FreeType backend font face
+    /// (see <see cref="FreeTypeFont(nint, int)"/>, <see cref="FreeTypeFont(nint)"/>).
+    /// </param>
+    /// <exception cref="InvalidOperationException">
+    /// <see cref="ScaledFont.FontType"/> is not <see cref="FontType.FreeType"/>
+    /// </exception>
+    public static void UnlockFace(ScaledFont scaledFont)
     {
-        this.CheckDisposed();
-        cairo_ft_scaled_font_unlock_face((cairo_scaled_font_t*)this.Handle);
+        if (scaledFont.FontType != FontType.FreeType)
+        {
+            throw new InvalidOperationException($"UnlockFace can only be called on FreeType fonts. Actual font type = {scaledFont.FontType}");
+        }
+
+        cairo_ft_scaled_font_unlock_face((cairo_scaled_font_t*)scaledFont.Handle);
     }
 
     /// <summary>
@@ -218,4 +273,14 @@ public sealed unsafe class FreeTypeFont : FontFace
 
         cairo_ft_font_face_unset_synthesize(this.Handle, synthFlags);
     }
+
+    /// <summary>
+    /// The FT_Face object for font.
+    /// </summary>
+    /// <remarks>
+    /// This pointer may be <c>null</c>, and is only set by ctors that take
+    /// FT_Face as argument (so <see cref="FreeTypeFont(FT_FaceRec_*, int)"/> or
+    /// <see cref="FreeTypeFont(nint, int)"/>).
+    /// </remarks>
+    public FT_Face FreeTypeFontFace => _freeTypeFace;
 }

@@ -268,11 +268,11 @@ internal static unsafe partial class CairoContextNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Status cairo_set_user_data(cairo_t* cr, ref UserDataKey key, void* user_data, cairo_destroy_func_t destroy);
+    internal static partial Status cairo_set_user_data(cairo_t* cr, UserDataKey* key, void* user_data, cairo_destroy_func_t destroy);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_get_user_data(cairo_t* cr, ref UserDataKey key);
+    internal static partial void* cairo_get_user_data(cairo_t* cr, UserDataKey* key);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

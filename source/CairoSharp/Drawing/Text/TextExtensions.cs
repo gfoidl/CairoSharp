@@ -126,29 +126,31 @@ public static unsafe class TextExtensions
         /// options are derived by merging these options with the options derived from underlying surface;
         /// if the value in options has a default value (like <see cref="Antialias.Default"/>), then the
         /// value from the surface is used.
-        /// <para>
-        /// Get retrieves font rendering options set via the setter. Note that the returned options do not
-        /// include any options derived from the underlying surface; they are literally the options
-        /// passed to the setter.
-        /// </para>
         /// </summary>
-        public FontOptions FontOptions
+        /// <param name="fontOptions">font options to use</param>
+        public void SetFontOptions(FontOptions fontOptions)
         {
-            get
-            {
-                cr.CheckDisposed();
+            ArgumentNullException.ThrowIfNull(fontOptions);
 
-                FontOptions fontOptions = new();
-                cairo_get_font_options(cr.Handle, fontOptions.Handle);
-                return fontOptions;
-            }
-            set
-            {
-                ArgumentNullException.ThrowIfNull(value);
+            cr.CheckDisposed();
+            cairo_set_font_options(cr.Handle, fontOptions.Handle);
+        }
 
-                cr.CheckDisposed();
-                cairo_set_font_options(cr.Handle, value.Handle);
-            }
+        /// <summary>
+        /// Retrieves font rendering options set via <see cref="SetFontOptions(CairoContext, FontOptions)"/>.
+        /// Note that the returned options do not include any options derived from the underlying surface;
+        /// they are literally the options passed to <see cref="SetFontOptions(CairoContext, FontOptions)"/>.
+        /// </summary>
+        /// <param name="fontOptions">
+        /// a <see cref="FontOptions"/> object into which to store the retrieved options. All existing
+        /// values are overwritten.
+        /// </param>
+        public void GetFontOptions(FontOptions fontOptions)
+        {
+            ArgumentNullException.ThrowIfNull(fontOptions);
+
+            cr.CheckDisposed();
+            cairo_get_font_options(cr.Handle, fontOptions.Handle);
         }
 
         /// <summary>

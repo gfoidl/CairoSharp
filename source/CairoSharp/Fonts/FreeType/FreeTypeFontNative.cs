@@ -1,7 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 global using unsafe FT_Face = Cairo.Fonts.FreeType.FT_FaceRec_*;
-
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Cairo.Fonts.Scaled;
 
@@ -9,7 +9,27 @@ namespace Cairo.Fonts.FreeType;
 
 // https://www.cairographics.org/manual/cairo-FreeType-Fonts.html
 
-internal struct FT_FaceRec_;
+/// <summary>
+/// FreeType's native face object.
+/// </summary>
+/// <remarks>
+/// See <a href="https://freetype.org/freetype2/docs/reference/ft2-face_creation.html#ft_facerec">FreeType docs</a>
+/// for the meaning of the fields.
+/// </remarks>
+[StructLayout(LayoutKind.Sequential)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public unsafe struct FT_FaceRec_
+{
+    public CLong  num_faces;
+    public CLong  face_index;
+    public CLong  face_flags;
+    public CLong  style_flags;
+    public CLong  num_glyphs;
+    public sbyte* family_name;
+    public sbyte* style_name;
+    // others left out
+}
+
 internal struct FcPattern;
 
 internal static unsafe partial class FreeTypeFontNative

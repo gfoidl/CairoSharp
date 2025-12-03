@@ -4,6 +4,7 @@
         <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
         <SignAssembly>True</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\CairoSharp.snk</AssemblyOriginatorKeyFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,6 +23,11 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\..\demos\FreeTypeDemo\fonts\*.?tf" Link="Fonts\fonts\%(FileName)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="Fonts\*.svg" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

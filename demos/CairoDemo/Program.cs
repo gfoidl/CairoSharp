@@ -374,9 +374,9 @@ static void Demo02()
         radpat.AddColorStop(0, new Color(1.0, 0.8, 0.8));
         radpat.AddColorStop(1, new Color(0.9, 0.0, 0.0));
 
-        for (int i = 1; i < 10; i++)
+        for (int i = 1; i < 10; ++i)
         {
-            for (int j = 1; j < 10; j++)
+            for (int j = 1; j < 10; ++j)
             {
                 c.Rectangle(i / 10d - 0.04, j / 10d - 0.04, 0.08, 0.08);
             }

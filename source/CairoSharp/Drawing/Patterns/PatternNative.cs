@@ -177,11 +177,11 @@ internal static unsafe partial class PatternNative
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial Status cairo_pattern_set_user_data(cairo_pattern_t* pattern, ref UserDataKey key, void* user_data, cairo_destroy_func_t destroy);
+    internal static partial Status cairo_pattern_set_user_data(cairo_pattern_t* pattern, UserDataKey* key, void* user_data, cairo_destroy_func_t destroy);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void* cairo_pattern_get_user_data(cairo_pattern_t* pattern, ref UserDataKey key);
+    internal static partial void* cairo_pattern_get_user_data(cairo_pattern_t* pattern, UserDataKey* key);
 
     [LibraryImport(Native.LibCairo)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
