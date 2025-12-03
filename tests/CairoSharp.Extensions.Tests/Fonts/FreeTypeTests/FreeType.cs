@@ -51,14 +51,12 @@ public class FreeType
         Matrix fontMatrix = default;
         Matrix ctm        = default;
         fontMatrix.InitIdentity();
-        ctm.InitIdentity();
+        ctm       .InitIdentity();
 
         using FontOptions fontOptions  = new();
         using FreeTypeFont sanRemoFont = Helper.LoadFreeTypeFontFromFile("SanRemo.ttf");
         using ScaledFont scaledFont    = new(sanRemoFont, ref fontMatrix, ref ctm, fontOptions);
         FT_FaceRec_* face              = FreeTypeFont.LockFace(scaledFont);
-
-        var type = scaledFont.FontType;
 
         using (Assert.EnterMultipleScope())
         {

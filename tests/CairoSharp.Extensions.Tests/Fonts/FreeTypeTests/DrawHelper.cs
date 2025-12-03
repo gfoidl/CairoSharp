@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using Cairo;
+using Cairo.Drawing.Text;
 using Cairo.Extensions;
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Fonts;
@@ -144,10 +145,19 @@ internal static class DrawHelper
         using (SvgSurface svg     = new(resultStream, Size, Size))
         using (CairoContext cr    = new(svg))
         {
-            cr.FontFace = DefaultFonts.SansSerifBold;
+            FontFace fontFace = useDefaultFont
+                ? DefaultFonts.SansSerifBold
+                : new ToyFontFace("Helvetica", weight: FontWeight.Bold);
+
+            cr.FontFace = fontFace;
             cr.SetFontSize(64);
             (_, double y) = cr.TextAlignCenter("CairoSharp"u8, Size, Size, out TextExtents textExtents, moveCurrentPoint: true);
             cr.ShowText("CairoSharp"u8);
+
+            if (!useDefaultFont)
+            {
+                fontFace.Dispose();
+            }
 
             using FreeTypeFont sanRemoFont = Helper.LoadFreeTypeFontFromFile("SanRemo.ttf");
             using (sanRemoFont.SetSynthesize(Synthesize.Bold))

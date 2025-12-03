@@ -18,6 +18,10 @@ namespace Cairo.Fonts.FreeType;
 /// time. On the other hand, functions like FT_Load_Glyph and its siblings are thread-safe and do
 /// not need the lock to be held as long as the same FT_Face object is not used from multiple
 /// threads at the same time.
+/// <para>
+/// Here a single instance of FT_Library is used, which is protected by a monitor
+/// (C#'s <see langword="lock"/>).
+/// </para>
 /// </remarks>
 public static unsafe class FreeTypeExtensions
 {

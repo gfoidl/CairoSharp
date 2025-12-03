@@ -275,7 +275,12 @@ public sealed unsafe class FreeTypeFont : FontFace
     }
 
     /// <summary>
-    /// The FT_Face object for font
+    /// The FT_Face object for font.
     /// </summary>
+    /// <remarks>
+    /// This pointer may be <c>null</c>, and is only set by ctors that take
+    /// FT_Face as argument (so <see cref="FreeTypeFont(FT_FaceRec_*, int)"/> or
+    /// <see cref="FreeTypeFont(nint, int)"/>).
+    /// </remarks>
     public FT_Face FreeTypeFontFace => _freeTypeFace;
 }
