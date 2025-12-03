@@ -28,6 +28,9 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// inefficient since it creates a separate PangoContext object for each layout. This might matter
     /// in an application that was laying out large amounts of text.
     /// </para>
+    /// <para>
+    /// If no font description is set on the layout, the font description from the layout’s context is used.
+    /// </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException"><paramref name="cr"/> is <c>null</c></exception>
     public PangoLayout(CairoContext cr) : base(Create(cr)) => _cr = cr;
@@ -45,6 +48,42 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
         Debug.Assert(LibGObjectName == LoadingNative.LibGObjectName);
 
         LoadingNative.g_object_unref(handle);
+    }
+
+    /// <summary>
+    /// Sets the default font description for the layout.
+    /// </summary>
+    /// <param name="fontDescription">
+    /// String representation of a font description. The string must have the form
+    /// <code>
+    /// [FAMILY-LIST] [STYLE-OPTIONS] [SIZE] [VARIATIONS] [FEATURES]
+    /// </code>
+    /// <para>
+    /// See
+    /// <a href="https://docs.gtk.org/Pango/type_func.FontDescription.from_string.html#description">Pango docs</a>
+    /// for details on how the string should look like.
+    /// </para>
+    /// <para>
+    /// When <c>null</c> is set, the current font description is unset.
+    /// </para>
+    /// </param>
+    /// <remarks>
+    /// If no font description is set on the layout, the font description from the layout’s context is used.
+    /// </remarks>
+    public void SetFontDescriptionFromString(string? fontDescription)
+    {
+        this.CheckDisposed();
+
+        if (fontDescription is null)
+        {
+            pango_layout_set_font_description(this.Handle, null);
+        }
+        else
+        {
+            pango_font_description* desc = pango_font_description_from_string(fontDescription);
+            pango_layout_set_font_description(this.Handle, desc);
+            pango_font_description_free(desc);
+        }
     }
 
     /// <summary>
@@ -112,30 +151,42 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     }
 
     /// <summary>
-    /// Gets or sets the text of the layout.
+    /// Sets the text of the layout.
     /// </summary>
     /// <remarks>
-    /// The setter validates the value and renders invalid UTF-8 with a placeholder glyph.
+    /// This method validates the value and renders invalid UTF-8 with a placeholder glyph.
     /// </remarks>
-    public string Text
+    public void SetText(string text)
     {
-        get
-        {
-            this.CheckDisposed();
-            return pango_layout_get_text(this.Handle);
-        }
-        set
-        {
-            this.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(text);
+        this.CheckDisposed();
 
-            if (_inMarkupMode)
-            {
-                this.ClearMarkup();
-            }
-            Debug.Assert(!_inMarkupMode);
-
-            pango_layout_set_text(this.Handle, value, -1);
+        if (_inMarkupMode)
+        {
+            this.ClearMarkup();
         }
+        Debug.Assert(!_inMarkupMode);
+
+        pango_layout_set_text(this.Handle, text, -1);
+    }
+
+    /// <summary>
+    /// Sets the text of the layout.
+    /// </summary>
+    /// <remarks>
+    /// This method validates the value and renders invalid UTF-8 with a placeholder glyph.
+    /// </remarks>
+    public void SetText(ReadOnlySpan<byte> text)
+    {
+        this.CheckDisposed();
+
+        if (_inMarkupMode)
+        {
+            this.ClearMarkup();
+        }
+        Debug.Assert(!_inMarkupMode);
+
+        pango_layout_set_text(this.Handle, text, -1);
     }
 
     /// <summary>
@@ -153,6 +204,24 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
         this.CheckDisposed();
 
         pango_layout_set_markup(this.Handle, markup, -1);
+        _inMarkupMode = true;
+    }
+
+    /// <summary>
+    /// Sets the layout text and attribute list from marked-up text.
+    /// </summary>
+    /// <param name="markup">Marked-up text.</param>
+    /// <remarks>
+    /// See <a href="https://docs.gtk.org/Pango/pango_markup.html">Pango Markup</a>.
+    /// <para>
+    /// Replaces the current text and attribute list.
+    /// </para>
+    /// </remarks>
+    public void SetMarkup(ReadOnlySpan<byte> markup)
+    {
+        this.CheckDisposed();
+
+        pango_layout_set_markup(this.Handle, markup, markup.Length);
         _inMarkupMode = true;
     }
 
