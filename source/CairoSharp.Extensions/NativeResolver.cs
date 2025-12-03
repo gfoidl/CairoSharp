@@ -20,14 +20,26 @@ internal static class NativeResolver
     {
         NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), static (libraryName, assembly, searchPath) =>
         {
-            return libraryName switch
+            nint handle = libraryName switch
             {
-                FreeTypeNative.LibFreeType             => FreeTypeNative.Resolver                (FreeTypeNative.LibFreeType            , assembly, searchPath),
-                ScriptNative.LibCairoScriptInterpreter => ScriptNative.Resolver                  (ScriptNative.LibCairoScriptInterpreter, assembly, searchPath),
-                PangoNative.LibPangoName               => PangoNative  .DllImportResolver?.Invoke(PangoNative.LibPangoName              , assembly, searchPath) ?? default,
-                PangoNative.LibPangoCairoName          => PangoNative  .DllImportResolver?.Invoke(PangoNative.LibPangoCairoName         , assembly, searchPath) ?? default,
-                _                                      => LoadingNative.DllImportResolver?.Invoke(libraryName                           , assembly, searchPath) ?? default
+                FreeTypeNative.LibFreeType             => FreeTypeNative.Resolver(FreeTypeNative.LibFreeType            , assembly, searchPath),
+                ScriptNative.LibCairoScriptInterpreter => ScriptNative.Resolver  (ScriptNative.LibCairoScriptInterpreter, assembly, searchPath),
+                _                                      => default
             };
+
+            if (handle != 0)
+            {
+                return handle;
+            }
+
+            handle = PangoNative.DllImportResolver?.Invoke(libraryName, assembly, searchPath) ?? default;
+
+            if (handle != 0)
+            {
+                return handle;
+            }
+
+            return LoadingNative.DllImportResolver?.Invoke(libraryName, assembly, searchPath) ?? default;
         });
     }
 #pragma warning restore CA2255      // The 'ModuleInitializer' attribute should not be used in libraries
