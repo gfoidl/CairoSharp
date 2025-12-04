@@ -30,6 +30,9 @@
     <ItemGroup>
         <None Include="ReadMe.md" Pack="true" PackagePath="\" />
         <None Include="..\..\icon.png" Label="icon.png" Visible="false" Pack="true" PackagePath="\" />
+
+        <None Include="CairoSharp.Extensions.props" Pack="true" PackagePath="build\gfoidl.CairoSharp.Extensions.props" />
+        <None Include="CairoSharp.Extensions.targets" Pack="true" PackagePath="build\gfoidl.CairoSharp.Extensions.targets" />
     </ItemGroup>
 
     <ItemGroup>
