@@ -38,6 +38,12 @@ Loading of FreeType fonts either from
 
 Both fonts are also available as bold variant.
 
+## Pango
+
+Support for `PangoLayout` is given, but not the whole Pango API is implemented.
+
+See [ReadMe in Pango](./Pango/ReadMe.md) for further information.
+
 ## Loading
 
 PDF, and SVG can be parsed and the drawing loading into a cairo context, for further use.

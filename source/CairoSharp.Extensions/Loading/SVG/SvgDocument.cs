@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Cairo.Extensions.GObject;
 using static Cairo.Extensions.Loading.LoadingNative;
 
 namespace Cairo.Extensions.Loading.SVG;
@@ -88,13 +89,13 @@ public sealed unsafe class SvgDocument : Document
     {
         if (_handle is not null)
         {
-            g_object_unref(_handle);
+            GObjectNative.g_object_unref(_handle);
             _handle = null;
         }
 
         if (_fileOrStream is not null)
         {
-            g_object_unref(_fileOrStream);
+            GObjectNative.g_object_unref(_fileOrStream);
             _fileOrStream = null;
         }
     }

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Cairo.Extensions.Fonts.FreeType;
 using Cairo.Extensions.Loading;
 using Cairo.Extensions.Loading.Script;
+using Cairo.Extensions.Pango;
 
 namespace Cairo.Extensions;
 
@@ -19,12 +20,26 @@ internal static class NativeResolver
     {
         NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), static (libraryName, assembly, searchPath) =>
         {
-            return libraryName switch
+            nint handle = libraryName switch
             {
                 FreeTypeNative.LibFreeType             => FreeTypeNative.Resolver(FreeTypeNative.LibFreeType            , assembly, searchPath),
-                ScriptNative.LibCairoScriptInterpreter => ScriptNative  .Resolver(ScriptNative.LibCairoScriptInterpreter, assembly, searchPath),
-                _                                      => LoadingNative.DllImportResolver?.Invoke(libraryName           , assembly, searchPath) ?? default
+                ScriptNative.LibCairoScriptInterpreter => ScriptNative.Resolver  (ScriptNative.LibCairoScriptInterpreter, assembly, searchPath),
+                _                                      => default
             };
+
+            if (handle != 0)
+            {
+                return handle;
+            }
+
+            handle = PangoNative.DllImportResolver?.Invoke(libraryName, assembly, searchPath) ?? default;
+
+            if (handle != 0)
+            {
+                return handle;
+            }
+
+            return LoadingNative.DllImportResolver?.Invoke(libraryName, assembly, searchPath) ?? default;
         });
     }
 #pragma warning restore CA2255      // The 'ModuleInitializer' attribute should not be used in libraries

@@ -1,0 +1,8 @@
+<Project>
+
+    <PropertyGroup>
+        <PangoWinNativeDir>C:\Program Files\msys64\ucrt64\bin</PangoWinNativeDir>
+        <PangoWinCopyNativeLibs>false</PangoWinCopyNativeLibs>
+    </PropertyGroup>
+
+</Project>

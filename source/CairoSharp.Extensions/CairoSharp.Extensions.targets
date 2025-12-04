@@ -1,0 +1,26 @@
+<Project>
+
+    <!-- Can be found via Resource Monitor, Process Monitor and similar tools. -->
+    <ItemGroup Label="Native Pango DLLs for Windows">
+        <PangoWinLib Include="libfontconfig-1.dll" />
+        <PangoWinLib Include="libglib-2.0-0.dll" />
+        <PangoWinLib Include="libgobject-2.0-0.dll" />
+        <PangoWinLib Include="libharfbuzz-0.dll" />
+        <PangoWinLib Include="libintl-8.dll" />
+        <PangoWinLib Include="libpango-1.0-0.dll" />
+        <PangoWinLib Include="libpangocairo-1.0-0.dll" />
+        <PangoWinLib Include="libpangoft2-1.0-0.dll" />
+        <PangoWinLib Include="libpangowin32-1.0-0.dll" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PangoWinLib_x64 Include="@(PangoWinLib -> '$(PangoWinNativeDir)\%(Identity).dll')" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(PangoWinCopyNativeLibs)' == 'true'">
+        <Content Include="@(PangoWinLib_x64)"
+                 CopyToOutputDirectory="PreserveNewest"
+                 Visible="false" />
+    </ItemGroup>
+
+</Project>

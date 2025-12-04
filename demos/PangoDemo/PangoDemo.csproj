@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\source\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
+    </ItemGroup>
+
+</Project>

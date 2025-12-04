@@ -11,6 +11,7 @@
     <Project Path="demos/CairoDemo/CairoDemo.csproj" />
     <Project Path="demos/CairoExtensionsDemo/CairoExtensionsDemo.csproj" />
     <Project Path="demos/FreeTypeDemo/FreeTypeDemo.csproj" />
+    <Project Path="demos/PangoDemo/PangoDemo.csproj" />
     <Project Path="demos/SvgPdfLoading/SvgPdfLoading.csproj" />
   </Folder>
   <Folder Name="/demos/GTK/">

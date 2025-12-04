@@ -3,6 +3,7 @@
 extern alias CairoSharp;
 
 using System.Diagnostics;
+using Cairo.Extensions.Pango;
 using CairoSharp::Cairo;
 using CairoSharp::Cairo.Drawing;
 using CairoSharp::Cairo.Drawing.Path;
@@ -112,6 +113,7 @@ public sealed class MainWindow : ApplicationWindow
         this.AddAction("drawTextExtents"     , this.DrawTextExtents);
         this.AddAction("drawGlyphs"          , this.DrawGlyphs);
         this.AddAction("drawGlyphExtents"    , this.DrawGlyphExtents);
+        this.AddAction("drawPango"           , this.DrawPango);
         this.AddAction("hitTest"             , this.DrawHitTest);
 
         app.AddAction("funcPeaks"    , PixelGraphics);
@@ -882,6 +884,26 @@ public sealed class MainWindow : ApplicationWindow
             {
                 clusters?.Dispose();
             }
+        };
+
+        _drawingArea.QueueDraw();
+    }
+
+    private void DrawPango()
+    {
+        _lastSelectedDemo = "pango";
+        _onDrawAction     = static cr =>
+        {
+            using PangoLayout pangoLayout = new(cr);
+            pangoLayout.SetFontDescriptionFromString("Serif Normal 28");
+            pangoLayout.SetText("no AV and no VA");
+
+            pangoLayout.GetSize(out double width, out double height);
+            cr.MoveTo(0, 256 / 2d - height / 2d);
+
+            pangoLayout.Width     = 256;
+            pangoLayout.Alignment = Alignment.Center;
+            pangoLayout.ShowLayout();
         };
 
         _drawingArea.QueueDraw();

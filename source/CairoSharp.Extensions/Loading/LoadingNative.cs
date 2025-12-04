@@ -6,6 +6,7 @@ global using RsvgRectangle         = Cairo.Rectangle;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using Cairo.Extensions.GObject;
 using Cairo.Extensions.Loading.PDF;
 using Cairo.Extensions.Loading.SVG;
 
@@ -14,7 +15,7 @@ namespace Cairo.Extensions.Loading;
 public static unsafe partial class LoadingNative
 {
     public const string LibGLibName    = "libglib-2.0.so.0";
-    public const string LibGObjectName = "libgobject-2.0.so.0";
+    public const string LibGObjectName = GObjectNative.LibGObjectName;
     public const string LibGioName     = "libgio-2.0.so.0";
     public const string LibRSvgName    = "librsvg-2.so.2";
     public const string LibPopplerName = "libpoppler-glib.so.8";
@@ -99,10 +100,6 @@ public static unsafe partial class LoadingNative
     [LibraryImport(LibGLibName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial void g_error_free(GError* error);
-
-    [LibraryImport(LibGObjectName)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void g_object_unref(void* @object);
     //-------------------------------------------------------------------------
     [LibraryImport(LibGioName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
