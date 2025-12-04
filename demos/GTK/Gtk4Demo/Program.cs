@@ -1,10 +1,14 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Cairo.Extensions.Pango;
 using Gtk;
 using Gtk4.Extensions;
 using Gtk4Demo;
 using Spectre.Console;
+using IOPath = System.IO.Path;
 
 #if USE_LIB_ADWAITA
 using Application = Adw.Application;
@@ -13,6 +17,7 @@ using Application = Gtk.Application;
 #endif
 
 FixupEnvironment();
+InitPangoCairo();
 
 using Application app = Application.New("at.gfoidl.cairo.gtk4.demo", Gio.ApplicationFlags.FlagsNone);
 app.OnActivate += static (Gio.Application gioApp, EventArgs args) =>
@@ -116,4 +121,25 @@ static void PrintDisplayInformation()
         AnsiConsole.Write(tree);
         Console.WriteLine();
     }
+}
+//-----------------------------------------------------------------------------
+static void InitPangoCairo()
+{
+    PangoNative.DllImportResolver = static (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
+    {
+        string? path = libraryName switch
+        {
+            PangoNative.LibPangoName      => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libpango-1.0-0.dll"),
+            PangoNative.LibPangoCairoName => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libpangocairo-1.0-0.dll"),
+            PangoNative.LibGObjectName    => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libgobject-2.0-0.dll"),
+            _                             => null
+        };
+
+        if (path is not null && NativeLibrary.TryLoad(path, out nint handle))
+        {
+            return handle;
+        }
+
+        return default;
+    };
 }

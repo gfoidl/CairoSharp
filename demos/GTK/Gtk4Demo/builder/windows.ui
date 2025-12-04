@@ -125,6 +125,10 @@
         <attribute name="label">glyph extents</attribute>
       </item>
       <item>
+        <attribute name="action">win.drawPango</attribute>
+        <attribute name="label">Pango</attribute>
+      </item>
+      <item>
         <attribute name="action">win.hitTest</attribute>
         <attribute name="label">hit test</attribute>
       </item>
