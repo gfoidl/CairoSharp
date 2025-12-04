@@ -17,4 +17,12 @@ public static class Pango
     /// </para>
     /// </remarks>
     public const int Scale = 1024;
+
+    /// <summary>
+    /// Default resolution, 96.
+    /// </summary>
+    /// <remarks>
+    /// See <see cref="PangoLayout.Resolution"/> for description.
+    /// </remarks>
+    public const double DefaultResolution = 96d;
 }

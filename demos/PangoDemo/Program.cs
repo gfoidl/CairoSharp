@@ -1,10 +1,12 @@
 // (c) gfoidl, all rights reserved
 
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Cairo;
 using Cairo.Extensions.Colors;
 using Cairo.Extensions.Pango;
+using Cairo.Fonts;
 using Cairo.Surfaces.PDF;
 using Cairo.Surfaces.SVG;
 using Cairo.Surfaces.Tee;
@@ -37,13 +39,13 @@ Environment.CurrentDirectory = IOPath.Combine(Environment.CurrentDirectory, "out
 
 DemoComparisonWithCairoText();
 DemoFromPangoDocsWithTextAroundCircle();
-DemoWithMarkup();
+DemoPangoFeatures();
 //-----------------------------------------------------------------------------
 static void DemoComparisonWithCairoText()
 {
     const int Width   = 600;
-    const int Height  = 250;
-    const string Text = "Hello from CairoSharp, w/o any AV and VAST";
+    const int Height  = 150;
+    const string Text = "Hello from CairoSharp, w/o any AV and VA";
 
     using SvgSurface svg  = new("cairo_comparison.svg", Width, Height);
     using PdfSurface pdf  = new("cairo_comparison.pdf", Width, Height);
@@ -53,35 +55,49 @@ static void DemoComparisonWithCairoText()
 
     cr.Color = KnownColors.White;
     cr.Paint();
-
-    cr.LineWidth = 4;
+    cr.LineWidth = 6;
     cr.Color     = Color.Default;
-
     cr.Rectangle(0, 0, Width, Height);
     cr.Stroke();
-
     cr.LineWidth = 1;
 
-    cr.MoveTo(10, 30);
-    cr.ShowText("Demo for Kerning");
-
-    cr.SelectFontFace("Times New Roman");
-    cr.SetFontSize(28);
-    cr.MoveTo(0, 100);
-    cr.RelLineTo(Width, 0);
-    cr.Stroke();
-    cr.MoveTo(10, 100);
-    cr.ShowText(Text);
-
-    cr.MoveTo(0, 150);
-    cr.RelLineTo(Width, 0);
-    cr.Stroke();
-    cr.MoveTo(10, 150);
-    using (PangoLayout pangoLayout = new(cr))
+    using (cr.Save())
     {
-        pangoLayout.SetText(Text);
-        pangoLayout.SetFontDescriptionFromString("Times New Roman, Normal 22");     // note the terminating , here at the font family
-        pangoLayout.ShowLayout();
+        cr.Color = KnownColors.Coral;
+        cr.MoveTo(10, 30);
+        cr.ShowText("Demo for Kerning");
+    }
+
+    FontExtents fontExtents;
+
+    // Cairo text rendering
+    {
+        cr.SelectFontFace("Times New Roman");
+        cr.SetFontSize(28);
+        cr.MoveTo(0, 75);
+        cr.RelLineTo(Width, 0);
+        cr.Stroke();
+        cr.MoveTo(10, 75);
+        cr.ShowText(Text);
+        cr.FontExtents(out fontExtents);
+    }
+
+    // Pango text rendering
+    {
+        cr.Translate(0, 75 + fontExtents.Descent + 5);
+        cr.MoveTo(0, 0);
+        cr.RelLineTo(Width, 0);
+        cr.Stroke();
+        cr.MoveTo(10, 0);
+        using (PangoLayout pangoLayout = new(cr))
+        {
+            pangoLayout.SetText(Text);
+
+            // note the terminating , here at the font family
+            pangoLayout.SetFontDescriptionFromString("Times New Roman, Normal 28");
+
+            pangoLayout.ShowLayout();
+        }
     }
 
     tee.WriteToPng("cairo_comparison.png");
@@ -108,7 +124,6 @@ static void DemoFromPangoDocsWithTextAroundCircle()
     {
         cr.Color = KnownColors.White;
         cr.Paint();
-
         cr.Color     = Color.Default;
         cr.LineWidth = 6;
         cr.Rectangle(0, 0, Width, Height);
@@ -120,6 +135,7 @@ static void DemoFromPangoDocsWithTextAroundCircle()
     using PangoLayout pangoLayout = new(cr);
     pangoLayout.SetText("Text"u8);
     pangoLayout.SetFontDescriptionFromString(Font);
+    pangoLayout.Resolution = Pango.DefaultResolution;
 
     for (int i = 0; i < Words; ++i)
     {
@@ -133,8 +149,8 @@ static void DemoFromPangoDocsWithTextAroundCircle()
             cr.Rotate(angle.DegreesToRadians());
             pangoLayout.UpdateLayout();
 
-            pangoLayout.GetSize(out int width, out int height);
-            cr.MoveTo(-((double)width / Pango.Scale) / 2, -Radius);
+            pangoLayout.GetSize(out double width, out double height);
+            cr.MoveTo(-width / 2, -Radius);
 
             pangoLayout.ShowLayout();
         }
@@ -143,44 +159,187 @@ static void DemoFromPangoDocsWithTextAroundCircle()
     tee.WriteToPng("sample_from_docs.png");
 }
 //-----------------------------------------------------------------------------
-static void DemoWithMarkup()
+static void DemoPangoFeatures()
 {
     const int Width  = 600;
-    const int Height = 250;
+    const int Height = 620;
 
-    using SvgSurface svg  = new("markup.svg", Width, Height);
-    using PdfSurface pdf  = new("markup.pdf", Width, Height);
+    using SvgSurface svg  = new("features.svg", Width, Height);
+    using PdfSurface pdf  = new("features.pdf", Width, Height);
     using TeeSurface tee  = new(svg);
     using CairoContext cr = new(tee);
     tee.Add(pdf);
 
     cr.Color = KnownColors.White;
     cr.Paint();
-
-    cr.LineWidth = 4;
+    cr.LineWidth = 6;
     cr.Color     = Color.Default;
-
     cr.Rectangle(0, 0, Width, Height);
     cr.Stroke();
+    cr.LineWidth = 1;
 
     using (PangoLayout pangoLayout = new(cr))
     {
-        cr.MoveTo(10, 10);
-        pangoLayout.SetMarkup("""
-            <span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!
-            """);
-        pangoLayout.ShowLayout();
+        double curY = 10;
 
-        cr.MoveTo(10, 40);
-        pangoLayout.SetFontDescriptionFromString("Times New Roman, Normal 22");     // note the terminating , here at the font family
-        pangoLayout.ShowLayout();
+        // Markup
+        {
+            cr.MoveTo(10, curY);
+            pangoLayout.SetMarkup("""
+                <span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!
+                """);
+            pangoLayout.ShowLayout();
+        }
+        pangoLayout.GetSize(out double width, out double height);
+        curY += height;
 
-        cr.MoveTo(10, 80);
-        pangoLayout.SetMarkup("""
-            <span foreground="coral">This is quite a bit of text</span>, just to showcase what happens when the text is longer than the surface.
-            """);
-        pangoLayout.ShowLayout();
+        // Markup with selected font
+        {
+            cr.MoveTo(10, curY);
+            pangoLayout.SetFontDescriptionFromString("Times New Roman, Normal 22");     // note the terminating , here at the font family
+            pangoLayout.ShowLayout();
+        }
+        pangoLayout.GetSize(out width, out height);
+        curY += height;
+
+        cr.MoveTo(0, curY);
+        cr.RelLineTo(Width, 0);
+        cr.Stroke();
+
+        // Wrapping by setting the width
+        {
+            Debug.Assert(pangoLayout.Width == -1);
+
+            cr.MoveTo(10, curY);
+            pangoLayout.SetMarkup("""
+                <span foreground="coral">This is quite a bit of text</span>, just to showcase what happens when the text is longer than the surface.
+                """);
+            Console.WriteLine($"Is in wrap-mode: {pangoLayout.IsWrapped}");
+            pangoLayout.ShowLayout();
+
+            pangoLayout.GetSize(out width, out height);
+            curY += height;
+
+            cr.MoveTo(10, curY);
+            pangoLayout.SetMarkup("""
+                <span foreground="coral">This is quite a bit of text</span>, just to showcase what happens when the text is longer than the surface.
+                """);
+            Console.WriteLine($"Is in wrap-mode: {pangoLayout.IsWrapped}");
+            pangoLayout.Width = Width - 2 * 10;
+            Console.WriteLine($"Is in wrap-mode: {pangoLayout.IsWrapped}");
+            pangoLayout.ShowLayout();
+        }
+        pangoLayout.GetSize(out width, out height);
+        curY += height;
+
+        cr.MoveTo(0, curY);
+        cr.RelLineTo(Width, 0);
+        cr.Stroke();
+
+        // Alignment
+        {
+            pangoLayout.Width = Width - 2 * 10;
+
+            cr.MoveTo(10, curY);
+            pangoLayout.SetText("Left aligned");
+            pangoLayout.Alignment = Alignment.Left;
+            pangoLayout.ShowLayout();
+
+            pangoLayout.GetSize(out width, out height);
+            curY += height;
+
+            cr.MoveTo(10, curY);
+            pangoLayout.SetText("Center aligned");
+            pangoLayout.Alignment = Alignment.Center;
+            pangoLayout.ShowLayout();
+
+            pangoLayout.GetSize(out width, out height);
+            curY += height;
+
+            cr.MoveTo(10, curY);
+            pangoLayout.SetText("Right aligned");
+            pangoLayout.Alignment = Alignment.Right;
+            pangoLayout.ShowLayout();
+
+            pangoLayout.Alignment = Alignment.Left;
+        }
+        pangoLayout.GetSize(out width, out height);
+        curY += height;
+
+        cr.MoveTo(0, curY);
+        cr.RelLineTo(Width, 0);
+        cr.Stroke();
+
+        // Justify
+        {
+            cr.Color = KnownColors.DeepSkyBlue;
+            cr.MoveTo(10, curY);
+            pangoLayout.SetText("Another long text, to showcase how justify works. And as we get on at least one more line, we can test next how JustifyLastLine works.");
+            pangoLayout.ShowLayout();
+
+            pangoLayout.GetSize(out width, out height);
+            curY += height;
+
+            cr.Color = KnownColors.Green;
+            cr.MoveTo(10, curY);
+            pangoLayout.Justify = true;
+            pangoLayout.ShowLayout();
+
+            pangoLayout.GetSize(out width, out height);
+            curY += height;
+
+            cr.Color = KnownColors.Blue;
+            cr.MoveTo(10, curY);
+            pangoLayout.Justify         = true;
+            pangoLayout.JustifyLastLine = true;
+            pangoLayout.ShowLayout();
+
+            pangoLayout.Justify = false;
+        }
+        pangoLayout.GetSize(out width, out height);
+        curY += height;
+
+        cr.Color = Color.Default;
+        cr.MoveTo(0, curY);
+        cr.RelLineTo(Width, 0);
+        cr.Stroke();
+
+        // LayoutPath
+        {
+            cr.MoveTo(10, curY);
+            pangoLayout.SetText("CairoSharp"u8);
+            pangoLayout.LayoutPath();
+
+            cr.Color = KnownColors.Cyan;
+            cr.FillPreserve();
+            cr.Color = KnownColors.Red;
+            cr.Stroke();
+        }
+        pangoLayout.GetSize(out width, out height);
+        curY += height;
+
+        cr.Color = Color.Default;
+        cr.MoveTo(0, curY);
+        cr.RelLineTo(Width, 0);
+        cr.Stroke();
+
+        // Ident
+        {
+            cr.Color = KnownColors.Green;
+            cr.MoveTo(10, curY);
+            pangoLayout.SetText("Again, a longer text to get at least another line, in order to see how Ident behaves. But just one additional line is not enough, so we have more words to get another line.");
+            pangoLayout.Ident = 20;
+            pangoLayout.ShowLayout();
+
+            pangoLayout.GetSize(out width, out height);
+            curY += height;
+
+            cr.Color = KnownColors.Blue;
+            cr.MoveTo(10, curY);
+            pangoLayout.Ident = -20;
+            pangoLayout.ShowLayout();
+        }
     }
 
-    tee.WriteToPng("markup.png");
+    tee.WriteToPng("features.png");
 }
