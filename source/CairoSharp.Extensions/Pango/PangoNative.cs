@@ -3,6 +3,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using Cairo.Extensions.GObject;
 
 namespace Cairo.Extensions.Pango;
 
@@ -16,7 +17,7 @@ public static unsafe partial class PangoNative
 {
     public const string LibPangoName      = "libpango.so.1";
     public const string LibPangoCairoName = "libpangocairo.so.1";
-    public const string LibGObjectName    = "libgobject-2.0.so.0";
+    public const string LibGObjectName    = GObjectNative.LibGObjectName;
 
     // https://docs.gtk.org/PangoCairo/func.create_layout.html
     [LibraryImport(LibPangoCairoName)]

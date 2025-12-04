@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
+using Cairo.Extensions.GObject;
 using Cairo.Extensions.Loading;
 using static Cairo.Extensions.Pango.PangoNative;
 
@@ -59,7 +60,7 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     {
         Debug.Assert(LibGObjectName == LoadingNative.LibGObjectName);
 
-        LoadingNative.g_object_unref(handle);
+        GObjectNative.g_object_unref(handle);
     }
 
     /// <summary>

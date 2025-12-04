@@ -3,6 +3,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Cairo.Extensions.GObject;
 using static Cairo.Extensions.Loading.LoadingNative;
 
 namespace Cairo.Extensions.Loading.PDF;
@@ -75,7 +76,7 @@ public sealed unsafe class PdfDocument : Document
         {
             foreach (PopplerPage* page in _pages.Values)
             {
-                g_object_unref(page);
+                GObjectNative.g_object_unref(page);
             }
 
             _pages = null;
@@ -83,13 +84,13 @@ public sealed unsafe class PdfDocument : Document
 
         if (_document is not null)
         {
-            g_object_unref(_document);
+            GObjectNative.g_object_unref(_document);
             _document = null;
         }
 
         if (_fileOrStream is not null)
         {
-            g_object_unref(_fileOrStream);
+            GObjectNative.g_object_unref(_fileOrStream);
             _fileOrStream = null;
         }
     }
