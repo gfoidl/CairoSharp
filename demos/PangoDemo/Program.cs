@@ -270,6 +270,8 @@ static void DemoPangoFeatures()
         cr.RelLineTo(Width, 0);
         cr.Stroke();
 
+        pangoLayout.SetFontDescriptionFromString("Serif Normal 22");
+
         // Justify
         {
             cr.Color = KnownColors.DeepSkyBlue;
