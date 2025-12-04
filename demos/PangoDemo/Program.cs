@@ -147,6 +147,8 @@ static void DemoFromPangoDocsWithTextAroundCircle()
             cr.SetSourceRgb(red, 0, 1d - red);
 
             cr.Rotate(angle.DegreesToRadians());
+
+            // Need to update the layout, as the current transformation got changed by Rotate
             pangoLayout.UpdateLayout();
 
             pangoLayout.GetSize(out double width, out double height);

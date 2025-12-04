@@ -294,8 +294,10 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// </summary>
     /// <remarks>
     /// This is a scale factor between points specified in a PangoFontDescription and cairo units.
-    /// The default value is 96, meaning that a 10 point font will be 13 units high.
-    /// (10 * 96. / 72. = 13.3).
+    /// The default value is 96 in Pango, meaning that a 10 point font will be 13 units high.
+    /// (10 * 96. / 72. = 13.3).<br />
+    /// Note: <see cref="PangoLayout(CairoContext, double)"/> has a default of 72, so that the units
+    /// are equivalent to cairo's units.
     /// <para>
     /// Physical inches aren't actually involved; the terminology is conventional.
     /// </para>
