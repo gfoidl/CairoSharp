@@ -41,3 +41,6 @@ if (OperatingSystem.IsWindows())
 
 > [!TIP]
 > The `PangoNative.LibXYZ` names are the standard so-names on Linux, thus for a standard installation no `DllImportResolver` has to be set on Linux.
+
+> [!NOTE]
+> When the Pango libraries are on `$PATH` you don't have to set the `PangoNative.DllImportResolver`.
