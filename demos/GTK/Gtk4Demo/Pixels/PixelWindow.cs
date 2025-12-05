@@ -542,7 +542,11 @@ public sealed partial class PixelWindow : Window
             cr.Stroke();
         }
 
-        ImageSurface imageSurface = cr.Target.MapToImage();
+        // Need to store the target into a local, to
+        // * avoid another allocation below
+        // * avoid potential ObjectDisposedException for cr
+        Surface target            = cr.Target;
+        ImageSurface imageSurface = target.MapToImage();
         try
         {
             await this.DrawFunctionAsync(imageSurface);
@@ -554,7 +558,10 @@ public sealed partial class PixelWindow : Window
         }
         finally
         {
-            cr.Target.UnmapImage(imageSurface);
+            target.UnmapImage(imageSurface);
+
+            imageSurface.Dispose();
+            target      .Dispose();
         }
     }
 
