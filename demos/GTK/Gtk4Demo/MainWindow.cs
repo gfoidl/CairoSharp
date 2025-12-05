@@ -900,9 +900,18 @@ public sealed class MainWindow : ApplicationWindow
 
             pangoLayout.GetSize(out double width, out double height);
             cr.MoveTo(0, 256 / 2d - height / 2d);
+            cr.MoveTo(0, 50);
 
             pangoLayout.Width     = 256;
             pangoLayout.Alignment = Alignment.Center;
+            pangoLayout.ShowLayout();
+
+            pangoLayout.Alignment = Alignment.Left;
+            pangoLayout.Justify   = true;
+            PointD currentPoint   = cr.CurrentPoint;
+            cr.MoveTo(0, currentPoint.Y + height);
+            cr.SetSourceRgb(0, 0, 1);
+            pangoLayout.SetText("Lots of more text to display which is broken into some lines."u8);
             pangoLayout.ShowLayout();
         };
 
