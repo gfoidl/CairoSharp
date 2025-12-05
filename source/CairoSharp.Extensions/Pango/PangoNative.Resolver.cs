@@ -26,50 +26,29 @@ static partial class PangoNative
     private static nint s_libPangoHandle;
     private static nint s_libPangoCairoHandle;
     private static nint s_libGObjectHandle;
-
+    //-------------------------------------------------------------------------
     [DisallowNull]
     public static DllImportResolver? DllImportResolver { get; set; } = static (libraryName, assembly, searchPath) =>
     {
-        switch (libraryName)
+        return libraryName switch
         {
-            case LibPangoName:
-            {
-                nint libHandle = Volatile.Read(ref s_libPangoHandle);
-
-                if (libHandle == 0)
-                {
-                    libHandle = Native.GetLibHandle(s_pangoLibNames);
-                    Volatile.Write(ref s_libPangoHandle, libHandle);
-                }
-
-                return libHandle;
-            }
-            case LibPangoCairoName:
-            {
-                nint libHandle = Volatile.Read(ref s_libPangoCairoHandle);
-
-                if (libHandle == 0)
-                {
-                    libHandle = Native.GetLibHandle(s_pangoCairoLibNames);
-                    Volatile.Write(ref s_libPangoCairoHandle, libHandle);
-                }
-
-                return libHandle;
-            }
-            case GObjectNative.LibGObjectName:
-            {
-                nint libHandle = Volatile.Read(ref s_libGObjectHandle);
-
-                if (libHandle == 0)
-                {
-                    libHandle = Native.GetLibHandle(s_gobjectLibNames);
-                    Volatile.Write(ref s_libGObjectHandle, libHandle);
-                }
-
-                return libHandle;
-            }
-            default:
-                return default;
-        }
+            LibPangoName                 => ResolveCore(ref s_libPangoHandle     , s_pangoLibNames),
+            LibPangoCairoName            => ResolveCore(ref s_libPangoCairoHandle, s_pangoCairoLibNames),
+            GObjectNative.LibGObjectName => ResolveCore(ref s_libGObjectHandle   , s_gobjectLibNames),
+            _                            => default
+        };
     };
+    //-------------------------------------------------------------------------
+    private static nint ResolveCore(ref nint handle, Native.LibNames libNames)
+    {
+        nint libHandle = Volatile.Read(ref handle);
+
+        if (libHandle == 0)
+        {
+            libHandle = Native.GetLibHandle(libNames);
+            Volatile.Write(ref handle, libHandle);
+        }
+
+        return libHandle;
+    }
 }
