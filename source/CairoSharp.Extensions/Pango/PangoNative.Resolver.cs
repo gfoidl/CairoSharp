@@ -9,19 +9,19 @@ namespace Cairo.Extensions.Pango;
 static partial class PangoNative
 {
     private static readonly Native.LibNames s_pangoLibNames = new(
-        "libpango.so.1",                // Linux
+        "libpango-1.0.so.0",            // Linux
         "libpango-1.0-0.dll",           // Windows
-        "libpango.1.dylib");            // MacOS
+        "libpango-1.0.0.dylib");        // MacOS
 
     private static readonly Native.LibNames s_pangoCairoLibNames = new(
-        "libpangocairo.so.1",           // Linux
+        "libpangocairo-1.0.so.0",       // Linux
         "libpangocairo-1.0-0.dll",      // Windows
-        "libpangocairo.1.dylib");       // MacOS
+        "libpangocairo-1.0.0.dylib");   // MacOS
 
     private static readonly Native.LibNames s_gobjectLibNames = new(
         GObjectNative.LibGObjectName,   // Linux
         "libgobject-2.0-0.dll",         // Windows
-        "libgobject.2.dylib");          // MacOS
+        "libgobject-2.0.0.dylib");      // MacOS
 
     private static nint s_libPangoHandle;
     private static nint s_libPangoCairoHandle;
