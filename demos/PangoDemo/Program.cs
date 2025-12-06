@@ -40,6 +40,7 @@ Directory.CreateDirectory("output");
 Environment.CurrentDirectory = IOPath.Combine(Environment.CurrentDirectory, "output");
 
 ComparisonWithCairoTextDemo();
+FontSelectionDemo();
 PangoDocsDemoWithTextAroundCircle();
 PangoFeaturesDemo();
 FontMapDemo();
@@ -106,6 +107,57 @@ static void ComparisonWithCairoTextDemo()
     }
 
     tee.WriteToPng("cairo_comparison.png");
+}
+//-----------------------------------------------------------------------------
+static void FontSelectionDemo()
+{
+    const int Width   = 700;
+    const int Height  = 100;
+    const string Text = "Hello from CairoSharp, w/o any AV and VA";
+
+    using SvgSurface svg  = new("font-selection.svg", Width, Height);
+    using PdfSurface pdf  = new("font-selection.pdf", Width, Height);
+    using TeeSurface tee  = new(svg);
+    using CairoContext cr = new(tee);
+    tee.Add(pdf);
+
+    cr.Color = KnownColors.White;
+    cr.Paint();
+    cr.LineWidth = 6;
+    cr.Color     = Color.Default;
+    cr.Rectangle(0, 0, Width, Height);
+    cr.Stroke();
+    cr.LineWidth = 1;
+
+    double curY = 10;
+    using PangoLayout pangoLayout = new(cr);
+
+    cr.MoveTo(10, curY);
+    pangoLayout.SetText($"{Text} (Pango font from string)");
+    pangoLayout.SetFontDescriptionFromString("Arial Normal 22");
+    pangoLayout.ShowLayout();
+    pangoLayout.GetSize(out double width, out double height);
+
+    curY += height;
+    cr.MoveTo(10, curY);
+    using PangoFontMap fontMap       = PangoFontMap.CairoFontMapGetDefault();
+    using PangoFontFamily fontFamily = fontMap.GetFamily("Arial");
+    using PangoFontFace? fontFace    = fontFamily.GetFace(null);
+    Debug.Assert(fontFace is not null);
+    pangoLayout.SetText($"{Text} (Pango font selected)");
+    pangoLayout.SetFontDescription(fontFace, size: 22);
+    pangoLayout.ShowLayout();
+    pangoLayout.GetSize(out width, out height);
+    curY += height;
+
+    cr.SelectFontFace("Arial");
+    cr.SetFontSize(22);
+    cr.FontExtents(out FontExtents fontExtents);
+    curY += fontExtents.Ascent;
+    cr.MoveTo(10, curY);
+    cr.ShowText($"{Text} (cairo)");
+
+    tee.WriteToPng("font-selection.png");
 }
 //-----------------------------------------------------------------------------
 static void PangoDocsDemoWithTextAroundCircle()
@@ -502,11 +554,16 @@ static void FontListDemo()
 
         foreach (PangoFontFamily fontFamily in families)
         {
-            cr.MoveTo(10, curY);
-            string familyName = fontFamily.Name;
+            using PangoFontFace? fontFace = fontFamily.GetFace(null);
 
-            pangoLayout.SetFontDescriptionFromString($"{familyName}, Normal 22");   // note: trailing ,
-            pangoLayout.SetText($"Font: {familyName}; AV and VA to see kerning or not");
+            if (fontFace is null)
+            {
+                continue;
+            }
+
+            cr.MoveTo(10, curY);
+            pangoLayout.SetText($"Font: {fontFamily.Name} {fontFace.Name}; AV and VA to see kerning or not");
+            pangoLayout.SetFontDescription(fontFace, size: 22);
             pangoLayout.ShowLayout();
             pangoLayout.GetSize(out double width, out double height);
             curY += height;

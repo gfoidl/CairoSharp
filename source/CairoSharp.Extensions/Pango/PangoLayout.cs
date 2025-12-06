@@ -104,17 +104,25 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// Sets the font description that matches the face.
     /// </summary>
     /// <param name="fontFace">The font face.</param>
+    /// <param name="size">
+    /// The size of the font in points
+    /// </param>
     /// <remarks>
     /// The resulting font description will have the family, style, variant, weight and stretch
     /// of the face, but its size field will be unset.
     /// </remarks>
-    public void SetFontDescription(PangoFontFace fontFace)
+    public void SetFontDescription(PangoFontFace fontFace, int size)
     {
         this.CheckDisposed();
         fontFace.CheckDisposed();
         ArgumentNullException.ThrowIfNull(fontFace);
 
         pango_font_description* desc = PangoFontFaceNative.pango_font_face_describe(fontFace.Handle);
+
+        // Must be set before assigning it to the layout.
+        pango_font_description_set_size(desc, size * Pango.Scale);
+        //pango_font_description_set_absolute_size(desc, size * Pango.Scale);
+
         pango_layout_set_font_description(this.Handle, desc);
         pango_font_description_free(desc);
     }

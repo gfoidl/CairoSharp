@@ -26,7 +26,7 @@ public sealed unsafe class PangoFontFace : CairoObject<pango_font_face>
     /// Note that a font family may contain multiple faces with the same name (e.g. a variable
     /// and a non-variable face for the same style).
     /// </remarks>
-    public string FaceName
+    public string Name
     {
         get
         {

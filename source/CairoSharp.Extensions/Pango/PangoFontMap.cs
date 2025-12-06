@@ -54,6 +54,19 @@ public sealed unsafe class PangoFontMap : CairoObject<pango_font_map>
     }
 
     /// <summary>
+    /// Gets a font family by name.
+    /// </summary>
+    /// <param name="name">A family name.</param>
+    /// <returns>The font family.</returns>
+    public PangoFontFamily GetFamily(string name)
+    {
+        this.CheckDisposed();
+
+        pango_font_family* family = pango_font_map_get_family(this.Handle, name);
+        return new PangoFontFamily(family);
+    }
+
+    /// <summary>
     /// List all families for a fontmap.
     /// </summary>
     /// <returns>All families for a fontmap.</returns>

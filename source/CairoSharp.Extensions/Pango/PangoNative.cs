@@ -28,6 +28,16 @@ public static unsafe partial class PangoNative
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial pango_font_description* pango_font_description_from_string(string str);
 
+    // https://docs.gtk.org/Pango/method.FontDescription.set_size.html
+    [LibraryImport(LibPangoName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void pango_font_description_set_size(pango_font_description* desc, int size);
+
+    // https://docs.gtk.org/Pango/method.FontDescription.set_absolute_size.html
+    [LibraryImport(LibPangoName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void pango_font_description_set_absolute_size(pango_font_description* desc, double size);
+
     // https://docs.gtk.org/Pango/method.FontDescription.free.html
     [LibraryImport(LibPangoName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

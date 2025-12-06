@@ -18,6 +18,11 @@ internal static unsafe partial class PangoFontMapNative
     [return: MarshalAs(UnmanagedType.U4)]
     internal static partial bool pango_font_map_add_font_file(pango_font_map* fontmap, string filename, GError** error);
 
+    // https://docs.gtk.org/Pango/method.FontMap.get_family.html
+    [LibraryImport(PangoNative.LibPangoName, StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial pango_font_family* pango_font_map_get_family(pango_font_map* fontmap, string name);
+
     // https://docs.gtk.org/Pango/method.FontMap.list_families.html
     [LibraryImport(PangoNative.LibPangoName)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
