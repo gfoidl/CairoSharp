@@ -25,7 +25,7 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// font sizes given in Pango match the font size given in cairo's user space units.
     /// </param>
     /// <remarks>
-    /// This layout can then be used for text measurement with functions like <see cref="GetSize(out int, out int)"/>
+    /// This layout can then be used for text measurement with functions like <see cref="GetSize(out double, out double)"/>
     /// or drawing with functions like <see cref="ShowLayout"/>. If you change the transformation or target
     /// surface for <paramref name="cr"/>, you need to call <see cref="UpdateLayout"/>.
     /// <para>
@@ -214,7 +214,8 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     }
 
     /// <summary>
-    /// Updates the private PangoContext of a <see cref="PangoLayout"/> created with <see cref="PangoLayout(CairoContext)"/>
+    /// Updates the private PangoContext of a <see cref="PangoLayout"/> created with
+    /// <see cref="PangoLayout(CairoContext, double)"/>
     /// to match the current transformation and target surface of a <see cref="CairoContext"/>.
     /// </summary>
     public void UpdateLayout()
