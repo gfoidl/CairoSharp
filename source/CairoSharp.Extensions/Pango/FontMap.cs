@@ -60,7 +60,11 @@ public sealed unsafe class FontMap : CairoObject<pango_font_map>
     /// <remarks>
     /// Note that the returned families are not in any particular order.
     /// </remarks>
-    public FontFamilyIterator ListFamilies() => new(this.Handle);
+    public FontFamilyIterator ListFamilies()
+    {
+        this.CheckDisposed();
+        return new FontFamilyIterator(this.Handle);
+    }
 
     /// <summary>
     /// Enumerator for <see cref="FontFamily"/>.
@@ -75,7 +79,7 @@ public sealed unsafe class FontMap : CairoObject<pango_font_map>
 
         internal FontFamilyIterator(pango_font_map* fontMap) => _fontMap = fontMap;
 
-        public FontFamilyIterator GetEnumerator() => this;
+        public readonly FontFamilyIterator GetEnumerator() => this;
 
         public readonly void Dispose()
         {

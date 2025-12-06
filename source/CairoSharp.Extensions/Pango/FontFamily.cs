@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Extensions.GObject;
 using static Cairo.Extensions.Pango.FontFamilyNative;
 
 namespace Cairo.Extensions.Pango;
@@ -72,4 +73,99 @@ public sealed unsafe class FontFamily : CairoObject<pango_font_family>
         IsMonospace: {this.IsMonospace}
         IsVariable:  {this.IsVariable}
         """;
+
+    /// <summary>
+    /// Gets the <see cref="FontFace"/> of family with the given name.
+    /// </summary>
+    /// <param name="name">
+    /// The name of a face. If the name is <c>null</c>, the family’s default face
+    /// (fontconfig calls it "Regular") will be returned.
+    /// </param>
+    /// <returns>
+    /// The <see cref="FontFace"/>, or <c>null</c> if no face with the given name exists.
+    /// </returns>
+    public FontFace? GetFace(string? name)
+    {
+        this.CheckDisposed();
+
+        pango_font_face* face = pango_font_family_get_face(this.Handle, name);
+
+        return face is not null
+            ? new FontFace(this, face)
+            : null;
+    }
+
+    /// <summary>
+    /// Lists the different font faces that make up <see cref="FontFamily"/>.
+    /// </summary>
+    /// <returns>List of font faces for the family.</returns>
+    /// <remarks>
+    /// The faces in a family share a common design, but differ in slant, weight, width
+    /// and other aspects.
+    /// <para>
+    /// Note that the returned faces are not in any particular order, and multiple faces may
+    /// have the same name or characteristics.
+    /// </para>
+    /// </remarks>
+    public FontFaceIterator ListFaces()
+    {
+        this.CheckDisposed();
+        return new FontFaceIterator(this);
+    }
+
+    /// <summary>
+    /// Enumerator for <see cref="FontFace"/> for the <see cref="FontFamily"/>.
+    /// </summary>
+    public struct FontFaceIterator : IDisposable
+    {
+        private readonly FontFamily _family;
+
+        private pango_font_face** _faces;
+        private int               _count;
+        private int               _i = -1;
+
+        internal FontFaceIterator(FontFamily family) => _family = family;
+
+        public readonly FontFaceIterator GetEnumerator() => this;
+
+        public readonly void Dispose()
+        {
+            if (_faces is not null)
+            {
+                GObjectNative.g_free(_faces);
+            }
+        }
+
+        public readonly FontFace Current
+        {
+            get
+            {
+                if (_i < 0)
+                {
+                    throw new InvalidOperationException("Must call MoveNext() before accessing the first element");
+                }
+
+                pango_font_face* face = _faces[_i];
+                return new FontFace(_family, face);
+            }
+        }
+
+        public bool MoveNext()
+        {
+            if (_i < 0)
+            {
+                fixed (pango_font_face*** faces = &_faces)
+                fixed (int* count               = &_count)
+                {
+                    pango_font_family_list_faces(_family.Handle, faces, count);
+                }
+            }
+            else
+            {
+                _i++;
+            }
+
+            return _i < _count;
+        }
+    }
 }

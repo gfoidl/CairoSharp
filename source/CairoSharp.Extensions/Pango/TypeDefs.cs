@@ -16,3 +16,6 @@ public struct pango_font_map;
 
 [EditorBrowsable(EditorBrowsableState.Never)]
 public struct pango_font_family;
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public struct pango_font_face;
