@@ -14,7 +14,7 @@ namespace Cairo.Extensions.Loading;
 
 public static unsafe partial class LoadingNative
 {
-    public const string LibGLibName    = "libglib-2.0.so.0";
+    public const string LibGLibName    = GObjectNative.LibGLibName;
     public const string LibGObjectName = GObjectNative.LibGObjectName;
     public const string LibGioName     = "libgio-2.0.so.0";
     public const string LibRSvgName    = "librsvg-2.so.2";
@@ -92,14 +92,6 @@ public static unsafe partial class LoadingNative
 
         return CairoAPI.VersionEncode(major, minor, patch);
     }
-    //-------------------------------------------------------------------------
-    [LibraryImport(LibGLibName)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void g_free(void* mem);
-
-    [LibraryImport(LibGLibName)]
-    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    internal static partial void g_error_free(GError* error);
     //-------------------------------------------------------------------------
     [LibraryImport(LibGioName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]

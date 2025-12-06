@@ -8,4 +8,8 @@
         <ProjectReference Include="..\..\source\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\FreeTypeDemo\fonts\SanRemo.ttf" Link="fonts\SanRemo.ttf" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

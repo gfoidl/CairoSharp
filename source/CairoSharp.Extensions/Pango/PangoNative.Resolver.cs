@@ -23,9 +23,15 @@ static partial class PangoNative
         "libgobject-2.0-0.dll",         // Windows
         "libgobject-2.0.0.dylib");      // MacOS
 
+    private static readonly Native.LibNames s_glibLibNames = new(
+        GObjectNative.LibGLibName,      // Linux
+        "libglib-2.0-0.dll",            // Windows
+        "libglib-2.0.0.dylib");         // MacOS
+
     private static nint s_libPangoHandle;
     private static nint s_libPangoCairoHandle;
     private static nint s_libGObjectHandle;
+    private static nint s_libGLibHandle;
     //-------------------------------------------------------------------------
     [DisallowNull]
     public static DllImportResolver? DllImportResolver { get; set; } = static (libraryName, assembly, searchPath) =>
@@ -35,6 +41,7 @@ static partial class PangoNative
             LibPangoName                 => ResolveCore(ref s_libPangoHandle     , s_pangoLibNames),
             LibPangoCairoName            => ResolveCore(ref s_libPangoCairoHandle, s_pangoCairoLibNames),
             GObjectNative.LibGObjectName => ResolveCore(ref s_libGObjectHandle   , s_gobjectLibNames),
+            GObjectNative.LibGLibName    => ResolveCore(ref s_libGLibHandle      , s_glibLibNames),
             _                            => default
         };
     };

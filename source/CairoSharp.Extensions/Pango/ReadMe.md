@@ -26,6 +26,7 @@ if (OperatingSystem.IsWindows())
             PangoNative.LibPangoName      => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libpango-1.0-0.dll"),
             PangoNative.LibPangoCairoName => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libpangocairo-1.0-0.dll"),
             PangoNative.LibGObjectName    => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libgobject-2.0-0.dll"),
+            PangoNative.LibGLibName       => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libglib-2.0-0.dll"),
             _                             => null
         };
 
