@@ -44,6 +44,7 @@ PangoDocsDemoWithTextAroundCircle();
 PangoFeaturesDemo();
 FontMapDemo();
 RecordingSurfaceDemo();
+FontListDemo();
 //-----------------------------------------------------------------------------
 static void ComparisonWithCairoTextDemo()
 {
@@ -410,6 +411,8 @@ static void FontMapDemo()
     curY += height;
 
     tee.WriteToPng("font-map.png");
+
+    families.ForEach(f => f.Dispose());
 }
 //-----------------------------------------------------------------------------
 static void RecordingSurfaceDemo()
@@ -472,4 +475,67 @@ static void RecordingSurfaceDemo()
     }
 
     tee.WriteToPng("recording.png");
+
+    families.ForEach(f => f.Dispose());
+}
+//-----------------------------------------------------------------------------
+static void FontListDemo()
+{
+    using FontMap fontMap = FontMap.CairoFontMapGetDefault();
+    fontMap.AddFontFile(IOPath.Combine(AppContext.BaseDirectory, "fonts", "SanRemo.ttf"));
+
+    List<FontFamily> families = [];
+    foreach (FontFamily fontFamily in fontMap.ListFamilies())
+    {
+        families.Add(fontFamily);
+    }
+    families = [.. families
+        .OrderBy(f => f.IsMonospace)
+        .ThenBy (f => f.Name)
+    ];
+
+    using RecordingSurface surface = new();
+    using (CairoContext cr         = new(surface))
+    {
+        using PangoLayout pangoLayout = new(cr);
+        double curY                   = 10;
+
+        foreach(FontFamily fontFamily in families)
+        {
+            cr.MoveTo(10, curY);
+            string familyName = fontFamily.Name;
+            pangoLayout.SetFontDescriptionFromString($"{familyName}, Normal 22");   // note: trailing ,
+            pangoLayout.SetText($"Font: {familyName}; AV and VA to see kerning or not");
+            pangoLayout.ShowLayout();
+            pangoLayout.GetSize(out double width, out double height);
+            curY += height;
+        }
+    }
+
+    Rectangle recordingExtents = surface.GetInkExtents();
+    const int Padding          = 10;
+    double surfaceWidth        = recordingExtents.Width  + 2 * Padding;
+    double surfaceHeight       = recordingExtents.Height + 2 * Padding;
+
+    using SvgSurface svg   = new("font-list.svg", surfaceWidth, surfaceHeight);
+    using PdfSurface pdf   = new("font-list.pdf", surfaceWidth, surfaceHeight);
+    using TeeSurface tee   = new(svg);
+    using (CairoContext cr = new(tee))
+    {
+        tee.Add(pdf);
+
+        cr.Color = KnownColors.White;
+        cr.Paint();
+        cr.Color = Color.Default;
+        cr.LineWidth = 4;
+        cr.Rectangle(0, 0, surfaceWidth, surfaceHeight);
+        cr.Stroke();
+
+        cr.SetSourceSurface(surface, Padding - recordingExtents.X, Padding - recordingExtents.Y);
+        cr.Paint();
+    }
+
+    tee.WriteToPng("font-list.png");
+
+    families.ForEach(f => f.Dispose());
 }

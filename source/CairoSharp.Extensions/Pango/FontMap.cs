@@ -62,6 +62,9 @@ public sealed unsafe class FontMap : CairoObject<pango_font_map>
     /// </remarks>
     public FontFamilyIterator ListFamilies() => new(this.Handle);
 
+    /// <summary>
+    /// Enumerator for <see cref="FontFamily"/>.
+    /// </summary>
     public struct FontFamilyIterator : IDisposable
     {
         private readonly pango_font_map* _fontMap;
