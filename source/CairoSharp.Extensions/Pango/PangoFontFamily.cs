@@ -1,20 +1,20 @@
 // (c) gfoidl, all rights reserved
 
 using Cairo.Extensions.GObject;
-using static Cairo.Extensions.Pango.FontFamilyNative;
+using static Cairo.Extensions.Pango.PangoFontFamilyNative;
 
 namespace Cairo.Extensions.Pango;
 
 /// <summary>
-/// A <see cref="FontFamily"/> is used to represent a family of related font faces.
+/// A <see cref="PangoFontFamily"/> is used to represent a family of related font faces.
 /// </summary>
 /// <remarks>
 /// The font faces in a family share a common design, but differ in slant, weight, width
 /// or other aspects.
 /// </remarks>
-public sealed unsafe class FontFamily : CairoObject<pango_font_family>
+public sealed unsafe class PangoFontFamily : CairoObject<pango_font_family>
 {
-    internal FontFamily(pango_font_family* family) : base(family, isOwnedByCairo: true, needsDestroy: false) { }
+    internal PangoFontFamily(pango_font_family* family) : base(family, isOwnedByCairo: true, needsDestroy: false) { }
 
     protected override void DisposeCore(pango_font_family* handle)
         => throw new InvalidOperationException("PangoFontFamily must not be freed");
@@ -75,28 +75,28 @@ public sealed unsafe class FontFamily : CairoObject<pango_font_family>
         """;
 
     /// <summary>
-    /// Gets the <see cref="FontFace"/> of family with the given name.
+    /// Gets the <see cref="PangoFontFace"/> of family with the given name.
     /// </summary>
     /// <param name="name">
     /// The name of a face. If the name is <c>null</c>, the family’s default face
     /// (fontconfig calls it "Regular") will be returned.
     /// </param>
     /// <returns>
-    /// The <see cref="FontFace"/>, or <c>null</c> if no face with the given name exists.
+    /// The <see cref="PangoFontFace"/>, or <c>null</c> if no face with the given name exists.
     /// </returns>
-    public FontFace? GetFace(string? name)
+    public PangoFontFace? GetFace(string? name)
     {
         this.CheckDisposed();
 
         pango_font_face* face = pango_font_family_get_face(this.Handle, name);
 
         return face is not null
-            ? new FontFace(this, face)
+            ? new PangoFontFace(this, face)
             : null;
     }
 
     /// <summary>
-    /// Lists the different font faces that make up <see cref="FontFamily"/>.
+    /// Lists the different font faces that make up <see cref="PangoFontFamily"/>.
     /// </summary>
     /// <returns>List of font faces for the family.</returns>
     /// <remarks>
@@ -114,17 +114,17 @@ public sealed unsafe class FontFamily : CairoObject<pango_font_family>
     }
 
     /// <summary>
-    /// Enumerator for <see cref="FontFace"/> for the <see cref="FontFamily"/>.
+    /// Enumerator for <see cref="PangoFontFace"/> for the <see cref="PangoFontFamily"/>.
     /// </summary>
     public struct FontFaceIterator : IDisposable
     {
-        private readonly FontFamily _family;
+        private readonly PangoFontFamily _family;
 
         private pango_font_face** _faces;
         private int               _count;
         private int               _i = -1;
 
-        internal FontFaceIterator(FontFamily family) => _family = family;
+        internal FontFaceIterator(PangoFontFamily family) => _family = family;
 
         public readonly FontFaceIterator GetEnumerator() => this;
 
@@ -136,7 +136,7 @@ public sealed unsafe class FontFamily : CairoObject<pango_font_family>
             }
         }
 
-        public readonly FontFace Current
+        public readonly PangoFontFace Current
         {
             get
             {
@@ -146,7 +146,7 @@ public sealed unsafe class FontFamily : CairoObject<pango_font_family>
                 }
 
                 pango_font_face* face = _faces[_i];
-                return new FontFace(_family, face);
+                return new PangoFontFace(_family, face);
             }
         }
 

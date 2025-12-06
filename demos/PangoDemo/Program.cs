@@ -359,17 +359,17 @@ static void FontMapDemo()
     using StreamWriter sw = File.CreateText("font-families.csv");
     sw.WriteLine("Name;IsMonospace;IsVariable");
 
-    using FontMap fontMap = FontMap.CairoFontMapGetDefault();
+    using PangoFontMap fontMap = PangoFontMap.CairoFontMapGetDefault();
     fontMap.AddFontFile(IOPath.Combine(AppContext.BaseDirectory, "fonts", "SanRemo.ttf"));
 
-    List<FontFamily> families = [];
-    foreach (FontFamily fontFamily in fontMap.ListFamilies())
+    List<PangoFontFamily> families = [];
+    foreach (PangoFontFamily fontFamily in fontMap.ListFamilies())
     {
         families.Add(fontFamily);
     }
 
     string fontFamilyName = "";
-    foreach (FontFamily fontFamily in families.OrderBy(f => f.Name))
+    foreach (PangoFontFamily fontFamily in families.OrderBy(f => f.Name))
     {
         fontFamilyName = fontFamily.Name;
 
@@ -417,17 +417,17 @@ static void FontMapDemo()
 //-----------------------------------------------------------------------------
 static void RecordingSurfaceDemo()
 {
-    using FontMap fontMap = FontMap.CairoFontMapGetDefault();
+    using PangoFontMap fontMap = PangoFontMap.CairoFontMapGetDefault();
     fontMap.AddFontFile(IOPath.Combine(AppContext.BaseDirectory, "fonts", "SanRemo.ttf"));
 
-    List<FontFamily> families = [];
-    foreach (FontFamily fontFamily in fontMap.ListFamilies())
+    List<PangoFontFamily> families = [];
+    foreach (PangoFontFamily fontFamily in fontMap.ListFamilies())
     {
         families.Add(fontFamily);
     }
 
     string fontFamilyName = "";
-    foreach (FontFamily fontFamily in families.OrderBy(f => f.Name))
+    foreach (PangoFontFamily fontFamily in families.OrderBy(f => f.Name))
     {
         fontFamilyName = fontFamily.Name;
     }
@@ -481,11 +481,11 @@ static void RecordingSurfaceDemo()
 //-----------------------------------------------------------------------------
 static void FontListDemo()
 {
-    using FontMap fontMap = FontMap.CairoFontMapGetDefault();
+    using PangoFontMap fontMap = PangoFontMap.CairoFontMapGetDefault();
     fontMap.AddFontFile(IOPath.Combine(AppContext.BaseDirectory, "fonts", "SanRemo.ttf"));
 
-    List<FontFamily> families = [];
-    foreach (FontFamily fontFamily in fontMap.ListFamilies())
+    List<PangoFontFamily> families = [];
+    foreach (PangoFontFamily fontFamily in fontMap.ListFamilies())
     {
         families.Add(fontFamily);
     }
@@ -500,10 +500,11 @@ static void FontListDemo()
         using PangoLayout pangoLayout = new(cr);
         double curY                   = 10;
 
-        foreach(FontFamily fontFamily in families)
+        foreach (PangoFontFamily fontFamily in families)
         {
             cr.MoveTo(10, curY);
             string familyName = fontFamily.Name;
+
             pangoLayout.SetFontDescriptionFromString($"{familyName}, Normal 22");   // note: trailing ,
             pangoLayout.SetText($"Font: {familyName}; AV and VA to see kerning or not");
             pangoLayout.ShowLayout();

@@ -1,19 +1,19 @@
 // (c) gfoidl, all rights reserved
 
 using Cairo.Extensions.GObject;
-using static Cairo.Extensions.Pango.FontFaceNative;
+using static Cairo.Extensions.Pango.PangoFontFaceNative;
 
 namespace Cairo.Extensions.Pango;
 
 /// <summary>
-/// A <see cref="FontFace"/> is used to represent a group of fonts with the same family,
+/// A <see cref="PangoFontFace"/> is used to represent a group of fonts with the same family,
 /// slant, weight, and width, but varying sizes.
 /// </summary>
-public sealed unsafe class FontFace : CairoObject<pango_font_face>
+public sealed unsafe class PangoFontFace : CairoObject<pango_font_face>
 {
-    private readonly FontFamily _family;
+    private readonly PangoFontFamily _family;
 
-    internal FontFace(FontFamily family, pango_font_face* face) : base(face, isOwnedByCairo: true, needsDestroy: false)
+    internal PangoFontFace(PangoFontFamily family, pango_font_face* face) : base(face, isOwnedByCairo: true, needsDestroy: false)
         => _family = family;
 
     protected override void DisposeCore(pango_font_face* handle)
@@ -36,7 +36,7 @@ public sealed unsafe class FontFace : CairoObject<pango_font_face>
     }
 
     /// <summary>
-    /// Returns whether a <see cref="FontFace"/> is synthesized.
+    /// Returns whether a <see cref="PangoFontFace"/> is synthesized.
     /// </summary>
     /// <remarks>
     /// This will be the case if the underlying font rendering engine creates this face from
@@ -52,9 +52,9 @@ public sealed unsafe class FontFace : CairoObject<pango_font_face>
     }
 
     /// <summary>
-    /// Gets the <see cref="Extensions.Pango.FontFamily"/> that face belongs to.
+    /// Gets the <see cref="Extensions.Pango.PangoFontFamily"/> that face belongs to.
     /// </summary>
-    public FontFamily FontFamily => _family;
+    public PangoFontFamily FontFamily => _family;
 
     /// <summary>
     /// List the available sizes for a font.
@@ -78,7 +78,7 @@ public sealed unsafe class FontFace : CairoObject<pango_font_face>
     }
 
     /// <summary>
-    /// Enumerator for the sizes in the <see cref="FontFace"/>.
+    /// Enumerator for the sizes in the <see cref="PangoFontFace"/>.
     /// </summary>
     public struct FontFaceSizeIterator : IDisposable
     {

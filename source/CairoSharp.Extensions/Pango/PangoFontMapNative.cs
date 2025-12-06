@@ -5,7 +5,7 @@ using Cairo.Extensions.GObject;
 
 namespace Cairo.Extensions.Pango;
 
-internal static unsafe partial class FontMapNative
+internal static unsafe partial class PangoFontMapNative
 {
     // https://docs.gtk.org/PangoCairo/type_func.FontMap.get_default.html
     [LibraryImport(PangoNative.LibPangoCairoName)]

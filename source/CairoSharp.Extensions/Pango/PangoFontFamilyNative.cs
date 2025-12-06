@@ -5,7 +5,7 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace Cairo.Extensions.Pango;
 
-internal static unsafe partial class FontFamilyNative
+internal static unsafe partial class PangoFontFamilyNative
 {
     // https://docs.gtk.org/Pango/method.FontFamily.get_name.html
     [LibraryImport(PangoNative.LibPangoName)]

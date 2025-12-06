@@ -1,19 +1,19 @@
 // (c) gfoidl, all rights reserved
 
 using Cairo.Extensions.GObject;
-using static Cairo.Extensions.Pango.FontMapNative;
+using static Cairo.Extensions.Pango.PangoFontMapNative;
 
 namespace Cairo.Extensions.Pango;
 
 /// <summary>
-/// A <see cref="FontMap"/> represents the set of fonts available for a particular rendering system.
+/// A <see cref="PangoFontMap"/> represents the set of fonts available for a particular rendering system.
 /// </summary>
 /// <remarks>
 /// This is a virtual object with implementations being specific to particular rendering systems.
 /// </remarks>
-public sealed unsafe class FontMap : CairoObject<pango_font_map>
+public sealed unsafe class PangoFontMap : CairoObject<pango_font_map>
 {
-    private FontMap(pango_font_map* fontMap) : base(fontMap, isOwnedByCairo: true, needsDestroy: false) { }
+    private PangoFontMap(pango_font_map* fontMap) : base(fontMap, isOwnedByCairo: true, needsDestroy: false) { }
 
     /// <summary>
     /// Gets a default PangoCairoFontMap to use with cairo.
@@ -23,17 +23,17 @@ public sealed unsafe class FontMap : CairoObject<pango_font_map>
     /// not be freed (note: you still should Dispose the object, but here disposal won't free the native
     /// resource).
     /// </returns>
-    public static FontMap CairoFontMapGetDefault()
+    public static PangoFontMap CairoFontMapGetDefault()
     {
         pango_font_map* fontMap = pango_cairo_font_map_get_default();
-        return new FontMap(fontMap);
+        return new PangoFontMap(fontMap);
     }
 
     protected override void DisposeCore(pango_font_map* handle)
         => throw new InvalidOperationException("PangoFontMap must not be freed");
 
     /// <summary>
-    /// Loads a font file with one or more fonts into the <see cref="FontMap"/>.
+    /// Loads a font file with one or more fonts into the <see cref="PangoFontMap"/>.
     /// </summary>
     /// <param name="fileName">Absolute path to the font file.</param>
     /// <remarks>
@@ -67,7 +67,7 @@ public sealed unsafe class FontMap : CairoObject<pango_font_map>
     }
 
     /// <summary>
-    /// Enumerator for <see cref="FontFamily"/>.
+    /// Enumerator for <see cref="PangoFontFamily"/>.
     /// </summary>
     public struct FontFamilyIterator : IDisposable
     {
@@ -89,7 +89,7 @@ public sealed unsafe class FontMap : CairoObject<pango_font_map>
             }
         }
 
-        public readonly FontFamily Current
+        public readonly PangoFontFamily Current
         {
             get
             {
@@ -99,7 +99,7 @@ public sealed unsafe class FontMap : CairoObject<pango_font_map>
                 }
 
                 pango_font_family* family = _families[_i];
-                return new FontFamily(family);
+                return new PangoFontFamily(family);
             }
         }
 
