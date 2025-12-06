@@ -425,8 +425,22 @@ static void FontMapDemo()
     {
         fontFamilyName = fontFamily.Name;
 
-        Console.WriteLine($"{fontFamily}\n");
         sw.WriteLine($"{fontFamilyName};{fontFamily.IsMonospace};{fontFamily.IsVariable}");
+        Console.WriteLine(fontFamily);
+        Console.WriteLine("Faces:");
+
+        foreach (PangoFontFace fontFace in fontFamily.ListFaces())
+        {
+            Console.WriteLine($"\t{fontFace.Name}\tsynthesized: {fontFace.IsSynthesized}");
+            Console.WriteLine("\tSizes:");
+
+            foreach (double size in fontFace.ListSizes())
+            {
+                Console.WriteLine($"\t\t{size}");
+            }
+        }
+
+        Console.WriteLine();
     }
 
     const int Width  = 600;

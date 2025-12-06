@@ -159,6 +159,8 @@ public sealed unsafe class PangoFontFamily : CairoObject<pango_font_family>
                 {
                     pango_font_family_list_faces(_family.Handle, faces, count);
                 }
+
+                _i = 0;
             }
             else
             {

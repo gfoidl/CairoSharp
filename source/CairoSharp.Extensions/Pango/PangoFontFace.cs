@@ -129,6 +129,8 @@ public sealed unsafe class PangoFontFace : CairoObject<pango_font_face>
                 {
                     return false;
                 }
+
+                _i = 0;
             }
             else
             {
