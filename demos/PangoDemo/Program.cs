@@ -8,6 +8,7 @@ using Cairo.Extensions.Colors;
 using Cairo.Extensions.Pango;
 using Cairo.Fonts;
 using Cairo.Surfaces.PDF;
+using Cairo.Surfaces.Recording;
 using Cairo.Surfaces.SVG;
 using Cairo.Surfaces.Tee;
 using IOPath = System.IO.Path;
@@ -38,12 +39,13 @@ if (Directory.Exists("output")) Directory.Delete("output", true);
 Directory.CreateDirectory("output");
 Environment.CurrentDirectory = IOPath.Combine(Environment.CurrentDirectory, "output");
 
-DemoComparisonWithCairoText();
-DemoFromPangoDocsWithTextAroundCircle();
-DemoPangoFeatures();
-DemoFontMap();
+ComparisonWithCairoTextDemo();
+PangoDocsDemoWithTextAroundCircle();
+PangoFeaturesDemo();
+FontMapDemo();
+RecordingSurfaceDemo();
 //-----------------------------------------------------------------------------
-static void DemoComparisonWithCairoText()
+static void ComparisonWithCairoTextDemo()
 {
     const int Width   = 600;
     const int Height  = 150;
@@ -105,7 +107,7 @@ static void DemoComparisonWithCairoText()
     tee.WriteToPng("cairo_comparison.png");
 }
 //-----------------------------------------------------------------------------
-static void DemoFromPangoDocsWithTextAroundCircle()
+static void PangoDocsDemoWithTextAroundCircle()
 {
     // Demo from https://docs.gtk.org/PangoCairo/pango_cairo.html
 
@@ -163,7 +165,7 @@ static void DemoFromPangoDocsWithTextAroundCircle()
     tee.WriteToPng("sample_from_docs.png");
 }
 //-----------------------------------------------------------------------------
-static void DemoPangoFeatures()
+static void PangoFeaturesDemo()
 {
     const int Width  = 600;
     const int Height = 620;
@@ -350,7 +352,7 @@ static void DemoPangoFeatures()
     tee.WriteToPng("features.png");
 }
 //-----------------------------------------------------------------------------
-static void DemoFontMap()
+static void FontMapDemo()
 {
     Console.WriteLine();
     using StreamWriter sw = File.CreateText("font-families.csv");
@@ -384,7 +386,7 @@ static void DemoFontMap()
     tee.Add(pdf);
 
     using PangoLayout pangoLayout = new(cr);
-    double curY = 10;
+    double curY                   = 10;
 
     cr.MoveTo(10, curY);
     pangoLayout.SetFontDescriptionFromString($"{fontFamilyName} Normal 22");
@@ -408,4 +410,66 @@ static void DemoFontMap()
     curY += height;
 
     tee.WriteToPng("font-map.png");
+}
+//-----------------------------------------------------------------------------
+static void RecordingSurfaceDemo()
+{
+    using FontMap fontMap = FontMap.CairoFontMapGetDefault();
+    fontMap.AddFontFile(IOPath.Combine(AppContext.BaseDirectory, "fonts", "SanRemo.ttf"));
+
+    List<FontFamily> families = [];
+    foreach (FontFamily fontFamily in fontMap.ListFamilies())
+    {
+        families.Add(fontFamily);
+    }
+
+    string fontFamilyName = "";
+    foreach (FontFamily fontFamily in families.OrderBy(f => f.Name))
+    {
+        fontFamilyName = fontFamily.Name;
+    }
+
+    using RecordingSurface surface = new();
+    using (CairoContext cr         = new(surface))
+    {
+        using PangoLayout pangoLayout = new(cr);
+        double curY                   = 10;
+
+        cr.MoveTo(10, curY);
+        pangoLayout.SetFontDescriptionFromString($"{fontFamilyName} Normal 22");
+        pangoLayout.SetText($"Font: {fontFamilyName}");
+        pangoLayout.ShowLayout();
+        pangoLayout.GetSize(out double width, out double height);
+        curY += height;
+
+        cr.MoveTo(10, curY);
+        pangoLayout.SetFontDescriptionFromString("Viner Hand ITC, Normal 22");
+        pangoLayout.SetText("Font: Viner Hand ITC");
+        pangoLayout.ShowLayout();
+        pangoLayout.GetSize(out width, out height);
+        curY += height;
+
+        cr.MoveTo(10, curY);
+        pangoLayout.SetFontDescriptionFromString("San Remo, Normal 22");
+        pangoLayout.SetText("Font: San Remo");
+        pangoLayout.ShowLayout();
+        pangoLayout.GetSize(out width, out height);
+        curY += height;
+    }
+
+    Rectangle recordingExtents = surface.GetInkExtents();
+    const int Padding          = 10;
+
+    using SvgSurface svg   = new("recording.svg", recordingExtents.Width + 2 * Padding, recordingExtents.Height + 2 * Padding);
+    using PdfSurface pdf   = new("recording.pdf", recordingExtents.Width + 2 * Padding, recordingExtents.Height + 2 * Padding);
+    using TeeSurface tee   = new(svg);
+    using (CairoContext cr = new(tee))
+    {
+        tee.Add(pdf);
+
+        cr.SetSourceSurface(surface, Padding - recordingExtents.X, Padding - recordingExtents.Y);
+        cr.Paint();
+    }
+
+    tee.WriteToPng("recording.png");
 }
