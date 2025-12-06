@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Extensions.GObject;
 using static Cairo.Extensions.Loading.LoadingNative;
 
 namespace Cairo.Extensions.Loading.SVG;
@@ -73,18 +74,13 @@ public static unsafe class LibRSvgExtensions
         /// </summary>
         /// <param name="svgDocument">SVG document</param>
         /// <param name="viewPort">viewport size at which the whole SVG would be fitted</param>
-        /// <param name="dpi">
-        /// the DPI at which the SVG will be rendered in cairo. Common values are 75, 90 and 300 DPI. See
-        /// <a href="https://gnome.pages.gitlab.gnome.org/librsvg/Rsvg-2.0/class.Handle.html#resolution-of-the-rendered-image-dots-per-inch-or-dpi">Resolution of the rendered image (dots per inch, or DPI)</a>
-        /// for further information. Current CSS assumes a default DPI of 96 (the default used here).
-        /// </param>
         /// <remarks>
         /// The <paramref name="viewPort"/> gives the position and size at which the whole SVG document will
         /// be rendered. The document is scaled proportionally to fit into this viewport.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="svgDocument"/> is <c>null</c></exception>
         /// <exception cref="LibRsvgException">an error occured</exception>
-        public void LoadSvg(SvgDocument svgDocument, RsvgRectangle viewPort, double dpi = 96d)
+        public void LoadSvg(SvgDocument svgDocument, RsvgRectangle viewPort)
         {
             ArgumentNullException.ThrowIfNull(svgDocument);
 

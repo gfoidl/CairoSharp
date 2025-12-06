@@ -48,6 +48,7 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
         }
     }
 
+    [StackTraceHidden]
     private static pango_layout* Create(CairoContext cr)
     {
         ArgumentNullException.ThrowIfNull(cr);

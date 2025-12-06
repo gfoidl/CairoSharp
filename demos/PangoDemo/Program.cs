@@ -21,6 +21,7 @@ if (OperatingSystem.IsWindows())
             PangoNative.LibPangoName      => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libpango-1.0-0.dll"),
             PangoNative.LibPangoCairoName => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libpangocairo-1.0-0.dll"),
             PangoNative.LibGObjectName    => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libgobject-2.0-0.dll"),
+            PangoNative.LibGLibName       => IOPath.Combine(@"C:\Program Files\msys64\ucrt64\bin", "libglib-2.0-0.dll"),
             _                             => null
         };
 
@@ -40,6 +41,7 @@ Environment.CurrentDirectory = IOPath.Combine(Environment.CurrentDirectory, "out
 DemoComparisonWithCairoText();
 DemoFromPangoDocsWithTextAroundCircle();
 DemoPangoFeatures();
+DemoFontMap();
 //-----------------------------------------------------------------------------
 static void DemoComparisonWithCairoText()
 {
@@ -278,7 +280,7 @@ static void DemoPangoFeatures()
         {
             cr.Color = KnownColors.DeepSkyBlue;
             cr.MoveTo(10, curY);
-            pangoLayout.SetText("Another long text, to showcase how justify works. And as we get on at least one more line, we can test next how JustifyLastLine works.");
+            pangoLayout.SetMarkup("Another long text, to showcase how <tt>Justify</tt> works. And as we get on at least one more line, we can test next how <tt>JustifyLastLine</tt> works."u8);
             pangoLayout.ShowLayout();
 
             pangoLayout.GetSize(out width, out height);
@@ -346,4 +348,64 @@ static void DemoPangoFeatures()
     }
 
     tee.WriteToPng("features.png");
+}
+//-----------------------------------------------------------------------------
+static void DemoFontMap()
+{
+    Console.WriteLine();
+    using StreamWriter sw = File.CreateText("font-families.csv");
+    sw.WriteLine("Name;IsMonospace;IsVariable");
+
+    using FontMap fontMap = FontMap.CairoFontMapGetDefault();
+    fontMap.AddFontFile(IOPath.Combine(AppContext.BaseDirectory, "fonts", "SanRemo.ttf"));
+
+    List<FontFamily> families = [];
+    foreach (FontFamily fontFamily in fontMap.ListFamilies())
+    {
+        families.Add(fontFamily);
+    }
+
+    string fontFamilyName = "";
+    foreach (FontFamily fontFamily in families.OrderBy(f => f.Name))
+    {
+        fontFamilyName = fontFamily.Name;
+
+        Console.WriteLine($"{fontFamily}\n");
+        sw.WriteLine($"{fontFamilyName};{fontFamily.IsMonospace};{fontFamily.IsVariable}");
+    }
+
+    const int Width  = 600;
+    const int Height = 120;
+
+    using SvgSurface svg  = new("font-map.svg", Width, Height);
+    using PdfSurface pdf  = new("font-map.pdf", Width, Height);
+    using TeeSurface tee  = new(svg);
+    using CairoContext cr = new(tee);
+    tee.Add(pdf);
+
+    using PangoLayout pangoLayout = new(cr);
+    double curY = 10;
+
+    cr.MoveTo(10, curY);
+    pangoLayout.SetFontDescriptionFromString($"{fontFamilyName} Normal 22");
+    pangoLayout.SetText($"Font: {fontFamilyName}");
+    pangoLayout.ShowLayout();
+    pangoLayout.GetSize(out double width, out double height);
+    curY += height;
+
+    cr.MoveTo(10, curY);
+    pangoLayout.SetFontDescriptionFromString("Viner Hand ITC, Normal 22");
+    pangoLayout.SetText("Font: Viner Hand ITC");
+    pangoLayout.ShowLayout();
+    pangoLayout.GetSize(out width, out height);
+    curY += height;
+
+    cr.MoveTo(10, curY);
+    pangoLayout.SetFontDescriptionFromString("San Remo, Normal 22");
+    pangoLayout.SetText("Font: San Remo");
+    pangoLayout.ShowLayout();
+    pangoLayout.GetSize(out width, out height);
+    curY += height;
+
+    tee.WriteToPng("font-map.png");
 }

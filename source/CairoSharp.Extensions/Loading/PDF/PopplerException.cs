@@ -1,5 +1,7 @@
 // (c) gfoidl, all rights reserved
 
+using Cairo.Extensions.GObject;
+
 namespace Cairo.Extensions.Loading.PDF;
 
 [Serializable]
