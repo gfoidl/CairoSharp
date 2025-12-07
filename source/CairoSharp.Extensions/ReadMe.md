@@ -31,12 +31,13 @@ Loading of FreeType fonts either from
 
 ### Default Fonts
 
-| Type        | Font        |
-|-------------|-------------|
-| `SansSerif` | Helvetica   |
-| `MonoSpace` | Inconsolata |
+| Type        | Font         |
+|-------------|--------------|
+| `SansSerif` | Helvetica    |
+| `Serif`     | DejaVu Serif |
+| `MonoSpace` | Inconsolata  |
 
-Both fonts are also available as bold variant.
+These fonts are available in regular, bold, italic, and bold+italic.
 
 ## Pango
 
@@ -62,6 +63,7 @@ The following color spaces are available:
 * sRGB (the default `Color` struct as used in _cairo_)
 * HSV
 * CIE-L\*a\*b\*
+* CIE-XYZ
 
 There are also methods to convert between these color spaces. See [Colors](./Colors/ReadMe.md) for further information.
 

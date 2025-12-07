@@ -73,7 +73,7 @@ public static unsafe class WindowExtensions
         }
 
         /// <summary>
-        /// Gets the <see cref="Surface"/> associated with the windows.
+        /// Gets the <see cref="Surface"/> associated with the window.
         /// </summary>
         /// <returns>The surface for the window</returns>
         public Surface? GetSurface()

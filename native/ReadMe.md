@@ -2,6 +2,25 @@
 
 ## cairo
 
+```mermaid
+flowchart TD
+    cr[cairo-2.dll] --> z[z-1.dll]
+    cr --> pn[png6-16.dll]
+    cr --> fc[fontconfig-1.dll]
+    cr --> ft[freetype-6.dll]
+    cr --> px[pixman-1-0.dll]
+
+    pn --> z
+
+    fc --> ft
+    fc --> x[xml2-2.dll]
+
+    ft --> z
+    ft --> pn
+
+    x --> z
+```
+
 ### Linux
 
 For Linux _cairo_ is a prerequisite and must be [installed](https://www.cairographics.org/download/), e.g. for Debian-like:

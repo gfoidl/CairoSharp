@@ -51,7 +51,9 @@ public static class GrayScaleExtensions
 
                     if (!Vector256.IsHardwareAccelerated)
                     {
-                        yLinear = WeightRed * color.Red + WeightGreen * color.Green + WeightBlue * color.Blue;
+                        yLinear = WeightRed   * color.Red
+                                + WeightGreen * color.Green
+                                + WeightBlue  * color.Blue;
                     }
                     else
                     {
