@@ -6,6 +6,7 @@
   </Folder>
   <Folder Name="/demos/">
     <File Path="demos/ReadMe.md" />
+    <File Path="demos/run-all-non-gui.sh" />
     <Project Path="demos/AspNetCoreDemo/AspNetCoreDemo.csproj" />
     <Project Path="demos/CairoDemo.NuGet/CairoDemo.NuGet.csproj" />
     <Project Path="demos/CairoDemo/CairoDemo.csproj" />
