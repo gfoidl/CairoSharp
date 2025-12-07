@@ -81,22 +81,30 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// When <c>null</c> is set, the current font description is unset.
     /// </para>
     /// </param>
+    /// <returns>A string representation of a font description.</returns>
     /// <remarks>
     /// If no font description is set on the layout, the font description from the layout’s context is used.
     /// </remarks>
-    public void SetFontDescriptionFromString(string? fontDescription)
+    public string? SetFontDescriptionFromString(string? fontDescription)
     {
         this.CheckDisposed();
 
         if (fontDescription is null)
         {
             pango_layout_set_font_description(this.Handle, null);
+            return null;
         }
         else
         {
             pango_font_description* desc = pango_font_description_from_string(fontDescription);
             pango_layout_set_font_description(this.Handle, desc);
+
+            sbyte* tmp = pango_font_description_to_string(desc);
             pango_font_description_free(desc);
+
+            string res = new(tmp);
+            GObjectNative.g_free(tmp);
+            return res;
         }
     }
 
@@ -107,11 +115,12 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// <param name="size">
     /// The size of the font in points
     /// </param>
+    /// <returns>A string representation of a font description.</returns>
     /// <remarks>
     /// The resulting font description will have the family, style, variant, weight and stretch
     /// of the face, but its size field will be unset.
     /// </remarks>
-    public void SetFontDescription(PangoFontFace fontFace, int size)
+    public string SetFontDescription(PangoFontFace fontFace, int size)
     {
         this.CheckDisposed();
         fontFace.CheckDisposed();
@@ -124,7 +133,13 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
         //pango_font_description_set_absolute_size(desc, size * Pango.Scale);
 
         pango_layout_set_font_description(this.Handle, desc);
+
+        sbyte* tmp = pango_font_description_to_string(desc);
         pango_font_description_free(desc);
+
+        string res = new(tmp);
+        GObjectNative.g_free(tmp);
+        return res;
     }
 
     /// <summary>

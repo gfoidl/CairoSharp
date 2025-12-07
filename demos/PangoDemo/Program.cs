@@ -111,7 +111,7 @@ static void ComparisonWithCairoTextDemo()
 //-----------------------------------------------------------------------------
 static void FontSelectionDemo()
 {
-    const int Width   = 700;
+    const int Width   = 800;
     const int Height  = 100;
     const string Text = "Hello from CairoSharp, w/o any AV and VA";
 
@@ -134,23 +134,25 @@ static void FontSelectionDemo()
 
     cr.MoveTo(10, curY);
     pangoLayout.SetText($"{Text} (Pango font from string)");
-    pangoLayout.SetFontDescriptionFromString("Arial Normal 22");
+    string? fontDescriptionAsString = pangoLayout.SetFontDescriptionFromString("DejaVu Serif, Normal 22");
+    Console.WriteLine(fontDescriptionAsString);
     pangoLayout.ShowLayout();
     pangoLayout.GetSize(out double width, out double height);
 
     curY += height;
     cr.MoveTo(10, curY);
     using PangoFontMap fontMap       = PangoFontMap.CairoFontMapGetDefault();
-    using PangoFontFamily fontFamily = fontMap.GetFamily("Arial");
+    using PangoFontFamily fontFamily = fontMap.GetFamily("DejaVu Serif");
     using PangoFontFace? fontFace    = fontFamily.GetFace(null);
     Debug.Assert(fontFace is not null);
     pangoLayout.SetText($"{Text} (Pango font selected)");
-    pangoLayout.SetFontDescription(fontFace, size: 22);
+    fontDescriptionAsString = pangoLayout.SetFontDescription(fontFace, size: 22);
+    Console.WriteLine(fontDescriptionAsString);
     pangoLayout.ShowLayout();
     pangoLayout.GetSize(out width, out height);
     curY += height;
 
-    cr.SelectFontFace("Arial");
+    cr.SelectFontFace("DejaVu Serif");
     cr.SetFontSize(22);
     cr.FontExtents(out FontExtents fontExtents);
     curY += fontExtents.Ascent;
