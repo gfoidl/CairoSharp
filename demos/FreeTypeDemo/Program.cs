@@ -150,9 +150,15 @@ static void Core(string fileName, string[] fontNames, Func<string, FreeTypeFont>
     {
         yield return (DefaultFonts.SansSerif          , "Helvetica");
         yield return (DefaultFonts.SansSerifBold      , "Helvetica (bold)");
+        yield return (DefaultFonts.SansSerifItalic    , "Helvetica (italic)");
         yield return (DefaultFonts.SansSerifBoldItalic, "Helvetica (bold, italic)");
+        yield return (DefaultFonts.Serif              , "DejaVu Serif");
+        yield return (DefaultFonts.SerifBold          , "DejaVu Serif (bold)");
+        yield return (DefaultFonts.SerifItalic        , "DejaVu Serif (italic)");
+        yield return (DefaultFonts.SerifBoldItalic    , "DejaVu Serif (bold, italic)");
         yield return (DefaultFonts.MonoSpace          , "Source Code Pro (monospace)");
         yield return (DefaultFonts.MonoSpaceBold      , "Source Code Pro (monospace, bold)");
+        yield return (DefaultFonts.MonoSpaceItalic    , "Source Code Pro (monospace, italic)");
         yield return (DefaultFonts.MonoSpaceBoldItalic, "Source Code Pro (monospace, bold, italic)");
     }
 }

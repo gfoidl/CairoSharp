@@ -1,7 +1,7 @@
 // (c) gfoidl, all rights reserved
 
 using System.Runtime.InteropServices.Marshalling;
-using static Cairo.Extensions.Loading.LoadingNative;
+using Cairo.Extensions.GObject;
 
 namespace Cairo.Extensions.Loading;
 
@@ -15,5 +15,5 @@ internal static unsafe class GCharMarshaller
             : new string(utf8);
     }
     //-------------------------------------------------------------------------
-    public static void Free(sbyte* utf8) => g_free(utf8);
+    public static void Free(sbyte* utf8) => GObjectNative.g_free(utf8);
 }

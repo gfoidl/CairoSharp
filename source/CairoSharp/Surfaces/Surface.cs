@@ -184,12 +184,12 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// This method finishes the surface and drops all references to external resources. For example,
     /// for the Xlib backend it means that cairo will no longer access the drawable, which can be freed.
     /// After calling <see cref="Finish"/> the only valid operations on a surface are checking status, getting
-    /// and setting user, referencing and destroying, and flushing and finishing it. Further drawing to the
+    /// and setting user data, referencing and destroying, and flushing and finishing it. Further drawing to the
     /// surface will not affect the surface but will instead trigger a <see cref="Status.SurfaceFinished"/> error.
     /// </summary>
     /// <remarks>
     /// When the last call to <see cref="CairoObject.Dispose()"/> decreases the reference count to zero,
-    /// cairo will call cairo_surface_finish() if it hasn't been called already, before freeing the resources
+    /// cairo will call <c>cairo_surface_finish()</c> if it hasn't been called already, before freeing the resources
     /// associated with the surface.
     /// </remarks>
     public void Finish()

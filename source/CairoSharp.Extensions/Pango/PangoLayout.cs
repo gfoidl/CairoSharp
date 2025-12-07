@@ -25,7 +25,7 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// font sizes given in Pango match the font size given in cairo's user space units.
     /// </param>
     /// <remarks>
-    /// This layout can then be used for text measurement with functions like <see cref="GetSize(out int, out int)"/>
+    /// This layout can then be used for text measurement with functions like <see cref="GetSize(out double, out double)"/>
     /// or drawing with functions like <see cref="ShowLayout"/>. If you change the transformation or target
     /// surface for <paramref name="cr"/>, you need to call <see cref="UpdateLayout"/>.
     /// <para>
@@ -48,6 +48,7 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
         }
     }
 
+    [StackTraceHidden]
     private static pango_layout* Create(CairoContext cr)
     {
         ArgumentNullException.ThrowIfNull(cr);
@@ -80,23 +81,65 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// When <c>null</c> is set, the current font description is unset.
     /// </para>
     /// </param>
+    /// <returns>A string representation of a font description.</returns>
     /// <remarks>
     /// If no font description is set on the layout, the font description from the layout’s context is used.
     /// </remarks>
-    public void SetFontDescriptionFromString(string? fontDescription)
+    public string? SetFontDescriptionFromString(string? fontDescription)
     {
         this.CheckDisposed();
 
         if (fontDescription is null)
         {
             pango_layout_set_font_description(this.Handle, null);
+            return null;
         }
         else
         {
             pango_font_description* desc = pango_font_description_from_string(fontDescription);
             pango_layout_set_font_description(this.Handle, desc);
+
+            sbyte* tmp = pango_font_description_to_string(desc);
             pango_font_description_free(desc);
+
+            string res = new(tmp);
+            GObjectNative.g_free(tmp);
+            return res;
         }
+    }
+
+    /// <summary>
+    /// Sets the font description that matches the face.
+    /// </summary>
+    /// <param name="fontFace">The font face.</param>
+    /// <param name="size">
+    /// The size of the font in points
+    /// </param>
+    /// <returns>A string representation of a font description.</returns>
+    /// <remarks>
+    /// The resulting font description will have the family, style, variant, weight and stretch
+    /// of the face, but its size field will be unset.
+    /// </remarks>
+    public string SetFontDescription(PangoFontFace fontFace, int size)
+    {
+        this.CheckDisposed();
+        fontFace.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(fontFace);
+
+        pango_font_description* desc = PangoFontFaceNative.pango_font_face_describe(fontFace.Handle);
+
+        // Must be set before assigning it to the layout.
+        pango_font_description_set_size(desc, size * Pango.Scale);
+        //pango_font_description_set_absolute_size(desc, size * Pango.Scale);
+
+        pango_layout_set_font_description(this.Handle, desc);
+
+        sbyte* tmp = pango_font_description_to_string(desc);
+        pango_font_description_free(desc);
+
+        string res = new(tmp);
+        GObjectNative.g_free(tmp);
+        return res;
     }
 
     /// <summary>
@@ -186,7 +229,8 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     }
 
     /// <summary>
-    /// Updates the private PangoContext of a <see cref="PangoLayout"/> created with <see cref="PangoLayout(CairoContext)"/>
+    /// Updates the private PangoContext of a <see cref="PangoLayout"/> created with
+    /// <see cref="PangoLayout(CairoContext, double)"/>
     /// to match the current transformation and target surface of a <see cref="CairoContext"/>.
     /// </summary>
     public void UpdateLayout()

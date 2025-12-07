@@ -79,6 +79,70 @@ public static class DefaultFonts
 #endif
 
     /// <summary>
+    /// DejaVu Serif
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ToyFontFace"/> created for DejaVu Serif.
+    /// </returns>
+#if USE_THREADSTATIC
+    [ThreadStatic] private static FontFace? t_serif;
+    public static FontFace Serif => t_serif ??= new ToyFontFace("DejaVu Serif");
+#else
+    public static FontFace Serif => s_serif.Value;
+    private static readonly Lazy<FontFace> s_serif = new(
+        () => new ToyFontFace("DejaVu Serif"),
+        LazyThreadSafetyMode.ExecutionAndPublication);
+#endif
+
+    /// <summary>
+    /// DejaVu Serif (bold)
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ToyFontFace"/> created for DejaVu Serif.
+    /// </returns>
+#if USE_THREADSTATIC
+    [ThreadStatic] private static FontFace? t_serifBold;
+    public static FontFace SerifBold => t_serifBold ??= new ToyFontFace("DejaVu Serif", weight: Drawing.Text.FontWeight.Bold);
+#else
+    public static FontFace SerifBold => s_serifBold.Value;
+    private static readonly Lazy<FontFace> s_serifBold = new(
+        () => new ToyFontFace("DejaVu Serif", weight: Drawing.Text.FontWeight.Bold),
+        LazyThreadSafetyMode.ExecutionAndPublication);
+#endif
+
+    /// <summary>
+    /// DejaVu Serif (italic)
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ToyFontFace"/> created for DejaVu Serif.
+    /// </returns>
+#if USE_THREADSTATIC
+    [ThreadStatic] private static FontFace? t_serifItalic;
+    public static FontFace SerifItalic => t_serifItalic ??= new ToyFontFace("DejaVu Serif", slant: Drawing.Text.FontSlant.Italic);
+#else
+    public static FontFace SerifItalic => s_serifItalic.Value;
+    private static readonly Lazy<FontFace> s_serifItalic = new(
+        () => new ToyFontFace("DejaVu Serif", slant: Drawing.Text.FontSlant.Italic),
+        LazyThreadSafetyMode.ExecutionAndPublication);
+#endif
+
+    /// <summary>
+    /// DejaVu Serif (bold italic)
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ToyFontFace"/> created for DejaVu Serif.
+    /// </returns>
+#if USE_THREADSTATIC
+    [ThreadStatic] private static FontFace? t_serifBoldItalic;
+    public static FontFace SerifBoldItalic => t_serifBoldItalic ??= new ToyFontFace("DejaVu Serif", slant: Drawing.Text.FontSlant.Italic, weight: Drawing.Text.FontWeight.Bold);
+#else
+    public static FontFace SerifBoldItalic => s_serifBoldItalic.Value;
+    private static readonly Lazy<FontFace> s_serifBoldItalic = new(
+        () => new ToyFontFace("DejaVu Serif", slant: Drawing.Text.FontSlant.Italic, weight: Drawing.Text.FontWeight.Bold),
+        LazyThreadSafetyMode.ExecutionAndPublication);
+#endif
+
+    /// <summary>
     /// Source Code Pro
     /// </summary>
     /// <returns>

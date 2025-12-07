@@ -1,23 +1,17 @@
 // (c) gfoidl, all rights reserved
 
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using Cairo.Extensions.GObject;
 
 namespace Cairo.Extensions.Pango;
 
-[EditorBrowsable(EditorBrowsableState.Never)]
-public struct pango_layout;
-internal struct pango_context;
-internal struct pango_font_description;
-internal struct pango_attr_list;
-
 public static unsafe partial class PangoNative
 {
     public const string LibPangoName      = "libpango.so.1";
     public const string LibPangoCairoName = "libpangocairo.so.1";
     public const string LibGObjectName    = GObjectNative.LibGObjectName;
+    public const string LibGLibName       = GObjectNative.LibGLibName;
 
     // https://docs.gtk.org/PangoCairo/func.create_layout.html
     [LibraryImport(LibPangoCairoName)]
@@ -33,6 +27,21 @@ public static unsafe partial class PangoNative
     [LibraryImport(LibPangoName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     internal static partial pango_font_description* pango_font_description_from_string(string str);
+
+    // https://docs.gtk.org/Pango/method.FontDescription.set_size.html
+    [LibraryImport(LibPangoName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void pango_font_description_set_size(pango_font_description* desc, int size);
+
+    // https://docs.gtk.org/Pango/method.FontDescription.set_absolute_size.html
+    [LibraryImport(LibPangoName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial void pango_font_description_set_absolute_size(pango_font_description* desc, double size);
+
+    // https://docs.gtk.org/Pango/method.FontDescription.to_string.html
+    [LibraryImport(LibPangoName)]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    internal static partial sbyte* pango_font_description_to_string(pango_font_description* desc);
 
     // https://docs.gtk.org/Pango/method.FontDescription.free.html
     [LibraryImport(LibPangoName)]

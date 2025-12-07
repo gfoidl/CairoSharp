@@ -29,6 +29,7 @@ public abstract unsafe class StreamSurface : Surface
         // Need to free the surface first, so that the write function (if any)
         // can be called on a valid handle.
         // So it's like: dispose -> write func -> stream handle free
+        // See also Surface.Finish for more info.
         if (_stateHandle.IsAllocated)
         {
             _stateHandle.Free();
