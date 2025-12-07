@@ -73,7 +73,7 @@ namespace Cairo.Drawing.Patterns;
 /// Additional patches may be added with additional calls to <see cref="BeginPatch"/> / <see cref="EndPatch"/>.
 /// </para>
 /// <para>
-/// See <a href="https://github.com/gfoidl/CairoSharp/blob/82f4eb67c63cd145a2dcd36627b181902d150935/demos/CairoDemo/Program.cs#L643-L670">CairoDemo</a>
+/// See <a href="https://github.com/gfoidl/CairoSharp/blob/main/demos/CairoDemo/Program.cs#L643-L670">CairoDemo</a>
 /// for an example of a mesh with a Coons patch and a Gouraud-shaded triangle.
 /// </para>
 /// <para>
