@@ -16,5 +16,10 @@ Some links about colors etc.:
 * RGB / sRGB (s...standard)
 * HSV
 * CIE-L\*a\*b\*
+* CIE-XYZ
 
-With conversions RGB <-> HSV and RGB <-> CIE-L\*a\*b\*.
+With conversions RGB <-> HSV and RGB <-> CIE-L\*a\*b\* and RGB <-> CIE-XYZ
+
+### Grayscale
+
+There are extensions to convert a color to a grayscale color by using a mode given by [GrayScaleMode](./GrayScaleMode.cs).

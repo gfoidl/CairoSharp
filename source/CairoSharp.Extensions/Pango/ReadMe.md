@@ -45,3 +45,18 @@ if (OperatingSystem.IsWindows())
 
 > [!NOTE]
 > When the Pango libraries are on `$PATH` you don't have to set the `PangoNative.DllImportResolver`.
+
+## MSBuild properties
+
+These properties are optional, and by default (`false`) they do nothing.
+
+```xml
+<PropertyGroup>
+    <PangoWinNativeDir>C:\Program Files\msys64\ucrt64\bin</PangoWinNativeDir>
+    <PangoWinCopyNativeLibs>true</PangoWinCopyNativeLibs>
+</PropertyGroup>
+```
+
+When `PangoWinCopyNativeLibs` is set to `true`, then the native binaries are copied from the directory given by `PangoWinNativeDir` to the output directory.
+
+This is for convenience when you want to package the application.
