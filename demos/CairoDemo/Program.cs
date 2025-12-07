@@ -47,6 +47,7 @@ try
     Gradient();
     MeshPattern();
     MeshPattern1();
+    MeshPattern2();
     RecordingAndScriptSurface();
     PdfFeatures();
     RasterSource();
@@ -579,6 +580,9 @@ static void MeshPattern()
 {
     // Based on https://gist.github.com/mgdm/3159434
 
+    const int Width  = 400;
+    const int Height = 300;
+
     static void Draw(Surface surface)
     {
         using CairoContext c = new(surface);
@@ -588,11 +592,11 @@ static void MeshPattern()
         // This rectangle will be the same size as the image
         using (mesh.BeginPatch())
         {
-            mesh.LineTo(0, 0);      // corner 0
-            mesh.LineTo(400, 0);    // corner 1
-            mesh.LineTo(400, 300);  // corner 2
-            mesh.LineTo(0, 300);    // corner 3
-            mesh.LineTo(0, 0);      // back to corner 0
+            mesh.LineTo(0, 0);              // corner 0
+            mesh.LineTo(Width, 0);          // corner 1
+            mesh.LineTo(Width, Height);     // corner 2
+            mesh.LineTo(0, Height);         // corner 3
+            mesh.LineTo(0, 0);              // back to corner 0
 
             mesh.SetCornerColorRgb(0, 0, 0, 0);     // corner 0 - black
             mesh.SetCornerColorRgb(1, 1, 0, 0);     // corner 1 - red
@@ -607,9 +611,9 @@ static void MeshPattern()
         c.Fill();
     }
 
-    using Surface primarySurface = new PdfSurface("mesh.pdf", 400, 300);
-    using Surface svgSurface     = new SvgSurface("mesh.svg", 400, 300);
-    using Surface imageSurface   = new ImageSurface(Format.Argb32, 400, 300);
+    using Surface primarySurface = new PdfSurface("mesh.pdf", Width, Height);
+    using Surface svgSurface     = new SvgSurface("mesh.svg", Width, Height);
+    using Surface imageSurface   = new ImageSurface(Format.Argb32, Width, Height);
     using TeeSurface teeSurface  = new(primarySurface);
 
     teeSurface.Add(svgSurface);
@@ -642,10 +646,10 @@ static void MeshPattern1()
         using (mesh.BeginPatch())
         {
             mesh.MoveTo(0, 0);
-            mesh.CurveTo(30, -30, 60, 30, 100, 0);
-            mesh.CurveTo(60, 30, 130, 60, 100, 100);
-            mesh.CurveTo(60, 70, 30, 130, 0, 100);
-            mesh.CurveTo(30, 70, -30, 30, 0, 0);
+            mesh.CurveTo(30, -30,  60,  30, 100,   0);
+            mesh.CurveTo(60,  30, 130,  60, 100, 100);
+            mesh.CurveTo(60,  70,  30, 130,   0, 100);
+            mesh.CurveTo(30,  70, -30,  30,   0,   0);
 
             mesh.SetCornerColorRgb(0, 1, 0, 0);
             mesh.SetCornerColorRgb(1, 0, 1, 0);
@@ -653,19 +657,16 @@ static void MeshPattern1()
             mesh.SetCornerColorRgb(3, 1, 1, 0);
         }
 
+        // Add a Gouraud-shaded triangle
         using (mesh.BeginPatch())
         {
-            mesh.MoveTo(50, 50);
+            mesh.MoveTo(100, 100);
+            mesh.LineTo(130, 130);
+            mesh.LineTo(130,  70);
 
-            mesh.CurveTo(80, 20, 110, 80, 150, 50);
-            mesh.CurveTo(110, 80, 180, 110, 150, 150);
-            mesh.CurveTo(110, 120, 80, 180, 50, 150);
-            mesh.CurveTo(80, 120, 20, 80, 50, 50);
-
-            mesh.SetCornerColorRgba(0, 1, 0, 0, 0.3);
+            mesh.SetCornerColorRgb(0, 1, 0, 0);
             mesh.SetCornerColorRgb(1, 0, 1, 0);
-            mesh.SetCornerColorRgba(2, 0, 0, 1, 0.3);
-            mesh.SetCornerColorRgb(3, 1, 1, 0);
+            mesh.SetCornerColorRgb(2, 0, 0, 1);
         }
 
         cr.SetSource(mesh);
@@ -684,6 +685,76 @@ static void MeshPattern1()
     }
 
     using (Surface surface = new SvgSurface("mesh1.svg", Width, Height))
+    {
+        Draw(surface);
+    }
+}
+//-----------------------------------------------------------------------------
+static void MeshPattern2()
+{
+    // Based on https://gitlab.com/saiwp/cairo/-/blob/master/test/mesh-pattern.c?ref_type=heads
+
+    const int PatWidth = 170;
+    const int Size     = PatWidth;
+    const int Pad      = 2;
+    const int Width    = Pad + Size + Pad;
+    const int Height   = Width;
+
+    static void Draw(Surface surface)
+    {
+        using CairoContext cr = new(surface);
+
+        cr.Translate(Pad, Pad);
+        cr.Translate(10, 10);
+
+        using Mesh mesh = new();
+
+        // Add a Coons patch
+        using (mesh.BeginPatch())
+        {
+            mesh.MoveTo(0, 0);
+            mesh.CurveTo(30, -30,  60,  30, 100,   0);
+            mesh.CurveTo(60,  30, 130,  60, 100, 100);
+            mesh.CurveTo(60,  70,  30, 130,   0, 100);
+            mesh.CurveTo(30,  70, -30,  30,   0,   0);
+
+            mesh.SetCornerColorRgb(0, 1, 0, 0);
+            mesh.SetCornerColorRgb(1, 0, 1, 0);
+            mesh.SetCornerColorRgb(2, 0, 0, 1);
+            mesh.SetCornerColorRgb(3, 1, 1, 0);
+        }
+
+        using (mesh.BeginPatch())
+        {
+            mesh.MoveTo(50, 50);
+
+            mesh.CurveTo( 80,  20, 110,  80, 150,  50);
+            mesh.CurveTo(110,  80, 180, 110, 150, 150);
+            mesh.CurveTo(110, 120,  80, 180,  50, 150);
+            mesh.CurveTo( 80, 120,  20,  80,  50,  50);
+
+            mesh.SetCornerColorRgba(0, 1, 0, 0, 0.3);
+            mesh.SetCornerColorRgb (1, 0, 1, 0);
+            mesh.SetCornerColorRgba(2, 0, 0, 1, 0.3);
+            mesh.SetCornerColorRgb (3, 1, 1, 0);
+        }
+
+        cr.SetSource(mesh);
+        cr.Paint();
+    }
+
+    using (Surface surface = new ImageSurface(Format.Argb32, Width, Height))
+    {
+        Draw(surface);
+        surface.WriteToPng("mesh2.png");
+    }
+
+    using (Surface surface = new PdfSurface("mesh2.pdf", Width, Height))
+    {
+        Draw(surface);
+    }
+
+    using (Surface surface = new SvgSurface("mesh2.svg", Width, Height))
     {
         Draw(surface);
     }
