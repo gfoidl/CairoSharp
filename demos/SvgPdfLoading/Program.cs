@@ -242,6 +242,12 @@ static void Pdf2Png()
     }
 
     // Playing around is similar to the demo at SVG above.
+
+    // Render to PNG
+    {
+        using PdfDocument pdf = new("../Sample_two_page_pager.pdf");
+        pdf.RenderToPng("Sample_two_page_pager_first_page.png", pageIndex: 0);
+    }
 }
 //-----------------------------------------------------------------------------
 static void ScriptLoading()
