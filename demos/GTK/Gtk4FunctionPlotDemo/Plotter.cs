@@ -208,7 +208,10 @@ internal static class Plotter
                 cr.PopGroupToSource();
 
                 // Cf. https://www.cairographics.org/operators/
-                cr.Operator = !darkColorScheme ? Operator.Add : Operator.Multiply;
+                // Both variants result here in the same image, but the chosen one seems more
+                // correct to me.
+                //cr.Operator = !darkColorScheme ? Operator.Add : Operator.Multiply;
+                cr.Operator = !darkColorScheme ? Operator.Lighten : Operator.Darken;
                 cr.Paint();
             }
             cr.PopGroupToSource();
