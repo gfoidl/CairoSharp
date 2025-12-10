@@ -25,6 +25,7 @@
     <Project Path="demos/GTK/Gtk4FunctionPlotDemo/Gtk4FunctionPlotDemo.csproj" />
   </Folder>
   <Folder Name="/demos/Loading/">
+    <Project Path="demos/Loading/AspNetCorePdf2Png/AspNetCorePdf2Png.csproj" />
     <Project Path="demos/Loading/SvgPdfLoading/SvgPdfLoading.csproj" />
   </Folder>
   <Folder Name="/demos/Windows/">

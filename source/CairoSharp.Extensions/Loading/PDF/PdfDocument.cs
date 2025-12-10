@@ -108,9 +108,14 @@ public sealed unsafe class PdfDocument : Document
     internal PopplerDocument* Handle => _document;
 
     [return: NotNull]
-    internal PopplerPage* GetPage(int pageIndex)
+    internal PopplerPage* GetPage(int pageIndex, bool validatePageIndex = true)
     {
         this.CheckNotDisposed();
+
+        if (validatePageIndex)
+        {
+            this.ValidatePageIndex(pageIndex);
+        }
 
         _pages ??= [];
 
@@ -122,14 +127,36 @@ public sealed unsafe class PdfDocument : Document
 
             if (handle == 0)
             {
-                throw new PopplerException($"""
-                    PDF page at index {pageIndex} could not be loaded.
-                    Note: the page index is 0-based.
-                    """);
+                ThrowPageIndexOutOfRange(pageIndex);
             }
         }
 
         return (PopplerPage*)handle;
+    }
+
+    /// <summary>
+    /// Validates the given page in within the number of pages in the PDF.
+    /// </summary>
+    /// <param name="pageIndex">a page index (zero-based)</param>
+    /// <remarks>
+    /// When <paramref name="pageIndex"/> &lt; <see cref="NumberOfPages"/> no exception
+    /// is thrown, otherwise a <see cref="PopplerException"/> is thrown.
+    /// </remarks>
+    public void ValidatePageIndex(int pageIndex)
+    {
+        if (pageIndex >= this.NumberOfPages)
+        {
+            ThrowPageIndexOutOfRange(pageIndex);
+        }
+    }
+
+    [DoesNotReturn]
+    private static void ThrowPageIndexOutOfRange(int pageIndex)
+    {
+        throw new PopplerException($"""
+            PDF page at index {pageIndex} could not be loaded.
+            Note: the page index is 0-based.
+            """);
     }
 
     /// <summary>

@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Http.Features;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 WebApplication app            = builder.Build();
 
-app.MapGet("/", GetSvg);
+app.MapGet("", GetSvg);
 
 app.Run();
 //-----------------------------------------------------------------------------
