@@ -13,7 +13,6 @@
     <Project Path="demos/CairoExtensionsDemo/CairoExtensionsDemo.csproj" />
     <Project Path="demos/FreeTypeDemo/FreeTypeDemo.csproj" />
     <Project Path="demos/PangoDemo/PangoDemo.csproj" />
-    <Project Path="demos/SvgPdfLoading/SvgPdfLoading.csproj" />
   </Folder>
   <Folder Name="/demos/GTK/">
     <Project Path="demos/Gtk/Gtk3Demo/Gtk3Demo.csproj" />
@@ -24,6 +23,9 @@
     <Project Path="demos/Gtk/Gtk4Demo/Gtk4Demo.csproj" />
     <Project Path="demos/Gtk/Gtk4DemoSimple/Gtk4DemoSimple.csproj" />
     <Project Path="demos/GTK/Gtk4FunctionPlotDemo/Gtk4FunctionPlotDemo.csproj" />
+  </Folder>
+  <Folder Name="/demos/Loading/">
+    <Project Path="demos/Loading/SvgPdfLoading/SvgPdfLoading.csproj" />
   </Folder>
   <Folder Name="/demos/Windows/">
     <Project Path="demos/Windows/WinFormsAnimation/WinFormsAnimation.csproj" />

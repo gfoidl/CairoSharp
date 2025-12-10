@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\source\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
+        <ProjectReference Include="..\..\..\source\CairoSharp.Extensions\CairoSharp.Extensions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <Content Include="scripts\script0.cairo" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="..\..\native\cairo\util\cairo-script\examples\*.cs" Link="scripts\%(FileName).cairo" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\..\..\native\cairo\util\cairo-script\examples\*.cs" Link="scripts\%(FileName).cairo" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
