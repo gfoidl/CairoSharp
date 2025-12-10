@@ -1,9 +1,13 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Cairo.Extensions.GObject;
+using Cairo.Surfaces;
+using Cairo.Surfaces.Images;
 using static Cairo.Extensions.Loading.LoadingNative;
 
 namespace Cairo.Extensions.Loading.PDF;
@@ -104,9 +108,14 @@ public sealed unsafe class PdfDocument : Document
     internal PopplerDocument* Handle => _document;
 
     [return: NotNull]
-    internal PopplerPage* GetPage(int pageIndex)
+    internal PopplerPage* GetPage(int pageIndex, bool validatePageIndex = true)
     {
         this.CheckNotDisposed();
+
+        if (validatePageIndex)
+        {
+            this.ValidatePageIndex(pageIndex);
+        }
 
         _pages ??= [];
 
@@ -118,10 +127,7 @@ public sealed unsafe class PdfDocument : Document
 
             if (handle == 0)
             {
-                throw new PopplerException($"""
-                    PDF page at index {pageIndex} could not be loaded.
-                    Note: the page index is 0-based.
-                    """);
+                ThrowPageIndexOutOfRange(pageIndex);
             }
         }
 
@@ -129,17 +135,42 @@ public sealed unsafe class PdfDocument : Document
     }
 
     /// <summary>
+    /// Validates the given page in within the number of pages in the PDF.
+    /// </summary>
+    /// <param name="pageIndex">a page index (zero-based)</param>
+    /// <remarks>
+    /// When <paramref name="pageIndex"/> &lt; <see cref="NumberOfPages"/> no exception
+    /// is thrown, otherwise a <see cref="PopplerException"/> is thrown.
+    /// </remarks>
+    public void ValidatePageIndex(int pageIndex)
+    {
+        if (pageIndex >= this.NumberOfPages)
+        {
+            ThrowPageIndexOutOfRange(pageIndex);
+        }
+    }
+
+    [DoesNotReturn]
+    private static void ThrowPageIndexOutOfRange(int pageIndex)
+    {
+        throw new PopplerException($"""
+            PDF page at index {pageIndex} could not be loaded.
+            Note: the page index is 0-based.
+            """);
+    }
+
+    /// <summary>
     /// Gets the size of page given by <paramref name="pageIndex"/> at the current scale and rotation.
     /// </summary>
     /// <param name="pageIndex">a page index (zero-based)</param>
-    /// <param name="width">the width of the page</param>
-    /// <param name="height">the height of the page</param>
-    public void GetPageSize(int pageIndex, out double width, out double height)
+    /// <param name="widthInPoints">the width of the page (in points, 1 pt = 1/72 inch)</param>
+    /// <param name="heightInPoints">the height of the page (in points, 1 pt = 1/72 inch)</param>
+    public void GetPageSize(int pageIndex, out double widthInPoints, out double heightInPoints)
     {
         this.CheckNotDisposed();
 
         PopplerPage* page = this.GetPage(pageIndex);
-        poppler_page_get_size(page, out width, out height);
+        poppler_page_get_size(page, out widthInPoints, out heightInPoints);
     }
 
     /// <summary>
@@ -259,5 +290,78 @@ public sealed unsafe class PdfDocument : Document
 
             return poppler_document_get_title(_document);
         }
+    }
+
+    /// <summary>
+    /// Renders the specified page to a PNG file.
+    /// </summary>
+    /// <param name="fileName">the name of a file to write to; on Windows this filename is encoded in UTF-8.</param>
+    /// <param name="pageIndex">a page index (zero-based)</param>
+    /// <param name="dpi">the DPI (dots per inch) for the output image (defaults to 150)</param>
+    public void RenderToPng(string fileName, int pageIndex = 0, double dpi = 150)
+    {
+        using ImageSurface surface = this.RenderToPngCore(pageIndex, dpi);
+        surface.WriteToPng(fileName);
+    }
+
+    /// <summary>
+    /// Renders the specified page to a PNG stream.
+    /// </summary>
+    /// <param name="stream">the stream to write to</param>
+    /// <param name="pageIndex">a page index (zero-based)</param>
+    /// <param name="dpi">the DPI (dots per inch) for the output image (defaults to 150)</param>
+    public void RenderToPng(Stream stream, int pageIndex = 0, double dpi = 150)
+    {
+        using ImageSurface surface = this.RenderToPngCore(pageIndex, dpi);
+        surface.WriteToPng(stream);
+    }
+
+    /// <summary>
+    /// Renders the specified page to a PNG buffer writer.
+    /// </summary>
+    /// <param name="bufferWriter">the buffer writer to write to</param>
+    /// <param name="pageIndex">a page index (zero-based)</param>
+    /// <param name="dpi">the DPI (dots per inch) for the output image (defaults to 150)</param>
+    public void RenderToPng(IBufferWriter<byte> bufferWriter, int pageIndex = 0, double dpi = 150)
+    {
+        using ImageSurface surface = this.RenderToPngCore(pageIndex, dpi);
+        surface.WriteToPng(bufferWriter);
+    }
+
+    private ImageSurface RenderToPngCore(int pageIndex, double dpi)
+    {
+        // Based on https://www.cairographics.org/cookbook/renderpdf/
+
+        // Checked by GetPageSize too, so avoid it here.
+        //this.CheckNotDisposed();
+
+        this.GetPageSize(pageIndex, out double widthInPoints, out double heightInPoints);
+
+        // For correct rendering of PDF, the PDF is first rendered to a transparent
+        // image (all alpha = 0).
+
+        const double InchesPerPoint = 1 / 72d;
+        int imgWidth                = (int)(widthInPoints  * InchesPerPoint * dpi);
+        int imgHeight               = (int)(heightInPoints * InchesPerPoint * dpi);
+
+        ImageSurface surface  = new(Format.Argb32, imgWidth, imgHeight);
+        using CairoContext cr = new(surface);
+
+        double scale = dpi / 72d;
+        cr.Scale(scale, scale);
+
+        using (cr.Save())
+        {
+            cr.LoadPdf(this, pageIndex, printing: true);
+        }
+
+        // Then the image is painted on top of a white "page". Instead of creating a second
+        // image, painting it white, then painting the PDF image over it we can use the
+        // CAIRO_OPERATOR_DEST_OVER operator to achieve the same effect with the one image.
+        cr.Operator = Drawing.Operator.DestOver;
+        cr.SetSourceRgb(1, 1, 1);
+        cr.Paint();
+
+        return surface;
     }
 }

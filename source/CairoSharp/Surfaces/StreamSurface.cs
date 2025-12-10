@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -77,8 +78,49 @@ public abstract unsafe class StreamSurface : Surface
         }
     }
 
+    protected static State CreateForBufferWriter(IBufferWriter<byte> bufferWriter, double width, double height, NativeFactory factory)
+    {
+        ArgumentNullException.ThrowIfNull(bufferWriter);
+
+        GCHandle writerHandle        = GCHandle.Alloc(bufferWriter, GCHandleType.Normal);
+        void* state                  = GCHandle.ToIntPtr(writerHandle).ToPointer();
+        cairo_write_func_t writeFunc = &WriteFunc;
+
+        cairo_surface_t* handle = factory(writeFunc, state, width, height);
+
+        return new State(handle, writerHandle);
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static Status WriteFunc(void* state, byte* data, uint length)
+        {
+            GCHandle gcHandle = GCHandle.FromIntPtr((nint)state);
+            Debug.Assert(gcHandle.IsAllocated);
+
+            IBufferWriter<byte>? bufferWriter = gcHandle.Target as IBufferWriter<byte>;
+            Debug.Assert(bufferWriter is not null);
+
+            ReadOnlySpan<byte> span = new(data, (int)length);
+
+            try
+            {
+                Span<byte> buffer = bufferWriter.GetSpan(span.Length);
+                span.CopyTo(buffer);
+
+                bufferWriter.Advance(span.Length);
+            }
+            catch
+            {
+                return Status.WriteError;
+            }
+
+            return Status.Success;
+        }
+    }
+
     protected static State CreateForDelegate(object? obj, Callback callback, double width, double height, NativeFactory factory)
     {
+        ArgumentNullException.ThrowIfNull(callback);
+
         CallbackState callbackState  = new(obj, callback);
         GCHandle stateHandle         = GCHandle.Alloc(callbackState, GCHandleType.Normal);
         void* state                  = GCHandle.ToIntPtr(stateHandle).ToPointer();

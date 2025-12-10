@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
 using System.IO;
 using static Cairo.Surfaces.SVG.SvgSurfaceNative;
 
@@ -71,6 +72,18 @@ public sealed unsafe class SvgSurface : StreamSurface
     /// <exception cref="ArgumentException"><paramref name="stream"/> is not writeable</exception>
     public SvgSurface(Stream stream, double widthInPoints, double heightInPoints)
         : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream)) { }
+
+    /// <summary>
+    /// Creates a SVG surface of the specified size in points to be written incrementally to the
+    /// buffer writer.
+    /// </summary>
+    /// <param name="bufferWriter">The buffer writer to which the SVG content is written to</param>
+    /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <exception cref="CairoException">when construction fails</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="bufferWriter"/> is <c>null</c></exception>
+    public SvgSurface(IBufferWriter<byte> bufferWriter, double widthInPoints, double heightInPoints)
+        : base(CreateForBufferWriter(bufferWriter, widthInPoints, heightInPoints, &cairo_svg_surface_create_for_stream)) { }
 
     /// <summary>
     /// Creates a SVG surface of the specified size in points to be written incrementally via the

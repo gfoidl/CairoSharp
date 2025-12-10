@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
 using System.IO;
 using static Cairo.Surfaces.PostScript.PostScriptSurfaceNative;
 
@@ -76,7 +77,7 @@ public sealed unsafe class PostScriptSurface : StreamSurface
 
     /// <summary>
     /// Creates a PostScript surface of the specified size in points to be written incrementally to the
-    /// stream represented by write_func and closure. See <see cref="PostScriptSurface(string?, double, double)"/>
+    /// stream. See <see cref="PostScriptSurface(string?, double, double)"/>
     /// for a more convenient way to simply direct the PostScript output to a named file.
     /// </summary>
     /// <param name="stream">The stream to which the PS content is written to</param>
@@ -92,6 +93,21 @@ public sealed unsafe class PostScriptSurface : StreamSurface
         : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream)) { }
 
     /// <summary>
+    /// Creates a PostScript surface of the specified size in points to be written incrementally to the
+    /// buffer writer.
+    /// </summary>
+    /// <param name="bufferWriter">The buffer writer to which the PS content is written to</param>
+    /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>
+    /// Note that the size of individual pages of the PostScript output can vary. See <see cref="SetSize"/>.
+    /// </remarks>
+    /// <exception cref="CairoException">when construction fails</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="bufferWriter"/> is <c>null</c></exception>
+    public PostScriptSurface(IBufferWriter<byte> bufferWriter, double widthInPoints, double heightInPoints)
+        : base(CreateForBufferWriter(bufferWriter, widthInPoints, heightInPoints, &cairo_ps_surface_create_for_stream)) { }
+
+    /// <summary>
     /// Creates a PostScript surface of the specified size in points to be written incrementally via the
     /// <paramref name="callback"/>.
     /// </summary>
@@ -99,6 +115,9 @@ public sealed unsafe class PostScriptSurface : StreamSurface
     /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>
+    /// Note that the size of individual pages of the PostScript output can vary. See <see cref="SetSize"/>.
+    /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
     public PostScriptSurface(Callback callback, object? state, double widthInPoints, double heightInPoints)
