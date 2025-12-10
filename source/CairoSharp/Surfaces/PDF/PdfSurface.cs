@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
 using System.IO;
 using static Cairo.Surfaces.PDF.PdfSurfaceNative;
 
@@ -48,22 +49,43 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// </param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>
+    /// Note that the size of individual pages of the PDF output can vary. See <see cref="SetSize"/>.
+    /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     public PdfSurface(string? fileName, double widthInPoints, double heightInPoints)
         : base(cairo_pdf_surface_create(fileName, widthInPoints, heightInPoints)) { }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points to be written incrementally to the
-    /// stream represented by write_func and closure.
+    /// stream.
     /// </summary>
     /// <param name="stream">The stream to which the PDF content is written to</param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>
+    /// Note that the size of individual pages of the PDF output can vary. See <see cref="SetSize"/>.
+    /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c></exception>
     /// <exception cref="ArgumentException"><paramref name="stream"/> is not writeable</exception>
     public PdfSurface(Stream stream, double widthInPoints, double heightInPoints)
         : base(CreateForWriteStream(stream, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream)) { }
+
+    /// <summary>
+    /// Creates a PDF surface of the specified size in points to be written incrementally to the
+    /// buffer writer.
+    /// </summary>
+    /// <param name="bufferWriter">The buffer writer to which the PDF content is written to</param>
+    /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>
+    /// Note that the size of individual pages of the PDF output can vary. See <see cref="SetSize"/>.
+    /// </remarks>
+    /// <exception cref="CairoException">when construction fails</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="bufferWriter"/> is <c>null</c></exception>
+    public PdfSurface(IBufferWriter<byte> bufferWriter, double widthInPoints, double heightInPoints)
+        : base(CreateForBufferWriter(bufferWriter, widthInPoints, heightInPoints, &cairo_pdf_surface_create_for_stream)) { }
 
     /// <summary>
     /// Creates a PDF surface of the specified size in points to be written incrementally via the
@@ -73,6 +95,9 @@ public sealed unsafe class PdfSurface : StreamSurface
     /// <param name="state">A state object that is passed to the <paramref name="callback"/></param>
     /// <param name="widthInPoints">width of the surface, in points (1 point == 1/72.0 inch)</param>
     /// <param name="heightInPoints">height of the surface, in points (1 point == 1/72.0 inch)</param>
+    /// <remarks>
+    /// Note that the size of individual pages of the PDF output can vary. See <see cref="SetSize"/>.
+    /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <c>null</c></exception>
     public PdfSurface(Callback callback, object? state, double widthInPoints, double heightInPoints)

@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -607,7 +608,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     }
 
     /// <summary>
-    /// Writes the contents of surface to a new file filename as a PNG image.
+    /// Writes the contents of surface to a new file <paramref name="fileName"/> as a PNG image.
     /// </summary>
     /// <param name="fileName">the name of a file to write to; on Windows this filename is encoded in UTF-8.</param>
     /// <param name="throwOnError">
@@ -624,9 +625,11 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// <exception cref="CairoException">
     /// when the operation fails and <paramref name="throwOnError"/> is set to <c>true</c>
     /// </exception>
+    /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is <c>null</c></exception>
     public Status WriteToPng(string fileName, bool throwOnError = true)
     {
         this.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(fileName);
 
         if (Ascii.IsValid(fileName))
         {
@@ -651,11 +654,11 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
 
     Stream:
         using FileStream stream = File.Create(fileName);
-        return this.WriteToPngStream(stream, throwOnError);
+        return this.WriteToPng(stream, throwOnError);
     }
 
     /// <summary>
-    /// Writes the image surface to the given stream
+    /// Writes the contents of surface to the given stream.
     /// </summary>
     /// <param name="stream">The stream to which the PNG content is written to</param>
     /// <param name="throwOnError">
@@ -671,10 +674,12 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// <exception cref="CairoException">
     /// when the operation fails and <paramref name="throwOnError"/> is set to <c>true</c>
     /// </exception>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c></exception>
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
-    public Status WriteToPngStream(Stream stream, bool throwOnError = true)
+    public Status WriteToPng(Stream stream, bool throwOnError = true)
     {
         this.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(stream);
 
         cairo_write_func_t writeFunc = &WriteFunc;
         Status status                = cairo_surface_write_to_png_stream(this.Handle, writeFunc, &stream);
@@ -693,6 +698,56 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
             ReadOnlySpan<byte> span = new(data, (int)dataLength);
 
             stream.Write(span);
+
+            return Status.Success;
+        }
+    }
+
+    [Obsolete($"Use the {nameof(WriteToPng)} with the stream overload instead.")]
+    public Status WriteToPngStream(Stream stream, bool throwOnError = true) => this.WriteToPng(stream, throwOnError);
+
+    /// <summary>
+    /// Writes the contents of surface to the given buffer writer.
+    /// </summary>
+    /// <param name="bufferWriter">The buffer writer to which the PNG content is written to</param>
+    /// <param name="throwOnError">
+    /// when set to <c>true</c> (the default) throws a <see cref="CairoException"/> when the status
+    /// does not indicate success.
+    /// </param>
+    /// <returns>
+    /// <see cref="Status.Success"/> if the PNG file was written successfully. Otherwise,
+    /// <see cref="Status.NoMemory"/> is returned if memory could not be allocated for the operation,
+    /// <see cref="Status.SurfaceTypeMismatch"/> if the surface does not have pixel contents, or
+    /// <see cref="Status.PngError"/> if libpng returned an error.
+    /// </returns>
+    /// <exception cref="CairoException">
+    /// when the operation fails and <paramref name="throwOnError"/> is set to <c>true</c>
+    /// </exception>
+    /// <exception cref="ArgumentNullException"><paramref name="bufferWriter"/> is <c>null</c></exception>
+    public Status WriteToPng(IBufferWriter<byte> bufferWriter, bool throwOnError = true)
+    {
+        this.CheckDisposed();
+        ArgumentNullException.ThrowIfNull(bufferWriter);
+
+        cairo_write_func_t writeFunc = &WriteFunc;
+        Status status                = cairo_surface_write_to_png_stream(this.Handle, writeFunc, &bufferWriter);
+
+        if (throwOnError)
+        {
+            status.ThrowIfNotSuccess();
+        }
+
+        return status;
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static Status WriteFunc(void* state, byte* data, uint dataLength)
+        {
+            IBufferWriter<byte> bufferWriter = *(IBufferWriter<byte>*)state;
+            ReadOnlySpan<byte> span          = new(data, (int)dataLength);
+            Span<byte> buffer                = bufferWriter.GetSpan(span.Length);
+
+            span.CopyTo(buffer);
+            bufferWriter.Advance(span.Length);
 
             return Status.Success;
         }

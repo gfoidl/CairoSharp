@@ -1,5 +1,6 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -269,7 +270,7 @@ public sealed unsafe class PdfDocument : Document
     /// </summary>
     /// <param name="fileName">the name of a file to write to; on Windows this filename is encoded in UTF-8.</param>
     /// <param name="pageIndex">a page index (zero-based)</param>
-    /// <param name="dpi">the DPI (dots per inch) for the output image</param>
+    /// <param name="dpi">the DPI (dots per inch) for the output image (defaults to 150)</param>
     public void RenderToPng(string fileName, int pageIndex = 0, double dpi = 150)
     {
         using ImageSurface surface = this.RenderToPngCore(pageIndex, dpi);
@@ -281,11 +282,23 @@ public sealed unsafe class PdfDocument : Document
     /// </summary>
     /// <param name="stream">the stream to write to</param>
     /// <param name="pageIndex">a page index (zero-based)</param>
-    /// <param name="dpi">the DPI (dots per inch) for the output image</param>
+    /// <param name="dpi">the DPI (dots per inch) for the output image (defaults to 150)</param>
     public void RenderToPng(Stream stream, int pageIndex = 0, double dpi = 150)
     {
         using ImageSurface surface = this.RenderToPngCore(pageIndex, dpi);
-        surface.WriteToPngStream(stream);
+        surface.WriteToPng(stream);
+    }
+
+    /// <summary>
+    /// Renders the specified page to a PNG buffer writer.
+    /// </summary>
+    /// <param name="bufferWriter">the buffer writer to write to</param>
+    /// <param name="pageIndex">a page index (zero-based)</param>
+    /// <param name="dpi">the DPI (dots per inch) for the output image (defaults to 150)</param>
+    public void RenderToPng(IBufferWriter<byte> bufferWriter, int pageIndex = 0, double dpi = 150)
+    {
+        using ImageSurface surface = this.RenderToPngCore(pageIndex, dpi);
+        surface.WriteToPng(bufferWriter);
     }
 
     private ImageSurface RenderToPngCore(int pageIndex, double dpi)

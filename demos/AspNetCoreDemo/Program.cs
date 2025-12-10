@@ -1,6 +1,7 @@
 // (c) gfoidl, all rights reserved
 
-#define CAIRO_USE_CALLBACK
+//#define CAIRO_USE_CALLBACK
+#define CAIRO_USE_BUFFERWRITER
 
 using System.Net.Mime;
 using Cairo;
@@ -13,7 +14,7 @@ using Cairo.Fonts.FreeType;
 using Cairo.Surfaces;
 using Cairo.Surfaces.SVG;
 
-#if CAIRO_USE_CALLBACK
+#if CAIRO_USE_BUFFERWRITER || CAIRO_USE_CALLBACK
 using System.IO.Pipelines;
 #else
 using System.Diagnostics;
@@ -26,13 +27,17 @@ WebApplication app            = builder.Build();
 app.MapGet("/", GetSvg);
 
 app.Run();
-
+//-----------------------------------------------------------------------------
 static async ValueTask GetSvg(HttpResponse response, bool showText = false)
 {
     response.StatusCode  = 200;
     response.ContentType = MediaTypeNames.Image.Svg;
 
-#if CAIRO_USE_CALLBACK
+#if CAIRO_USE_BUFFERWRITER
+    DrawSvgViaBufferWriter(response.BodyWriter, showText);
+
+    _ = await response.BodyWriter.FlushAsync();
+#elif CAIRO_USE_CALLBACK                   
     DrawSvgViaCallback(response.BodyWriter, showText);
 
     _ = await response.BodyWriter.FlushAsync();
@@ -47,8 +52,14 @@ static async ValueTask GetSvg(HttpResponse response, bool showText = false)
     await response.Body.FlushAsync();
 #endif
 }
-
-#if CAIRO_USE_CALLBACK
+//-----------------------------------------------------------------------------
+#if CAIRO_USE_BUFFERWRITER
+static void DrawSvgViaBufferWriter(PipeWriter bodyWriter, bool showText, int size = 500)
+{
+    using SvgSurface surface = new(bodyWriter, size, size);
+    DrawCore(surface, size, showText);
+}
+#elif CAIRO_USE_CALLBACK
 static void DrawSvgViaCallback(PipeWriter bodyWriter, bool showText, int size = 500)
 {
     using SvgSurface surface = new(static (state, data) =>
@@ -70,7 +81,7 @@ static void DrawSvgViaStream(Stream stream, bool showText, int size = 500)
     DrawCore(surface, size, showText);
 }
 #endif
-
+//-----------------------------------------------------------------------------
 static void DrawCore(SvgSurface surface, int size, bool showText)
 {
     using CairoContext cr = new(surface);
