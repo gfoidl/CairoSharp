@@ -455,8 +455,8 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     }
 
     /// <summary>
-    /// Attach an image in the format mime_type to surface. To remove the data from a surface,
-    /// call this method with same mime type and NULL for data.
+    /// Attach an image in the format <paramref name="mimeType"/> to the surface. To remove the data from
+    /// the surface, call this method with same mime type and <c>null</c> for data.
     /// </summary>
     /// <param name="mimeType">the MIME type of the image data</param>
     /// <param name="data">the image data to attach to the surface</param>
@@ -484,10 +484,57 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// </para>
     /// <para>
     /// An example is given in
-    /// <a href="https://gitlab.com/saiwp/cairo/-/blob/master/test/pdf-mime-data.c?ref_type=heads#L34-39">this C test</a>.
+    /// <a href="https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/pdf-mime-data.c?ref_type=heads#L34-39">this C test</a>.
     /// </para>
     /// </remarks>
     public void SetMimeData(string mimeType, ReadOnlySpan<byte> data)
+    {
+        this.SetMimeData(mimeType, data, &EmptyDestroyFunction, null);
+
+        // Let the GC do its work.
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static void EmptyDestroyFunction(void* state) { }
+    }
+
+    /// <summary>
+    /// Attach an image in the format <paramref name="mimeType"/> to the surface. To remove the data from
+    /// the surface, call this method with same mime type and <c>null</c> for data.
+    /// </summary>
+    /// <param name="mimeType">the MIME type of the image data</param>
+    /// <param name="data">the image data to attach to the surface</param>
+    /// <param name="destroy">
+    /// a cairo_destroy_func_t which will be called when the surface is destroyed or when new image data
+    /// is attached using the same mime type
+    /// </param>
+    /// <param name="closure">the data to be passed to the <paramref name="destroy"/> notifier</param>
+    /// <remarks>
+    /// The attached image (or filename) data can later be used by backends which support it (currently:
+    /// PDF, PS, SVG and Win32 Printing surfaces) to emit this data instead of making a snapshot of
+    /// the surface. This approach tends to be faster and requires less memory and disk space.
+    /// <para>
+    /// The recognized MIME types are the following: <see cref="MimeTypes.Jpeg"/>, <see cref="MimeTypes.Png"/>,
+    /// <see cref="MimeTypes.Jp2"/>, <see cref="MimeTypes.Uri"/>, <see cref="MimeTypes.UniqueId"/>,
+    /// <see cref="MimeTypes.Jbig2"/>, <see cref="MimeTypes.Jbig2Global"/>, <see cref="MimeTypes.Jbig2GlobalId"/>,
+    /// <see cref="MimeTypes.CcittFax"/>, <see cref="MimeTypes.CcittFaxParams"/>.
+    /// </para>
+    /// <para>
+    /// See corresponding backend surface docs for details about which MIME types it can handle. Caution:
+    /// the associated MIME data will be discarded if you draw on the surface afterwards. Use this method with care.
+    /// </para>
+    /// <para>
+    /// Even if a backend supports a MIME type, that does not mean cairo will always be able to use the
+    /// attached MIME data. For example, if the backend does not natively support the compositing operation
+    /// used to apply the MIME data to the backend. In that case, the MIME data will be ignored. Therefore,
+    /// to apply an image in all cases, it is best to create an image surface which contains the decoded image
+    /// data and then attach the MIME data to that. This ensures the image will always be used while still allowing
+    /// the MIME data to be used whenever possible.
+    /// </para>
+    /// <para>
+    /// An example is given in
+    /// <a href="https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/pdf-mime-data.c?ref_type=heads#L34-39">this C test</a>.
+    /// </para>
+    /// </remarks>
+    public void SetMimeData(string mimeType, ReadOnlySpan<byte> data, cairo_destroy_func_t destroy, void* closure)
     {
         this.CheckDisposed();
 
@@ -496,8 +543,6 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
             return;
         }
 
-        cairo_destroy_func_t destroyFunc = &EmptyDestroyFunction;
-
         fixed (byte* ptr = &MemoryMarshal.GetReference(data))
         {
             Status status = cairo_surface_set_mime_data(
@@ -505,15 +550,11 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
                 mimeType,
                 ptr,
                 new CULong((uint)data.Length),
-                destroyFunc,
-                null);
+                destroy,
+                closure);
 
             status.ThrowIfStatus(Status.NoMemory);
         }
-
-        // Let the GC do its work.
-        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-        static void EmptyDestroyFunction(void* state) { }
     }
 
     /// <summary>
@@ -522,7 +563,7 @@ public unsafe class Surface : CairoObject<cairo_surface_t>
     /// </summary>
     /// <param name="mimeType">the mime type of the image data</param>
     /// <returns>A span with the data or an empty span</returns>
-    public ReadOnlySpan<byte> GetMimeDate(string mimeType)
+    public ReadOnlySpan<byte> GetMimeData(string mimeType)
     {
         this.CheckDisposed();
 

@@ -40,7 +40,7 @@
 
     <ItemGroup>
         <Content Include="gtk4demo.gresource" CopyToOutputDirectory="PreserveNewest" Visible="false" />
-        <Content Include="..\..\Windows\WinFormsDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\..\CairoDemo\romedalen.png" Link="romedalen.png" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="icon.ico" />
         <Content Include="*.desktop" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>

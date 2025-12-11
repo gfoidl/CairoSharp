@@ -24,4 +24,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="images/*" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>
