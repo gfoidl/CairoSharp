@@ -312,7 +312,7 @@ public sealed unsafe class FontOptions : CairoObject<cairo_font_options_t>, IEqu
     /// <remarks>
     /// It is only possible to override color indexes already in the font palette.
     /// <para>
-    /// Available from Cairo 1.18 onwards.
+    /// Available from cairo 1.18 onwards.
     /// </para>
     /// </remarks>
     public CustomColorPaletteEntry CustomColorPalette

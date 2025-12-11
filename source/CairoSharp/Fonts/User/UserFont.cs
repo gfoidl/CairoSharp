@@ -263,7 +263,7 @@ public sealed unsafe class UserFont : FontFace
     /// marker as the source instead of <see cref="ForegroundSource"/> in a color render callback has the following benefits:
     /// <list type="number">
     /// <item>
-    /// Cairo only needs to call the render callback once as it can cache the recording. Cairo will substitute the
+    /// cairo only needs to call the render callback once as it can cache the recording. cairo will substitute the
     /// actual foreground color when rendering the recording.
     /// </item>
     /// <item>
@@ -302,7 +302,7 @@ public sealed unsafe class UserFont : FontFace
     /// does incur a performance penalty. If a render callback calls this property:
     /// <list type="number">
     /// <item>
-    /// Cairo will call the render callback whenever the current pattern of the context in which the glyph is rendered changes.
+    /// cairo will call the render callback whenever the current pattern of the context in which the glyph is rendered changes.
     /// </item>
     /// <item>
     /// On backends that support font embedding (PDF, PostScript, and SVG), cairo can not embed this glyph in a font.

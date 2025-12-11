@@ -34,7 +34,7 @@ public struct cairo_surface_t;
 /// A cairo surface is created by using backend-specific constructors
 /// </para>
 /// <para>
-/// Most surface types allow accessing the surface without using Cairo functions. If you do this, keep in mind
+/// Most surface types allow accessing the surface without using cairo functions. If you do this, keep in mind
 /// that it is mandatory that you call <see cref="Flush"/> before reading from or writing to the surface and
 /// that you must use <see cref="MarkDirty()"/> after modifying it.
 /// </para>
@@ -49,7 +49,7 @@ public struct cairo_surface_t;
 ///     // modify the image
 ///     ModifyImageData(surface.Data, surface.Width, surface.Height, surface.Stride);
 ///
-///     // mark the image dirty so Cairo clears its caches.
+///     // mark the image dirty so cairo clears its caches.
 ///     surface.MarkDirty();
 /// }
 /// </code>
