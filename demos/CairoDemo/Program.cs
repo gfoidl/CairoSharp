@@ -1,7 +1,6 @@
 // (c) gfoidl, all rights reserved
 
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Cairo;
 using Cairo.Drawing;
@@ -45,14 +44,17 @@ try
     Arrow();
     Hexagon();
     Gradient();
+    GradientStepFunction();
     MeshPattern();
     MeshPattern1();
     MeshPattern2();
+    MeshPatternConical();
     RecordingAndScriptSurface();
     PdfFeatures();
     RasterSource();
     UserFontSimple();
     PngFlatten();
+    MimeImageEmbedding();
 }
 catch (Exception ex) when (!Debugger.IsAttached)
 {
@@ -461,7 +463,7 @@ static void Hexagon()
     static PointD[] GetHexagonPoints(double cellSize)
     {
         double ri = cellSize / 2;
-        double r = 2 * ri / Math.Sqrt(3);
+        double r  = 2 * ri / Math.Sqrt(3);
 
         var p1 = new PointD(0, r);
         var p2 = new PointD(ri, r / 2);
@@ -573,6 +575,52 @@ static void Gradient()
     {
         Draw(surface);
         surface.WriteToPng("gradient2.png");
+    }
+}
+//-----------------------------------------------------------------------------
+static void GradientStepFunction()
+{
+    // Based on https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/linear-step-function.c?ref_type=heads
+
+    const int Size = 40;
+
+    static void Draw(Surface surface)
+    {
+        using CairoContext cr = new(surface);
+
+        cr.SetSourceRgb(0, 0, 0);
+        cr.Paint();
+
+        using LinearGradient pattern = new(Size / 2, 0, Size / 2, 0);
+        pattern.AddColorStopRgb(0, 1, 0, 0);
+        pattern.AddColorStopRgb(1, 0, 0, 1);
+        cr.SetSource(pattern);
+
+        pattern.Extend = Extend.None;   // nothing
+        cr.Rectangle(0, 0, Size, Size / 2);
+        cr.Fill();
+
+        pattern.Extend = Extend.Pad;    // step
+        cr.Rectangle(0, Size / 2, Size, Size / 2);
+        cr.Fill();
+    }
+
+    using (Surface surface = new ImageSurface(Format.Argb32, Size, Size))
+    {
+        Draw(surface);
+        surface.WriteToPng("gradient_step.png");
+    }
+
+    using (Surface surface = new PdfSurface("gradient_step.pdf", Size, Size))
+    {
+        Draw(surface);
+        surface.WriteToPng("gradient_step1.png");
+    }
+
+    using (Surface surface = new SvgSurface("gradient_step.svg", Size, Size))
+    {
+        Draw(surface);
+        surface.WriteToPng("gradient_step2.png");
     }
 }
 //-----------------------------------------------------------------------------
@@ -760,6 +808,116 @@ static void MeshPattern2()
     }
 }
 //-----------------------------------------------------------------------------
+static void MeshPatternConical()
+{
+    // Based on https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/mesh-pattern-conical.c?ref_type=heads
+
+    const int PatWidth  = 100;
+    const int PatHeight = 100;
+    const int Size      = PatWidth;
+    const int Pad       = 2;
+    const int Width     = Pad + Size + Pad;
+    const int Height    = Width;
+    const int CenterX   = 50;
+    const int CenterY   = 50;
+    const int Radius    = 50;
+
+    static void Draw(Surface surface)
+    {
+        using CairoContext cr = new(surface);
+
+        cr.SetSourceRgb(1, 1, 1);
+        cr.Paint();
+
+        using Mesh mesh = new();
+
+        SectorPatch(
+            mesh,
+            0,                  1, 0, 0,
+            Math.PI / 4,        1, 1, 0);
+        SectorPatch(
+            mesh,
+            Math.PI / 4,        0, 1, 0,
+            Math.PI / 2,        0, 1, 1);
+        SectorPatch(
+            mesh,
+                Math.PI / 2,    0, 0, 1,
+            3 * Math.PI / 4,    1, 0, 1);
+        SectorPatch(
+            mesh,
+            3 * Math.PI / 4,    1, 0, 0,
+                Math.PI,        1, 1, 0);
+        SectorPatch(
+            mesh,
+                -Math.PI,       1, 1, 0,
+            -3 * Math.PI / 4,   0, 1, 0);
+        SectorPatch(
+            mesh,
+            -3 * Math.PI / 4,   0, 1, 0,
+            -Math.PI / 2,       0, 1, 1);
+        SectorPatch(
+            mesh,
+            -Math.PI / 2,       0, 1, 1,
+            -Math.PI / 4,       0, 0, 1);
+        SectorPatch(
+            mesh,
+            -Math.PI / 4,       0, 0, 1,
+            0,                  1, 0, 0);
+
+        cr.SetSource(mesh);
+        cr.Paint();
+
+        static void SectorPatch(
+            Mesh mesh,
+            double angleA,
+            double aR, double aG, double aB,
+            double angleB,
+            double bR, double bG, double bB)
+        {
+            double rSinA = Radius * Math.Sin(angleA);
+            double rCosA = Radius * Math.Cos(angleA);
+            double rSinB = Radius * Math.Sin(angleB);
+            double rCosB = Radius * Math.Cos(angleB);
+
+            double h = 4d / 3d * Math.Tan((angleB - angleA) / 4d);
+
+            using (mesh.BeginPatch())
+            {
+                mesh.MoveTo(CenterX, CenterY);
+                mesh.LineTo(CenterX + rCosA, CenterY + rSinA);
+
+                mesh.CurveTo(
+                    CenterX + rCosA - h * rSinA,
+                    CenterY + rSinA + h * rCosA,
+                    CenterX + rCosB + h * rSinB,
+                    CenterY + rSinB - h * rCosB,
+                    CenterX + rCosB,
+                    CenterY + rSinB);
+
+                mesh.SetCornerColorRgb(0,  1,  1,  1);
+                mesh.SetCornerColorRgb(1, aR, aG, aB);
+                mesh.SetCornerColorRgb(2, bR, bG, bB);
+            }
+        }
+    }
+
+    using (Surface surface = new ImageSurface(Format.Argb32, Width, Height))
+    {
+        Draw(surface);
+        surface.WriteToPng("mesh_conical.png");
+    }
+
+    using (Surface surface = new PdfSurface("mesh_conical.pdf", Width, Height))
+    {
+        Draw(surface);
+    }
+
+    using (Surface surface = new SvgSurface("mesh_conical.svg", Width, Height))
+    {
+        Draw(surface);
+    }
+}
+//-----------------------------------------------------------------------------
 static void RecordingAndScriptSurface()
 {
     // Record a script
@@ -892,7 +1050,7 @@ static void PdfFeatures()
 //-----------------------------------------------------------------------------
 static void RasterSource()
 {
-    // Based on https://gitlab.com/saiwp/cairo/-/blob/master/test/raster-source.c?ref_type=heads
+    // Based on https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/raster-source.c?ref_type=heads
 
     // Note: we set the current dir to output
     PngDimensions("../png.png", out Content content, out int pngWidth, out int pngHeight);
@@ -960,6 +1118,7 @@ static void RasterSource()
 static void UserFontSimple()
 {
     // Well, this is a really very simple "font". Just for demo how it works.
+    // Another example is in https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/user-font-color.c?ref_type=heads
 
     static void Draw(Surface surface)
     {
@@ -1053,6 +1212,54 @@ static void PngFlatten()
     cr.Paint();
 
     rgb24.WriteToPng("png-opaque.png");
+}
+//-----------------------------------------------------------------------------
+static void MimeImageEmbedding()
+{
+    // Based on https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/pdf-mime-data.c?ref_type=heads
+
+    using ImageSurface image = new("../romedalen.png");
+    int width                = image.Width;
+    int height               = image.Height;
+
+    using (PdfSurface surface = new("mime_no_embed.pdf", width + 20, height + 20))
+    {
+        using CairoContext cr = new(surface);
+
+        cr.Translate(10, 10);
+        cr.SetSourceSurface(image, 0, 0);
+        cr.Paint();
+    }
+
+    using (SvgSurface surface = new("mime_no_embed.svg", width + 20, height + 20))
+    {
+        using CairoContext cr = new(surface);
+
+        cr.Translate(10, 10);
+        cr.SetSourceSurface(image, 0, 0);
+        cr.Paint();
+    }
+
+    byte[] jpgData = File.ReadAllBytes("../romedalen.jpg");
+    image.SetMimeData(MimeTypes.Jpeg, jpgData);
+
+    using (PdfSurface surface = new("mime_embed.pdf", width + 20, height + 20))
+    {
+        using CairoContext cr = new(surface);
+
+        cr.Translate(10, 10);
+        cr.SetSourceSurface(image, 0, 0);
+        cr.Paint();
+    }
+
+    using (SvgSurface surface = new("mime_embed.svg", width + 20, height + 20))
+    {
+        using CairoContext cr = new(surface);
+
+        cr.Translate(10, 10);
+        cr.SetSourceSurface(image, 0, 0);
+        cr.Paint();
+    }
 }
 //-----------------------------------------------------------------------------
 namespace CairoDemo

@@ -20,13 +20,13 @@ public sealed unsafe class QuartzSurface : Surface
     /// avoid an expensive colorspace transform done serially on the CPU. This may produce slightly
     /// different colors from what's intended. Programs for which color management is important should
     /// create their own CGBitmapContext with a device-independent color space; most will expect
-    /// Cairo to draw in sRGB and would use CGColorSpaceCreateWithName(kCGColorSpaceSRGB).
+    /// cairo to draw in sRGB and would use CGColorSpaceCreateWithName(kCGColorSpaceSRGB).
     /// </summary>
     /// <param name="format">format of pixels in the surface to create</param>
     /// <param name="widthInPixels">width of the surface, in pixels</param>
     /// <param name="heightInPixels">height of the surface, in pixels</param>
     /// <remarks>
-    /// All Cairo operations, including those that require software rendering, will succeed on this surface.
+    /// All cairo operations, including those that require software rendering, will succeed on this surface.
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>
     public QuartzSurface(Format format, int widthInPixels, int heightInPixels)
@@ -34,7 +34,7 @@ public sealed unsafe class QuartzSurface : Surface
 
     /// <summary>
     /// Creates a Quartz surface that wraps the given CGContext. The CGContext is assumed to
-    /// be in the standard Cairo coordinate space (that is, with the origin at the upper left
+    /// be in the standard cairo coordinate space (that is, with the origin at the upper left
     /// and the Y axis increasing downward). If the CGContext is in the Quartz coordinate space
     /// (with the origin at the bottom left), then it should be flipped before this function
     /// is called.
@@ -43,7 +43,7 @@ public sealed unsafe class QuartzSurface : Surface
     /// <param name="widthInPixels">width of the surface, in pixels</param>
     /// <param name="heightInPixels">height of the surface, in pixels</param>
     /// <remarks>
-    /// All Cairo operations are implemented in terms of Quartz operations, as long as
+    /// All cairo operations are implemented in terms of Quartz operations, as long as
     /// Quartz-compatible elements are used (such as Quartz fonts).
     /// </remarks>
     /// <exception cref="CairoException">when construction fails</exception>

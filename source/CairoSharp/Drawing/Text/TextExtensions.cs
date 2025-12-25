@@ -38,7 +38,7 @@ public static unsafe class TextExtensions
     {
         /// <summary>
         /// Selects a family and style of font from a simplified description as a family name, slant and
-        /// weight. Cairo provides no operation to list available family names on the system (this is a "toy",
+        /// weight. cairo provides no operation to list available family names on the system (this is a "toy",
         /// remember), but the standard CSS2 generic family names, ("serif", "sans-serif", "cursive", "fantasy",
         /// "monospace"), are likely to work as expected.
         /// </summary>

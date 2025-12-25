@@ -765,7 +765,7 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// <remarks>
     /// If the current line join style is set to <see cref="LineJoin.Miter"/> (see <see cref="LineJoin"/>),
     /// the miter limit is used to determine whether the lines should be joined with a bevel instead
-    /// of a miter. Cairo divides the length of the miter by the line width. If the result is greater
+    /// of a miter. cairo divides the length of the miter by the line width. If the result is greater
     /// than the miter limit, the style is converted to a bevel.
     /// <para>
     /// As with the other stroke parameters, the current line cap style is examined by
@@ -828,7 +828,7 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// original path and the polygonal approximation is less than tolerance. The default value
     /// is 0.1. A larger value will give better performance, a smaller value, better appearance.
     /// (Reducing the value from the default value of 0.1 is unlikely to improve appearance significantly.)
-    /// The accuracy of paths within Cairo is limited by the precision of its internal arithmetic,
+    /// The accuracy of paths within cairo is limited by the precision of its internal arithmetic,
     /// and the prescribed tolerance is restricted to the smallest representable internal value.
     /// </remarks>
     public double Tolerance
@@ -1351,9 +1351,9 @@ public sealed unsafe class CairoContext : CairoObject<cairo_t>
     /// <item>svg: Encoded as 1px non-scaling-stroke.</item>
     /// <item>script: Encoded with set-hairline function.</item>
     /// </list>
-    /// Cairo will always render hairlines at 1 device unit wide, even if an anisotropic scaling was applied
+    /// cairo will always render hairlines at 1 device unit wide, even if an anisotropic scaling was applied
     /// to the stroke width. In the wild, handling of this situation is not well-defined. Some PDF, PS, and
-    /// SVG renderers match Cairo's output, but some very popular implementations (Acrobat, Chrome, rsvg)
+    /// SVG renderers match cairo's output, but some very popular implementations (Acrobat, Chrome, rsvg)
     /// will scale the hairline unevenly. As such, best practice is to reset any anisotropic scaling before
     /// calling <see cref="Stroke"/>.
     /// See <a href="https://cairographics.org/cookbook/ellipses/">cairo cookbok - ellipses</a> for an example.

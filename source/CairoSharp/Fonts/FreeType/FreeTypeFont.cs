@@ -25,7 +25,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// </summary>
     /// <param name="face">
     /// A FreeType face object, already opened. This must be kept around until the face's ref_count
-    /// drops to zero and it is freed. Since the face may be referenced internally to Cairo, the best
+    /// drops to zero and it is freed. Since the face may be referenced internally to cairo, the best
     /// way to determine when it is safe to free the face is to pass a cairo_destroy_func_t to
     /// cairo_font_face_set_user_data()
     /// </param>
@@ -45,7 +45,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the FreeType backend and can be used with functions such as <see cref="LockFace"/>.
-    /// Note that Cairo may keep a reference to the FT_Face alive in a font-cache and the exact lifetime
+    /// Note that cairo may keep a reference to the FT_Face alive in a font-cache and the exact lifetime
     /// of the reference depends highly upon the exact usage pattern and is subject to external factors.
     /// You must not call FT_Done_Face() before the last reference to the <see cref="FontFace"/> has been dropped.
     /// <para>
@@ -62,7 +62,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// </summary>
     /// <param name="face">
     /// A FreeType face object, already opened. This must be kept around until the face's ref_count
-    /// drops to zero and it is freed. Since the face may be referenced internally to Cairo, the best
+    /// drops to zero and it is freed. Since the face may be referenced internally to cairo, the best
     /// way to determine when it is safe to free the face is to pass a cairo_destroy_func_t to
     /// cairo_font_face_set_user_data()
     /// </param>
@@ -82,7 +82,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>.
     /// The <see cref="ScaledFont"/> returned from <see cref="ScaledFont(FontFace, ref Matrix, ref Matrix, FontOptions)"/>
     /// is also for the FreeType backend and can be used with functions such as <see cref="LockFace"/>.
-    /// Note that Cairo may keep a reference to the FT_Face alive in a font-cache and the exact lifetime
+    /// Note that cairo may keep a reference to the FT_Face alive in a font-cache and the exact lifetime
     /// of the reference depends highly upon the exact usage pattern and is subject to external factors.
     /// You must not call FT_Done_Face() before the last reference to the <see cref="FontFace"/> has been dropped.
     /// <para>
@@ -96,7 +96,7 @@ public sealed unsafe class FreeTypeFont : FontFace
     /// Creates a new font face for the FreeType font backend based on a fontconfig pattern.
     /// </summary>
     /// <param name="pattern">
-    /// A fontconfig pattern. Cairo makes a copy of the pattern if it needs to. You are
+    /// A fontconfig pattern. cairo makes a copy of the pattern if it needs to. You are
     /// free to modify or free pattern after this call.
     /// </param>
     /// <remarks>
