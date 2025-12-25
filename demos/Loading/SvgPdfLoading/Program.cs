@@ -189,6 +189,12 @@ static void Svg2Png()
 
         svgSurface.WriteToPng("svg2png_3.png");
     }
+
+    // Render to PNG
+    {
+        using SvgDocument svgDoc = new("../demo02.svg");
+        svgDoc.RenderToPng("demo02.png");
+    }
 }
 //-----------------------------------------------------------------------------
 static void Pdf2Png()

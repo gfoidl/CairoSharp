@@ -88,7 +88,7 @@ public static unsafe class LibRSvgExtensions
         }
     }
 
-    private static void RenderCore(RsvgHandle* handle, CairoContext cr, RsvgRectangle viewPort)
+    internal static void RenderCore(RsvgHandle* handle, CairoContext cr, RsvgRectangle viewPort)
     {
         GError* error = null;
 
