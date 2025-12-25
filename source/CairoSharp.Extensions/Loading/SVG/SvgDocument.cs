@@ -1,8 +1,12 @@
 // (c) gfoidl, all rights reserved
 
+using System.Buffers;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Cairo.Extensions.GObject;
+using Cairo.Surfaces;
+using Cairo.Surfaces.Images;
 using static Cairo.Extensions.Loading.LoadingNative;
 
 namespace Cairo.Extensions.Loading.SVG;
@@ -122,7 +126,7 @@ public sealed unsafe class SvgDocument : Document
     }
 
     /// <summary>
-    /// Converts an SVG document’s intrinsic dimensions to pixels, and returns the result.
+    /// Converts an SVG document's intrinsic dimensions to pixels, and returns the result.
     /// </summary>
     /// <param name="widthInPixels">Will be set to the computed width; you should round this up to get integer pixels.</param>
     /// <param name="heightInPixels">Will be set to the computed height; you should round this up to get integer pixels.</param>
@@ -189,5 +193,60 @@ public sealed unsafe class SvgDocument : Document
         {
             viewBox = viewBoxLocal;
         }
+    }
+
+    /// <summary>
+    /// Renders the SVG to a PNG file.
+    /// </summary>
+    /// <param name="fileName">the name of a file to write to; on Windows this filename is encoded in UTF-8.</param>
+    public void RenderToPng(string fileName)
+    {
+        using ImageSurface surface = this.RenderToPngCore();
+        surface.WriteToPng(fileName);
+    }
+
+    /// <summary>
+    /// Renders the SVG to a PNG stream.
+    /// </summary>
+    /// <param name="stream">the stream to write to</param>
+    public void RenderToPng(Stream stream)
+    {
+        using ImageSurface surface = this.RenderToPngCore();
+        surface.WriteToPng(stream);
+    }
+
+    /// <summary>
+    /// Renders the SVG to a PNG buffer writer.
+    /// </summary>
+    /// <param name="bufferWriter">the buffer writer to write to</param>
+    public void RenderToPng(IBufferWriter<byte> bufferWriter)
+    {
+        using ImageSurface surface = this.RenderToPngCore();
+        surface.WriteToPng(bufferWriter);
+    }
+
+    private ImageSurface RenderToPngCore()
+    {
+        // Based on https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/svg2png.c?ref_type=heads
+
+        if (!this.TryGetSizeInPixels(out double widthInPixels, out double heightInPixels))
+        {
+            throw new LibRsvgException("SVG document doesn't have intrinsic dimensions");
+        }
+
+        ImageSurface surface  = new(Format.Rgb24, (int)Math.Ceiling(widthInPixels), (int)Math.Ceiling(heightInPixels));
+        using CairoContext cr = new(surface);
+
+        cr.SetSourceRgb(1, 1, 1);
+        cr.Paint();
+
+        cr.PushGroupWithContent(Content.ColorAlpha);
+
+        LibRSvgExtensions.RenderCore(this.Handle, cr, new RsvgRectangle(0, 0, widthInPixels, heightInPixels));
+
+        cr.PopGroupToSource();
+        cr.Paint();
+
+        return surface;
     }
 }
