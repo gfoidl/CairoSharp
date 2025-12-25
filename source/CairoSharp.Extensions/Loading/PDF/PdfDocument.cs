@@ -331,6 +331,9 @@ public sealed unsafe class PdfDocument : Document
     private ImageSurface RenderToPngCore(int pageIndex, double dpi)
     {
         // Based on https://www.cairographics.org/cookbook/renderpdf/
+        // and on https://gitlab.freedesktop.org/cairo/cairo/-/blob/master/test/pdf2png.c?ref_type=heads
+        // especially with the correction in
+        // https://gitlab.freedesktop.org/cairo/cairo/-/commit/f74b11415a1f7682dd50c222baa8815ef93681dc
 
         // Checked by GetPageSize too, so avoid it here.
         //this.CheckNotDisposed();
@@ -344,22 +347,20 @@ public sealed unsafe class PdfDocument : Document
         int imgWidth                = (int)(widthInPoints  * InchesPerPoint * dpi);
         int imgHeight               = (int)(heightInPoints * InchesPerPoint * dpi);
 
-        ImageSurface surface  = new(Format.Argb32, imgWidth, imgHeight);
+        ImageSurface surface  = new(Format.Rgb24, imgWidth, imgHeight);
         using CairoContext cr = new(surface);
+
+        cr.SetSourceRgb(1, 1, 1);
+        cr.Paint();
+
+        cr.PushGroupWithContent(Content.ColorAlpha);
 
         double scale = dpi / 72d;
         cr.Scale(scale, scale);
 
-        using (cr.Save())
-        {
-            cr.LoadPdf(this, pageIndex, printing: true);
-        }
+        cr.LoadPdf(this, pageIndex, printing: true);
 
-        // Then the image is painted on top of a white "page". Instead of creating a second
-        // image, painting it white, then painting the PDF image over it we can use the
-        // CAIRO_OPERATOR_DEST_OVER operator to achieve the same effect with the one image.
-        cr.Operator = Drawing.Operator.DestOver;
-        cr.SetSourceRgb(1, 1, 1);
+        cr.PopGroupToSource();
         cr.Paint();
 
         return surface;
