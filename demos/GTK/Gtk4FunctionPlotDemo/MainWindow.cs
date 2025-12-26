@@ -171,7 +171,7 @@ public sealed class MainWindow : ApplicationWindow
         using (cr.Save())
         {
             cr.Rectangle(0, 0, width, height);
-            cr.Color = Color.Default;
+            cr.Color     = Color.Default;
             cr.LineWidth = 1d;
             cr.Stroke();
         }
@@ -187,7 +187,7 @@ public sealed class MainWindow : ApplicationWindow
                     width, height,
                     _mousePosition,
                     x, y, z,
-                    _annotationDarkSchemeCheckButton.Active,
+                    _annotationDarkSchemeCheckButton      .Active,
                     _monospaceFontForAnnotationCheckButton.Active);
             }
         }

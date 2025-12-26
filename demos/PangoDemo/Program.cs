@@ -129,7 +129,7 @@ static void FontSelectionDemo()
     cr.Stroke();
     cr.LineWidth = 1;
 
-    double curY = 10;
+    double curY                   = 10;
     using PangoLayout pangoLayout = new(cr);
 
     cr.MoveTo(10, curY);

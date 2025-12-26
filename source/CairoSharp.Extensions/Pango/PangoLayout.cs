@@ -122,9 +122,9 @@ public sealed unsafe class PangoLayout : CairoObject<pango_layout>
     /// </remarks>
     public string SetFontDescription(PangoFontFace fontFace, int size)
     {
+        ArgumentNullException.ThrowIfNull(fontFace);
         this.CheckDisposed();
         fontFace.CheckDisposed();
-        ArgumentNullException.ThrowIfNull(fontFace);
 
         pango_font_description* desc = PangoFontFaceNative.pango_font_face_describe(fontFace.Handle);
 
