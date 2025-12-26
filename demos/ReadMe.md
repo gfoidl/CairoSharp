@@ -26,6 +26,10 @@ Shows some features that the _CairoSharp.Extensions_ package provides.
 
 Uses FreeType fonts either loaded from file, a byte array or from an embedded resource.
 
+### PangoDemo
+
+Shows some features that [Pango](https://www.gtk.org/docs/architecture/pango) offers for _cairo_.
+
 ### SvgPdfLoading
 
 Loads SVG or PDF files into a _cairo_ context, so they can be used in further drawing.
