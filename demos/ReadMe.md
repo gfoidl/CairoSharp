@@ -50,7 +50,7 @@ A Windows version is in [WinFormsDemo](#winformsdemo).
 
 #### Gtk4Animation
 
-Shows how to display an animation, drawed via _cairo_ in GTK 4. For each iteration an image can be stored to the output folder, and in the [ReadMe](./Gtk/Gtk4Animation/ReadMe.md) over there is a command on how to create a `mp4`-video out of the created image files.
+Shows how to display an animation, drawed via _cairo_ in GTK 4. For each iteration an image can be stored to the output folder, and in the [ReadMe](./GTK/Gtk4Animation/ReadMe.md) over there is a command on how to create a `mp4`-video out of the created image files.
 
 There are some variants of this demo:
 * [Gtk4AnimationWithBuilder](./GTK/Gtk4AnimationWithBuilder/ReadMe.md) shows how to use GTK 4's UI builder
